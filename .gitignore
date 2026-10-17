@@ -1,0 +1,6 @@
+
+# input and output artifacts, never commit those
+local_inputs
+local_outputs
+
+
