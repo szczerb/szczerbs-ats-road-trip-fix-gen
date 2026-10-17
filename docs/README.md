@@ -35,4 +35,5 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).
 - [CLI setup, commands, and prototype limits](reference/TOOLING.md).
 - [Generated artifacts and validation handoff](reference/VALIDATION_HANDOFF.md).
+- [Starting-garage evidence and Helena-area/Great Falls samples](reference/STARTER_AREA_SAMPLE.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

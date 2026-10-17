@@ -21,6 +21,10 @@ All are ignored derived files, not committed/distributed mods. Their embedded re
 
 Use one courier context output at a time: they share an additive file path. The source station PPD SHA-256 is `558813136dc24c7e621d694420d4b9162544fe5d24215e39c3c9099e6e030139`; the modified candidate is `3a43be1aa465e349163705d4d06e9fb344d5c471f0591ca799f0689573cac059`.
 
+## Easier ATS Expansion location
+
+The [starter-area guide](STARTER_AREA_SAMPLE.md) adds separate Helena-area and Great Falls single-pump experiments. Prefer checking Helena HQ selection because its effective garage retains a standard class; Great Falls uses a custom garage, with a target about 94 map metres from that placed GaragePoint. It edits a private descriptor **and the existing map service**, preserving counts and transforms. Confirm Great Falls appears in the new-profile selector; custom garage presence does not prove eligibility. The sample converts one pump, can remove truck access there, and overrides a whole sector. This is distinct from the earlier Reforma PPD-only experiment.
+
 ## Copied-profile experiment
 
 1. Start from a disposable/copied profile, record exact ATS/DLC/map versions and priority, and keep the original profile unchanged. Confirm original source hashes and inspect each generated ZIP's embedded report. Place only the chosen candidate above its source maps/resources in that test profile.

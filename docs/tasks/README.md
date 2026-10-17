@@ -4,7 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-No active tasks. The research/prototype milestone is complete; gameplay validation remains in backlog.
+No active tasks. Starter-area sample preparation is complete; gameplay validation remains in backlog.
 
 ## Backlog
 
@@ -21,5 +21,7 @@ No active tasks. The research/prototype milestone is complete; gameplay validati
 | [TASK-0005: Design first generator increment](done/TASK-0005-design-first-generator-increment.md) | Python inspection/experimental patch design and validation boundaries |
 
 - [TASK-0006: Build inspector and experimental generators](done/TASK-0006-build-inspector-and-experimental-generators.md) — 39 tests and real-input static checks passed; experimental packages and handoff produced.
+
+- [TASK-0008: Prepare starter-area samples](done/TASK-0008-prepare-starter-area-sample.md) — effective garage comparison, pinned single-pump generator, Helena-area/Great Falls packages, and 43 passing tests.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

@@ -1,5 +1,7 @@
 # ADR-0002: Use Python inspection and bounded experimental patches
 
+Partial supersession: [ADR-0003](ADR-0003-allow-pinned-single-pump-sector-experiments.md) later permits one separate, pinned single-pump sector experiment. The original descriptor-only command and other decisions below remain unchanged.
+
 ## Context
 
 Date: 2026-10-17. The user authorized autonomous research, useful archive tooling, and an evidence-supported proof of concept after initialization. Both compatibility investigations produced concrete static mechanisms, with runtime uncertainties. See [courier findings](../../reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](../../reference/REFUELING_RESEARCH_FINDINGS.md), and [installed baseline](../../reference/RESEARCH_BASELINE.md).

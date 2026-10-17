@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "game_version": "1.61.3.18",
+  "sector": "map/usa/sec-0016-0014.base",
+  "sector_sha256": "259834286637f8429f8b19f494cc9aab0760963b9d5d1653524334132dc93137",
+  "descriptor_sha256": "5e9780d00f91360531caee48b62fc8bca6284827468d92a3311fa178035cc8eb",
+  "prefab_uid": "0x485aa52809000001",
+  "service_uid": "0x660cd950200030bb",
+  "location": {
+    "city": "Great Falls",
+    "city_token": "great_falls",
+    "pump_prefab_bounds_center": [-60335.9140625, 60.283203125, -52408.67578125],
+    "garage_point": [-60248.1953125, 60.390625, -52442.48046875],
+    "distance_from_garage_point_map_units": 94.007,
+    "distance_interpretation": "Straight-line map distance; not driven route length",
+    "starting_city_ui_confirmed": false
+  }
+}

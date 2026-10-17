@@ -68,8 +68,14 @@ Repeated `--package` has the same low-to-high semantics. Select exact `--path` v
 
 This is an experiment: co-located locators, physical car access, fuel behavior, and map-service/spawn rebuilding are untested. It is not a generic map-sector repair. See [refueling findings](REFUELING_RESEARCH_FINDINGS.md).
 
+## Pinned single-pump map experiment
+
+`generate-local-fuel` accepts repeated `--baseline` packages, one `--map`, a reviewed `--recipe` JSON, `--output`, exact `--game-version 1.61.3.18`, and `--experimental`. The [starter-area guide](STARTER_AREA_SAMPLE.md#reproduce-generation) provides the complete command and authored Helena-area/Great Falls recipes. It requires exact source hashes, a supported single-GAS stock configuration, matching prefab/service identities, and no generated collisions. It emits a private prefab alias, same-size descriptor with one locator flag changed, and a same-size sector with the selected model token/service bit changed.
+
+Unlike the descriptor-only experiment, this converts **one existing pump**; truck use at that pump may disappear. Nearby pumps retain their original data. A full sector override conflicts with other edits to that sector/companions. The service-bit interpretation, starting-city eligibility, and gameplay remain unverified. This is not general sector serialization or automatic fix discovery. See [ADR-0003](../architecture/decisions/ADR-0003-allow-pinned-single-pump-sector-experiments.md).
+
 ## Generated output contract
 
-Both generators require `--experimental` and a declared ATS 1.61 `--game-version`. They refuse empty changes and existing outputs. The deterministic ZIP_STORED `.scs` contains generated/changed resources, `manifest.sii`, `mod_description.txt`, and `road_trip_fix_report.json`. The report carries `schema_version: 1`, provenance, transformations, limitations, generated resource hashes, and `in_game_verified: false`. These are prototype interfaces; they do not certify complete game compatibility. Errors exit with status 2.
+All generators require `--experimental` and a declared ATS 1.61 `--game-version`. They refuse empty changes and existing outputs. The deterministic ZIP_STORED `.scs` contains generated/changed resources, `manifest.sii`, `mod_description.txt`, and `road_trip_fix_report.json`. The report carries `schema_version: 1`, provenance, transformations, limitations, generated resource hashes, and `in_game_verified: false`. These are prototype interfaces; they do not certify complete game compatibility. Errors exit with status 2.
 
 Nothing is installed in the game or mod directory. Generated fuel descriptors contain modified source asset bytes and remain ignored local artifacts. Follow the [validation handoff](VALIDATION_HANDOFF.md) before treating any candidate as a working fix.

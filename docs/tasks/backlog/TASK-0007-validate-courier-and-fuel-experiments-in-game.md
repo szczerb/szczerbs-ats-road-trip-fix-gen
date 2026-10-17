@@ -21,6 +21,7 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 # Scope
 
 - Use a disposable/copied profile with exact game/DLC/mod versions, priority, vehicle/class, rating, and baseline observations.
+- Confirm Great Falls HQ selection/access and compare the [single-pump sample](../../reference/STARTER_AREA_SAMPLE.md), including the converted pump and unchanged nearby truck controls.
 - Test the narrow Ahorrara courier candidate separately from the wider alias experiment and the fuel descriptor experiment.
 - Compare unmodified, candidate-only, and (only if necessary) separately editor-rebuilt fuel data.
 - Record counterexamples, actual fuel changes and completed deliveries, logs, and truck regressions.

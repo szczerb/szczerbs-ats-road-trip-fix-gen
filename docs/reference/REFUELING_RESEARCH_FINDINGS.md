@@ -96,6 +96,10 @@ A narrow example is registered by `/def/world/prefab.mvs.sii`, unit `prefab.mx9`
 
 **Observed locally:** five focused synthetic unit tests cover versioned reading, preserved original records/opaque sections, offset changes, idempotence, and rejection of malformed or unsupported input. The inspector also processed all 191 official selected PPDs. Transformation plus a second idempotence pass succeeded for every applicable official descriptor. Those checks establish deterministic structural behavior only. No in-game refueling, editor rebuild, or truck regression test has occurred.
 
+## Follow-up: existing service fuel bit
+
+A later [ATS Expansion starter-area inspection](STARTER_AREA_SAMPLE.md) found service flags `0x80004000` correlated with car-oriented PPD locators, alongside `0x80000000` truck services. This provides a stronger, still unverified petrol-bit hypothesis and a separate Great Falls experiment converting an existing locator and its linked service. Counts/transforms are preserved, and the stock shared descriptor is not overridden globally. The earlier Reforma generator/results above remain unchanged. The new experiment is explicitly pinned to one sector/version and may remove truck access at the selected pump.
+
 ## Confounders and next experiment
 
 **Observed locally:** the installed Ford DLC engine definitions for Bronco (`ford_27l_ecoboost.sii`), F-150 (`ford_tivct_32v_v8.sii`), Mustang (`challenger_289v8.sii`), and Crown Victoria (`v8_46l.sii`) each specify `type: petrol` and `adblue_consumption: 0.0` under `/def/vehicle/car/<vehicle>/engine/`. Thus petrol is actual local powertrain data, not solely an inference from the wiki. The player's effective engine still depends on overrides.

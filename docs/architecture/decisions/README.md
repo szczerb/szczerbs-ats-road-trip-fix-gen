@@ -12,4 +12,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0002: Use Python inspection and bounded experimental patches](ADR-0002-use-python-inspection-and-bounded-experimental-patches.md).
 
+- [ADR-0003: Allow pinned single-pump sector experiments](ADR-0003-allow-pinned-single-pump-sector-experiments.md).
+
 Runtime fix validation and general map-sector authoring remain open.

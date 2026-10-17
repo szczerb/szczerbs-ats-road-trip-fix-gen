@@ -13,7 +13,7 @@ Workspace-authored documentation must be in English.
 3. The relevant task from the [task board](docs/tasks/README.md), related [ADRs](docs/architecture/decisions/README.md), and [incident evidence](docs/incidents/README.md).
 4. Relevant references: [archives and definitions](docs/reference/SCS_ARCHIVES_AND_DEFINITIONS.md), [maps and compatibility](docs/reference/MAP_STRUCTURE_AND_COMPATIBILITY.md), [economy and Courier Jobs](docs/reference/ECONOMY_AND_COURIER_JOBS.md), [car refueling](docs/reference/PASSENGER_CAR_REFUELING.md), and [local inputs](docs/reference/LOCAL_INPUT_INVENTORY.md).
 
-See also [installed baseline](docs/reference/RESEARCH_BASELINE.md), [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md), [tool usage](docs/reference/TOOLING.md), and [validation handoff](docs/reference/VALIDATION_HANDOFF.md).
+See also [installed baseline](docs/reference/RESEARCH_BASELINE.md), [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md), [tool usage](docs/reference/TOOLING.md), [validation handoff](docs/reference/VALIDATION_HANDOFF.md), and [starter-area sample](docs/reference/STARTER_AREA_SAMPLE.md).
 
 ## Task and evidence rules
 
