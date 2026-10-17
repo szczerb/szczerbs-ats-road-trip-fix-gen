@@ -42,5 +42,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Five verified r1 fuel packages, fingerprints and next test](reference/FUEL_FIX_BATCH_1_61_R1.md).
 - [Map-wide fuel generator, one-command usage and coverage boundaries](reference/MAP_WIDE_FUEL_GENERATOR.md).
 - [Connector findings, screenshot-confirmed priority and fuel fixes](reference/CONNECTOR_FUEL_FIXES.md).
+- [Canadian refueling quantity/zero-price research and minimal test](reference/CANADA_FUEL_DISPLAY_RESEARCH.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

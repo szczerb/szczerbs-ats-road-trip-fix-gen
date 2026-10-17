@@ -19,6 +19,8 @@ Fuel package name, author, revision and icon requirements are in the [metadata c
 
 For combined-map fuel work, read [connector findings and confirmed source priority](docs/reference/CONNECTOR_FUEL_FIXES.md). Preserve explicit dependency order. Each fuel fix belongs directly above its own source; source-relative installation and the effective data needed during generation are separate checks.
 
+The user reports broad Canadian car-refueling access, with a separate invalid quantity/zero-price issue. Read the [country-price research](docs/reference/CANADA_FUEL_DISPLAY_RESEARCH.md) before changing economy data. Station target coverage does not establish finite petrol prices or correct billing; preserve source price provenance and distinguish static omissions from tested engine behavior.
+
 ## Task and evidence rules
 
 - Use `TASK-XXXX-<slug>.md` with frontmatter `id`, `title`, `status`, `priority`, `repositories`, `depends_on`, `owner`; sections `Goal`, `Context`, `Scope`, `Implementation Plan`, `Acceptance Criteria`, `Verification`, `Links`. For this single repository, use `repositories: [.]`.

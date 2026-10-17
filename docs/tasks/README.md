@@ -5,11 +5,12 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 ## Active
 
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 ## Backlog
 
-No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pending design and comparison.
+- [TASK-0014: Audit and test petrol-price overrides](backlog/TASK-0014-audit-and-test-petrol-price-overrides.md) — effective price diagnostics, source-preserving BC candidate and a defined same-station runtime comparison; broader province prices require a sourced policy.
 
 ## Done
 
@@ -32,5 +33,7 @@ No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pendi
 - [TASK-0011: Generate map-wide fuel fixes](done/TASK-0011-generate-map-wide-fuel-fixes.md) — five complete r1 packages, 2,281 new car points, original truck records retained, 111 passing tests and independent full-output checks.
 
 - [TASK-0012: Inspect and fix map connectors](done/TASK-0012-inspect-and-fix-map-connectors.md) — connector-derived 50-point Western Canada–ProMods fix, no station fix needed for OtherMaps, explicit source order and 116 passing tests.
+
+- [TASK-0013: Investigate Canadian fuel quantities](done/TASK-0013-investigate-canadian-fuel-nan-display.md) — confirmed BC override drops ProMods' petrol price; WCE province fields also missing; strong cause hypothesis and bounded diagnostic, no price patch generated.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.
