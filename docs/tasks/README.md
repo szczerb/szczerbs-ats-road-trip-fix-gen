@@ -4,11 +4,11 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-No active tasks. Starter-area sample preparation is complete; gameplay validation remains in backlog.
+- [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — first Helena-area refueling success reported by the user; truck/reload, other locations and courier validation remain open.
 
 ## Backlog
 
-- [TASK-0007: Validate experiments in game](backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — copied-profile courier/refueling comparisons; depends on TASK-0006.
+No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pending design and comparison.
 
 ## Done
 

@@ -54,7 +54,7 @@ Completed static milestone, 2026-10-17, installed ATS 1.61.3.18 / ATS Expansion 
 # Links
 
 - [Prototype](../done/TASK-0006-build-inspector-and-experimental-generators.md)
-- [Gameplay validation](../backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md)
+- [Gameplay validation](../active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md)
 - [Refueling findings](../../reference/REFUELING_RESEARCH_FINDINGS.md)
 - [Starting-garage evidence and samples](../../reference/STARTER_AREA_SAMPLE.md)
 - [Pinned sector experiment decision](../../architecture/decisions/ADR-0003-allow-pinned-single-pump-sector-experiments.md)

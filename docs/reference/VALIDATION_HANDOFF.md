@@ -1,6 +1,10 @@
 # Research result and validation handoff
 
-Date: 2026-10-17. The overnight milestone delivered research, usable inspection tooling, and generated experimental packages. It did not run the game/editor or modify a live profile. See [baseline](RESEARCH_BASELINE.md), [tool usage](TOOLING.md), and [validation task](../tasks/backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md).
+Date: 2026-10-17. The overnight milestone delivered research, usable inspection tooling, and generated experimental packages. It did not run the game/editor or modify a live profile. See [baseline](RESEARCH_BASELINE.md), [tool usage](TOOLING.md), and [validation task](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md).
+
+## First external gameplay evidence
+
+The [2026-10-17 user test](VALIDATION_RESULTS.md) reports successful refueling at the eastern Helena-area target. Its car-map icon appears in the patched screenshot; the nearer city station remains truck-only. This is a positive result for the combined single-pump descriptor/service sample, not validation of every experiment. The reported driving detour makes the city station the more useful next target; its four logical points require extending the first generator's one-point scope.
 
 ## What the evidence supports
 
@@ -37,4 +41,4 @@ The [starter-area guide](STARTER_AREA_SAMPLE.md) adds separate Helena-area and G
 
 ## Remaining scope
 
-No exact user-observed city/station reproduction has been supplied yet; collecting it is now useful in the validation task. Static experiments explain plausible mechanisms, not every issue in the full map combination. Legacy PPD conversion, arbitrary custom depots, placed car pickup positions, and map-service authoring remain outside this first PoC. Successful controlled game evidence is the gate for calling a candidate a verified fix or automating a broader transformation.
+A Helena-area user observation and four screenshots are now recorded in [validation results](VALIDATION_RESULTS.md); quantitative fuel/payment, truck/reload checks, other candidate outcomes, and courier observations remain open. Static experiments explain plausible mechanisms, not every issue in the full map combination. Legacy PPD conversion, arbitrary custom depots, placed car pickup positions, and map-service authoring remain outside this first PoC. Successful controlled game evidence is the gate for calling a candidate a verified fix or automating a broader transformation.

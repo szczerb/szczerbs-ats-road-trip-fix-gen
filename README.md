@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; gameplay validation is still pending. Courier and refueling investigations have equal priority.
+**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car refueling with the Helena-area sample. Broader gameplay validation remains open. Courier and refueling investigations have equal priority.
 
 ## Findings and first experiments
 
@@ -10,7 +10,7 @@ A research utility for American Truck Simulator map expansions and reworks: insp
 - Official Road Trip gas-station descriptors consistently contain a GAS locator flag missing from selected Reforma stations. A v25 descriptor experiment adds that locator while preserving the truck record; separately serialized map services may also need rebuilding: [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md).
 - Neither experiment is a verified gameplay repair. See the [validation handoff](docs/reference/VALIDATION_HANDOFF.md) for generated artifacts, evidence, limits, and copied-profile testing.
 
-[Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class and is the stronger first HQ candidate; fresh-profile selection and gameplay still require confirmation.
+[Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class. The [first user test](docs/reference/VALIDATION_RESULTS.md) reports successful refueling at the eastern target and a substantial driving detour; the closer city station remains unchanged.
 
 ## Run the tooling
 

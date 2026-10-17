@@ -1,12 +1,12 @@
 # Starting-garage evidence and local fuel experiments
 
-Inspected: 2026-10-17. Installed ATS **1.61.3.18**, build **25952361**, Road Trip Ford; supplied **ATS Expansion v23.0**. All evidence is static. No game, editor, mod-directory installation, or profile changes were performed.
+Inspected: 2026-10-17. Installed ATS **1.61.3.18**, build **25952361**, Road Trip Ford; supplied **ATS Expansion v23.0**. Initial agent inspection was static; the agent performed no game/editor/profile operations. A later [user gameplay test](VALIDATION_RESULTS.md) reports successful Helena-area refueling and a long road detour. Original static unknowns below are superseded only where that dated result explicitly supplies evidence.
 
 ## Practical result
 
 **Observed locally:** two samples are available. Prefer the **Helena-area** sample and UI check described next; the initial **Great Falls** experiment remains useful as a second location. The Great Falls fuel interaction lies approximately **94 map metres from its GaragePoint**, or 83 from its BuyPoint. A generated sample converts that one existing interaction to the hypothesized car/petrol type. Two other nearby station prefabs retain their original truck fuel interactions.
 
-Output: `local_outputs/generated/ats-expansion-great-falls-fuel-sample.scs`. It is a local experiment, **not a verified fix**. The [recipe](../../examples/great-falls-fuel-1.61.3.18.json) pins the inspected sector, descriptor hashes, target UIDs, and location. Runtime validation belongs to [TASK-0007](../tasks/backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md).
+Output: `local_outputs/generated/ats-expansion-great-falls-fuel-sample.scs`. It is a local experiment, **not a verified fix**. The [recipe](../../examples/great-falls-fuel-1.61.3.18.json) pins the inspected sector, descriptor hashes, target UIDs, and location. Runtime validation belongs to [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md).
 
 **Unknown:** whether Great Falls appears in the fresh-profile starting-city selector with the exact test stack. Confirm that in the UI before committing to this location. The generator does not change starter eligibility. If Great Falls is absent, prefer the Helena check below or test the Great Falls sample after reaching its area; do not assume another listed garage city is selectable without checking.
 
@@ -48,6 +48,12 @@ If Helena is selectable, establish a control there and follow the same before/af
 
 Ignored evidence: `local_outputs/research/starter-area/stock-mt-garages.json`, including the corrected effective-data section. The earlier stock-only proximity estimate is retained as inspection history, explicitly rejected for choosing the effective target.
 
+## Why the city station was left unchanged
+
+**Observed locally:** the city truck control listed above was recognized, approximately 344 map units from the garage. Its v25 descriptor has four GAS locators and four linked services, all truck-oriented by the inspected flags. The initial generator supports only a reviewed `02003` single-locator/single-service shape. That deliberately narrow scope excluded the nearer multi-point station; no old-format incompatibility or inherent conversion hazard was diagnosed. See the [selection review](VALIDATION_RESULTS.md#why-the-closer-city-station-was-not-selected).
+
+The user's first test reports successful refueling at the eastern target but a substantial driving detour. Straight-line distance did not establish a convenient road approach. The next target should prioritize the city station and preserve truck interactions while matching any converted locator to its own service. The screenshots do not locate each visible forecourt dispenser in world coordinates, so visual pump-to-locator association remains to be checked.
+
 ## What was actually inspected
 
 **Observed locally:** research used the installed `def.scs`, selected assets from `base.scs`, Road Trip Ford definitions, and the supplied map archives. The installed game was not launched. See [baseline](RESEARCH_BASELINE.md) for versions and prior inspection scope.
@@ -62,26 +68,26 @@ The 20 tokens from that initial partial pass are:
 
 | City token | ATS Expansion sector |
 | --- | --- |
-| `ansley` | `sec-0004-0004.base.base` |
-| `bovina` | `sec-0008+0005.base.base` |
-| `broadus` | `sec-0010-0010.base.base` |
-| `childress` | `sec-0005+0006.base.base` |
-| `chinook` | `sec-0013-0015.base.base` |
-| `eglacier` | `sec-0016-0015.base.base` |
-| `great_falls` | `sec-0016-0014.base.base` |
-| `greybull` | `sec-0012-0009.base.base` |
-| `jordan` | `sec-0011-0014.base.base` |
-| `kingsville` | `sec-0003+0016.base.base` |
-| `malta` | `sec-0012-0015.base.base` |
-| `merriman` | `sec-0006-0006.base.base` |
-| `plainville` | `sec-0004-0001.base.base` |
-| `polson` | `sec-0018-0014.base.base` |
-| `powder_river` | `sec-0012-0007.base.base` |
-| `ryegate` | `sec-0014-0011.base.base` |
-| `shelby` | `sec-0015-0015.base.base` |
-| `troy` | `sec-0019-0015.base.base` |
-| `volborg` | `sec-0010-0011.base.base` |
-| `wcliffe` | `sec-0011+0000.base.base` |
+| `ansley` | `sec-0004-0004.base` |
+| `bovina` | `sec-0008+0005.base` |
+| `broadus` | `sec-0010-0010.base` |
+| `childress` | `sec-0005+0006.base` |
+| `chinook` | `sec-0013-0015.base` |
+| `eglacier` | `sec-0016-0015.base` |
+| `great_falls` | `sec-0016-0014.base` |
+| `greybull` | `sec-0012-0009.base` |
+| `jordan` | `sec-0011-0014.base` |
+| `kingsville` | `sec-0003+0016.base` |
+| `malta` | `sec-0012-0015.base` |
+| `merriman` | `sec-0006-0006.base` |
+| `plainville` | `sec-0004-0001.base` |
+| `polson` | `sec-0018-0014.base` |
+| `powder_river` | `sec-0012-0007.base` |
+| `ryegate` | `sec-0014-0011.base` |
+| `shelby` | `sec-0015-0015.base` |
+| `troy` | `sec-0019-0015.base` |
+| `volborg` | `sec-0010-0011.base` |
+| `wcliffe` | `sec-0011+0000.base` |
 
 ## Exact Great Falls target
 

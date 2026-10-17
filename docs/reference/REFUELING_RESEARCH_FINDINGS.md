@@ -1,6 +1,6 @@
 # Passenger-car refueling research findings
 
-Inspected: 2026-10-17. Target: installed ATS 1.61.3.18, build 25952361, with `dlc_rt_ford.scs`. All local results below are static inspections. No game, editor, profile, or live mod-directory changes were performed.
+Inspected: 2026-10-17. Target: installed ATS 1.61.3.18, build 25952361, with `dlc_rt_ford.scs`. The original local results below are static inspections; the later [user gameplay result](VALIDATION_RESULTS.md) reports one successful Helena-area refuel with the separate service-plus-descriptor sample. No game, editor, profile, or live mod-directory changes were performed.
 
 ## Result and boundary
 
@@ -99,6 +99,10 @@ A narrow example is registered by `/def/world/prefab.mvs.sii`, unit `prefab.mx9`
 ## Follow-up: existing service fuel bit
 
 A later [ATS Expansion starter-area inspection](STARTER_AREA_SAMPLE.md) found service flags `0x80004000` correlated with car-oriented PPD locators, alongside `0x80000000` truck services. This provides a stronger, still unverified petrol-bit hypothesis and a separate Great Falls experiment converting an existing locator and its linked service. Counts/transforms are preserved, and the stock shared descriptor is not overridden globally. The earlier Reforma generator/results above remain unchanged. The new experiment is explicitly pinned to one sector/version and may remove truck access at the selected pump.
+
+## First user-reported runtime result
+
+On 2026-10-17 the user reported successful car refueling at the eastern Helena-area target after enabling its localized PPD/prefab/service sample, on a disposable profile otherwise using ATS Expansion only. Inspected screenshots support the car-map icon change; the purchase itself is first-hand user evidence, not an agent reproduction. This strengthens the combined mechanism for one target. It does not isolate the need for each changed field or validate PPD-only duplication, multi-point stations, truck regressions, or other packages. See [results, remaining checks, and city-station selection review](VALIDATION_RESULTS.md).
 
 ## Confounders and next experiment
 
