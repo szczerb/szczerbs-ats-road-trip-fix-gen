@@ -20,4 +20,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0006: Discover and clone map fuel services](ADR-0006-discover-and-clone-map-fuel-services.md).
 
+- [ADR-0007: Repair missing petrol prices with explicit provenance](ADR-0007-repair-missing-petrol-prices.md).
+
 Runtime fix validation and general map-sector authoring remain open.

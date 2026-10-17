@@ -19,6 +19,8 @@ import re
 from .archive import Archive, ArchiveError
 from .mod_writer import write_mod
 from .package import Package, ResourceStack
+from .petrol_policy import DEFAULT_REFERENCE, build_policy
+from .petrol_prices import plan_petrol_prices
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -170,9 +172,9 @@ def _write_audit(path: Path, audit: dict) -> None:
         stream.write('\n')
 
 
-def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
+def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
                       run_id=None, extractor=None, dependency: list[str] = (),
-                      icon=None) -> dict:
+                      icon=None, petrol_reference=DEFAULT_REFERENCE) -> dict:
     """Audit one supplied map and emit a complete experimental fuel package.
 
     Explicit dependencies retain their low-to-high order. Known missing
@@ -188,6 +190,13 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
     name = map_name or inferred
     if name is None:
         raise ValueError('Unknown map archive name; pass --map-name')
+    if icon is None:
+        slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
+        icon_slug = {'reforma-othermaps-patch': 'reforma',
+                     'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
+        preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
+        if preset.is_file():
+            icon = preset
     work, output, stamp = _run_paths(name, revision, run_id)
     if (work / 'audit.json').exists() or output.exists():
         raise FileExistsError('Run audit or generated package already exists; choose a new run ID')
@@ -200,13 +209,18 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
         game_paths, dlcs = _game_packages(installed)
         maps = _map_packages(source, list(dependency))
         order = [*game_paths, *maps]
+        version_input = installed / 'version.sii' if (installed / 'version.sii').is_file() else installed / 'version.scs'
+        identity_paths = [version_input, *order]
+        if isinstance(icon, (str, Path)):
+            identity_paths.append(Path(icon).expanduser().resolve())
         identities = {path:(path.stat().st_size, path.stat().st_mtime_ns)
-                      for path in [installed / 'version.scs', *order]}
+                      for path in identity_paths}
         workflow = {
             'run_id': stamp, 'map_name': name, 'source': str(source),
             'game_dir': str(installed), 'game_version': version,
             'packages_low_to_high': [str(path) for path in order],
             'target_map_package': str(source),
+            'petrol_reference': petrol_reference,
             'owned_dlc_assumption': list(dlcs),
             'load_order_assumption': 'Declared order is a generation baseline, not a live profile observation.',
             'work_dir': str(work),
@@ -218,14 +232,38 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
             for index, path in enumerate(order, 1):
                 logging.getLogger(__name__).info('%s: package %s/%s %s', name, index, len(order), path.name)
                 packages.append(manager.enter_context(Package(path, extractor=extractor, dlcs=dlcs)))
-            report, resources = plan_map_fuel(ResourceStack(packages),
-                                              map_packages={str(source)}, map_name=name)
+            effective = ResourceStack(packages)
+            game_only = ResourceStack(packages[:len(game_paths)])
+            report, station_resources = plan_map_fuel(effective,
+                                                      map_packages={str(source)}, map_name=name)
+            policy, policy_report = build_policy(effective, game_only,
+                                                 target_packages={str(source)},
+                                                 reference_path=petrol_reference)
+            price_report, price_resources = plan_petrol_prices(effective,
+                                                               target_packages={str(source)},
+                                                               policy=policy)
+            price_report['policy'] = policy_report
+            report['petrol_prices'] = price_report
+            coverage = report.setdefault('coverage', {})
+            blockers = list(coverage.get('blockers', report.get('blockers', [])))
+            blockers.extend({'area': 'petrol_price_policy', **blocker}
+                            for blocker in policy_report['coverage']['blockers'])
+            blockers.extend({'area': 'petrol_prices', **blocker}
+                            for blocker in price_report['coverage']['blockers'])
+            conflicts = sorted(set(station_resources) & set(price_resources))
+            blockers.extend({'area': 'resource_collision', 'path': path,
+                             'reason': 'station and price planners emitted the same path'}
+                            for path in conflicts)
+            coverage['blockers'] = blockers
+            coverage['complete'] = not blockers
+            coverage['petrol_price_changed'] = price_report['coverage']['changed']
+            resources = {**station_resources, **price_resources}
         for path, identity in identities.items():
             if (path.stat().st_size, path.stat().st_mtime_ns) != identity:
                 raise ValueError(f'Source package changed during generation; retry from a stable stack: {path}')
         audit = {'workflow': workflow, 'planner': report,
                  'planned_resource_count': len(resources)}
-        blockers = report.get('coverage', {}).get('blockers', report.get('blockers', []))
+        blockers = report['coverage']['blockers']
         if blockers:
             audit['status'] = 'blocked'
             _write_audit(work / 'audit.json', audit)
@@ -234,16 +272,10 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
             audit['status'] = 'already_covered'
             _write_audit(work / 'audit.json', audit)
             return audit
-        if icon is None:
-            slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
-            icon_slug = {'reforma-othermaps-patch': 'reforma',
-                         'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
-            preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
-            if preset.is_file():
-                icon = preset
         icon_bytes = Path(icon).read_bytes() if isinstance(icon, (str, Path)) else icon
-        description = (f'Experimental map-wide passenger-car refueling counterpart package for {name}.\n'
+        description = (f'Experimental map-wide passenger-car refueling and petrol-price package for {name}.\n'
                        'Every supported missing truck fuel point receives a car interaction at the same position.\n'
+                       'Country petrol prices may be restored from lower definitions or estimated from stock ATS ratios.\n'
                        'Keep this package above its listed source/dependency maps in a copied test profile.\n'
                        'Read road_trip_fix_report.json for coverage, source assumptions and static verification.\n'
                        'Gameplay and reload behavior outside the tested sample remain unverified.\n')

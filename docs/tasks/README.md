@@ -4,13 +4,11 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 ## Backlog
 
-- [TASK-0014: Audit and test petrol-price overrides](backlog/TASK-0014-audit-and-test-petrol-price-overrides.md) — effective price diagnostics, source-preserving BC candidate and a defined same-station runtime comparison; broader province prices require a sourced policy.
+- [TASK-0016: Prepare a rest-eligibility experiment](backlog/TASK-0016-prepare-rest-eligibility-experiment.md) — separate bounded action-filter diagnostic, preserving trucks/buses and explicit later icon/prompt/fatigue/reload tests.
 
 ## Done
 
@@ -35,5 +33,9 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 - [TASK-0012: Inspect and fix map connectors](done/TASK-0012-inspect-and-fix-map-connectors.md) — connector-derived 50-point Western Canada–ProMods fix, no station fix needed for OtherMaps, explicit source order and 116 passing tests.
 
 - [TASK-0013: Investigate Canadian fuel quantities](done/TASK-0013-investigate-canadian-fuel-nan-display.md) — confirmed BC override drops ProMods' petrol price; WCE province fields also missing; strong cause hypothesis and bounded diagnostic, no price patch generated.
+
+- [TASK-0014: Repair missing petrol prices](done/TASK-0014-audit-and-test-petrol-price-overrides.md) — seven r2 packages, 27 effective country paths, r1 station payloads retained, 131 tests and independent checks; manual symptom/billing validation pending.
+
+- [TASK-0015: Investigate car rest areas](done/TASK-0015-investigate-passenger-car-rest-areas.md) — separate vehicle-filtered polygon actions and two concrete truck-stop placements; no rest package or gameplay repair claimed.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

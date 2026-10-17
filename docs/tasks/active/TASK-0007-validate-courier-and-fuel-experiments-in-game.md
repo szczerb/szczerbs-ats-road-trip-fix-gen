@@ -20,6 +20,9 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
+- Current handoff is [r2](../../reference/FUEL_FIX_BATCH_1_61_R2.md), retaining r1 station resources and adding sourced/estimated petrol prices. Follow the [manual checklist](../../reference/MANUAL_TEST_CHECKLIST.md): finite positive price, finite initial and changing quantity, tank/payment, truck diesel, garage and reload controls. The user accepts implementation now and explicitly defers gameplay after putting the rig away; the one-time reminder is set for 2026-10-18 18:00 Europe/Warsaw. Do not mark runtime work done from static definition checks.
+- [Rest research](../../reference/PASSENGER_CAR_REST_RESEARCH.md) found filtered polygon actions and actual truck-stop placements. No rest patch is included. The later separate candidate needs car prompt/fatigue recovery, map/discovery, retained truck and reload tests.
+
 - Test [full-map fuel batch r1](../../reference/FUEL_FIX_BATCH_1_61_R1.md) with each fix directly above its source map and old r0 samples disabled. First check all four points at the nearer Helena station, then car/truck purchases on the other maps, garages (including ownership/prices) and reloads. Preserve the single-point user result; do not treat static coverage as gameplay proof.
 - Include the [Western Canada–ProMods connector fuel fix](../../reference/CONNECTOR_FUEL_FIXES.md) directly above that connector in the screenshot-confirmed order. Test an affected connection-area station in both modes, including a garage and reload. Reforma OtherMaps needs no station-interaction package; its country fuel prices remain original inputs.
 

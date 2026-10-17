@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import zipfile
 
-from ats_road_trip.cli import main
+from ats_road_trip.cli import main, parser
 from ats_road_trip.ppd import inspect_ppd
 from ats_road_trip.sii import parse_units
 
@@ -121,6 +121,14 @@ company_def : .city { city: test_city prefab: alias }
         report.write_text('preserve')
         self.run_cli(['inspect', str(archive), '--output', str(report)], expected=2)
         self.assertEqual(report.read_text(), 'preserve')
+
+    def test_map_fuel_revision_and_game_only_reference_options(self):
+        options = parser().parse_args(['generate-map-fuel', 'source.scs', '--experimental'])
+        self.assertEqual(options.revision, 2)
+        self.assertEqual(options.petrol_reference, 'def/country/washington.sui')
+        options = parser().parse_args(['generate-map-fuel', 'source.scs', '--experimental',
+                                       '--petrol-reference', 'def/country/montana.sui'])
+        self.assertEqual(options.petrol_reference, 'def/country/montana.sui')
 
 
 if __name__ == '__main__':

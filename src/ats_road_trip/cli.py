@@ -14,6 +14,7 @@ from .courier_audit import audit_courier
 from .fuel_generator import plan_fuel
 from .mod_writer import write_mod
 from .package import Package, PackageError, ResourceStack, virtual_path
+from .petrol_policy import DEFAULT_REFERENCE
 from .sii import DefinitionError
 
 
@@ -68,9 +69,11 @@ def parser() -> argparse.ArgumentParser:
     bulk.add_argument('source', help='Source map .scs; known companion packages are resolved beside it')
     bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
     bulk.add_argument('--map-name', help='Short map name; inferred for the five supplied map families')
-    bulk.add_argument('--revision', type=int, default=1)
+    bulk.add_argument('--revision', type=int, default=2)
     bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
     bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
+    bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,
+                      help='Game-only mounted country path for the petrol/diesel fallback ratio')
     bulk.add_argument('--icon', help='Optional map-labelled JPEG276x162')
     bulk.add_argument('--experimental', action='store_true')
     for name in ('fuel-audit', 'generate-fuel'):
@@ -124,7 +127,8 @@ def main(argv: list[str] | None = None) -> int:
             from .bulk_run import generate_map_fuel
             result = generate_map_fuel(args.source, game_dir=args.game_dir, map_name=args.map_name,
                                        revision=args.revision, run_id=args.run_id, extractor=args.extractor,
-                                       dependency=args.dependency, icon=args.icon)
+                                       dependency=args.dependency, icon=args.icon,
+                                       petrol_reference=args.petrol_reference)
             _emit({'status': result['status'], 'output': result.get('output'),
                    'work_dir': result['workflow']['work_dir'],
                    'coverage': result['planner'].get('coverage')}, None)

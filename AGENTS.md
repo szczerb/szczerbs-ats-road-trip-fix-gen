@@ -2,7 +2,7 @@
 
 ## Goal and current boundary
 
-Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization and the first research/prototype milestone are complete; the user subsequently authorized map-wide fuel generation. Five experimental r1 map packages and a separate connector fix now have complete static target coverage; read the [batch result](docs/reference/FUEL_FIX_BATCH_1_61_R1.md), [connector findings](docs/reference/CONNECTOR_FUEL_FIXES.md), and [map-wide command guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md). A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
+Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations retain equal research priority unless the user directs the current work elsewhere. Initialization and prototypes are complete; map-wide fuel generation now includes the user-authorized missing petrol-price repair. Read the [current r2 batch](docs/reference/FUEL_FIX_BATCH_1_61_R2.md), historical [r1 result](docs/reference/FUEL_FIX_BATCH_1_61_R1.md), [connector findings](docs/reference/CONNECTOR_FUEL_FIXES.md), and [map-wide command guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md). The user reports sample-2 dual-vehicle refueling and broad Canadian car access; new price/billing behavior and rest eligibility remain manually unverified. Read current state for exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
 
 Workspace-authored documentation must be in English.
 
@@ -20,6 +20,8 @@ Fuel package name, author, revision and icon requirements are in the [metadata c
 For combined-map fuel work, read [connector findings and confirmed source priority](docs/reference/CONNECTOR_FUEL_FIXES.md). Preserve explicit dependency order. Each fuel fix belongs directly above its own source; source-relative installation and the effective data needed during generation are separate checks.
 
 The user reports broad Canadian car-refueling access, with a separate invalid quantity/zero-price issue. Read the [country-price research](docs/reference/CANADA_FUEL_DISPLAY_RESEARCH.md) before changing economy data. Station target coverage does not establish finite petrol prices or correct billing; preserve source price provenance and distinguish static omissions from tested engine behavior.
+
+The user authorizes missing petrol-price repair now with manual confirmation later. Follow [ADR-0007](docs/architecture/decisions/ADR-0007-repair-missing-petrol-prices.md), the [manual checklist](docs/reference/MANUAL_TEST_CHECKLIST.md), and [rest-area research](docs/reference/PASSENGER_CAR_REST_RESEARCH.md). Remind the user of pending game tests at subsequent package handoffs; do not label pricing/billing or rest behavior confirmed from static checks. No more manual tests are expected during this night's work.
 
 ## Task and evidence rules
 

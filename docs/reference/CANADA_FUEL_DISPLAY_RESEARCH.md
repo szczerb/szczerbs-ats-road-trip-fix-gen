@@ -1,6 +1,8 @@
 # Canadian car-refueling quantity display
 
-Inspected: 2026-10-18. Applies to installed ATS **1.61.3.18**, the eleven supplied archives, and the source priority in [connector findings](CONNECTOR_FUEL_FIXES.md). This investigates the purchase panel separately from station access and actual tank replenishment. [TASK-0013](../tasks/done/TASK-0013-investigate-canadian-fuel-nan-display.md) records the investigation and delegation. [TASK-0014](../tasks/backlog/TASK-0014-audit-and-test-petrol-price-overrides.md) scopes a proposed audit and minimal diagnostic; no patch was generated here.
+Inspected: 2026-10-18. Applies to installed ATS **1.61.3.18**, the eleven supplied archives, and the source priority in [connector findings](CONNECTOR_FUEL_FIXES.md). This investigates the purchase panel separately from station access and actual tank replenishment. [TASK-0013](../tasks/done/TASK-0013-investigate-canadian-fuel-nan-display.md) records the investigation and delegation. [TASK-0014](../tasks/done/TASK-0014-audit-and-test-petrol-price-overrides.md) scopes a proposed audit and minimal diagnostic; no patch was generated here.
+
+Subsequent user authorization, 2026-10-18: implement the evident missing field now and keep gameplay confirmation pending. The [r2 batch](FUEL_FIX_BATCH_1_61_R2.md) and [ADR-0007](../architecture/decisions/ADR-0007-repair-missing-petrol-prices.md) record source-priority restoration and an explicit game-ratio fallback for other missing values. This page preserves the original research and proposed one-field comparison, not the later implementation status. [Manual tests](MANUAL_TEST_CHECKLIST.md) are still required.
 
 ## Finding and confidence
 

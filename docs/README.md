@@ -40,8 +40,11 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
 - [Five verified r1 fuel packages, fingerprints and next test](reference/FUEL_FIX_BATCH_1_61_R1.md).
+- [Current r2 fuel/price packages and pending gameplay checks](reference/FUEL_FIX_BATCH_1_61_R2.md).
 - [Map-wide fuel generator, one-command usage and coverage boundaries](reference/MAP_WIDE_FUEL_GENERATOR.md).
 - [Connector findings, screenshot-confirmed priority and fuel fixes](reference/CONNECTOR_FUEL_FIXES.md).
 - [Canadian refueling quantity/zero-price research and minimal test](reference/CANADA_FUEL_DISPLAY_RESEARCH.md).
+- [Pending manual tests and reminder agreement](reference/MANUAL_TEST_CHECKLIST.md).
+- [Passenger-car rest actions, polygons and selected map placements](reference/PASSENGER_CAR_REST_RESEARCH.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

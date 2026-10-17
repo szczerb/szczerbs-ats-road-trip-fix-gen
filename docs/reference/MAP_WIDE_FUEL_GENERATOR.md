@@ -17,7 +17,7 @@ PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/Western_C
 
 Each invocation discovers targets and builds its fix with Python and the external HashFS extractor. It needs no per-station recipe or language-model call. Known sibling companions are selected automatically. The game path comes from `--game-dir`, `ATS_GAME_DIR`, or the detected Windows Steam installation. Source-map contents remain read-only.
 
-Optional arguments: `--map-name`, `--revision` (default `1` for this first full-map increment), `--run-id YYYY-MM-DD_HH-MM-SS`, repeated `--dependency` (low-to-high additional resources), and `--icon`. Known map/connector names and map-labelled C icons are automatic. Connectors reuse their parent map's selected C artwork; their titles and filenames distinguish the connection patch. Generated version is initially `1.61-r1-experimental`; the earlier isolated sample remains r0. The command reads the actual game version from `version.scs:/version.sii` and rejects other game families/releases.
+Optional arguments: `--map-name`, `--revision` (current default `2`), `--run-id YYYY-MM-DD_HH-MM-SS`, repeated `--dependency` (low-to-high additional resources), `--petrol-reference` (default `def/country/washington.sui` resolved only from game data), and `--icon`. Known map/connector names and map-labelled C icons are automatic. Connectors reuse their parent map's selected C artwork; their titles and filenames distinguish the connection patch. Current generated version is `1.61-r2-experimental`; earlier full-map packages were r1 and isolated samples r0. The command reads the actual game version from `version.scs:/version.sii` and rejects other game families/releases.
 
 Explicit dependency order is authoritative. Missing known companions are inserted without reordering the supplied sequence; the source is highest and must not be repeated as a dependency. Source-only companion order is a declared baseline, not a substitute for the user's combined stack. See [connector reproduction](CONNECTOR_FUEL_FIXES.md#reproduction) for the full screenshot-derived order.
 
@@ -35,9 +35,11 @@ The installed baseline consists of base, shared assets, base map, definitions, i
 | Western Canada | Complete ProMods companion set when provided; partial/ambiguous sets are rejected |
 | Alaska | None |
 | Western Canada ProMods Connections | Western Canada, then ProMods models, assets, map and definitions; connector highest |
-| Reforma OtherMaps Patch | Mega Resources and Reforma; the inspected patch has zero sector fuel targets and produces no empty fix |
+| Reforma OtherMaps Patch | Mega Resources and Reforma; zero sector fuel targets, but r2 adds missing petrol-price definitions |
 
 Extra connection/OtherMaps patches are not silently pulled from the live mod directory. The two known connector families are recognized when explicitly selected as the source. Additional dependencies and changed source/resource versions alter the effective data and require review/regeneration. The [input inventory](LOCAL_INPUT_INVENTORY.md) records supplied versions and the [connector findings](CONNECTOR_FUEL_FIXES.md) distinguish the inspected patches' actual roles.
+
+From r2 the command also audits source-owned effective country definitions. It retains valid petrol prices, restores a same-unit lower-source price where available, otherwise estimates from unchanged diesel and an explicit stock-game ratio. It changes only the petrol attribute, combines price/station blockers, and can produce a price-only source package. See [r2 results and policy](FUEL_FIX_BATCH_1_61_R2.md). Static numeric validity does not establish billing or a cured UI symptom; keep the [manual checklist](MANUAL_TEST_CHECKLIST.md) pending.
 
 Coverage targets truck fuel items belonging to source sectors or linked to source prefabs across neighboring boundaries. A fuel point already available to a car at exactly the same transform is retained. Existing car pumps at other positions are also retained, but do not count as a co-located counterpart for a different truck pump. Counts describe logical interaction points and prefab instances, not visible dispensers or unique real-world stations.
 
@@ -62,6 +64,8 @@ Primary format references: [TruckLib serialization at inspected commit](https://
 See [r1 results](FUEL_FIX_BATCH_1_61_R1.md) for the five packages, exact fingerprints, 2,281 added points, independent verification and the nearer Helena test target.
 
 The [additional connection package](CONNECTOR_FUEL_FIXES.md#western-canadapromods-connection) adds 50 points on connector-derived sectors. Its counters overlap the earlier packages' superseded sector versions; do not sum the six package counts as unique combined-stack coverage.
+
+The [r2 batch](FUEL_FIX_BATCH_1_61_R2.md) keeps those station payloads and adds missing petrol prices, including a new OtherMaps price-only package. No rest-area correction is included.
 
 ## Installation and testing
 

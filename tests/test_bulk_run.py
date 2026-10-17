@@ -31,6 +31,9 @@ class BulkRunTests(unittest.TestCase):
                 {'version.sii': 'SiiNunit\n{\nfs_pack_set : .test {\n application: ats\n version: "1.61.3.18"\n}\n}\n'})
         for name in (*bulk_run._BASE_PACKAGES, 'dlc_rt_ford.scs'):
             archive(self.game / name)
+        archive(self.game / 'def.scs', {'def/country/washington.sui':
+                b'country_data: country.data.washington {\n'
+                b' fuel_price: 1.92132\n petrol_price: 1.47197\n}\n'})
         self.source = self.inputs / 'ATS_Expansion_v23.0_1.61.scs'
         archive(self.source, {'map/usa/sec+0000+0000.base': b'placeholder'})
 
@@ -251,10 +254,46 @@ class BulkRunTests(unittest.TestCase):
             self.assertEqual(z.read('map/usa/fixture.base'), b'fixture')
             manifest = z.read('manifest.sii').decode()
             self.assertIn('for ATS Expansion', manifest)
-            self.assertIn('1.61-r1-experimental', manifest)
+            self.assertIn('1.61-r2-experimental', manifest)
             report = json.loads(z.read('road_trip_fix_report.json'))
             self.assertEqual(report['workflow']['target_map_package'], str(self.source.resolve()))
         self.assertTrue((self.root / 'local_outputs/work/2026-10-17_22-11-10/ats-expansion/audit.json').is_file())
+
+    def test_generation_combines_station_and_sourced_petrol_resources(self):
+        source_country = (b'country_data: country.data.ak {\n'
+                          b' fuel_price: 1.250 # source diesel\n'
+                          b' name: "Alaska"\n}\n')
+        archive(self.source, {'map/usa/sec+0000+0000.base': b'placeholder',
+                              'def/country/ak.sui': source_country})
+        audit = self._run_with_plan(lambda *args, **kwargs:
+                                    ({'coverage': {'blockers': []}},
+                                     {'map/usa/fixture.base': b'fixture'}))
+        self.assertEqual(audit['status'], 'generated')
+        self.assertTrue(audit['planner']['coverage']['complete'])
+        self.assertEqual(audit['planner']['coverage']['petrol_price_changed'], 1)
+        self.assertEqual(audit['planner']['petrol_prices']['policy']['coverage']['estimated'], 1)
+        with zipfile.ZipFile(audit['output']) as z:
+            self.assertEqual(z.read('map/usa/fixture.base'), b'fixture')
+            price = z.read('def/country/ak.sui')
+            self.assertIn(b'fuel_price: 1.250 # source diesel\n petrol_price: ', price)
+            self.assertIn(b'name: "Alaska"', price)
+            report = json.loads(z.read('road_trip_fix_report.json'))
+            self.assertEqual(report['petrol_prices']['policy']['reference']['fuel_price'], '1.92132')
+            self.assertEqual(report['package_metadata']['package_version'], '1.61-r2-experimental')
+
+    def test_price_coverage_blocker_prevents_station_package(self):
+        archive(self.source, {'map/usa/sec+0000+0000.base': b'placeholder',
+                              'def/country/ak.sui': b'country_data: country.data.ak {\n fuel_price: 0\n}\n'})
+        with self.assertRaisesRegex(ValueError, 'coverage blocker'):
+            self._run_with_plan(lambda *args, **kwargs:
+                                ({'coverage': {'blockers': []}}, {'map/usa/fixture.base': b'fixture'}))
+        audit_path = self.root / 'local_outputs/work/2026-10-17_22-11-10/ats-expansion/audit.json'
+        audit = json.loads(audit_path.read_text())
+        self.assertEqual(audit['status'], 'blocked')
+        self.assertFalse(audit['planner']['coverage']['complete'])
+        self.assertTrue(any(item['area'] == 'petrol_price_policy'
+                            for item in audit['planner']['coverage']['blockers']))
+        self.assertFalse((self.root / 'local_outputs/generated/2026-10-17_22-11-10').exists())
 
 
 if __name__ == '__main__':

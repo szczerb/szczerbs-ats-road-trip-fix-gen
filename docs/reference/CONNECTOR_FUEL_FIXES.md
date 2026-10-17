@@ -2,6 +2,8 @@
 
 Inspection date: 2026-10-17. Applies to the eleven supplied archives and ATS 1.61.3.18. [TASK-0012](../tasks/done/TASK-0012-inspect-and-fix-map-connectors.md) records the work; the [input inventory](LOCAL_INPUT_INVENTORY.md#current-connector-additions-eleven-archives-total) preserves exact source metadata. Static observations do not establish gameplay behavior.
 
+Subsequent update, 2026-10-18: the [r2 price increment](FUEL_FIX_BATCH_1_61_R2.md) retains the station resources documented here and adds missing petrol fields. OtherMaps now has a **price-only** fix; the statement below that it needs no station-interaction fix remains true. Commands without an explicit revision now use r2, not the historical r1 artifact. [Manual price/billing tests](MANUAL_TEST_CHECKLIST.md) are still pending.
+
 ## What the original overlap check established
 
 **Observed locally:** the five original r1 fixes share changed-sector paths in three pairs: ATS Expansion–Western Canada (6), Alaska–Western Canada (3), and ProMods Canada–Western Canada (15). This was an exact intersection of output file paths. It did not compare road geometry, merge maps, establish defects, or include the two then-unprovided connectors. See the [original batch](FUEL_FIX_BATCH_1_61_R1.md).

@@ -16,7 +16,7 @@ Updated: 2026-10-17. Applies to this prototype's ATS 1.61 fuel packages. [ADR-00
 | Icon | Optional root `mod_icon.jpg`, JPEG, exactly 276x162 pixels |
 | Description | UTF-8 `mod_description.txt`, including experimental scope and source-map load priority |
 
-The three historical fuel generation commands require `--map-name`, accept `--revision` (default `0`) and optional `--icon <JPEG path>`. The [map-wide command](MAP_WIDE_FUEL_GENERATOR.md) infers known map names and icons, defaults to revision `1`, and writes timestamped paths automatically; the first full-map packages use `1.61-r1-experimental`. See [CLI examples](TOOLING.md). No stable/release mode or automatic revision increment is implemented. The program's own package version is independent of the generated mod version.
+The three historical fuel generation commands require `--map-name`, accept `--revision` (default `0`) and optional `--icon <JPEG path>`. The [map-wide command](MAP_WIDE_FUEL_GENERATOR.md) infers known map names and icons and writes timestamped paths automatically. The first full-map packages used revision `1`; the current missing-price increment defaults to **revision `2`** and produces `1.61-r2-experimental`. The default is a deliberate increment choice, not automatic revision counting. See [CLI examples](TOOLING.md). No stable/release mode or automatic revision increment is implemented. The program's own package version is independent of the generated mod version.
 
 ## Handoff filenames
 
