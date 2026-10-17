@@ -137,6 +137,7 @@ PYTHONPATH=src python3 -m ats_road_trip \
   --baseline "$ats_game/base.scs" \
   --baseline "$ats_game/def.scs" \
   --map local_inputs/ATS_Expansion_v23.0_1.61.scs \
+  --map-name 'ATS Expansion' \
   --recipe examples/great-falls-fuel-1.61.3.18.json \
   --output local_outputs/generated/ats-expansion-great-falls-fuel-recheck.scs \
   --game-version 1.61.3.18 --experimental

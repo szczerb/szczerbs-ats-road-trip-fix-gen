@@ -43,7 +43,7 @@ class CliTests(unittest.TestCase):
         source = self.put('map', 'prefab/gas/sample.ppd', fuel_descriptor())
         target = self.root/'fuel.scs'
         args = ['generate-fuel', '--package', str(self.root/'map'), '--path', '/prefab/gas/sample.ppd',
-                '--output', str(target), '--game-version', '1.61.3.18']
+                '--output', str(target), '--game-version', '1.61.3.18', '--map-name', 'Synthetic Map']
         self.run_cli(args, expected=2)
         self.assertFalse(target.exists())
         result = self.run_cli([*args, '--experimental'])
@@ -52,6 +52,10 @@ class CliTests(unittest.TestCase):
             patch = archive.read('prefab/gas/sample.ppd')
             self.assertEqual(inspect_ppd(patch)['fuel']['flags_one_count'], 1)
             self.assertEqual(inspect_ppd(patch)['fuel']['flags_zero_count'], 1)
+            manifest = parse_units(archive.read('manifest.sii').decode())[0]
+            self.assertEqual(manifest.one('display_name'), "szczerb's Road Trip Gas Stations Fix for Synthetic Map")
+            self.assertEqual(manifest.one('package_version'), '1.61-r0-experimental')
+            self.assertEqual(manifest.one('author'), 'szczerb')
             self.assertIsNone(archive.testzip())
         self.assertEqual(source.read_bytes(), fuel_descriptor())
         self.run_cli([*args, '--experimental'], expected=2)
@@ -60,8 +64,22 @@ class CliTests(unittest.TestCase):
         self.put('map', 'prefab/gas/sample.ppd', fuel_descriptor(flags=1))
         target = self.root/'no-op.scs'
         self.run_cli(['generate-fuel', '--package', str(self.root/'map'), '--prefix', '/prefab/gas/',
-                      '--output', str(target), '--game-version', '1.61', '--experimental'], expected=2)
+                      '--output', str(target), '--game-version', '1.61', '--map-name', 'Synthetic Map',
+                      '--experimental'], expected=2)
         self.assertFalse(target.exists())
+
+    def test_fuel_metadata_options(self):
+        self.put('map', 'prefab/gas/sample.ppd', fuel_descriptor())
+        target = self.root/'fuel-metadata.scs'
+        base = ['generate-fuel', '--package', str(self.root/'map'), '--path', '/prefab/gas/sample.ppd',
+                '--output', str(target), '--game-version', '1.61.3.18', '--experimental']
+        self.run_cli(base, expected=2)
+        self.run_cli([*base, '--map-name', 'Synthetic Map', '--revision', 'invalid'], expected=2)
+        self.assertFalse(target.exists())
+        self.run_cli([*base, '--map-name', 'Synthetic Map', '--revision', '3'])
+        with zipfile.ZipFile(target) as archive:
+            manifest = parse_units(archive.read('manifest.sii').decode())[0]
+            self.assertEqual(manifest.one('package_version'), '1.61-r3-experimental')
 
     def test_context_generation_from_mounted_definitions(self):
         self.put('game', 'def/world/prefab.sii', '''SiiNunit {

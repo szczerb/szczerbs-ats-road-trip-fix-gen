@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car refueling with the Helena-area sample. The user subsequently reports that the patched target disappears from the truck map; preserving both vehicle modes remains unresolved. Broader gameplay validation remains open. Courier and refueling investigations have equal priority.
+**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car and truck refueling at the same Helena-area pump with overlapping sample 2. Broader station, reload and courier validation remain open. Courier and refueling investigations have equal priority.
 
 ## Findings and first experiments
 
@@ -12,7 +12,7 @@ A research utility for American Truck Simulator map expansions and reworks: insp
 
 [Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class. The [first user test](docs/reference/VALIDATION_RESULTS.md) reports successful refueling at the eastern target and a substantial driving detour; the closer city station remains unchanged.
 
-The new [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. Its records and counts are statically verified; runtime coexistence is pending. Disable sample 1 when testing it.
+The new [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. The user reports successful refueling in both modes for this fixture. Disable sample 1 when testing it. Fuel packages now use [consistent branding, game-based revision versions and original icons](docs/reference/MOD_METADATA.md); this title does not imply map-wide coverage.
 
 ## Run the tooling
 

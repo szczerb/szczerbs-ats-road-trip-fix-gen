@@ -2,7 +2,7 @@
 
 ## Goal and current boundary
 
-Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization is complete; the authorized next milestone is autonomous research, archive inspection tooling, and an evidence-supported generator proof of concept. A tested inspection/generation prototype now exists; one Helena-area fuel sample has a user-reported successful gameplay test, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
+Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization is complete; the authorized next milestone is autonomous research, archive inspection tooling, and an evidence-supported generator proof of concept. A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
 
 Workspace-authored documentation must be in English.
 
@@ -14,6 +14,8 @@ Workspace-authored documentation must be in English.
 4. Relevant references: [archives and definitions](docs/reference/SCS_ARCHIVES_AND_DEFINITIONS.md), [maps and compatibility](docs/reference/MAP_STRUCTURE_AND_COMPATIBILITY.md), [economy and Courier Jobs](docs/reference/ECONOMY_AND_COURIER_JOBS.md), [car refueling](docs/reference/PASSENGER_CAR_REFUELING.md), and [local inputs](docs/reference/LOCAL_INPUT_INVENTORY.md).
 
 See also [installed baseline](docs/reference/RESEARCH_BASELINE.md), [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md), [tool usage](docs/reference/TOOLING.md), [validation handoff](docs/reference/VALIDATION_HANDOFF.md), [starter-area sample](docs/reference/STARTER_AREA_SAMPLE.md), [gameplay results](docs/reference/VALIDATION_RESULTS.md), and [same-position sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md).
+
+Fuel package name, author, revision and icon requirements are in the [metadata contract](docs/reference/MOD_METADATA.md). Use an explicit short map name and retain the experimental suffix. See [original icon proposals](assets/mod-icons/README.md).
 
 ## Task and evidence rules
 
@@ -34,6 +36,7 @@ Whenever in Plan Mode, include a table breaking down tasks and the models/effort
 
 - Treat `local_inputs/` archives as immutable. Preserve existing Git exclusions for `local_inputs/` and `local_outputs/`.
 - Keep extracted assets, game/DLC files, large logs, reports, downloaded tools, and generated mods beneath ignored `local_outputs/` subdirectories. Keep small authored summaries in documentation. See [workspace structure](docs/reference/WORKSPACE_STRUCTURE.md).
+- Small original project-authored icon exports and prompts may be tracked under `assets/mod-icons/`; large generated originals stay under ignored `local_outputs/artwork/`.
 - Do not commit supplied mods or copies of game assets. Do not extract whole archives for a metadata-only question. Record limitations when a format/tool is unavailable.
 - No automatic installation into a live mod directory, profile modification, economy reset, or in-game validation is part of initialization. Future experiments must state their setup and preserve the user's profile.
 

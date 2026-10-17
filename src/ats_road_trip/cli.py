@@ -34,6 +34,17 @@ def _common_stack(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('--dlc', action='append', default=[], help='Owned DLC mount token, e.g. dlc_wa')
 
 
+def _fuel_metadata(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument('--map-name', required=True, help='Short map name shown in the mod manager, e.g. ATS Expansion')
+    parser.add_argument('--revision', type=int, default=0, help='Experimental package revision (default: 0)')
+    parser.add_argument('--icon', help='Optional 276x162 JPEG mod manager icon')
+
+
+def _fuel_writer_options(args: argparse.Namespace) -> dict:
+    return {'map_name': args.map_name, 'revision': args.revision,
+            'icon': Path(args.icon).read_bytes() if args.icon else None}
+
+
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(description='ATS Road Trip compatibility research prototype')
     root.add_argument('--extractor', help='Path to the external Linux HashFS Extractor')
@@ -62,6 +73,7 @@ def parser() -> argparse.ArgumentParser:
         if name.startswith('generate'):
             fuel.add_argument('--game-version', required=True)
             fuel.add_argument('--experimental', action='store_true', help='Acknowledge unverified runtime behavior')
+            _fuel_metadata(fuel)
     context = sub.add_parser('generate-context', help='Generate exact-model/descriptor courier alias candidates')
     context.add_argument('--baseline', action='append', required=True)
     context.add_argument('--map', action='append', required=True)
@@ -80,6 +92,7 @@ def parser() -> argparse.ArgumentParser:
         local.add_argument('--output', required=True)
         local.add_argument('--game-version', required=True)
         local.add_argument('--experimental', action='store_true')
+        _fuel_metadata(local)
     return root
 
 
@@ -124,15 +137,14 @@ def main(argv: list[str] | None = None) -> int:
                 if args.command == 'generate-overlap-fuel':
                     from .overlap_fuel import plan_overlapping_fuel
                     planner = plan_overlapping_fuel
-                    options = {'display_name': 'Road Trip Helena - truck + car at one pump (sample 2)',
-                               'description': ('Experimental same-position fuel pair for ATS Expansion 23.0 / ATS 1.61.3.18.\n'
+                    options = {'description': ('Experimental single-station fuel sample; not a map-wide fix.\n'
                                                'Sample 2: retains the original truck point and adds a car point at identical coordinates.\n'
-                                               'Disable sample 1 and other fuel samples; place this above ATS Expansion in the test profile.\n'
-                                               'Verify map visibility and actual refueling separately with a truck and a car.\n'
-                                               'Same-position coexistence has not been validated in game. Read road_trip_fix_report.json.\n')}
+                                               'Disable previous fuel samples; place this above the source map in a test profile.\n'
+                                               'Broader regression and reload testing remains pending. Read road_trip_fix_report.json.\n')}
                 plan, changes = planner(ResourceStack(packages), recipe,
                                         map_package=str(packages[-1].path), game_version=args.game_version)
-                report = write_mod(args.output, changes, plan, game_version=args.game_version, **options)
+                report = write_mod(args.output, changes, plan, game_version=args.game_version,
+                                   **_fuel_writer_options(args), **options)
                 _emit({'output': str(Path(args.output).resolve()), 'report': report}, None)
             elif args.command in ('courier-audit', 'generate-context'):
                 baseline_packages = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc)))
@@ -164,7 +176,8 @@ def main(argv: list[str] | None = None) -> int:
                 if args.command == 'fuel-audit':
                     _emit(plan, args.output)
                 else:
-                    report = write_mod(args.output, changes, plan, game_version=args.game_version)
+                    report = write_mod(args.output, changes, plan, game_version=args.game_version,
+                                       **_fuel_writer_options(args))
                     _emit({'output': str(Path(args.output).resolve()), 'report': report}, None)
         return 0
     except (ArchiveError, PackageError, DefinitionError, OSError, ValueError, KeyError) as exc:

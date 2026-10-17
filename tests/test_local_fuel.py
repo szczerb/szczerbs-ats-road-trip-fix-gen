@@ -99,7 +99,8 @@ category: ""
             recipe_path, output = root/'recipe.json', root/'sample.scs'
             recipe_path.write_text(json.dumps(recipe))
             arguments = ['generate-local-fuel', '--baseline', str(baseline), '--map', str(source_map),
-                         '--recipe', str(recipe_path), '--output', str(output), '--game-version', '1.61.3.18']
+                         '--recipe', str(recipe_path), '--output', str(output), '--game-version', '1.61.3.18',
+                         '--map-name', 'Synthetic Map']
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     main(arguments)
@@ -110,6 +111,10 @@ category: ""
                 self.assertEqual(len(report['generated_resources']), 3)
                 self.assertFalse(report['in_game_verified'])
                 self.assertIsNone(archive.testzip())
+                manifest = parse_units(archive.read('manifest.sii').decode())[0]
+                self.assertEqual(manifest.one('display_name'), "szczerb's Road Trip Gas Stations Fix for Synthetic Map")
+                self.assertEqual(manifest.one('package_version'), '1.61-r0-experimental')
+                self.assertEqual(manifest.one('author'), 'szczerb')
                 definition_path = next(n for n in archive.namelist() if n.startswith('def/world/'))
                 alias = parse_units(archive.read(definition_path).decode())[0]
                 self.assertEqual(alias.name, report['alias'])

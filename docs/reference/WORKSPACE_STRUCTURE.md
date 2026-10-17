@@ -12,6 +12,7 @@
 | `docs/incidents/` | Separate evidence trails for reproducible failures |
 | `docs/reference/` | Sourced technical references and small authored inventories |
 | `docs/templates/` | Task, ADR, and incident templates |
+| `assets/mod-icons/` | Small original icon JPEG exports and exact generation prompts; selected design C |
 | `.gitignore` | Existing exclusions for local input/output artifacts |
 
 ## Local artifacts

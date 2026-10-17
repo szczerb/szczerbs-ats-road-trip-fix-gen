@@ -38,4 +38,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Starting-garage evidence and Helena-area/Great Falls samples](reference/STARTER_AREA_SAMPLE.md).
 - [User gameplay results and nearest-station selection review](reference/VALIDATION_RESULTS.md).
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
+- [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
+- [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import struct
 import zipfile
 
 from .package import virtual_path
@@ -15,9 +16,54 @@ def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _manifest_text(value: str, label: str) -> str:
+    if not isinstance(value, str) or not value.strip() or not value.isprintable():
+        raise ValueError(f'{label} must be a nonempty printable string')
+    return json.dumps(value, ensure_ascii=False)
+
+
+def _validate_icon(data: bytes) -> None:
+    """Check JPEG framing/dimensions without a runtime image dependency.
+
+    This is metadata validation, not a JPEG decoder or a safety guarantee for
+    arbitrary images. The game's documented icon canvas is exactly 276x162.
+    """
+    if not isinstance(data, bytes) or not data.startswith(b'\xff\xd8') or not data.endswith(b'\xff\xd9'):
+        raise ValueError('Icon must be a JPEG with a complete SOI/EOI frame')
+    offset = 2
+    frames = {0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf}
+    while offset < len(data) - 2:
+        if data[offset] != 0xff:
+            break
+        while offset < len(data) and data[offset] == 0xff:
+            offset += 1
+        if offset >= len(data):
+            break
+        marker = data[offset]
+        offset += 1
+        if marker in (0xd9, 0xda):
+            break
+        if offset + 2 > len(data):
+            break
+        length = int.from_bytes(data[offset:offset + 2], 'big')
+        if length < 2 or offset + length > len(data):
+            break
+        if marker in frames:
+            if length < 8:
+                break
+            height, width = struct.unpack_from('>HH', data, offset + 3)
+            components = data[offset + 7]
+            if length != 8 + 3 * components or components not in (1, 3) or (width, height) != (276, 162):
+                raise ValueError('Icon must be a 276x162 pixel grayscale or RGB JPEG')
+            return
+        offset += length
+    raise ValueError('Icon has no supported JPEG frame header')
+
+
 def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
               *, game_version: str, display_name: str | None = None,
-              description: str | None = None) -> dict:
+              description: str | None = None, map_name: str | None = None,
+              revision: int = 0, icon: bytes | None = None) -> dict:
     """Write a new ZIP_STORED .scs, with source/change report included.
 
     Existing outputs are never overwritten. Caller must explicitly acknowledge
@@ -28,10 +74,24 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
         raise ValueError('Output must have a .scs extension')
     if not re.fullmatch(r'1\.61(?:\.\d+)*', game_version):
         raise ValueError('This experimental prototype targets ATS 1.61 only')
+    if isinstance(revision, bool) or not isinstance(revision, int) or revision < 0:
+        raise ValueError('Revision must be a nonnegative integer')
+    if map_name is not None:
+        _manifest_text(map_name, 'Map name')
+        if map_name != map_name.strip():
+            raise ValueError('Map name must not have leading or trailing whitespace')
+        if display_name is not None:
+            raise ValueError('Specify map_name or display_name, not both')
+        display_name = f"szczerb's Road Trip Gas Stations Fix for {map_name}"
+    display_name = display_name if display_name is not None else 'Road Trip map compatibility experiment'
+    display_literal = _manifest_text(display_name, 'Display name')
+    package_version = '.'.join(game_version.split('.')[:2]) + f'-r{revision}-experimental'
+    if icon is not None:
+        _validate_icon(icon)
     if not resources:
         raise ValueError('No supported changes; no empty mod will be generated')
     safe: dict[str, bytes] = {}
-    reserved = {'manifest.sii', 'mod_description.txt', 'road_trip_fix_report.json'}
+    reserved = {'manifest.sii', 'mod_description.txt', 'road_trip_fix_report.json', 'mod_icon.jpg'}
     for name, data in resources.items():
         clean = virtual_path(name)
         if clean in reserved:
@@ -39,29 +99,33 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
         if clean in safe:
             raise ValueError(f'Duplicate output path: {name}')
         safe[clean] = data
+    metadata = {'display_name': display_name, 'author': 'szczerb',
+                'package_version': package_version, 'map_name': map_name,
+                'revision': revision}
+    if icon is not None:
+        metadata['icon'] = {'path': 'mod_icon.jpg', 'size': len(icon), 'sha256': sha256(icon)}
     final_report = {**report, 'experimental': True, 'in_game_verified': False,
+                    'package_metadata': metadata,
                     'game_version_declared': game_version,
                     'generated_resources': [{'path': name, 'size': len(data), 'sha256': sha256(data)}
                                             for name, data in sorted(safe.items())]}
-    manifest = '''SiiNunit
-{
+    manifest = f'''SiiNunit
+{{
 mod_package : .roadtrip_fix
-{
-    package_version: "0.1.0-experimental"
-    display_name: "Road Trip map compatibility experiment"
-    author: "ATS Road Trip compatibility research"
+{{
+    package_version: {json.dumps(package_version)}
+    display_name: {display_literal}
+    author: "szczerb"
     category[]: "map"
     compatible_versions[]: "1.61.*"
     dlc_dependencies[]: "dlc_rt_ford"
     description_file: "mod_description.txt"
-}
-}
+}}
+}}
 '''
-    if display_name is not None:
-        if not isinstance(display_name, str) or not 1 <= len(display_name) <= 120 or not display_name.isprintable():
-            raise ValueError('Display name must be 1-120 printable characters')
-        manifest = manifest.replace('display_name: "Road Trip map compatibility experiment"',
-                                    'display_name: ' + json.dumps(display_name))
+    if icon is not None:
+        manifest = manifest.replace('    description_file:', '    icon: "mod_icon.jpg"\n    description_file:')
+        safe['mod_icon.jpg'] = icon
     if description is None:
         description = ('Experimental generated compatibility candidate for ATS 1.61 / Road Trip Ford.\n'
                        'Not validated in game. Read road_trip_fix_report.json before testing.\n'

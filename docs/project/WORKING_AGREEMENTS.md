@@ -27,6 +27,8 @@ Delegate independent bounded work using explicit file ownership in shared checko
 
 Treat input archives as immutable. Keep local artifacts under the existing ignored input/output directories and preserve their exclusions. Use selective metadata/text reads before considering full extraction. Keep large logs, game/mod assets, downloaded tools, and generated packages out of tracked docs. See [workspace structure](../reference/WORKSPACE_STRUCTURE.md).
 
+Track small original project-authored icon exports and prompts under `assets/mod-icons/`; keep large generated originals ignored. Fuel package naming, author and game-based revision requirements follow the [metadata contract](../reference/MOD_METADATA.md).
+
 Future in-game experiments must use a disposable or copied profile and record exact build, DLCs, mod versions, load order, observation method, and logs. Do not prescribe a market reset or modify a live save without establishing its effects and the experiment's authorization. Initialization performs no in-game experiments.
 
 ## Commits

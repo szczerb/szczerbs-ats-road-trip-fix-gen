@@ -192,7 +192,7 @@ category: ""
         output = self.root / 'overlap.scs'
         args = ['generate-overlap-fuel', '--baseline', str(self.root / 'baseline'),
                 '--map', str(self.root / 'map'), '--recipe', str(recipe_path),
-                '--output', str(output), '--game-version', '1.61.3.18']
+                '--output', str(output), '--game-version', '1.61.3.18', '--map-name', 'Synthetic Map']
         status, _, _ = self._run_cli(args)
         self.assertEqual(status, 2)
         self.assertFalse(output.exists())
@@ -205,7 +205,9 @@ category: ""
             self.assertEqual(len(report['generated_resources']), 3)
             self.assertFalse(any(name.endswith(('.data', '.aux', '.desc', '.layer')) for name in archive.namelist()))
             manifest = parse_units(archive.read('manifest.sii').decode())[0]
-            self.assertEqual(manifest.one('display_name'), 'Road Trip Helena - truck + car at one pump (sample 2)')
+            self.assertEqual(manifest.one('display_name'), "szczerb's Road Trip Gas Stations Fix for Synthetic Map")
+            self.assertEqual(manifest.one('package_version'), '1.61-r0-experimental')
+            self.assertEqual(manifest.one('author'), 'szczerb')
             self.assertEqual(len(archive.read(SECTOR_PATH)), len(sector) + 141)
             self.assertEqual(archive.read(SECTOR_PATH).count(b'opaque-item-gap'), 1)
             self.assertEqual(archive.read(SECTOR_PATH).count(b'opaque-variable-length-payload'), 1)
@@ -213,6 +215,7 @@ category: ""
             self.assertEqual([spawn['flags'] for spawn in inspect_ppd(archive.read(ppd_path))['spawns']], [0, 1])
             description = archive.read('mod_description.txt').decode()
             self.assertIn('sample 2', description.lower())
+            self.assertIn('broader regression and reload testing remains pending', description.lower())
         self.assertEqual((self.root / 'map' / 'base' / SECTOR_PATH).read_bytes(), sector)
         for path, data in companions.items():
             self.assertEqual((self.root / 'map' / 'base' / path).read_bytes(), data)
@@ -221,7 +224,8 @@ category: ""
         sector, ppd, companions, recipe, recipe_path = self._setup_packages()
         args = ['generate-overlap-fuel', '--baseline', str(self.root / 'baseline'),
                 '--map', str(self.root / 'map'), '--recipe', str(recipe_path),
-                '--output', str(self.root / 'bad.scs'), '--game-version', '1.61.3.18', '--experimental']
+                '--output', str(self.root / 'bad.scs'), '--game-version', '1.61.3.18',
+                '--map-name', 'Synthetic Map', '--experimental']
         # A sample-1 conversion has the same length but differs in the pinned source hash.
         converted = bytearray(sector)
         service = converted.find(struct.pack('<IQ', 7, 300))

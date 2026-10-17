@@ -16,4 +16,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0004: Add pinned overlapping fuel services](ADR-0004-add-pinned-overlapping-fuel-services.md).
 
+- [ADR-0005: Standardize fuel package metadata](ADR-0005-standardize-fuel-package-metadata.md).
+
 Runtime fix validation and general map-sector authoring remain open.
