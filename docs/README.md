@@ -27,3 +27,12 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Task](templates/TASK_TEMPLATE.md)
 - [Architecture decision](templates/ADR_TEMPLATE.md)
 - [Incident](templates/INCIDENT_TEMPLATE.md)
+
+## Research results and tooling
+
+- [Installed baseline and extractor provenance](reference/RESEARCH_BASELINE.md).
+- [Courier research findings](reference/COURIER_RESEARCH_FINDINGS.md).
+- [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).
+- [CLI setup, commands, and prototype limits](reference/TOOLING.md).
+- [Generated artifacts and validation handoff](reference/VALIDATION_HANDOFF.md).
+- [Third-party notices](../THIRD_PARTY_NOTICES.md).

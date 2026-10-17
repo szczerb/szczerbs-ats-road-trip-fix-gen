@@ -1,12 +1,12 @@
 ---
 id: TASK-0002
 title: Establish reference data and extraction workflow
-status: backlog
+status: done
 priority: high
 repositories:
   - .
 depends_on: []
-owner: shared
+owner: root
 ---
 
 # Goal
@@ -43,8 +43,7 @@ The project needs to compare original game data with mod data before proposing c
 
 # Verification
 
-- Record source links, observed version/build identifiers, archive/file inventories, and tool compatibility evidence as work progresses.
-- Mark an extraction or inspection step as verified only after performing it against the recorded setup; otherwise state what remains unverified.
+Completed 2026-10-17. Recorded Steam build 25952361 / logged 1.61.3.18, relevant archive identities, historical 23-mod listing and its limits, and an explicit representative analysis order in RESEARCH_BASELINE.md. Verified Linux Extractor 2026-07-29 provenance and distinct ZIP/executable SHA256 identities. Official def extraction 34,970 files, Reforma 2,240, MegaResources 2,967, all zero failures; selected read/list/extraction through the Python adapter passed. Future live profile / UI priority and station/city observations remain validation inputs, not asserted facts. See the tooling guide and baseline for repeatable commands. Initialization's no-install boundary was superseded by the user's authorized overnight tooling milestone.
 
 # Links
 
@@ -53,6 +52,6 @@ The project needs to compare original game data with mod data before proposing c
 - [Economy and courier jobs](../../reference/ECONOMY_AND_COURIER_JOBS.md)
 - [Passenger-car refueling](../../reference/PASSENGER_CAR_REFUELING.md)
 - [Local input inventory](../../reference/LOCAL_INPUT_INVENTORY.md)
-- [Courier compatibility research](TASK-0003-investigate-courier-compatibility.md)
-- [Car refueling compatibility research](TASK-0004-investigate-car-refueling-compatibility.md)
-- [First generator increment design](TASK-0005-design-first-generator-increment.md)
+- [Courier compatibility research](../done/TASK-0003-investigate-courier-compatibility.md)
+- [Car refueling compatibility research](../done/TASK-0004-investigate-car-refueling-compatibility.md)
+- [First generator increment design](../done/TASK-0005-design-first-generator-increment.md)

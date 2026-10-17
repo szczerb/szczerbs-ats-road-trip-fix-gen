@@ -69,3 +69,7 @@ for path in sorted(Path("local_inputs").glob("*.scs")):
 - [SCS archives and definitions](SCS_ARCHIVES_AND_DEFINITIONS.md)
 - [Map structure and compatibility](MAP_STRUCTURE_AND_COMPATIBILITY.md)
 - [Project current state](../project/CURRENT_STATE.md)
+
+## Subsequent research
+
+The initialization observations above retain their original scope. See [the overnight findings/baseline](RESEARCH_BASELINE.md) and [tool usage](TOOLING.md) for later local evidence and supported experiments.

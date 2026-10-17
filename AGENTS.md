@@ -2,7 +2,7 @@
 
 ## Goal and current boundary
 
-Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization is complete; the authorized next milestone is autonomous research, archive inspection tooling, and an evidence-supported generator proof of concept. Read current state before assuming a diagnosis or generator exists. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
+Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization is complete; the authorized next milestone is autonomous research, archive inspection tooling, and an evidence-supported generator proof of concept. A tested inspection/generation prototype now exists; generated candidates remain unverified in game. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
 
 Workspace-authored documentation must be in English.
 
@@ -12,6 +12,8 @@ Workspace-authored documentation must be in English.
 2. [Working agreements](docs/project/WORKING_AGREEMENTS.md) and [task workflow](docs/project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md).
 3. The relevant task from the [task board](docs/tasks/README.md), related [ADRs](docs/architecture/decisions/README.md), and [incident evidence](docs/incidents/README.md).
 4. Relevant references: [archives and definitions](docs/reference/SCS_ARCHIVES_AND_DEFINITIONS.md), [maps and compatibility](docs/reference/MAP_STRUCTURE_AND_COMPATIBILITY.md), [economy and Courier Jobs](docs/reference/ECONOMY_AND_COURIER_JOBS.md), [car refueling](docs/reference/PASSENGER_CAR_REFUELING.md), and [local inputs](docs/reference/LOCAL_INPUT_INVENTORY.md).
+
+See also [installed baseline](docs/reference/RESEARCH_BASELINE.md), [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md), [tool usage](docs/reference/TOOLING.md), and [validation handoff](docs/reference/VALIDATION_HANDOFF.md).
 
 ## Task and evidence rules
 

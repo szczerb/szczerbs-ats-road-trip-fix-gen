@@ -1,13 +1,13 @@
 ---
 id: TASK-0003
 title: Investigate courier compatibility
-status: backlog
+status: done
 priority: high
 repositories:
   - .
 depends_on:
   - TASK-0002
-owner: shared
+owner: root
 ---
 
 # Goal
@@ -20,7 +20,7 @@ Courier compatibility may depend on map, economy, company, or other data relatio
 
 # Scope
 
-- Use the verified baseline and inspection workflow from [TASK-0002](TASK-0002-establish-reference-data-and-extraction.md).
+- Use the verified baseline and inspection workflow from [TASK-0002](../done/TASK-0002-establish-reference-data-and-extraction.md).
 - At task start, collect examples of working and affected cities, companies, and related locations from the user or available evidence.
 - Compare relevant original and modded courier, economy, company, and map data for those examples.
 - Investigate candidate Gemini markers, naming prefixes, or other mechanisms as hypotheses, not assumptions.
@@ -45,14 +45,13 @@ Courier compatibility may depend on map, economy, company, or other data relatio
 
 # Verification
 
-- Record compared file paths, identifiers, relationships, and source provenance as analysis proceeds.
-- For in-game checks, record the game and mod setup, observations, and relevant logs; label unperformed checks as pending rather than verified.
+Completed 2026-10-17. COURIER_RESEARCH_FINDINGS.md records 149 official jobs / 29 contexts, vehicle/rating schema, SCS exclusions, exact aliases, and existing log errors with provenance. Independent ZIP comparison and the public CLI agree on 1,030 definition occurrences: 964 classified, 25 explicitly excluded, 41 unclassified. Most ATS Expansion custom depots already have classification; a broad prefix fix is unsupported. Ahorrara reuses an official supermarket model/PPD and appears in eight Reforma editor files. Exact placement and market behavior await controlled game validation; this research task does not claim a fixed city. Prototype and validation work are tracked separately.
 
 # Links
 
-- [Establish reference data and extraction](TASK-0002-establish-reference-data-and-extraction.md)
+- [Establish reference data and extraction](../done/TASK-0002-establish-reference-data-and-extraction.md)
 - [SCS archives and definitions](../../reference/SCS_ARCHIVES_AND_DEFINITIONS.md)
 - [Map structure and compatibility](../../reference/MAP_STRUCTURE_AND_COMPATIBILITY.md)
 - [Economy and courier jobs](../../reference/ECONOMY_AND_COURIER_JOBS.md)
 - [Local input inventory](../../reference/LOCAL_INPUT_INVENTORY.md)
-- [First generator increment design](TASK-0005-design-first-generator-increment.md)
+- [First generator increment design](../done/TASK-0005-design-first-generator-increment.md)

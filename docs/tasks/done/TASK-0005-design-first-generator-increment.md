@@ -1,14 +1,14 @@
 ---
 id: TASK-0005
 title: Design the first generator increment
-status: backlog
+status: done
 priority: medium
 repositories:
   - .
 depends_on:
   - TASK-0003
   - TASK-0004
-owner: shared
+owner: root
 ---
 
 # Goal
@@ -21,7 +21,7 @@ The first implementation target should follow demonstrated compatibility mechani
 
 # Scope
 
-- Review the results and proposed patch feasibility from [TASK-0003](TASK-0003-investigate-courier-compatibility.md) and [TASK-0004](TASK-0004-investigate-car-refueling-compatibility.md).
+- Review the results and proposed patch feasibility from [TASK-0003](../done/TASK-0003-investigate-courier-compatibility.md) and [TASK-0004](../done/TASK-0004-investigate-car-refueling-compatibility.md).
 - Select a bounded first implementation target using evidence, impact, and validation feasibility.
 - Specify the initial generator interface and design, including language, CLI behavior, input schema, output layout, and validation approach as needed for the selected target.
 - Identify assumptions, limitations, and follow-on work.
@@ -45,16 +45,18 @@ The first implementation target should follow demonstrated compatibility mechani
 
 # Verification
 
-- Confirm both prerequisite task outcomes are complete and link their evidence before making the target decision.
-- Check that each proposed design choice follows from the selected evidence-backed target and that unresolved behavior is labeled as unverified.
+Completed 2026-10-17 after reviewing both research outcomes. ADR-0002 selects Python 3.11+, a subprocess HashFS adapter, explicit package mounts/order, static audits, deterministic experimental packages, and copied-profile validation boundaries. The first implementation includes a narrowly selectable exact-model/descriptor context alias candidate and a v25-only fuel descriptor experiment; neither claims game validation. Interfaces, output layout, limitations, tests, and dependency setup are specified in TOOLING.md. TASK-0006 implements that design; TASK-0007 owns runtime validation.
 
 # Links
 
-- [Courier compatibility research](TASK-0003-investigate-courier-compatibility.md)
-- [Car refueling compatibility research](TASK-0004-investigate-car-refueling-compatibility.md)
-- [Establish reference data and extraction](TASK-0002-establish-reference-data-and-extraction.md)
+- [Courier compatibility research](../done/TASK-0003-investigate-courier-compatibility.md)
+- [Car refueling compatibility research](../done/TASK-0004-investigate-car-refueling-compatibility.md)
+- [Establish reference data and extraction](../done/TASK-0002-establish-reference-data-and-extraction.md)
 - [SCS archives and definitions](../../reference/SCS_ARCHIVES_AND_DEFINITIONS.md)
 - [Map structure and compatibility](../../reference/MAP_STRUCTURE_AND_COMPATIBILITY.md)
 - [Economy and courier jobs](../../reference/ECONOMY_AND_COURIER_JOBS.md)
 - [Passenger-car refueling](../../reference/PASSENGER_CAR_REFUELING.md)
 - [Local input inventory](../../reference/LOCAL_INPUT_INVENTORY.md)
+
+- [Selected design](../../architecture/decisions/ADR-0002-use-python-inspection-and-bounded-experimental-patches.md)
+- [Prototype task](../done/TASK-0006-build-inspector-and-experimental-generators.md)

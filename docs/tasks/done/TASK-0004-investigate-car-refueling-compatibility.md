@@ -1,13 +1,13 @@
 ---
 id: TASK-0004
 title: Investigate car refueling compatibility
-status: backlog
+status: done
 priority: high
 repositories:
   - .
 depends_on:
   - TASK-0002
-owner: shared
+owner: root
 ---
 
 # Goal
@@ -20,7 +20,7 @@ Refueling failure may arise from physical station accessibility, interaction-tri
 
 # Scope
 
-- Use the verified baseline and inspection workflow from [TASK-0002](TASK-0002-establish-reference-data-and-extraction.md).
+- Use the verified baseline and inspection workflow from [TASK-0002](../done/TASK-0002-establish-reference-data-and-extraction.md).
 - At task start, collect examples of working and affected stations and relevant map locations from the user or available evidence.
 - Compare station geometry/access, interaction-trigger data, and fuel/vehicle eligibility data across working and affected examples.
 - Identify which conditions are static-data properties and which require in-game observation.
@@ -46,14 +46,13 @@ Refueling failure may arise from physical station accessibility, interaction-tri
 
 # Verification
 
-- Record compared file paths, station/location identifiers, observed data, and source provenance as the analysis proceeds.
-- For in-game checks, record the game and mod setup, observations, and relevant logs; label unperformed checks as pending rather than verified.
+Completed 2026-10-17. REFUELING_RESEARCH_FINDINGS.md records 191 official station PPDs (all 44 sampled _rt variants contain GAS flags 1), field layout and v23/v24/v25 limits, and real Reforma MX9 source/modified SHA-256 values. A bounded sector parse verified the actual prefab UID and linked service UID; this supports a service/spawn rebuilding limitation instead of a PPD-only runtime-success claim. Five PPD tests verify inspection, preservation, idempotence, and refusal cases; the experiment was also packaged through the real CLI. Physical access, fuel increase, and truck regression testing remain pending in TASK-0007.
 
 # Links
 
-- [Establish reference data and extraction](TASK-0002-establish-reference-data-and-extraction.md)
+- [Establish reference data and extraction](../done/TASK-0002-establish-reference-data-and-extraction.md)
 - [SCS archives and definitions](../../reference/SCS_ARCHIVES_AND_DEFINITIONS.md)
 - [Map structure and compatibility](../../reference/MAP_STRUCTURE_AND_COMPATIBILITY.md)
 - [Passenger-car refueling](../../reference/PASSENGER_CAR_REFUELING.md)
 - [Local input inventory](../../reference/LOCAL_INPUT_INVENTORY.md)
-- [First generator increment design](TASK-0005-design-first-generator-increment.md)
+- [First generator increment design](../done/TASK-0005-design-first-generator-increment.md)

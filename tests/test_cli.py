@@ -1,0 +1,109 @@
+from contextlib import redirect_stderr, redirect_stdout
+import io
+import json
+from pathlib import Path
+import struct
+import tempfile
+import unittest
+import zipfile
+
+from ats_road_trip.cli import main
+from ats_road_trip.ppd import inspect_ppd
+from ats_road_trip.sii import parse_units
+
+
+def fuel_descriptor(flags=0):
+    header = [25, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0] + [96] * 5 + [132] * 7
+    return struct.pack('<24I', *header) + struct.pack('<7fII', 1, 2, 3, 1, 0, 0, 0, 3, flags)
+
+
+class CliTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.addCleanup(self.temp.cleanup)
+
+    def run_cli(self, arguments, expected=0):
+        output, error = io.StringIO(), io.StringIO()
+        with redirect_stdout(output), redirect_stderr(error):
+            try:
+                status = main(arguments)
+            except SystemExit as exc:
+                status = exc.code
+        self.assertEqual(status, expected, error.getvalue())
+        return json.loads(output.getvalue()) if output.getvalue() else None
+
+    def put(self, package, path, contents):
+        target = self.root/package/path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(contents.encode() if isinstance(contents, str) else contents)
+        return target
+
+    def test_fuel_generation_gate_and_roundtrip(self):
+        source = self.put('map', 'prefab/gas/sample.ppd', fuel_descriptor())
+        target = self.root/'fuel.scs'
+        args = ['generate-fuel', '--package', str(self.root/'map'), '--path', '/prefab/gas/sample.ppd',
+                '--output', str(target), '--game-version', '1.61.3.18']
+        self.run_cli(args, expected=2)
+        self.assertFalse(target.exists())
+        result = self.run_cli([*args, '--experimental'])
+        self.assertFalse(result['report']['in_game_verified'])
+        with zipfile.ZipFile(target) as archive:
+            patch = archive.read('prefab/gas/sample.ppd')
+            self.assertEqual(inspect_ppd(patch)['fuel']['flags_one_count'], 1)
+            self.assertEqual(inspect_ppd(patch)['fuel']['flags_zero_count'], 1)
+            self.assertIsNone(archive.testzip())
+        self.assertEqual(source.read_bytes(), fuel_descriptor())
+        self.run_cli([*args, '--experimental'], expected=2)
+
+    def test_noop_does_not_create_empty_mod(self):
+        self.put('map', 'prefab/gas/sample.ppd', fuel_descriptor(flags=1))
+        target = self.root/'no-op.scs'
+        self.run_cli(['generate-fuel', '--package', str(self.root/'map'), '--prefix', '/prefab/gas/',
+                      '--output', str(target), '--game-version', '1.61', '--experimental'], expected=2)
+        self.assertFalse(target.exists())
+
+    def test_context_generation_from_mounted_definitions(self):
+        self.put('game', 'def/world/prefab.sii', '''SiiNunit {
+prefab_model : prefab.canonical {
+model_desc: "/prefab/a.pmd" prefab_desc: "/prefab/a.ppd"
+}
+}''')
+        self.put('game', 'def/data_context.sii', '''SiiNunit {
+data_context : context.prefab.sample { target_data[]: prefab.canonical tags[]: retail }
+}''')
+        self.put('game', 'def/car_job_data.sii', '''SiiNunit {
+car_job_data : car_job.sample { source_data_contexts[]: retail }
+}''')
+        self.put('game', 'prefab/a.pmd', b'model')
+        self.put('game', 'prefab/a.ppd', b'descriptor')
+        self.put('map', 'base/def/world/prefab.map.sii', '''SiiNunit {
+prefab_model : prefab.alias { model_desc: "/prefab/a.pmd" prefab_desc: "/prefab/a.ppd" }
+}''')
+        self.put('map', 'base/def/company/shop/editor/city.sii', '''SiiNunit {
+company_def : .city { city: test_city prefab: alias }
+}''')
+        target = self.root/'context.scs'
+        result = self.run_cli(['generate-context', '--baseline', str(self.root/'game'),
+                              '--map', str(self.root/'map'), '--output', str(target),
+                              '--game-version', '1.61', '--prefab', 'alias', '--experimental'])
+        self.assertEqual(result['report']['aliases'][0]['alias'], 'prefab.alias')
+        with zipfile.ZipFile(target) as archive:
+            unit = parse_units(archive.read('def/data_context.rtfix.sii').decode())[0]
+            self.assertEqual(unit.values('target_data'), ('prefab.alias',))
+            self.assertEqual(unit.values('tags'), ('retail',))
+            self.assertNotIn('def/data_context.sii', archive.namelist())
+            self.assertFalse(any(path.endswith('.ppd') for path in archive.namelist()))
+
+    def test_report_cannot_overwrite_existing_file(self):
+        archive = self.root/'map.scs'
+        with zipfile.ZipFile(archive, 'w') as output:
+            output.writestr('manifest.sii', 'SiiNunit { }')
+        report = self.root/'report.json'
+        report.write_text('preserve')
+        self.run_cli(['inspect', str(archive), '--output', str(report)], expected=2)
+        self.assertEqual(report.read_text(), 'preserve')
+
+
+if __name__ == '__main__':
+    unittest.main()

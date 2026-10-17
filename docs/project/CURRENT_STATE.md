@@ -1,27 +1,23 @@
 # Current State
 
-Updated: 2026-10-17. Initialization completed and verified under [TASK-0001](../tasks/done/TASK-0001-initialize-project.md).
+Updated: 2026-10-17. Initialization is complete; the overnight research and prototype milestone is complete and statically verified under [TASK-0006](../tasks/done/TASK-0006-build-inspector-and-experimental-generators.md).
 
-## Current milestone
+## Available result
 
-The workspace was generated with the bootstrap skill in merge mode and specialized for this project. Agent/workflow instructions, five technical reference topics, an input inventory, a workflow ADR, and four research backlog tasks are complete. Documentation links, task metadata/dependencies, inventory metadata, and artifact exclusions passed verification. No task is active; no utility, generated fix, or in-game validation exists.
+- A Python 3.11+ CLI inspects ZIP/HashFS, selectively extracts resources, resolves explicit package mounts/order and includes, audits courier context coverage, and generates two bounded experimental patch types. See [usage](../reference/TOOLING.md).
+- Both investigations are documented: [courier findings](../reference/COURIER_RESEARCH_FINDINGS.md) and [refueling findings](../reference/REFUELING_RESEARCH_FINDINGS.md). Research preparation and first-increment design are complete; no live game/editor/profile operation occurred.
+- Installed reference: ATS 1.61.3.18, Steam build 25952361, Road Trip Ford package, and five supplied map/resource archives. The existing log contains a historical 23-mod listing; analysis order is explicitly selected, not assumed to recreate the live profile. See [baseline](../reference/RESEARCH_BASELINE.md).
 
-## Evidence collected
+## Evidence and hypotheses
 
-- **Observed locally, 2026-10-17:** five supplied `.scs` archives are present. ATS Expansion, Alaska Expansion, and Western Canada Expansion are ZIP-readable; both Reforma packages have HashFS v2 headers. The ZIP archives contain stored and DEFLATE entries.
-- **Observed locally, 2026-10-17:** ATS Expansion uses a `base/` asset prefix; Alaska and Western Canada use root-level `def/` and `map/`. Small company definitions connect city identifiers to prefabs, and ATS Expansion includes traditional company cargo input/output definitions.
-- **Unknown:** the internal Reforma content; a suitable HashFS extractor was not available on PATH during inspection. No full extraction, integrity scan, or in-game compatibility check was performed.
+**Observed locally:** the public CLI reproduces independent coverage for 1,030 ZIP company definitions: 964 classified, 25 explicitly excluded by SCS, and 41 unclassified. Stock `d_cust_*` prefabs already have courier tags. Broad company-prefix or enable-everything fixes are unsupported.
 
-Exact archive metadata, source paths, method, and limitations belong to the [inventory](../reference/LOCAL_INPUT_INVENTORY.md). These observations establish input structure only; they do not diagnose either gameplay issue.
+**Hypothesis with exact alias evidence:** Reforma `ahorrara` shares the official supermarket model/descriptor pair and can receive an additive `retail` context. The narrow PoC emits a 108-byte gameplay definition for eight company/city occurrences. A broader conservative pass finds 15 aliases / 33 effective definitions. Neither count establishes usable placed locations or offers.
 
-## Open questions
+**Hypothesis with paired binary evidence:** GAS type 3 / flags 1 enables car/petrol interaction. The Reforma MX9 experiment changes a v25 PPD from 1,700 to 1,736 bytes while preserving its truck locator. A verified placed instance has a separately serialized map service; runtime rebuilding and physical interaction remain unknown.
 
-- **Hypothesis:** missing courier markers or company naming explains absent jobs. This is unproven; [courier research](../tasks/backlog/TASK-0003-investigate-courier-compatibility.md) must distinguish physical locations from registration and market eligibility.
-- **Unknown:** station physical access, trigger behavior, and fuel/vehicle eligibility in affected areas; [refueling research](../tasks/backlog/TASK-0004-investigate-car-refueling-compatibility.md) has equal priority.
-- Exact installed game build, Road Trip/DLC package data, enabled mod stack/load order, and working/affected examples have not been established. Collect them when the corresponding research starts, not during initialization.
+## Verification boundary and next work
 
-## Next work
+All 39 tests pass. Real archive/CLI runs, descriptor hashes, generated package contents, byte-identical regeneration, and source-preservation checks are recorded in TASK-0006. No task is active; gameplay validation is the next backlog item. All outputs remain experimental. [Validation handoff](../reference/VALIDATION_HANDOFF.md) identifies the artifacts and controlled comparisons.
 
-Start [reference data and extraction preparation](../tasks/backlog/TASK-0002-establish-reference-data-and-extraction.md). Its findings support the two equal-priority compatibility investigations. Review both outcomes before [designing the first generator increment](../tasks/backlog/TASK-0005-design-first-generator-increment.md).
-
-Implementation language, interfaces, schemas, extraction integration, override strategy, and output packaging remain undecided. See [system overview](../architecture/SYSTEM_OVERVIEW.md).
+Next: [TASK-0007](../tasks/backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md), using a copied/disposable profile to observe actual offers/completed deliveries and measurable refueling, isolate other courier/fuel/map mods, and determine whether services need editor rebuilding. No confirmed fix for every map or city is claimed.

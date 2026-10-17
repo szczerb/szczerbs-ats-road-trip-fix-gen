@@ -20,3 +20,7 @@ Inspected: 2026-10-17. SCS's company/cargo unit pages describe established ATS/E
 - **Hypothesis:** Gemini's proposed missing-marker/company-prefix explanation might account for absent courier jobs. There is no verified 1.61 source or local comparison in this note establishing that cause. Keep it as a test candidate, not a generator rule.
 
 See [Map structure and compatibility](./MAP_STRUCTURE_AND_COMPATIBILITY.md) for placed prefabs and binary sectors, [SCS archives and definitions](./SCS_ARCHIVES_AND_DEFINITIONS.md) for packaging and syntax, [Passenger-car refueling](./PASSENGER_CAR_REFUELING.md) for the separate fueling track, and [Local input inventory](./LOCAL_INPUT_INVENTORY.md) for installed inputs.
+
+## Subsequent research
+
+The initialization observations above retain their original scope. See [the overnight findings/baseline](COURIER_RESEARCH_FINDINGS.md) and [tool usage](TOOLING.md) for later local evidence and supported experiments.

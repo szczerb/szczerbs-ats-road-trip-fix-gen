@@ -1,0 +1,145 @@
+"""Command-line entrypoint for repeatable research and experimental generation."""
+
+from __future__ import annotations
+
+import argparse
+from contextlib import ExitStack
+from dataclasses import asdict
+import json
+from pathlib import Path
+import sys
+
+from .archive import Archive, ArchiveError
+from .courier_audit import audit_courier
+from .fuel_generator import plan_fuel
+from .mod_writer import write_mod
+from .package import Package, PackageError, ResourceStack, virtual_path
+from .sii import DefinitionError
+
+
+def _emit(data: dict, output: str | None) -> None:
+    text = json.dumps(data, indent=2, sort_keys=True) + '\n'
+    if output:
+        path = Path(output)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open('x', encoding='utf-8') as stream:
+            stream.write(text)
+    else:
+        sys.stdout.write(text)
+
+
+def _common_stack(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument('--package', action='append', required=True,
+                        help='Resource package/directory, repeat lowest priority first')
+    parser.add_argument('--dlc', action='append', default=[], help='Owned DLC mount token, e.g. dlc_wa')
+
+
+def parser() -> argparse.ArgumentParser:
+    root = argparse.ArgumentParser(description='ATS Road Trip compatibility research prototype')
+    root.add_argument('--extractor', help='Path to the external Linux HashFS Extractor')
+    sub = root.add_subparsers(dest='command', required=True)
+    inventory = sub.add_parser('inspect', help='List archive metadata without extracting content')
+    inventory.add_argument('archive')
+    inventory.add_argument('--prefix', default='')
+    inventory.add_argument('--output', help='Write JSON to a new file instead of stdout')
+    extract = sub.add_parser('extract', help='Extract explicit members or a prefix to a separate directory')
+    extract.add_argument('archive')
+    extract.add_argument('--path', action='append', default=[])
+    extract.add_argument('--prefix')
+    extract.add_argument('--output', required=True)
+    extract.add_argument('--max-bytes', type=int, default=16 * 1024 * 1024, help='Per-member limit')
+    courier = sub.add_parser('courier-audit', help='Report static prefab context coverage')
+    courier.add_argument('--baseline', action='append', required=True)
+    courier.add_argument('--map', action='append', required=True)
+    courier.add_argument('--dlc', action='append', default=[])
+    courier.add_argument('--output')
+    for name in ('fuel-audit', 'generate-fuel'):
+        fuel = sub.add_parser(name, help='Inspect fuel descriptors' if name == 'fuel-audit' else 'Build experimental v25 fuel candidates')
+        _common_stack(fuel)
+        fuel.add_argument('--path', action='append', default=[], help='Exact virtual PPD path, repeat as needed')
+        fuel.add_argument('--prefix', help='Select all PPDs below a virtual prefix')
+        fuel.add_argument('--output', required=name.startswith('generate'))
+        if name.startswith('generate'):
+            fuel.add_argument('--game-version', required=True)
+            fuel.add_argument('--experimental', action='store_true', help='Acknowledge unverified runtime behavior')
+    context = sub.add_parser('generate-context', help='Generate exact-model/descriptor courier alias candidates')
+    context.add_argument('--baseline', action='append', required=True)
+    context.add_argument('--map', action='append', required=True)
+    context.add_argument('--dlc', action='append', default=[])
+    context.add_argument('--output', required=True)
+    context.add_argument('--game-version', required=True)
+    context.add_argument('--experimental', action='store_true')
+    context.add_argument('--prefab', action='append', help='Restrict generation to reviewed prefab identifiers')
+    return root
+
+
+def main(argv: list[str] | None = None) -> int:
+    command = parser()
+    args = command.parse_args(argv)
+    try:
+        if hasattr(args, 'path'):
+            args.path = [virtual_path(p.lstrip('/')) for p in args.path]
+        if getattr(args, 'prefix', None):
+            prefix = args.prefix.lstrip('/')
+            if prefix:
+                virtual_path(prefix.rstrip('/'))
+            args.prefix = prefix
+        if args.command.startswith('generate') and not args.experimental:
+            raise ValueError('Generation requires --experimental; no candidate is verified in game')
+        if args.command == 'inspect':
+            with Archive(args.archive, extractor=args.extractor) as archive:
+                entries = archive.entries()
+                filtered = [asdict(entry) for entry in entries if entry.path.startswith(args.prefix)]
+                _emit({'archive': str(Path(args.archive).resolve()), 'format': archive.format,
+                       'entry_count': len(entries), 'selected_entries': filtered}, args.output)
+            return 0
+        if args.command == 'extract':
+            with Archive(args.archive, extractor=args.extractor) as archive:
+                names = list(args.path)
+                if args.prefix:
+                    names.extend(e.path for e in archive.entries() if not e.is_dir and e.path.startswith(args.prefix))
+                if not names:
+                    raise ValueError('Select --path or --prefix; implicit whole-archive extraction is disabled')
+                files = archive.extract(sorted(set(names)), args.output, max_bytes=args.max_bytes)
+                _emit({'extracted_file_count': len(files), 'output': str(Path(args.output).resolve())}, None)
+            return 0
+        with ExitStack() as manager:
+            if args.command in ('courier-audit', 'generate-context'):
+                baseline_packages = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc)))
+                                     for path in args.baseline]
+                maps = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc))) for path in args.map]
+                effective = ResourceStack([*baseline_packages, *maps])
+                map_paths = {str(p.path) for p in maps}
+                if args.command == 'courier-audit':
+                    _emit(audit_courier(effective, map_packages=map_paths), args.output)
+                else:
+                    from .context_generator import plan_context_aliases, render_context_patch
+                    plan = plan_context_aliases(ResourceStack(baseline_packages), effective, map_paths)
+                    if args.prefab:
+                        selected = {p if p.startswith('prefab.') else 'prefab.' + p for p in args.prefab}
+                        plan['selection'] = sorted(selected)
+                        omitted = [a for a in plan['aliases'] if a['alias'] not in selected]
+                        plan['skipped'].extend({'alias': a['alias'], 'reason': 'outside_requested_selection',
+                                                'company_definition_count': len(a['companies'])} for a in omitted)
+                        plan['aliases'] = [a for a in plan['aliases'] if a['alias'] in selected]
+                    report = write_mod(args.output, render_context_patch(plan), plan, game_version=args.game_version)
+                    _emit({'output': str(Path(args.output).resolve()), 'report': report}, None)
+            else:
+                packages = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc))) for path in args.package]
+                stack = ResourceStack(packages)
+                paths = list(args.path)
+                if args.prefix:
+                    paths.extend(path for path in stack.resources if path.startswith(args.prefix) and path.lower().endswith('.ppd'))
+                plan, changes = plan_fuel(stack, paths)
+                if args.command == 'fuel-audit':
+                    _emit(plan, args.output)
+                else:
+                    report = write_mod(args.output, changes, plan, game_version=args.game_version)
+                    _emit({'output': str(Path(args.output).resolve()), 'report': report}, None)
+        return 0
+    except (ArchiveError, PackageError, DefinitionError, OSError, ValueError, KeyError) as exc:
+        command.exit(2, f'error: {exc}\n')
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

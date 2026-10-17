@@ -17,3 +17,7 @@ Inspected: 2026-10-17. SCS's 1.61 release post concerns ATS map preparation for 
 - **Unknown:** Ease of repairing passenger-car refueling in third-party maps. Keep generator scope conditional until a reproducible before/after patch demonstrates which files are sufficient.
 
 See [Map structure and compatibility](./MAP_STRUCTURE_AND_COMPATIBILITY.md), [SCS archives and definitions](./SCS_ARCHIVES_AND_DEFINITIONS.md), the separate [Economy and courier jobs](./ECONOMY_AND_COURIER_JOBS.md), and [Local input inventory](./LOCAL_INPUT_INVENTORY.md).
+
+## Subsequent research
+
+The initialization observations above retain their original scope. See [the overnight findings/baseline](REFUELING_RESEARCH_FINDINGS.md) and [tool usage](TOOLING.md) for later local evidence and supported experiments.

@@ -14,19 +14,19 @@ The two features have equal research priority. Automation and small patch size a
 
 **Unknown:** whether the courier and refueling failures share a mechanism, whether either permits definition-only overrides, and whether fixes can be generated without editing prefabs or map sectors. See [car refueling](../reference/PASSENGER_CAR_REFUELING.md).
 
-## Initialization deliverable
+## Initialization deliverable (completed)
 
 - Agent entrypoint, project context, task tracking, templates, and decision/incident conventions.
 - Sourced references for shared SCS formats and ATS Road Trip behavior, with explicit evidence labels and version limits.
 - A light inventory of supplied archives and a bounded, linked research backlog.
 
-This milestone excludes utility code, extractor installation, patch generation, city-specific diagnosis, and in-game experiments. No language, CLI, public API, schema, or packaging strategy is selected.
+Initialization excluded utility code and experiments. The subsequently approved overnight milestone authorized archive tooling, research of both mechanisms, and an evidence-supported prototype. [ADR-0002](../architecture/decisions/ADR-0002-use-python-inspection-and-bounded-experimental-patches.md) records the resulting implementation choices; generated packages remain unverified in game.
 
 ## Eventual success criteria
 
 Once a mechanism is proven, a future increment should generate the smallest supported compatibility artifact from identified game/mod inputs, explain its dependencies and required load order, and produce reproducible validation evidence. Courier validation must cover market availability and completing a delivery; refueling validation must cover reaching a station and replenishing fuel. Both must check relevant truck behavior and shared-profile progression for regressions.
 
-These are future validation goals, not claims that an implementation is currently possible. The [design task](../tasks/backlog/TASK-0005-design-first-generator-increment.md) will select a concrete first increment after both investigations.
+These are future validation goals, not claims that an implementation is currently possible. The [design task](../tasks/done/TASK-0005-design-first-generator-increment.md) selected a concrete first increment after both investigations; runtime acceptance remains a separate gate.
 
 ## Target and non-goals
 

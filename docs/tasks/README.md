@@ -1,22 +1,25 @@
 # Task Board
 
-Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task template](../templates/TASK_TEMPLATE.md). File directory and frontmatter status must agree. IDs are unique and stable across moves; blockers are recorded inside tasks. The required metadata is `id`, `title`, `status`, `priority`, `repositories`, `depends_on`, `owner`.
+Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task template](../templates/TASK_TEMPLATE.md). Status and directory must agree; IDs are stable, dependencies use IDs, and blockers belong inside tasks.
 
 ## Active
 
-No active tasks.
+No active tasks. The research/prototype milestone is complete; gameplay validation remains in backlog.
 
 ## Backlog
 
-| Task | Priority | Depends on |
-| --- | --- | --- |
-| [TASK-0002: Establish reference data and extraction](backlog/TASK-0002-establish-reference-data-and-extraction.md) | high | — |
-| [TASK-0003: Investigate Courier Job compatibility](backlog/TASK-0003-investigate-courier-compatibility.md) | high | TASK-0002 |
-| [TASK-0004: Investigate car refueling compatibility](backlog/TASK-0004-investigate-car-refueling-compatibility.md) | high | TASK-0002 |
-| [TASK-0005: Design first generator increment](backlog/TASK-0005-design-first-generator-increment.md) | medium | TASK-0003, TASK-0004 |
-
-Courier and refueling research have equal priority. Concrete city/station examples are collected when the relevant investigation begins.
+- [TASK-0007: Validate experiments in game](backlog/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — copied-profile courier/refueling comparisons; depends on TASK-0006.
 
 ## Done
 
-- [TASK-0001: Initialize project](done/TASK-0001-initialize-project.md) — documentation, references, inventory, and verification completed on 2026-10-17.
+| Task | Outcome |
+| --- | --- |
+| [TASK-0001: Initialize project](done/TASK-0001-initialize-project.md) | Documentation, references, inventory, and workflow |
+| [TASK-0002: Establish reference data/extraction](done/TASK-0002-establish-reference-data-and-extraction.md) | Installed baseline, provenance, and verified HashFS access |
+| [TASK-0003: Investigate courier compatibility](done/TASK-0003-investigate-courier-compatibility.md) | Context mechanism, counterevidence, concrete alias candidate |
+| [TASK-0004: Investigate car refueling](done/TASK-0004-investigate-car-refueling-compatibility.md) | GAS flag evidence, placed station/service, bounded descriptor experiment |
+| [TASK-0005: Design first generator increment](done/TASK-0005-design-first-generator-increment.md) | Python inspection/experimental patch design and validation boundaries |
+
+- [TASK-0006: Build inspector and experimental generators](done/TASK-0006-build-inspector-and-experimental-generators.md) — 39 tests and real-input static checks passed; experimental packages and handoff produced.
+
+Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

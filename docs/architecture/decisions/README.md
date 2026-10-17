@@ -10,4 +10,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0001: Use a documentation and evidence workflow before generator implementation](ADR-0001-documentation-and-evidence-workflow.md).
 
-No language, product interface, schema, patch mechanism, or output packaging decision has been made.
+- [ADR-0002: Use Python inspection and bounded experimental patches](ADR-0002-use-python-inspection-and-bounded-experimental-patches.md).
+
+Runtime fix validation and general map-sector authoring remain open.

@@ -22,3 +22,7 @@ Inspected: 2026-10-17. Applies to the shared ATS/ETS2 data and mod packaging con
 3. **Unknown:** The exact precedence among a particular ATS 1.61 game build, DLCs, map packages, and compatibility packages has not been verified here. Do not assume that adding a file with a familiar name merges individual unit attributes. Compare the effective files at the intended load order.
 
 The archive inventory and inspection limits belong in [Local input inventory](./LOCAL_INPUT_INVENTORY.md). Follow [Map structure and compatibility](./MAP_STRUCTURE_AND_COMPATIBILITY.md) for map data, [Economy and courier jobs](./ECONOMY_AND_COURIER_JOBS.md) for job definitions, and [Passenger-car refueling](./PASSENGER_CAR_REFUELING.md) for station behavior.
+
+## Subsequent research
+
+The initialization observations above retain their original scope. See [the overnight findings/baseline](RESEARCH_BASELINE.md) and [tool usage](TOOLING.md) for later local evidence and supported experiments.

@@ -23,6 +23,11 @@ Both existing local directories are ignored by Git. Preserve these exclusions.
 
 Keep game/DLC data, extracted mod assets, downloaded tools, large logs/reports, and generated mods out of tracked docs. Summarize findings in references or tasks with original internal paths and exact versions when known. Do not use a documentation link to require an ignored artifact that another checkout will not have; explain how to obtain/reproduce evidence.
 
-## Future product code
+## Prototype code
 
-No source/test package, runtime, CLI, or artifact schema has been selected. Create those locations only after the [first increment design](../tasks/backlog/TASK-0005-design-first-generator-increment.md) establishes a supported approach.
+- `src/ats_road_trip/`: archive adapter, virtual packages, read-only SII analysis, courier audit, PPD experiment, deterministic mod writer, and CLI.
+- `tests/`: synthetic unit/integration tests; no copied game/mod assets.
+- `pyproject.toml`: Python 3.11+ metadata and optional installed CLI entrypoint.
+- `THIRD_PARTY_NOTICES.md`: external tool and format-research attribution.
+
+Python caches, virtual environments, and build outputs are ignored in addition to the original artifact exclusions. Runtime/public interfaces and supported experimental boundaries are described in [tool usage](TOOLING.md) and [ADR-0002](../architecture/decisions/ADR-0002-use-python-inspection-and-bounded-experimental-patches.md).

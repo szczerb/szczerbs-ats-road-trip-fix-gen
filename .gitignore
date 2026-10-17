@@ -3,4 +3,13 @@
 local_inputs
 local_outputs
 
+# Python runtime and packaging artifacts
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
 
