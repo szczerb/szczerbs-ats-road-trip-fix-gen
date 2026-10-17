@@ -18,6 +18,12 @@ Updated: 2026-10-17. Applies to this prototype's ATS 1.61 fuel packages. [ADR-00
 
 All three fuel generation commands require `--map-name`, accept `--revision` (default `0`) and optional `--icon <JPEG path>`. See [CLI examples](TOOLING.md). No stable/release mode or automatic revision increment is implemented. The program's own package version is independent of the generated mod version.
 
+## Handoff filenames
+
+User-facing fuel archives must identify the package family, map and version in the filename as well as the manifest. For the current sample use `szczerbs-road-trip-gas-stations-fix-ats-expansion-1.61-r0-experimental.scs`. Follow `szczerbs-road-trip-gas-stations-fix-<map-slug>-<version>.scs` for subsequent handoffs. The CLI accepts an explicit output path; the agent must supply this descriptive name.
+
+Keep regeneration copies and their reports in ignored `local_outputs/verification/package-rechecks/`, with descriptive filenames ending in `-recheck.scs` or `-recheck-report.json`. Do not place an ambiguously named verification archive such as `branded-fuel-recheck.scs` beside the deliverable. The current verification copy was relocated without changing its bytes; the final descriptive archive remains in `local_outputs/generated/`.
+
 Names are encoded as quoted strings; empty/nonprintable map names, edge whitespace, negative/noninteger revisions and incorrectly framed/sized icons are rejected. JPEG validation checks framing and supported frame dimensions; it is not a full image decoder. Original artwork exports are separately decoded/inspected before handoff. Metadata paths are reserved against gameplay-resource collisions. The embedded report records title, author, version, map, revision and icon SHA-256 separately from the gameplay-resource list. Regeneration is deterministic and refuses to overwrite an existing file.
 
 ## Sources and limits

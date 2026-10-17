@@ -53,6 +53,8 @@ GPT-6 Sol / medium implemented CLI wiring and focused tests, updated the tooling
 
 The both-mode runtime result is attributed to the user's historical sample-2 test in [validation results](../../reference/VALIDATION_RESULTS.md); it is not an agent gameplay run or a claim of map-wide coverage. Reload, controls, multi-point and courier checks remain TASK-0007. Metadata and artwork choices are in [ADR-0005](../../architecture/decisions/ADR-0005-standardize-fuel-package-metadata.md).
 
+Follow-up, 2026-10-17: the user identified ambiguous `branded-fuel-recheck.scs` as confusing. The correctly named handoff already existed and matched it byte-for-byte. Moved the verification copy and its reports under ignored `local_outputs/verification/package-rechecks/`, renamed them to include the package/map/version, and documented the handoff filename convention. Confirmed the final archive retained SHA-256 `235d00057939c1074bf434e11a3f8503093bd7179a269c6ff9178f7b7f1e40e3`. No gameplay bytes or generated metadata changed; no utility tests were needed for this file organization/documentation correction.
+
 # Links
 
 - [Overlapping sample](../done/TASK-0009-build-overlapping-fuel-pair.md)
