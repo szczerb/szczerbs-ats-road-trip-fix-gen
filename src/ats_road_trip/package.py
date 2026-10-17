@@ -41,6 +41,8 @@ class Package:
                  dlcs: tuple[str, ...] = ()):
         self.path = Path(path).resolve()
         self._cache: dict[str, bytes] = {}
+        self._disk_cache: dict[str, Path] = {}
+        self._disk_cache_root: Path | None = None
         self.archive = None if self.path.is_dir() else Archive(self.path, extractor=extractor)
         if self.path.is_dir():
             names = [str(p.relative_to(self.path).as_posix()) for p in self.path.rglob('*') if p.is_file()]
@@ -67,12 +69,26 @@ class Package:
             self.files[mounted] = name
 
     def read(self, name: str, *, max_bytes: int = 8 * 1024 * 1024) -> bytes:
+        if max_bytes < 0:
+            raise PackageError('Read limit must be nonnegative')
         if name in self._cache:
             data = self._cache[name]
             if len(data) > max_bytes:
                 raise PackageError(f'{name}: exceeds {max_bytes} byte read limit')
             return data
-        physical = self.files[virtual_path(name)]
+        name = virtual_path(name)
+        cached = self._disk_cache.get(name)
+        if cached is not None:
+            root = self._disk_cache_root
+            if root is None:
+                raise PackageError(f'{name}: disk cache has no recorded root')
+            self._check_disk_cache_path(root, cached, require_file=True)
+            with cached.open('rb') as stream:
+                data = stream.read(max_bytes + 1)
+            if len(data) > max_bytes:
+                raise PackageError(f'{name}: exceeds {max_bytes} byte read limit')
+            return data
+        physical = self.files[name]
         if self.archive:
             return self.archive.read(physical, max_bytes=max_bytes)
         file = self.path / physical
@@ -84,11 +100,89 @@ class Package:
             raise PackageError(f'{name}: exceeds {max_bytes} byte read limit')
         return data
 
-    def prefetch(self, names: list[str]) -> None:
-        """Batch selected HashFS definitions rather than launch once per file."""
+    @staticmethod
+    def _check_disk_cache_path(root: Path, path: Path, *, require_file: bool = False) -> None:
+        """Reject symlinks, escapes, and unexpected existing cache members."""
+        absolute_root = root.absolute()
+        current = Path(absolute_root.anchor)
+        for part in absolute_root.parts[1:]:
+            current = current / part
+            if current.is_symlink():
+                raise PackageError(f'Refusing symlink disk cache root: {current}')
+        root_resolved = root.resolve()
+        current = root
+        try:
+            relative = path.relative_to(root)
+        except ValueError as exc:
+            raise PackageError(f'Disk cache member is outside its root: {path}') from exc
+        for part in relative.parts:
+            current = current / part
+            if current.is_symlink():
+                raise PackageError(f'Refusing symlink disk cache member: {current}')
+        if not path.resolve().is_relative_to(root_resolved):
+            raise PackageError(f'Disk cache member is outside its root: {path}')
+        if require_file and not path.is_file():
+            raise PackageError(f'Disk cache member is missing or not a file: {path}')
+
+    def prefetch(self, names: list[str], *, disk_cache: str | Path | None = None,
+                 max_bytes: int = 64 * 1024 * 1024) -> None:
+        """Batch selected HashFS members in memory or into an optional disk cache.
+
+        The existing memory mode keeps its 8 MiB per-member and 64 MiB total
+        limits. In disk mode, ``max_bytes`` is a per-member extraction limit;
+        the cache has no aggregate size limit.
+        """
         if not self.archive or not self.archive.format.startswith('hashfs'):
             return
-        pending = sorted(set(names) - self._cache.keys())
+        selected = {virtual_path(name) for name in names}
+        if disk_cache is not None:
+            if max_bytes < 0:
+                raise PackageError('Disk cache member limit must be nonnegative')
+            cache_root = Path(disk_cache).absolute()
+            if self._disk_cache and self._disk_cache_root != cache_root:
+                raise PackageError('This package already has prefetched files in a different disk cache')
+            self._check_disk_cache_path(cache_root, cache_root)
+            cache_root.mkdir(parents=True, exist_ok=True)
+            self._check_disk_cache_path(cache_root, cache_root)
+            for name in selected & self._disk_cache.keys():
+                cached = self._disk_cache[name]
+                self._check_disk_cache_path(cache_root, cached, require_file=True)
+                if cached.stat().st_size > max_bytes:
+                    raise PackageError(f'{name}: exceeds {max_bytes} byte disk cache member limit')
+            pending = sorted(selected - self._cache.keys() - self._disk_cache.keys())
+            if not pending:
+                return
+            targets: dict[str, Path] = {}
+            for name in pending:
+                target = cache_root.joinpath(*PurePosixPath(self.files[name]).parts)
+                self._check_disk_cache_path(cache_root, target)
+                if target.exists():
+                    raise PackageError(f'Refusing unrecorded existing disk cache member: {target}')
+                parent = target.parent
+                parent.mkdir(parents=True, exist_ok=True)
+                self._check_disk_cache_path(cache_root, target)
+                targets[name] = target
+            batches: list[list[str]] = [[]]
+            length = 0
+            for name in pending:
+                physical = self.files[name]
+                if batches[-1] and length + len(physical) + 2 > 48000:
+                    batches.append([])
+                    length = 0
+                batches[-1].append(physical)
+                length += len(physical) + 2
+            names_by_physical = {self.files[name]: name for name in pending}
+            for batch in batches:
+                self.archive.extract(batch, cache_root, max_bytes=max_bytes)
+                for physical in batch:
+                    name = names_by_physical[physical]
+                    target = targets[name]
+                    self._check_disk_cache_path(cache_root, target, require_file=True)
+                    self._disk_cache[name] = target
+                self._disk_cache_root = cache_root
+            return
+
+        pending = sorted(selected - self._cache.keys())
         if not pending:
             return
         with TemporaryDirectory(dir=self.archive._scratch_root()) as temporary:

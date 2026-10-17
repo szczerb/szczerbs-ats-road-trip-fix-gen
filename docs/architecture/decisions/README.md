@@ -18,4 +18,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0005: Standardize fuel package metadata](ADR-0005-standardize-fuel-package-metadata.md).
 
+- [ADR-0006: Discover and clone map fuel services](ADR-0006-discover-and-clone-map-fuel-services.md).
+
 Runtime fix validation and general map-sector authoring remain open.

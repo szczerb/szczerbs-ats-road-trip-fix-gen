@@ -64,6 +64,15 @@ def parser() -> argparse.ArgumentParser:
     courier.add_argument('--map', action='append', required=True)
     courier.add_argument('--dlc', action='append', default=[])
     courier.add_argument('--output')
+    bulk = sub.add_parser('generate-map-fuel', help='Discover missing car fuel points in an entire source map')
+    bulk.add_argument('source', help='Source map .scs; known companion packages are resolved beside it')
+    bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
+    bulk.add_argument('--map-name', help='Short map name; inferred for the five supplied map families')
+    bulk.add_argument('--revision', type=int, default=1)
+    bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+    bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
+    bulk.add_argument('--icon', help='Optional map-labelled JPEG276x162')
+    bulk.add_argument('--experimental', action='store_true')
     for name in ('fuel-audit', 'generate-fuel'):
         fuel = sub.add_parser(name, help='Inspect fuel descriptors' if name == 'fuel-audit' else 'Build experimental v25 fuel candidates')
         _common_stack(fuel)
@@ -109,6 +118,17 @@ def main(argv: list[str] | None = None) -> int:
             args.prefix = prefix
         if args.command.startswith('generate') and not args.experimental:
             raise ValueError('Generation requires --experimental; no candidate is verified in game')
+        if args.command == 'generate-map-fuel':
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(message)s')
+            from .bulk_run import generate_map_fuel
+            result = generate_map_fuel(args.source, game_dir=args.game_dir, map_name=args.map_name,
+                                       revision=args.revision, run_id=args.run_id, extractor=args.extractor,
+                                       dependency=args.dependency, icon=args.icon)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'work_dir': result['workflow']['work_dir'],
+                   'coverage': result['planner'].get('coverage')}, None)
+            return 0
         if args.command == 'inspect':
             with Archive(args.archive, extractor=args.extractor) as archive:
                 entries = archive.entries()

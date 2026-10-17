@@ -85,6 +85,85 @@ class ArchiveTests(unittest.TestCase):
                 with self.assertRaisesRegex(ArchiveError, "requires a Linux"):
                     archive.entries()
 
+    def test_hashfs_v1_listing_uses_deep_scan_and_parses_paths(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "promods.scs"
+            source.write_bytes(b"SCS#\x01\x00\x00\x00")
+            extractor = root / "extractor"
+            extractor.write_text("placeholder")
+            extractor.chmod(0o755)
+            output = SimpleNamespace(
+                returncode=0,
+                stdout=("Opened promods.scs: HashFS v1 archive; 3 entries\n"
+                        "Top level directory is missing; use --deep to scan contents\n"
+                        "/manifest.sii\n/prefab/gas/station.ppd\n"),
+                stderr="",
+            )
+            with Archive(source, extractor=extractor) as archive, \
+                 patch("ats_road_trip.archive.subprocess.run", return_value=output) as run:
+                entries = archive.entries()
+
+            self.assertEqual([entry.path for entry in entries], ["manifest.sii", "prefab/gas/station.ppd"])
+            self.assertEqual([entry.is_dir for entry in entries], [False, False])
+            command = run.call_args.args[0]
+            self.assertIn("--deep", command)
+            self.assertIn("--list", command)
+
+    def test_hashfs_v2_listing_does_not_use_deep_scan(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "reforma.scs"
+            source.write_bytes(b"SCS#\x02\x00\x00\x00")
+            extractor = root / "extractor"
+            extractor.write_text("placeholder")
+            extractor.chmod(0o755)
+            output = SimpleNamespace(returncode=0, stdout="/def/map_data.sii\n", stderr="")
+            with Archive(source, extractor=extractor) as archive, \
+                 patch("ats_road_trip.archive.subprocess.run", return_value=output) as run:
+                entries = archive.entries()
+
+            self.assertEqual([entry.path for entry in entries], ["def/map_data.sii"])
+            self.assertNotIn("--deep", run.call_args.args[0])
+
+    def test_hashfs_v1_empty_deep_listing_is_an_error(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "promods.scs"
+            source.write_bytes(b"SCS#\x01\x00\x00\x00")
+            extractor = root / "extractor"
+            extractor.write_text("placeholder")
+            extractor.chmod(0o755)
+            output = SimpleNamespace(returncode=0, stdout="no paths found\n", stderr="")
+            with Archive(source, extractor=extractor) as archive, \
+                 patch("ats_road_trip.archive.subprocess.run", return_value=output):
+                with self.assertRaisesRegex(ArchiveError, "deep listing returned no HashFS v1 members"):
+                    archive.entries()
+
+    def test_hashfs_v1_selective_extraction_uses_deep_scan(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "promods.scs"
+            source.write_bytes(b"SCS#\x01\x00\x00\x00")
+            with Archive(source) as archive, patch.object(archive, "_require_extractor"), \
+                 patch("ats_road_trip.archive.subprocess.run",
+                       return_value=SimpleNamespace(returncode=0)) as run:
+                archive._extract_hashfs(["prefab/gas/station.ppd"], root / "stage")
+
+            command = run.call_args.args[0]
+            self.assertIn("--deep", command)
+            self.assertIn("--partial=/prefab/gas/station.ppd", command)
+
+    def test_archive_staging_uses_configured_work_root(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary) / "run-work"
+            try:
+                Archive.configure_work_root(root)
+                self.assertEqual(Archive._scratch_root(), root / "archive-staging")
+                self.assertTrue((root / "archive-staging").is_dir())
+            finally:
+                Archive.configure_work_root(None)
+
     def test_extraction_preserves_existing_files_and_source_archive(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

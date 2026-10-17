@@ -39,5 +39,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [User gameplay results and nearest-station selection review](reference/VALIDATION_RESULTS.md).
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
+- [Five verified r1 fuel packages, fingerprints and next test](reference/FUEL_FIX_BATCH_1_61_R1.md).
+- [Map-wide fuel generator, one-command usage and coverage boundaries](reference/MAP_WIDE_FUEL_GENERATOR.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

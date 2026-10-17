@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car and truck refueling at the same Helena-area pump with overlapping sample 2. Broader station, reload and courier validation remain open. Courier and refueling investigations have equal priority.
+**Current result:** a single source-map command generates experimental passenger-car fuel fixes for ATS Expansion, Reforma, ProMods Canada, Western Canada and Alaska. The first complete batch adds **2,281** car interaction points while preserving all original truck records and nodes. All **111 tests** and independent checks of five packages pass. Only the original Helena single-pump sample has user-reported gameplay validation; full-map testing remains open. See [batch r1](docs/reference/FUEL_FIX_BATCH_1_61_R1.md).
 
 ## Findings and first experiments
 
@@ -12,18 +12,19 @@ A research utility for American Truck Simulator map expansions and reworks: insp
 
 [Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class. The [first user test](docs/reference/VALIDATION_RESULTS.md) reports successful refueling at the eastern target and a substantial driving detour; the closer city station remains unchanged.
 
-The new [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. The user reports successful refueling in both modes for this fixture. Disable sample 1 when testing it. Fuel packages now use [consistent branding, game-based revision versions and original icons](docs/reference/MOD_METADATA.md); this title does not imply map-wide coverage.
+The historical [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. The user reports successful refueling in both modes for this fixture. Disable sample 1 when testing it. Fuel packages now use [consistent branding, game-based revision versions and original icons](docs/reference/MOD_METADATA.md); this title does not imply map-wide coverage.
 
 ## Run the tooling
 
 Requires Python 3.11+; ZIP inspection has no third-party Python dependencies. HashFS uses a separately installed external extractor.
 
 ```bash
+PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/ATS_Expansion_v23.0_1.61.scs --experimental
 PYTHONPATH=src python3 -m ats_road_trip --help
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extraction, explicit package order and mounts, context audits, dependencies, and experimental generation. Outputs contain a manifest and provenance/change report; they are not automatically installed.
+The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extraction, explicit package order and mounts, context audits, dependencies, and experimental generation. The [map-wide guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md) documents automatic companions, timestamped work/output directories and required source-relative load priority. Outputs contain a manifest, map-labelled icon and provenance/change report; they are not automatically installed.
 
 ## Project navigation
 

@@ -4,6 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 ## Backlog
@@ -27,5 +28,7 @@ No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pendi
 - [TASK-0009: Build overlapping fuel pair](done/TASK-0009-build-overlapping-fuel-pair.md) — source-pinned same-position truck/car candidate, original truck records preserved, 48 tests passed; runtime checks remain TASK-0007.
 
 - [TASK-0010: Brand gas station fix packages](done/TASK-0010-brand-gas-station-fix-packages.md) — requested metadata, selected icon C, identical sample-2 gameplay payload and 51 passing tests.
+
+- [TASK-0011: Generate map-wide fuel fixes](done/TASK-0011-generate-map-wide-fuel-fixes.md) — five complete r1 packages, 2,281 new car points, original truck records retained, 111 passing tests and independent full-output checks.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

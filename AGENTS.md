@@ -2,7 +2,7 @@
 
 ## Goal and current boundary
 
-Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization is complete; the authorized next milestone is autonomous research, archive inspection tooling, and an evidence-supported generator proof of concept. A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
+Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization and the first research/prototype milestone are complete; the user subsequently authorized map-wide fuel generation. Five experimental r1 packages now have complete static coverage; read the [batch result](docs/reference/FUEL_FIX_BATCH_1_61_R1.md) and [map-wide command guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md). A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
 
 Workspace-authored documentation must be in English.
 
@@ -34,9 +34,10 @@ Whenever in Plan Mode, include a table breaking down tasks and the models/effort
 
 ## Artifact handling
 
-- Treat `local_inputs/` archives as immutable. Preserve existing Git exclusions for `local_inputs/` and `local_outputs/`.
-- Keep extracted assets, game/DLC files, large logs, reports, downloaded tools, and generated mods beneath ignored `local_outputs/` subdirectories. Keep small authored summaries in documentation. See [workspace structure](docs/reference/WORKSPACE_STRUCTURE.md).
-- Small original project-authored icon exports and prompts may be tracked under `assets/mod-icons/`; large generated originals stay under ignored `local_outputs/artwork/`.
+- Treat `local_inputs/` as read-only. Do not extract into it, rename or edit supplied archives, or automatically remove sidecars or other untrusted adjacent metadata. Preserve sidecars unless the user explicitly requests a change. Preserve existing Git exclusions for `local_inputs/` and `local_outputs/`.
+- Put all new scratch, extracted samples, reports, temporary archive staging, and expressly requested input-sidecar moves under `local_outputs/work/<YYYY-MM-DD_HH-MM-SS>/`, with the timestamp in Europe/Warsaw local time. Put generated mods under `local_outputs/generated/<YYYY-MM-DD_HH-MM-SS>/`, with human-readable filenames that identify the map and ATS/map version. Keep each run's work together; do not move or delete older outputs automatically.
+- Keep newly created extracted assets, game/DLC files, large logs, reports, downloaded tools, and generated mods beneath ignored timestamped `local_outputs/` run directories. Existing historical artifacts, including tools outside the new layout, stay at their current paths; do not move or remove them automatically. Keep small authored summaries in documentation. See [workspace structure](docs/reference/WORKSPACE_STRUCTURE.md).
+- Small original project-authored icon exports and prompts may be tracked under `assets/mod-icons/`; large generated originals stay under ignored `local_outputs/work/<YYYY-MM-DD_HH-MM-SS>/artwork/`.
 - Do not commit supplied mods or copies of game assets. Do not extract whole archives for a metadata-only question. Record limitations when a format/tool is unavailable.
 - No automatic installation into a live mod directory, profile modification, economy reset, or in-game validation is part of initialization. Future experiments must state their setup and preserve the user's profile.
 

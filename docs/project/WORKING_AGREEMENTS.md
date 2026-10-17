@@ -25,7 +25,7 @@ Delegate independent bounded work using explicit file ownership in shared checko
 
 ## Artifacts and experiments
 
-Treat input archives as immutable. Keep local artifacts under the existing ignored input/output directories and preserve their exclusions. Use selective metadata/text reads before considering full extraction. Keep large logs, game/mod assets, downloaded tools, and generated packages out of tracked docs. See [workspace structure](../reference/WORKSPACE_STRUCTURE.md).
+Treat `local_inputs/` as read-only. Do not extract to it, rename or edit supplied archives, or automatically remove sidecars or other untrusted adjacent metadata. Preserve sidecars unless the user explicitly requests a change. Keep the existing ignored-directory rules intact. Put all new scratch, extracted samples, reports, temporary archive staging, and expressly requested input-sidecar moves under `local_outputs/work/<YYYY-MM-DD_HH-MM-SS>/`, using Europe/Warsaw local time. Put generated mods under `local_outputs/generated/<YYYY-MM-DD_HH-MM-SS>/` with human-readable names that identify the map and ATS/map version. Keep each run's artifacts in its timestamped directory; do not move or delete older outputs automatically. Use selective metadata/text reads before considering broader extraction. Keep large logs, game/mod assets, downloaded tools, and generated packages out of tracked docs. See [workspace structure](../reference/WORKSPACE_STRUCTURE.md).
 
 Track small original project-authored icon exports and prompts under `assets/mod-icons/`; keep large generated originals ignored. Fuel package naming, author and game-based revision requirements follow the [metadata contract](../reference/MOD_METADATA.md).
 

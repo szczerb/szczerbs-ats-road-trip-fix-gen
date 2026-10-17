@@ -7,6 +7,8 @@ binary belongs under ignored ``local_outputs/tools`` and is never vendored.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from typing import Iterable
@@ -75,6 +77,8 @@ class Archive:
     checked after the external extractor writes into a temporary staging area.
     """
 
+    _work_root: Path | None = None
+
     def __init__(self, path: str | os.PathLike[str], extractor: str | os.PathLike[str] | None = None):
         self.path = Path(path)
         self.format = detect_format(self.path)
@@ -93,6 +97,11 @@ class Archive:
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
+
+    @classmethod
+    def configure_work_root(cls, root: str | os.PathLike[str] | None) -> None:
+        """Set the ignored per-run work directory used for extraction staging."""
+        cls._work_root = Path(root) if root is not None else None
 
     def close(self) -> None:
         """Release an open ZIP handle (also safe to call repeatedly)."""
@@ -126,14 +135,23 @@ class Archive:
                 entries.append(ArchiveEntry(name, None if info.is_dir() else info.file_size, info.is_dir()))
         else:
             self._require_extractor()
+            command = [str(self.extractor), str(self.path)]
+            # HashFS v1 archives often have no top-level directory table.
+            # Extractor's ordinary --list then prints only a warning; --deep
+            # scans their contents for paths before listing them.
+            if self.format == "hashfs_v1":
+                command.append("--deep")
+            command.append("--list")
             result = subprocess.run(
-                [str(self.extractor), str(self.path), "--list"],
+                command,
                 capture_output=True, text=True, check=False,
             )
             if result.returncode:
                 raise ArchiveError(f"Extractor list failed: {result.stderr.strip() or result.stdout.strip()}")
             # The command prints paths (files and directories), rooted at '/'.
             raw = [line.strip() for line in result.stdout.splitlines() if line.startswith("/") and line.strip() != "/"]
+            if self.format == "hashfs_v1" and not raw:
+                raise ArchiveError("Extractor deep listing returned no HashFS v1 members")
             paths = [_safe_member(line[1:]) for line in raw]
             directories: set[str] = set()
             for name in paths:
@@ -235,9 +253,12 @@ class Archive:
                     result.append(target)
         return result
 
-    @staticmethod
-    def _scratch_root() -> Path:
-        root = Path(__file__).resolve().parents[2] / "local_outputs/extracted/.staging"
+    @classmethod
+    def _scratch_root(cls) -> Path:
+        if cls._work_root is None:
+            timestamp = datetime.now(ZoneInfo('Europe/Warsaw')).strftime("%Y-%m-%d_%H-%M-%S")
+            cls._work_root = Path(__file__).resolve().parents[2] / "local_outputs/work" / timestamp
+        root = cls._work_root / "archive-staging"
         root.mkdir(parents=True, exist_ok=True)
         return root
 
@@ -257,9 +278,13 @@ class Archive:
             batches[-1].append(name)
             length += len(name) + 2
         for batch in batches:
+            command = [str(self.extractor), str(self.path)]
+            if self.format == "hashfs_v1":
+                command.append("--deep")
+            command.extend(["--partial=" + ",".join("/" + name for name in batch),
+                            "--dest=" + str(stage), "--quiet"])
             result = subprocess.run(
-                [str(self.extractor), str(self.path), "--partial=" + ",".join("/" + name for name in batch),
-                 "--dest=" + str(stage), "--quiet"],
+                command,
                 capture_output=True, text=True, check=False,
             )
             if result.returncode:

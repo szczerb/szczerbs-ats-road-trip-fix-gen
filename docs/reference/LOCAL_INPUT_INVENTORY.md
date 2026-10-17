@@ -2,7 +2,37 @@
 
 Observation date: 2026-10-17. Evidence label: **Observed locally** for the metadata, tables, and selected paths below; uninspected contents are **Unknown**.
 
-This inventory records metadata visible from the local protected input files on the observation date. It does not establish game compatibility, explain a defect, or prove that a named definition is absent. Archive filenames and the presence or absence of specific names are not evidence of a root cause. Inputs under `local_inputs/` are ignored by Git; the inventory records observations without copying archive assets into the repository.
+This reference preserves the original five-archive inventory later in the file and adds the current nine-archive inventory below. The current observations supersede the earlier notes that ProMods was unavailable and Reforma metadata was uninspected. These observations do not establish game compatibility, explain a defect, or prove that a named definition is absent. Archive filenames and the presence or absence of specific names are not evidence of a root cause.
+
+`local_inputs/` is ignored by Git and must remain read-only. Current scratch and reports are in `local_outputs/work/2026-10-17_22-11-10/`. At the user's request, two standalone `:Zone.Identifier` sidecars were moved to `local_outputs/work/2026-10-17_22-11-10/input-sidecars/`; the corresponding `.scs` files were left unchanged. Preserve future sidecars and other untrusted metadata with their inputs unless the user explicitly requests a change. No automated metadata cleanup is authorized.
+
+## Current archive inventory (nine files)
+
+**Observed locally, 2026-10-17:** the following nine archives are present in `local_inputs/`. Byte counts are exact filesystem sizes. The HashFS v1 listing used the installed Extractor with `--deep`; its initial no-deep listing had omitted member paths and is superseded by this observation.
+
+| Map/resource role | Exact filename | Bytes | Archive format | Manifest/version and compatibility |
+|---|---|---:|---|---|
+| ATS Expansion map | `ATS_Expansion_v23.0_1.61.scs` | 1,598,589,452 | ZIP | `ATS Expansion v23.0`, package `23.0`, ATS `1.61.*` |
+| Alaska Expansion map | `Alaska_Expansion_v1.2.3.scs` | 676,950 | ZIP | `Alaska Expansion v1.2.3`, package `1.2.3`; ATS 1.61.x is stated in a comment, while the compatible-version line is commented out |
+| Reforma map | `Reforma_3_0_1_161.scs` | 371,796,014 | HashFS v2 | `Reforma 3.0.1.161`, package `3.0.1.161`, ATS `1.61.*` |
+| Reforma resources | `Reforma_MegaResources_v3_0_1_161.scs` | 660,653,538 | HashFS v2 | `Mega Resources 3.0.1.161`, package `3.0.1.161`, ATS `1.61.*` |
+| Western Canada map | `Western_Canada_Expansion_v1.7.3.scs` | 45,689,120 | ZIP | `Western Canada Expansion v1.7.3`, package `1.7.3`; ATS 1.61.x is stated in a comment, while the compatible-version line is commented out |
+| ProMods Canada assets | `promods-ats-assets-v164.scs` | 582,353,899 | HashFS v1 | `ProMods Canada Assets Package`, package `1.6.4`, ATS `1.61.*` |
+| ProMods Canada definitions | `promods-ats-def-v164.scs` | 112,194 | ZIP | `ProMods Canada Definition Package`, package `1.6.4`, ATS `1.61.*` |
+| ProMods Canada map | `promods-ats-map-v164.scs` | 108,310,458 | ZIP | `ProMods Canada Map Package`, package `1.6.4`, ATS `1.61.*` |
+| ProMods Canada models | `promods-ats-models-v164.scs` | 356,708,916 | HashFS v1 | `ProMods Canada Models Package`, package `1.6.4`, ATS `1.61.*` |
+
+The ProMods manifests identify ProMods Team as author and each declares `dlc_or` and `dlc_wa`. Reforma map declares `dlc_ar`, `dlc_arizona`, `dlc_co`, `dlc_ia`, `dlc_id`, `dlc_ks`, `dlc_mo`, `dlc_mt`, `dlc_ne`, `dlc_nevada`, `dlc_nm`, `dlc_ok`, `dlc_or`, `dlc_tx`, `dlc_ut`, `dlc_wa`, and `dlc_wy`. Reforma Mega Resources declares no DLC dependencies. The original three ZIP manifest dependency observations are retained in the historical section below. These strings are manifest declarations, not proof that DLC is owned or enabled.
+
+The five map archives list 270 ATS Expansion, 164 Alaska, 266 Reforma, 476 Western Canada, and 44 ProMods sector coordinate stems. One `.base` sample from each map archive had header format `907` / `euro2` / `3`; this is a selected header check, not an archive-wide validation. ATS Expansion and Mega Resources contain 36 and 350 PPD files respectively; ProMods assets and models contain 109 and 1. Alaska, Western Canada, Reforma map, ProMods map, and ProMods definitions contain no PPD files in those archives. PPD presence and GAS locator counts do not establish placed or usable stations.
+
+Selected descriptor observations: 9 of 324 Reforma Mega Resources `prefab/` PPDs contain 17 GAS records, all v25 with flags 0; 5 of 7 ProMods `prefab/gas/` PPDs contain 12 GAS records, all v25 with flags 0; and three ATS Expansion PPDs contain GAS records, all v23. These are descriptor capabilities, not counts of map placements or a compatibility diagnosis.
+
+The historical active-mod listing contains the Reforma OtherMaps compatibility patch v40.161 and Western Canada–ProMods connections v1.7.3 in the Documents ATS mod folder, outside `local_inputs/`. It also records ProMods Models, Assets, Map, Definitions in that order. This is historical package-list sequence only; the current Mod Manager priority was not verified. Use an explicitly confirmed low-to-high resource order for generation.
+
+## Original five-archive inventory (historical, superseded)
+
+The following archive table, dependency summary, structure notes, and ZIP-only reproduction method preserve the first five-archive observation. Current archive names, metadata, and HashFS v1 findings are in the current inventory above. In particular, the old “Reforma contents unknown” and “HashFS extractor unavailable” statements no longer describe the current workspace.
 
 ## Archive overview
 

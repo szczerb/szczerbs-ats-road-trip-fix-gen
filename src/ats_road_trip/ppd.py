@@ -95,3 +95,33 @@ def add_petrol_spawns(data: bytes) -> tuple[bytes, dict]:
         'map_spawn_rebuild': 'Unknown whether required; PPD-only behavior has not been tested in game',
         'placement': 'New flag-1 locators share existing flag-0 transforms; reachability and interaction untested',
     }
+
+
+def upgrade_fuel_descriptor(data: bytes) -> tuple[bytes, dict]:
+    """Upgrade legacy spawn flags only when all other sections are compatible.
+
+    TruckLib.Models version dispatch: v23 lacks the spawn flags word, v24
+    already has it; v25 changes semaphore records too. Refuse nonempty legacy
+    semaphores, preserving every other opaque section byte-for-byte.
+    """
+    info = inspect_ppd(data)
+    version = info['version']
+    if version == 25:
+        return data, {'from_version': 25, 'to_version': 25, 'upgraded': False}
+    header = list(struct.unpack_from('<24I', data))
+    if header[4]:
+        raise PpdError('Legacy PPD semaphore conversion is unsupported')
+    start, end = header[16:18]
+    if version == 23:
+        records = b''.join(data[start + 32*i:start + 32*(i+1)] + b'\0'*4
+                           for i in range(header[5]))
+        extra = 4 * header[5]
+        for i in range(17, 24):
+            header[i] += extra
+    else:
+        records = data[start:end]
+    header[0] = 25
+    result = struct.pack('<24I', *header) + data[96:start] + records + data[end:]
+    inspect_ppd(result)
+    return result, {'from_version': version, 'to_version': 25, 'upgraded': True,
+                    'legacy_semaphores': 0, 'opaque_nonspawn_sections_preserved': True}

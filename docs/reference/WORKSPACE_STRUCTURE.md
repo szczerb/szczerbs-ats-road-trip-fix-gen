@@ -17,12 +17,14 @@
 
 ## Local artifacts
 
-Both existing local directories are ignored by Git. Preserve these exclusions.
+Both local directories are ignored by Git. Preserve those exclusions.
 
-- `local_inputs/`: original supplied map archives; treat as immutable. Add future original reference inputs here with provenance recorded in a task.
-- `local_outputs/`: disposable derived/reference artifacts and future outputs. Use named subdirectories such as `extracted/`, `game-reference/`, `tools/`, `reports/`, and `generated/` when needed; initialization does not create or populate them.
+- `local_inputs/`: supplied original map archives and adjacent metadata. Treat this directory as read-only. Do not extract into it, rename files, remove sidecars, or perform automatic metadata cleanup. Preserve untrusted sidecars with their inputs unless the user explicitly requests a change. On 2026-10-17 the user requested two `:Zone.Identifier` sidecars be moved to the current run's `input-sidecars/`; the `.scs` archives were unchanged.
+- `local_outputs/work/<YYYY-MM-DD_HH-MM-SS>/`: per-run scratch, extracted samples, reports, temporary archive staging, and input-sidecar storage when expressly requested. Build the timestamp in Europe/Warsaw local time. Keep each run's work together and retain it unless cleanup is explicitly requested.
+- `local_outputs/generated/<YYYY-MM-DD_HH-MM-SS>/`: generated mod packages from that run. Use human-readable filenames that identify the map and ATS/map version, such as `ats-expansion-ats-1.61-map-23.0-experimental.scs`.
+- Other existing `local_outputs/` directories such as `extracted/`, `reports/`, `tools/`, and `generated/` may contain historical artifacts. Do not move or delete them automatically; use the current timestamped run directories for new work.
 
-Keep game/DLC data, extracted mod assets, downloaded tools, large logs/reports, and generated mods out of tracked docs. Summarize findings in references or tasks with original internal paths and exact versions when known. Do not use a documentation link to require an ignored artifact that another checkout will not have; explain how to obtain/reproduce evidence.
+Keep game/DLC data, extracted mod assets, downloaded tools, large logs/reports, scratch, and generated mods out of tracked docs. Summarize findings in references or tasks with original internal paths and exact versions when known. Do not use a documentation link to require an ignored artifact that another checkout will not have; explain how to obtain or reproduce evidence.
 
 ## Prototype code
 

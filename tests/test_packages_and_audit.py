@@ -1,9 +1,44 @@
 from pathlib import Path
+import hashlib
 import tempfile
 import unittest
+from unittest.mock import patch
 
+from ats_road_trip.archive import ArchiveEntry, ArchiveError
 from ats_road_trip.package import Package, PackageError, ResourceStack
 from ats_road_trip.courier_audit import audit_courier
+
+
+class FakeHashFsArchive:
+    format = 'hashfs_v2'
+
+    def __init__(self, members):
+        self.members = dict(members)
+        self.extract_calls = []
+
+    def entries(self):
+        return [ArchiveEntry(path, None, False) for path in self.members]
+
+    def extract(self, names, dest, *, max_bytes):
+        names = list(names)
+        self.extract_calls.append((names, max_bytes))
+        for name in names:
+            data = self.members[name]
+            size = data if isinstance(data, int) else len(data)
+            if size > max_bytes:
+                raise ArchiveError(f'{name}: exceeds {max_bytes} byte read limit')
+            target = Path(dest) / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():
+                raise FileExistsError(target)
+            if isinstance(data, int):
+                with target.open('wb') as stream:
+                    stream.truncate(data)
+            else:
+                target.write_bytes(data)
+
+    def close(self):
+        pass
 
 
 class PackagesAndAuditTest(unittest.TestCase):
@@ -44,6 +79,105 @@ class PackagesAndAuditTest(unittest.TestCase):
         with Package(self.root / 'a') as a:
             with self.assertRaises(PackageError):
                 a.read('def/secret.sii')
+
+    def test_disk_prefetch_uses_physical_paths_and_reuses_recorded_files(self):
+        source = self.root / 'promods.scs'
+        source.write_bytes(b'SCS#\x02\x00\x00\x00')
+        original_hash = hashlib.sha256(source.read_bytes()).digest()
+        fake = FakeHashFsArchive({
+            'base/def/company/a.sii': b'alpha',
+            'base/def/company/b.sii': b'beta',
+        })
+        cache = self.root / 'run-work/package-cache/mod-hash'
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                package.prefetch(['def/company/a.sii'], disk_cache=cache, max_bytes=64)
+                self.assertEqual(package.read('def/company/a.sii', max_bytes=64), b'alpha')
+                package.prefetch(['def/company/a.sii'], disk_cache=cache, max_bytes=64)
+                self.assertEqual(len(fake.extract_calls), 1)
+                self.assertEqual(fake.extract_calls[0][0], ['base/def/company/a.sii'])
+                self.assertEqual(fake.extract_calls[0][1], 64)
+        self.assertEqual(hashlib.sha256(source.read_bytes()).digest(), original_hash)
+
+    def test_disk_prefetch_batches_and_has_per_member_not_total_limit(self):
+        source = self.root / 'many.scs'
+        source.write_bytes(b'SCS#\x02\x00\x00\x00')
+        members = {f'def/resource/file_{i:04d}_' + ('x' * 24) + '.sii': b'abcde'
+                   for i in range(2100)}
+        fake = FakeHashFsArchive(members)
+        cache = self.root / 'cache'
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                package.prefetch(list(members), disk_cache=cache, max_bytes=5)
+                self.assertGreater(len(fake.extract_calls), 1)
+                self.assertTrue(all(limit == 5 for _, limit in fake.extract_calls))
+                self.assertEqual(sum(len(names) for names, _ in fake.extract_calls), len(members))
+                self.assertEqual(package.read(next(iter(members)), max_bytes=5), b'abcde')
+
+        large_members = {
+            'def/large-a.bin': 33 * 1024 * 1024,
+            'def/large-b.bin': 33 * 1024 * 1024,
+        }
+        fake_large = FakeHashFsArchive(large_members)
+        large_cache = self.root / 'large-cache'
+        with patch('ats_road_trip.package.Archive', return_value=fake_large):
+            with Package(source) as package:
+                package.prefetch(list(large_members), disk_cache=large_cache,
+                                 max_bytes=34 * 1024 * 1024)
+        self.assertEqual(sum((large_cache / name).stat().st_size for name in large_members),
+                         66 * 1024 * 1024)
+
+    def test_disk_prefetch_enforces_per_member_extraction_limit(self):
+        source = self.root / 'too-large.scs'
+        source.write_bytes(b'SCS#\x02\x00\x00\x00')
+        fake = FakeHashFsArchive({'base/def/a.sii': b'alpha'})
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                with self.assertRaisesRegex(ArchiveError, 'exceeds 4 byte read limit'):
+                    package.prefetch(['def/a.sii'], disk_cache=self.root / 'small-cache', max_bytes=4)
+
+    def test_disk_prefetch_rejects_foreign_files_and_symlink_members(self):
+        source = self.root / 'mod.scs'
+        source.write_bytes(b'SCS#\x02\x00\x00\x00')
+        fake = FakeHashFsArchive({'base/def/a.sii': b'alpha'})
+        cache = self.root / 'cache'
+        foreign = cache / 'base/def/a.sii'
+        foreign.parent.mkdir(parents=True)
+        foreign.write_bytes(b'foreign')
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                with self.assertRaisesRegex(PackageError, 'unrecorded existing'):
+                    package.prefetch(['def/a.sii'], disk_cache=cache)
+        self.assertEqual(fake.extract_calls, [])
+
+        outside = self.root / 'outside'
+        outside.mkdir()
+        link_cache = self.root / 'link-cache'
+        link_cache.mkdir()
+        (link_cache / 'base').symlink_to(outside, target_is_directory=True)
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                with self.assertRaisesRegex(PackageError, 'symlink disk cache member'):
+                    package.prefetch(['def/a.sii'], disk_cache=link_cache)
+        self.assertEqual(fake.extract_calls, [])
+
+    def test_disk_read_enforces_limit_and_refuses_replaced_symlink(self):
+        source = self.root / 'mod.scs'
+        source.write_bytes(b'SCS#\x02\x00\x00\x00')
+        fake = FakeHashFsArchive({'base/def/a.sii': b'alpha'})
+        cache = self.root / 'cache'
+        outside = self.root / 'outside.sii'
+        outside.write_bytes(b'other')
+        with patch('ats_road_trip.package.Archive', return_value=fake):
+            with Package(source) as package:
+                package.prefetch(['def/a.sii'], disk_cache=cache, max_bytes=5)
+                with self.assertRaisesRegex(PackageError, 'exceeds 4 byte read limit'):
+                    package.read('def/a.sii', max_bytes=4)
+                cached = cache / 'base/def/a.sii'
+                cached.unlink()
+                cached.symlink_to(outside)
+                with self.assertRaisesRegex(PackageError, 'symlink disk cache member'):
+                    package.read('def/a.sii', max_bytes=10)
 
     def test_context_counts_are_not_availability_claims(self):
         self.put('baseline', 'def/data_context.sii', '''SiiNunit {
