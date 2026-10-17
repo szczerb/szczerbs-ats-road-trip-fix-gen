@@ -19,7 +19,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 | Cities, companies, prefabs, sectors, mounts, overrides | [Map structure and compatibility](reference/MAP_STRUCTURE_AND_COMPATIBILITY.md) |
 | Traditional freight versus Road Trip courier markets | [Economy and Courier Jobs](reference/ECONOMY_AND_COURIER_JOBS.md) |
 | Station access, triggers, and vehicle/fuel eligibility | [Passenger-car refueling](reference/PASSENGER_CAR_REFUELING.md) |
-| Five supplied archives and inspection limitations | [Local input inventory](reference/LOCAL_INPUT_INVENTORY.md) |
+| Eleven supplied archives, original snapshots and inspection limitations | [Local input inventory](reference/LOCAL_INPUT_INVENTORY.md) |
 | Documentation and ignored artifact locations | [Workspace structure](reference/WORKSPACE_STRUCTURE.md) |
 
 ## Templates
@@ -41,5 +41,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
 - [Five verified r1 fuel packages, fingerprints and next test](reference/FUEL_FIX_BATCH_1_61_R1.md).
 - [Map-wide fuel generator, one-command usage and coverage boundaries](reference/MAP_WIDE_FUEL_GENERATOR.md).
+- [Connector findings, screenshot-confirmed priority and fuel fixes](reference/CONNECTOR_FUEL_FIXES.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

@@ -2,6 +2,8 @@
 
 Prepared: 2026-10-17. Collection timestamp: `2026-10-17_22-46-14` (Europe/Warsaw). **Observed locally:** five experimental packages were produced using one source-map CLI invocation per map, without per-station recipes or language-model patch generation. All coverage reports are complete with zero blockers. **Unknown:** gameplay across all these points; the earlier single Helena pair is the only user-reported dual-vehicle refueling test.
 
+Subsequent update, 2026-10-17: [connector inspection and the additional Western Canada–ProMods fuel fix](CONNECTOR_FUEL_FIXES.md) cover the two newly supplied patches and screenshot-confirmed priority. This page retains the original five-package result; its counts are not unique effective coverage for the combined profile.
+
 The verified collection is in ignored `local_outputs/generated/2026-10-17_22-46-14/`, with `BATCH_MANIFEST.json` and `SHA256SUMS.txt`. Individual generation audits retain their own timestamped work directories; the collection copies preserve their original package bytes. Collection verification/rechecks are in `local_outputs/work/2026-10-17_22-46-14/release-verification/`.
 
 | Map | Supplied source version | New car fuel points | Includes garage points | Changed fuel prefabs | Changed sector files | Bytes |

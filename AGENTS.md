@@ -2,7 +2,7 @@
 
 ## Goal and current boundary
 
-Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization and the first research/prototype milestone are complete; the user subsequently authorized map-wide fuel generation. Five experimental r1 packages now have complete static coverage; read the [batch result](docs/reference/FUEL_FIX_BATCH_1_61_R1.md) and [map-wide command guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md). A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
+Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs and passenger-car refueling in map expansions and reworks. Both investigations have equal priority. Initialization and the first research/prototype milestone are complete; the user subsequently authorized map-wide fuel generation. Five experimental r1 map packages and a separate connector fix now have complete static target coverage; read the [batch result](docs/reference/FUEL_FIX_BATCH_1_61_R1.md), [connector findings](docs/reference/CONNECTOR_FUEL_FIXES.md), and [map-wide command guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md). A tested inspection/generation prototype now exists; the user reports successful car and truck refueling with Helena-area sample 2, while broader validation remains open. Read current state for its exact scope. ATS is the product target; ETS2 documentation supplies shared engine context only where applicable.
 
 Workspace-authored documentation must be in English.
 
@@ -16,6 +16,8 @@ Workspace-authored documentation must be in English.
 See also [installed baseline](docs/reference/RESEARCH_BASELINE.md), [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md), [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md), [tool usage](docs/reference/TOOLING.md), [validation handoff](docs/reference/VALIDATION_HANDOFF.md), [starter-area sample](docs/reference/STARTER_AREA_SAMPLE.md), [gameplay results](docs/reference/VALIDATION_RESULTS.md), and [same-position sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md).
 
 Fuel package name, author, revision and icon requirements are in the [metadata contract](docs/reference/MOD_METADATA.md). Use an explicit short map name and retain the experimental suffix. See [original icon proposals](assets/mod-icons/README.md).
+
+For combined-map fuel work, read [connector findings and confirmed source priority](docs/reference/CONNECTOR_FUEL_FIXES.md). Preserve explicit dependency order. Each fuel fix belongs directly above its own source; source-relative installation and the effective data needed during generation are separate checks.
 
 ## Task and evidence rules
 

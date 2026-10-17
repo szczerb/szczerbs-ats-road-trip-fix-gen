@@ -75,12 +75,23 @@ def _profile(source: Path) -> tuple[str | None, tuple[tuple[str, ...], ...]]:
         return 'ATS Expansion', ()
     if name.startswith('alaska_expansion'):
         return 'Alaska', ()
-    if name.startswith('reforma_') and 'megaresources' not in name:
+    if name.startswith('reforma_othermaps_patch_'):
+        return 'Reforma OtherMaps Patch', (('Reforma_MegaResources*.scs',),
+                                          ('Reforma_[0-9]*.scs',))
+    if re.match(r'reforma_(?:v)?\d', name):
         return 'Reforma', (('Reforma_MegaResources*.scs',),)
     if name.startswith('promods-ats-map-'):
         return 'ProMods Canada', (('promods-ats-assets-*.scs',),
                                    ('promods-ats-models-*.scs',),
                                    ('promods-ats-def-*.scs',))
+    if name.startswith('western_canada_promods_connections_'):
+        # In the user's observed profile, Western Canada is below ProMods;
+        # within ProMods the low-to-high order is models, assets, map, def.
+        # Explicit --dependency order remains authoritative.
+        return 'Western Canada ProMods Connections', (
+            ('Western_Canada_Expansion*.scs',),
+            ('promods-ats-models-*.scs',), ('promods-ats-assets-*.scs',),
+            ('promods-ats-map-*.scs',), ('promods-ats-def-*.scs',))
     if name.startswith('western_canada_expansion'):
         # Western Canada can use the ProMods stack if the complete companion
         # set is supplied next to it. A partial set is an ambiguous input.
@@ -100,28 +111,40 @@ def _map_packages(source: Path, dependency: list[str]) -> list[Path]:
     supplied = [Path(path).expanduser().resolve() for path in dependency]
     if any(not path.is_file() for path in supplied):
         raise ValueError('An explicit dependency archive is missing')
-    companions: list[Path] = []
-    for group in required:
-        if any(any(path.match(pattern) for pattern in group) for path in supplied):
-            continue
-        companions.append(_one_sibling(source.parent, group[0]))
+    if source in supplied:
+        raise ValueError('Source archive must be highest; do not repeat it as a dependency')
+    # Resolve one archive for each known slot. The caller's explicit sequence is
+    # already low-to-high; missing companions are inserted around those slots
+    # instead of being appended above explicitly supplied maps.
     if label == 'Western Canada':
         patterns = ('promods-ats-assets-*.scs', 'promods-ats-models-*.scs',
                     'promods-ats-def-*.scs', 'promods-ats-map-*.scs')
         found = []
         for pattern in patterns:
-            matches = sorted(source.parent.glob(pattern))
-            if len(matches) > 1:
+            explicit = [path for path in supplied if path.match(pattern)]
+            siblings = sorted(source.parent.glob(pattern)) if not explicit else []
+            if len(explicit) > 1 or len(siblings) > 1:
                 raise ValueError(f'Ambiguous Western Canada companion {pattern}')
-            if matches:
-                found.append(matches[0].resolve())
-        if found and len(found) != len(patterns):
+            found.append(bool(explicit or siblings))
+        if any(found) and not all(found):
             raise ValueError('Western Canada has an incomplete ProMods companion set')
-        companions.extend(found)
-    result: list[Path] = []
-    for path in [*supplied, *companions, source]:
-        if path not in result:
-            result.append(path)
+        if all(found):
+            required = tuple((pattern,) for pattern in patterns)
+    slots: list[Path] = []
+    for group in required:
+        matches = [path for path in supplied if any(path.match(pattern) for pattern in group)]
+        if len(matches) > 1:
+            raise ValueError(f'Ambiguous explicit companion {group[0]}')
+        slots.append(matches[0] if matches else _one_sibling(source.parent, group[0]))
+    result = list(dict.fromkeys(supplied))
+    for index, path in enumerate(slots):
+        if path in result:
+            continue
+        later = [result.index(other) for other in slots[index + 1:] if other in result]
+        earlier = [result.index(other) for other in slots[:index] if other in result]
+        position = min(later) if later else (max(earlier) + 1 if earlier else 0)
+        result.insert(position, path)
+    result.append(source)
     return result
 
 
@@ -152,9 +175,9 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
                       icon=None) -> dict:
     """Audit one supplied map and emit a complete experimental fuel package.
 
-    Explicit dependencies are mounted low-to-high before automatically found
-    companion archives; the source map is highest. The actual profile load
-    order is unknown and recorded in the audit for review.
+    Explicit dependencies retain their low-to-high order. Known missing
+    companions are inserted into their family slots, with the source highest.
+    The actual profile load order is unknown and recorded for review.
     """
     from .bulk_fuel import plan_map_fuel
 
@@ -213,7 +236,9 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=1,
             return audit
         if icon is None:
             slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
-            preset = REPO_ROOT / 'assets/mod-icons' / f'{slug}-c.jpg'
+            icon_slug = {'reforma-othermaps-patch': 'reforma',
+                         'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
+            preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
             if preset.is_file():
                 icon = preset
         icon_bytes = Path(icon).read_bytes() if isinstance(icon, (str, Path)) else icon

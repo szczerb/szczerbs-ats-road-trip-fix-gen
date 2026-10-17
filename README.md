@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** a single source-map command generates experimental passenger-car fuel fixes for ATS Expansion, Reforma, ProMods Canada, Western Canada and Alaska. The first complete batch adds **2,281** car interaction points while preserving all original truck records and nodes. All **111 tests** and independent checks of five packages pass. Only the original Helena single-pump sample has user-reported gameplay validation; full-map testing remains open. See [batch r1](docs/reference/FUEL_FIX_BATCH_1_61_R1.md).
+**Current result:** a single source-map command generates experimental passenger-car fuel fixes for ATS Expansion, Reforma, ProMods Canada, Western Canada, Alaska and the Western Canada–ProMods connector. The first five packages add **2,281** car interaction points; the connector package adds **50** on its own sector versions. Those overlapping counters are not unique combined coverage. All **116 tests** and independent output checks pass. Only the original Helena single-pump sample has user-reported gameplay validation; full-map testing remains open. See [batch r1](docs/reference/FUEL_FIX_BATCH_1_61_R1.md) and [connector findings/priority](docs/reference/CONNECTOR_FUEL_FIXES.md).
 
 ## Findings and first experiments
 

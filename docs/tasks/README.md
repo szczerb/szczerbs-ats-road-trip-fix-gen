@@ -31,4 +31,6 @@ No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pendi
 
 - [TASK-0011: Generate map-wide fuel fixes](done/TASK-0011-generate-map-wide-fuel-fixes.md) — five complete r1 packages, 2,281 new car points, original truck records retained, 111 passing tests and independent full-output checks.
 
+- [TASK-0012: Inspect and fix map connectors](done/TASK-0012-inspect-and-fix-map-connectors.md) — connector-derived 50-point Western Canada–ProMods fix, no station fix needed for OtherMaps, explicit source order and 116 passing tests.
+
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

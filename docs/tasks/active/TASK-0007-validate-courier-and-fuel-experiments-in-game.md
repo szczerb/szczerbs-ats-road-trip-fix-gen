@@ -21,6 +21,7 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 # Scope
 
 - Test [full-map fuel batch r1](../../reference/FUEL_FIX_BATCH_1_61_R1.md) with each fix directly above its source map and old r0 samples disabled. First check all four points at the nearer Helena station, then car/truck purchases on the other maps, garages (including ownership/prices) and reloads. Preserve the single-point user result; do not treat static coverage as gameplay proof.
+- Include the [Western Canada–ProMods connector fuel fix](../../reference/CONNECTOR_FUEL_FIXES.md) directly above that connector in the screenshot-confirmed order. Test an affected connection-area station in both modes, including a garage and reload. Reforma OtherMaps needs no station-interaction package; its country fuel prices remain original inputs.
 
 - Use a disposable/copied profile with exact game/DLC/mod versions, priority, vehicle/class, rating, and baseline observations.
 - Test [sample 2](../../reference/OVERLAPPING_FUEL_SAMPLE.md) at the same eastern Helena dispenser with sample 1 disabled: map visibility and actual refueling with both a truck and car, then reload/control checks.
