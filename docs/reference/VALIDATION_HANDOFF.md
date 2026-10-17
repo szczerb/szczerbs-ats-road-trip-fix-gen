@@ -4,7 +4,7 @@ Date: 2026-10-17. The overnight milestone delivered research, usable inspection 
 
 ## First external gameplay evidence
 
-The [2026-10-17 user test](VALIDATION_RESULTS.md) reports successful refueling at the eastern Helena-area target. Its car-map icon appears in the patched screenshot; the nearer city station remains truck-only. This is a positive result for the combined single-pump descriptor/service sample, not validation of every experiment. The reported driving detour makes the city station the more useful next target; its four logical points require extending the first generator's one-point scope.
+The [2026-10-17 user test](VALIDATION_RESULTS.md) reports successful refueling at the eastern Helena-area target. Its car-map icon appears in the patched screenshot; the nearer city station remains truck-only. This is a positive result for the combined single-pump descriptor/service sample, not validation of every experiment. A follow-up corrects the truck screenshot to a pre-installation baseline and reports that the patched target disappears from the truck map. Physical truck refueling is not yet tested. Resolve preservation of truck and car support at the same pump before broadening to the nearer city station; its four logical points also exceed the first generator's one-point scope.
 
 ## What the evidence supports
 

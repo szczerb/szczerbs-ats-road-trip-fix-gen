@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car refueling with the Helena-area sample. Broader gameplay validation remains open. Courier and refueling investigations have equal priority.
+**Current result:** working Python CLI, sourced research for both issues, and generated experimental `.scs` packages. Static tests pass; the user reports successful car refueling with the Helena-area sample. The user subsequently reports that the patched target disappears from the truck map; preserving both vehicle modes remains unresolved. Broader gameplay validation remains open. Courier and refueling investigations have equal priority.
 
 ## Findings and first experiments
 

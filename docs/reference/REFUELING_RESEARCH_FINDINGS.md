@@ -102,7 +102,7 @@ A later [ATS Expansion starter-area inspection](STARTER_AREA_SAMPLE.md) found se
 
 ## First user-reported runtime result
 
-On 2026-10-17 the user reported successful car refueling at the eastern Helena-area target after enabling its localized PPD/prefab/service sample, on a disposable profile otherwise using ATS Expansion only. Inspected screenshots support the car-map icon change; the purchase itself is first-hand user evidence, not an agent reproduction. This strengthens the combined mechanism for one target. It does not isolate the need for each changed field or validate PPD-only duplication, multi-point stations, truck regressions, or other packages. See [results, remaining checks, and city-station selection review](VALIDATION_RESULTS.md).
+On 2026-10-17 the user reported successful car refueling at the eastern Helena-area target after enabling its localized PPD/prefab/service sample, on a disposable profile otherwise using ATS Expansion only. Inspected screenshots support the car-map icon change; the purchase itself is first-hand user evidence, not an agent reproduction. This strengthens the combined mechanism for one target. It does not isolate the need for each changed field or validate PPD-only duplication, multi-point stations, truck regressions, or other packages. The user subsequently corrected the truck screenshot context: it probably predates the sample; with the sample active, the eastern point is reported absent in truck-map mode and present only in car-map mode. This supports a map-category switch, while actual truck refueling after the patch remains untested. See [results, correction, remaining checks, and city-station selection review](VALIDATION_RESULTS.md).
 
 ## Confounders and next experiment
 

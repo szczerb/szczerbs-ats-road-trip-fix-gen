@@ -4,7 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — first Helena-area refueling success reported by the user; truck/reload, other locations and courier validation remain open.
+- [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — first Helena-area car-refueling success and patched truck-map disappearance reported by the user; physical truck/reload, both-vehicle support, other locations and courier validation remain open.
 
 ## Backlog
 

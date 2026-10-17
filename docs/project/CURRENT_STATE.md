@@ -24,6 +24,8 @@ Updated: 2026-10-17. Initialization is complete; the overnight research and prot
 
 **Documented — user report, 2026-10-17:** a fresh test profile with ATS Expansion as its only baseline mod was compared with the Helena-area sample. The eastern station gained a car-map icon and the user successfully refueled there. The user reports a substantial road detour and the closer city station remaining truck-only. Four screenshots were inspected; actual refueling was reported by the user rather than reproduced by the agent. See [dated results and evidence limits](../reference/VALIDATION_RESULTS.md).
 
+**Documented — user follow-up correction:** the original truck-map screenshot probably predates sample installation. With the sample now enabled, the eastern target is reported absent from the truck map and present only in car mode. This demonstrates a map-visibility regression against both-mode support; actual post-patch truck refueling remains untested. Next fuel experiment must preserve truck service while enabling cars at the same physical pump; a required physical dispenser split has not been established.
+
 **Observed locally:** the nearer city station was already recognized as a truck control, approximately 344 map units from the garage. It has a v25 descriptor with four GAS locators/four services; the first generator deliberately supports only the single-locator/single-service `02003` shape. Its exclusion was a prototype limitation, not a diagnosed unsafe format. Next fuel target: that nearer station, with deliberate locator/service matching and truck preservation. Route convenience must be evaluated beyond straight-line distance.
 
 ## Verification boundary and next work
