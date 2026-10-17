@@ -12,6 +12,8 @@ A research utility for American Truck Simulator map expansions and reworks: insp
 
 [Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class. The [first user test](docs/reference/VALIDATION_RESULTS.md) reports successful refueling at the eastern target and a substantial driving detour; the closer city station remains unchanged.
 
+The new [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. Its records and counts are statically verified; runtime coexistence is pending. Disable sample 1 when testing it.
+
 ## Run the tooling
 
 Requires Python 3.11+; ZIP inspection has no third-party Python dependencies. HashFS uses a separately installed external extractor.

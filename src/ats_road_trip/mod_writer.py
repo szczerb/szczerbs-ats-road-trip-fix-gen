@@ -16,7 +16,8 @@ def sha256(data: bytes) -> str:
 
 
 def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
-              *, game_version: str) -> dict:
+              *, game_version: str, display_name: str | None = None,
+              description: str | None = None) -> dict:
     """Write a new ZIP_STORED .scs, with source/change report included.
 
     Existing outputs are never overwritten. Caller must explicitly acknowledge
@@ -56,11 +57,17 @@ mod_package : .roadtrip_fix
 }
 }
 '''
-    description = ('Experimental generated compatibility candidate for ATS 1.61 / Road Trip Ford.\n'
-                   'Not validated in game. Read road_trip_fix_report.json before testing.\n'
-                   'Place above the source map/resource mods in a copied test profile.\n'
-                   'PPD fuel candidates may require map spawn/service rebuilding and do not prove reachability.\n'
-                   'Original archives, game installation, and profiles are not modified by this generator.\n')
+    if display_name is not None:
+        if not isinstance(display_name, str) or not 1 <= len(display_name) <= 120 or not display_name.isprintable():
+            raise ValueError('Display name must be 1-120 printable characters')
+        manifest = manifest.replace('display_name: "Road Trip map compatibility experiment"',
+                                    'display_name: ' + json.dumps(display_name))
+    if description is None:
+        description = ('Experimental generated compatibility candidate for ATS 1.61 / Road Trip Ford.\n'
+                       'Not validated in game. Read road_trip_fix_report.json before testing.\n'
+                       'Place above the source map/resource mods in a copied test profile.\n'
+                       'PPD fuel candidates may require map spawn/service rebuilding and do not prove reachability.\n'
+                       'Original archives, game installation, and profiles are not modified by this generator.\n')
     safe['manifest.sii'] = manifest.encode()
     safe['mod_description.txt'] = description.encode()
     safe['road_trip_fix_report.json'] = (json.dumps(final_report, indent=2, sort_keys=True) + '\n').encode()

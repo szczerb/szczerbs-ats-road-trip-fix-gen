@@ -70,14 +70,16 @@ def parser() -> argparse.ArgumentParser:
     context.add_argument('--game-version', required=True)
     context.add_argument('--experimental', action='store_true')
     context.add_argument('--prefab', action='append', help='Restrict generation to reviewed prefab identifiers')
-    local = sub.add_parser('generate-local-fuel', help='Build a pinned single-pump sector experiment')
-    local.add_argument('--baseline', action='append', required=True)
-    local.add_argument('--map', required=True)
-    local.add_argument('--recipe', required=True, help='Reviewed recipe JSON with exact source hashes and UIDs')
-    local.add_argument('--dlc', action='append', default=[])
-    local.add_argument('--output', required=True)
-    local.add_argument('--game-version', required=True)
-    local.add_argument('--experimental', action='store_true')
+    for name in ('generate-local-fuel', 'generate-overlap-fuel'):
+        local = sub.add_parser(name, help='Build a pinned fuel conversion' if name == 'generate-local-fuel'
+                              else 'Retain a truck point and add a car point at the same transform')
+        local.add_argument('--baseline', action='append', required=True)
+        local.add_argument('--map', required=True)
+        local.add_argument('--recipe', required=True, help='Reviewed recipe JSON with exact source hashes and UIDs')
+        local.add_argument('--dlc', action='append', default=[])
+        local.add_argument('--output', required=True)
+        local.add_argument('--game-version', required=True)
+        local.add_argument('--experimental', action='store_true')
     return root
 
 
@@ -112,14 +114,25 @@ def main(argv: list[str] | None = None) -> int:
                 _emit({'extracted_file_count': len(files), 'output': str(Path(args.output).resolve())}, None)
             return 0
         with ExitStack() as manager:
-            if args.command == 'generate-local-fuel':
+            if args.command in ('generate-local-fuel', 'generate-overlap-fuel'):
                 from .local_fuel import plan_local_fuel
                 packages = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc)))
                             for path in [*args.baseline, args.map]]
                 recipe = json.loads(Path(args.recipe).read_text(encoding='utf-8'))
-                plan, changes = plan_local_fuel(ResourceStack(packages), recipe,
-                                               map_package=str(packages[-1].path), game_version=args.game_version)
-                report = write_mod(args.output, changes, plan, game_version=args.game_version)
+                planner = plan_local_fuel
+                options = {}
+                if args.command == 'generate-overlap-fuel':
+                    from .overlap_fuel import plan_overlapping_fuel
+                    planner = plan_overlapping_fuel
+                    options = {'display_name': 'Road Trip Helena - truck + car at one pump (sample 2)',
+                               'description': ('Experimental same-position fuel pair for ATS Expansion 23.0 / ATS 1.61.3.18.\n'
+                                               'Sample 2: retains the original truck point and adds a car point at identical coordinates.\n'
+                                               'Disable sample 1 and other fuel samples; place this above ATS Expansion in the test profile.\n'
+                                               'Verify map visibility and actual refueling separately with a truck and a car.\n'
+                                               'Same-position coexistence has not been validated in game. Read road_trip_fix_report.json.\n')}
+                plan, changes = planner(ResourceStack(packages), recipe,
+                                        map_package=str(packages[-1].path), game_version=args.game_version)
+                report = write_mod(args.output, changes, plan, game_version=args.game_version, **options)
                 _emit({'output': str(Path(args.output).resolve()), 'report': report}, None)
             elif args.command in ('courier-audit', 'generate-context'):
                 baseline_packages = [manager.enter_context(Package(path, extractor=args.extractor, dlcs=tuple(args.dlc)))

@@ -24,4 +24,6 @@ No backlog tasks. Follow-up multi-point work is scoped in active TASK-0007 pendi
 
 - [TASK-0008: Prepare starter-area samples](done/TASK-0008-prepare-starter-area-sample.md) — effective garage comparison, pinned single-pump generator, Helena-area/Great Falls packages, and 43 passing tests.
 
+- [TASK-0009: Build overlapping fuel pair](done/TASK-0009-build-overlapping-fuel-pair.md) — source-pinned same-position truck/car candidate, original truck records preserved, 48 tests passed; runtime checks remain TASK-0007.
+
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

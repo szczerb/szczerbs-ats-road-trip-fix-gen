@@ -104,6 +104,10 @@ A later [ATS Expansion starter-area inspection](STARTER_AREA_SAMPLE.md) found se
 
 On 2026-10-17 the user reported successful car refueling at the eastern Helena-area target after enabling its localized PPD/prefab/service sample, on a disposable profile otherwise using ATS Expansion only. Inspected screenshots support the car-map icon change; the purchase itself is first-hand user evidence, not an agent reproduction. This strengthens the combined mechanism for one target. It does not isolate the need for each changed field or validate PPD-only duplication, multi-point stations, truck regressions, or other packages. The user subsequently corrected the truck screenshot context: it probably predates the sample; with the sample active, the eastern point is reported absent in truck-map mode and present only in car-map mode. This supports a map-category switch, while actual truck refueling after the patch remains untested. See [results, correction, remaining checks, and city-station selection review](VALIDATION_RESULTS.md).
 
+## Requested overlap experiment
+
+The user requested a truck point and car point at exactly the same location. [Sample 2](OVERLAPPING_FUEL_SAMPLE.md) preserves the original truck locator/service/node and adds a car twin at identical PPD/world transform bytes. A second prefab service reference and sector item/node counts are updated. Pinned companion/source checks and independent serializer research account for leaving `.data` and the other companions unchanged. Runtime filtering and same-position coexistence remain unknown. This is separate from the earlier PPD-only duplication experiment and sample-1 conversion.
+
 ## Confounders and next experiment
 
 **Observed locally:** the installed Ford DLC engine definitions for Bronco (`ford_27l_ecoboost.sii`), F-150 (`ford_tivct_32v_v8.sii`), Mustang (`challenger_289v8.sii`), and Crown Victoria (`v8_46l.sii`) each specify `type: petrol` and `adblue_consumption: 0.0` under `/def/vehicle/car/<vehicle>/engine/`. Thus petrol is actual local powertrain data, not solely an inference from the wiki. The player's effective engine still depends on overrides.

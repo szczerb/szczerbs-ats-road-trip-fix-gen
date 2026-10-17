@@ -21,7 +21,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 # Scope
 
 - Use a disposable/copied profile with exact game/DLC/mod versions, priority, vehicle/class, rating, and baseline observations.
-- Record the Helena-area user test and compare the closer city station next, including physical locator/service matching and preserved truck interactions.
+- Test [sample 2](../../reference/OVERLAPPING_FUEL_SAMPLE.md) at the same eastern Helena dispenser with sample 1 disabled: map visibility and actual refueling with both a truck and car, then reload/control checks.
+- Retain the Helena-area sample-1 user results; broaden to the closer city station only after establishing preservation of both interactions.
 - Confirm Great Falls HQ selection/access and compare the [single-pump sample](../../reference/STARTER_AREA_SAMPLE.md), including the converted pump and unchanged nearby truck controls.
 - Test the narrow Ahorrara courier candidate separately from the wider alias experiment and the fuel descriptor experiment.
 - Compare unmodified, candidate-only, and (only if necessary) separately editor-rebuilt fuel data.
@@ -34,7 +35,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 2. Establish a reproducible control stack, isolating extra courier and fuel mods first.
 3. Compare courier offers, pickup orientation/access, route completion, and delivery/rating results with matched market progression.
 4. For the Helena sample, record the combined descriptor/service outcome, corrected baseline screenshot context, reported patched truck-map absence, and remaining physical truck/reload checks. Establish car and truck support at the same physical pump before broadening to the nearer multi-point city station; do not assume splitting dispensers is necessary. For the separate Reforma PPD-only candidate, compare actual fuel purchase and truck behavior; investigate editor rebuilding only if its own result requires it.
-5. Update hypotheses with results and create the next implementation task only from demonstrated behavior.
+5. The user selected the exact-overlap experiment: TASK-0009 produces a standalone sample preserving truck records and adding a car twin. Test it before broadening to other locations; do not assume its generated structure establishes runtime success.
+6. Update hypotheses with results and create the next implementation task only from demonstrated behavior.
 
 # Acceptance Criteria
 
@@ -55,6 +57,8 @@ Documentation checks passed: 39 Markdown documents, 247 relative links, eight ta
 Follow-up, 2026-10-17: user recalls the original truck-map screenshot probably predates installing the sample, during the initial truck quick job. With the sample now active, the tested point is reported absent in Truck map mode and present only in Car mode. No actual truck-refueling failure is reported. The sample therefore lacks confirmed both-mode visibility, while physical truck fueling remains unknown. GPT-6 Luna / medium reviewed this distinction against the existing code/report; root updated the dated results and ignored evidence metadata. No code, package, game, or profile changes were made.
 
 Still pending: exact runtime build/installed-sample fingerprints, numerical fuel/payment observations, truck and reload regressions, multi-point city-station design/validation, Great Falls/Reforma tests, and courier offers/completed deliveries. A combined PPD/service success does not isolate each component's necessity. This task remains active; one successful user-reported fuel test does not satisfy all acceptance criteria.
+
+A separate [sample-2 generation task](../done/TASK-0009-build-overlapping-fuel-pair.md) now implements the user-requested overlap experiment. Its static tests do not close this gameplay task.
 
 # Links
 

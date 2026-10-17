@@ -74,6 +74,12 @@ This is an experiment: co-located locators, physical car access, fuel behavior, 
 
 Unlike the descriptor-only experiment, this converts **one existing pump**; truck use at that pump may disappear. Nearby pumps retain their original data. A full sector override conflicts with other edits to that sector/companions. The service-bit interpretation, starting-city eligibility, and gameplay remain unverified. This is not general sector serialization or automatic fix discovery. See [ADR-0003](../architecture/decisions/ADR-0003-allow-pinned-single-pump-sector-experiments.md).
 
+## Same-position truck/car pair
+
+`generate-overlap-fuel` uses the same baseline/map/output/version/experimental arguments as `generate-local-fuel`, but requires a reviewed schema-2 recipe including source companion fingerprints and explicit node-table layout. See the [sample-2 guide](OVERLAPPING_FUEL_SAMPLE.md#reproduce) for the tested command. It retains the original truck records and adds a same-transform car locator, linked service and node, updates counted references/tables, and uses a distinct private prefab alias.
+
+The reviewed fixture is map 907, stock `02003`, one original GAS/service, a local UID-sorted 56-byte node table, no visibility children and an empty layer. Unsupported layouts/companions, source changes or UID collisions fail. Output identifies sample 2 in the mod manager. Disable sample 1 before testing. A full-sector override and overlapping runtime interactions still need the documented game comparison; this command does not generally serialize sectors or certify dual-vehicle support.
+
 ## Generated output contract
 
 All generators require `--experimental` and a declared ATS 1.61 `--game-version`. They refuse empty changes and existing outputs. The deterministic ZIP_STORED `.scs` contains generated/changed resources, `manifest.sii`, `mod_description.txt`, and `road_trip_fix_report.json`. The report carries `schema_version: 1`, provenance, transformations, limitations, generated resource hashes, and `in_game_verified: false`. These are prototype interfaces; they do not certify complete game compatibility. Errors exit with status 2.

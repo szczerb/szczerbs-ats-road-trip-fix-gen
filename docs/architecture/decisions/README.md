@@ -14,4 +14,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0003: Allow pinned single-pump sector experiments](ADR-0003-allow-pinned-single-pump-sector-experiments.md).
 
+- [ADR-0004: Add pinned overlapping fuel services](ADR-0004-add-pinned-overlapping-fuel-services.md).
+
 Runtime fix validation and general map-sector authoring remain open.

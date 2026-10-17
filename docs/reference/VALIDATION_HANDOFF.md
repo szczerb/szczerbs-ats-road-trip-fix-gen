@@ -29,6 +29,10 @@ Use one courier context output at a time: they share an additive file path. The 
 
 The [starter-area guide](STARTER_AREA_SAMPLE.md) adds separate Helena-area and Great Falls single-pump experiments. Prefer checking Helena HQ selection because its effective garage retains a standard class; Great Falls uses a custom garage, with a target about 94 map metres from that placed GaragePoint. It edits a private descriptor **and the existing map service**, preserving counts and transforms. Confirm Great Falls appears in the new-profile selector; custom garage presence does not prove eligibility. The sample converts one pump, can remove truck access there, and overrides a whole sector. This is distinct from the earlier Reforma PPD-only experiment.
 
+## Next requested fuel test: sample 2
+
+[Same-position sample 2](OVERLAPPING_FUEL_SAMPLE.md) preserves the original truck records and adds a car interaction at the same eastern Helena dispenser. Disable sample 1 and enable the new package above ATS Expansion. Compare actual refueling and map visibility in both modes at that exact point. This extends the experiment with a cloned service/node; its static verification does not establish runtime coexistence.
+
 ## Copied-profile experiment
 
 1. Start from a disposable/copied profile, record exact ATS/DLC/map versions and priority, and keep the original profile unchanged. Confirm original source hashes and inspect each generated ZIP's embedded report. Place only the chosen candidate above its source maps/resources in that test profile.

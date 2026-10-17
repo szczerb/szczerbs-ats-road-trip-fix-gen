@@ -37,6 +37,10 @@ The user now reports that **with the sample enabled, the tested eastern station 
 
 The next experiment must aim for **car and truck service at the same physical pump**, not assume a forced division of the station's visible dispensers. First preserve this correction and separate map visibility from actual fueling. A bounded one-field-at-a-time experiment can investigate whether a shared setting exists; adding car interaction while retaining the original truck records is another unvalidated design option. Do not guess a new flag value or treat overlapping logical services as already supported. Keep transforms/physical pump positions unchanged and require successful refueling with both vehicles before calling a candidate dual-vehicle support.
 
+### Requested next experiment: same-position pair
+
+The user explicitly requested two interactions at exactly the same physical point, one for cars and one for trucks. [Sample 2](OVERLAPPING_FUEL_SAMPLE.md) now retains the original truck GAS/service/node and adds a car GAS/service/node with identical transform bytes. This is a new generated candidate; the positive car-refueling and truck-map-loss results above apply to sample 1 only. Runtime both-mode visibility/refueling remains pending in TASK-0007.
+
 ### Why the closer city station was not selected
 
 **Observed locally:** the city station was recognized before this test and recorded as the unchanged truck control in the [starter-area guide](STARTER_AREA_SAMPLE.md). Its inspected fuel prefab is `1e00i`, UID `0x42dd66b86ad1d49f`, in `map/usa/sec-0016-0013.base`, approximately **344 map units** from the effective garage point. The PPD is `/prefab/gas/us_gas_gallonoil_truck_7rows_roof.ppd`, **version 25**, 2,204 bytes, with **four logical GAS locators, all flags 0**, and four matching linked service items, all flags `0x80000000`. These logical points are not a count of every visible dispenser in the whole forecourt. The screenshot's exact world coordinates were not supplied; assigning its visible car forecourt to an individual prefab/locator still needs a position check.

@@ -1,5 +1,7 @@
 # ADR-0003: Allow pinned single-pump sector experiments
 
+Partial supersession: [ADR-0004](ADR-0004-add-pinned-overlapping-fuel-services.md) permits a separate pinned additive service/node experiment at the same position. Existing conversion semantics below remain unchanged.
+
 ## Context
 
 Date: 2026-10-17. The user requested a practical ATS Expansion sample near a candidate starting garage. Follow-up inspection found a separate serialized service field correlated with car-oriented PPD flags, and a Great Falls single-locator prefab near a placed garage. See [location and evidence](../../reference/STARTER_AREA_SAMPLE.md) and [TASK-0008](../../tasks/done/TASK-0008-prepare-starter-area-sample.md).

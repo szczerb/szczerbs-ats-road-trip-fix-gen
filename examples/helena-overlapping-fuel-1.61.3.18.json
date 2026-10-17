@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "game_version": "1.61.3.18",
+  "sector": "map/usa/sec-0015-0012.base",
+  "sector_sha256": "e807655d879eb07d069b4f3dd362007eaba7e4bdc935810aea43445c787a700c",
+  "descriptor_sha256": "5e9780d00f91360531caee48b62fc8bca6284827468d92a3311fa178035cc8eb",
+  "prefab_uid": "0x45aa5478ea6f0001",
+  "service_uid": "0x660cd95039002d88",
+  "location": {
+    "city": "Helena area",
+    "city_token": "helena",
+    "pump_prefab_bounds_center": [
+      -57752.07421875,
+      78.013671875,
+      -47852.453125
+    ],
+    "garage_point": [
+      -61153.0546875,
+      65.421875,
+      -48702.78515625
+    ],
+    "garage_prefab": "prefab.81",
+    "distance_from_garage_point_map_units": 3505.672,
+    "distance_interpretation": "Straight-line map distance; not driven GPS route length or real-world distance",
+    "starting_city_ui_confirmed": false
+  },
+  "overlap": {
+    "layout": {
+      "node_count_offset": 72760,
+      "node_count": 396,
+      "item_count": 319,
+      "service_node_uid": "0x660cd9510b802d87"
+    },
+    "companion_sha256": {
+      "map/usa/sec-0015-0012.data": "d3fd3d893938bb22cfa4b0bd090ddfb0be1187187b6d0e969e0dbea035564445",
+      "map/usa/sec-0015-0012.aux": "4b9b0c2a1d746725a61c22bbb9bafac9fd6df413d32fad23912b1952ac44df90",
+      "map/usa/sec-0015-0012.desc": "0aea620a81e92d44d31a5864aa61d56d2d1612e7cbebc5bd08b16bc93f99eb94",
+      "map/usa/sec-0015-0012.layer": "c067665c6ff84c829d0790059ac5d564d0bed0e3dbae3d4bad9623c2b5191dc6"
+    }
+  }
+}

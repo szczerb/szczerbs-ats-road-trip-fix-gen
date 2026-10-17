@@ -116,7 +116,7 @@ def patch_local_pump(sector: bytes, ppd: bytes, *, prefab_uid: int,
 
 
 def plan_local_fuel(stack: ResourceStack, recipe: dict, *, map_package: str,
-                    game_version: str) -> tuple[dict, dict[str, bytes]]:
+                    game_version: str, alias_prefix: str = 'rtf') -> tuple[dict, dict[str, bytes]]:
     """Generate only from reviewed, fingerprinted inputs; never discover a target implicitly."""
     required = {'schema_version', 'game_version', 'sector', 'sector_sha256',
                 'descriptor_sha256', 'prefab_uid', 'service_uid', 'location'}
@@ -139,7 +139,9 @@ def plan_local_fuel(stack: ResourceStack, recipe: dict, *, map_package: str,
         if not isinstance(recipe[key], str) or _hash(data) != recipe[key]:
             raise ValueError(f'Source fingerprint mismatch: {key}')
     uid, slave = int(recipe['prefab_uid'], 0), int(recipe['service_uid'], 0)
-    alias = 'rtf' + _hash(f'{sector_path}:{uid:x}'.encode())[:8]
+    if alias_prefix not in ('rtf', 'rtp'):
+        raise ValueError('Unsupported experiment alias prefix')
+    alias = alias_prefix + _hash(f'{sector_path}:{uid:x}'.encode())[:8]
     destination = f'prefab/rtfix/{alias}.ppd'
     definition_path = f'def/world/prefab.{alias}.sii'
     if any(path in stack.resources for path in (destination, definition_path)):

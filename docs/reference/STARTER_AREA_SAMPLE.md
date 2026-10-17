@@ -2,6 +2,8 @@
 
 Inspected: 2026-10-17. Installed ATS **1.61.3.18**, build **25952361**, Road Trip Ford; supplied **ATS Expansion v23.0**. Initial agent inspection was static; the agent performed no game/editor/profile operations. A later [user gameplay test](VALIDATION_RESULTS.md) reports successful Helena-area refueling and a long road detour. Original static unknowns below are superseded only where that dated result explicitly supplies evidence.
 
+**New experiment:** [sample 2](OVERLAPPING_FUEL_SAMPLE.md) retains the original truck point and adds a car point at the same transform. Use it instead of sample 1 for the next both-mode comparison. The conversion samples described below remain as test history and are not confirmed dual-vehicle fixes.
+
 ## Practical result
 
 **Observed locally:** two samples are available. Prefer the **Helena-area** sample and UI check described next; the initial **Great Falls** experiment remains useful as a second location. The Great Falls fuel interaction lies approximately **94 map metres from its GaragePoint**, or 83 from its BuyPoint. A generated sample converts that one existing interaction to the hypothesized car/petrol type. Two other nearby station prefabs retain their original truck fuel interactions.
