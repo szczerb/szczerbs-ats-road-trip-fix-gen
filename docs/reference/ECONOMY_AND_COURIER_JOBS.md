@@ -24,3 +24,5 @@ See [Map structure and compatibility](./MAP_STRUCTURE_AND_COMPATIBILITY.md) for 
 ## Subsequent research
 
 The initialization observations above retain their original scope. See [the overnight findings/baseline](COURIER_RESEARCH_FINDINGS.md) and [tool usage](TOOLING.md) for later local evidence and supported experiments.
+
+The [availability research](COURIER_JOB_AVAILABILITY_RESEARCH.md) records the user's discovered-city observation, online evidence limits, stock Mustang definition restrictions and controlled future comparisons. A fixed global courier-offer budget remains a hypothesis; it is not an established cause or generator rule.

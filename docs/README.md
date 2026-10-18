@@ -32,6 +32,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 
 - [Installed baseline and extractor provenance](reference/RESEARCH_BASELINE.md).
 - [Courier research findings](reference/COURIER_RESEARCH_FINDINGS.md).
+- [Courier job quantities, discovery hypotheses and stock vehicle restrictions](reference/COURIER_JOB_AVAILABILITY_RESEARCH.md).
 - [Courier company selection markers and placed-node evidence](reference/COURIER_MARKER_RESEARCH.md).
 - [Source-relative courier analysis/reporting command and interpretation](reference/COURIER_REPORTING.md).
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).

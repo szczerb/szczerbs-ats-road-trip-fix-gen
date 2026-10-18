@@ -4,6 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 
@@ -44,5 +45,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 - [TASK-0017: Compose selectable compatibility processors](done/TASK-0017-compose-selectable-compatibility-processors.md) — enum/CLI selection, atomic composed output, accurate topic metadata, 179 tests and independently verified WCE fuel/rest package.
 
 - [TASK-0018: Report courier company locations](done/TASK-0018-report-courier-company-locations.md) — read-only selectable analysis, shared-marker evidence, 194 tests and real ATS Expansion/WCE patch reports; existing alias-context risk tracked separately.
+
+- [TASK-0020: Research courier quantities and discovery](done/TASK-0020-research-courier-market-job-quantity.md) — sourced online findings, unproven global-budget hypothesis, concrete stock Mustang restrictions and controlled future discovery tests.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.
