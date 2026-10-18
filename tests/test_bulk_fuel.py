@@ -117,6 +117,22 @@ class BulkFuelTests(unittest.TestCase):
         self.assert_complete(first[0])
         self.assertEqual(first, second)
 
+    def test_expansion_display_renames_preserve_established_fuel_payload(self):
+        package = self.package('map', resources(visibility=True))
+        stack = ResourceStack([package])
+        for old_name, public_name in [('Alaska', 'Alaska Expansion'),
+                                      ('Western Canada', 'Western Canada Expansion')]:
+            with self.subTest(map=public_name):
+                old_report, old_output = plan_map_fuel(
+                    stack, map_packages={str(package.path)}, map_name=old_name)
+                report, output = plan_map_fuel(
+                    stack, map_packages={str(package.path)}, map_name=public_name)
+                self.assert_complete(report)
+                self.assertEqual(report['map_name'], public_name)
+                self.assertEqual(output, old_output)
+                self.assertTrue(any(path.endswith('.ppd') for path in output))
+                self.assertEqual(report['coverage'], old_report['coverage'])
+
     def test_four_shuffled_points_and_original_records_preserved(self):
         original = resources([((x, 0.02, 2.), 0) for x in (-18., -6., 6., 18.)])
         _, (report, output) = self.plan(original)

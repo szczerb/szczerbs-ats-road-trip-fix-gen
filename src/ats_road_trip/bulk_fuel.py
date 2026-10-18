@@ -86,6 +86,10 @@ def _splice(data: bytes, changes: list[tuple[int, int, bytes]]) -> bytes:
 
 def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str) -> tuple[dict, dict[str, bytes]]:
     log = logging.getLogger(__name__)
+    # R8 renamed these sources for display only, retaining the R7 gameplay
+    # payload. Keep their established generated UIDs/aliases across that rename.
+    namespace_name = {'Alaska Expansion': 'Alaska',
+                      'Western Canada Expansion': 'Western Canada'}.get(map_name, map_name)
     report = {'schema_version': 3, 'analysis': 'map_wide_missing_car_fuel', 'map_name': map_name,
               'package_order': [str(p.path) for p in stack.packages],
               'coverage': {'blockers': [], 'truck_points': 0, 'already_supported': 0,
@@ -267,7 +271,7 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                 entry_report['status'] = 'already_supported'; report['stations'].append(entry_report); continue
             key = (unit.name, _sha(original_ppd))
             if needs_descriptor and key not in aliases:
-                alias = 'rtg' + _sha(f'{map_name}:{unit.name}:{_sha(original_ppd)}'.encode())[:8]
+                alias = 'rtg' + _sha(f'{namespace_name}:{unit.name}:{_sha(original_ppd)}'.encode())[:8]
                 private_ppd = f'prefab/rtfix/{alias}.ppd'; definition = f'def/world/prefab.{alias}.sii'
                 if (any(p in stack.resources or p in resources for p in (private_ppd, definition))
                         or token(alias) in definitions):
@@ -288,7 +292,7 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                 node = node_for(old.details['node'], path)
                 if old.details['nodes'] or node.backward != 0 or node.forward != old.uid:
                     raise ValueError('Fuel service has unsupported extra-node/ownership links')
-                seed = f'{map_name}:{path}:{old.uid:x}:{_sha(sectors[path][0])}'
+                seed = f'{namespace_name}:{path}:{old.uid:x}:{_sha(sectors[path][0])}'
                 uid, node_uid = new_uid(seed+':car-service'), new_uid(seed+':car-node')
                 raw = bytearray(sectors[path][0][old.offset:old.end])
                 # Garage FuelPump consumes the first GAS; appended GAS becomes
