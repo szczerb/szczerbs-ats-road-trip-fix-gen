@@ -1,5 +1,7 @@
 # Project Brief
 
+**Documented — expanded user direction, 2026-10-18:** provide a separate [reasonable gas tank upgrades mod](../reference/REASONABLE_GAS_TANK_UPGRADES.md), based on credible tank options for all four Road Trip Ford models. This adds researched Mustang/F-150 choices without forcing unsupported upgrades on Crown Victoria/Bronco or bundling them into map/job fixes.
+
 ## Goal and audience
 
 Build a utility that automatically produces small compatibility mods for American Truck Simulator map expansions and reworks, enabling Road Trip Courier Jobs and passenger-car refueling where support is missing. The initial user is an ATS player with existing map mods and little prior SCS modding experience; documentation should explain relevant concepts before relying on specialist terms.

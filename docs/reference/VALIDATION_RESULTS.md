@@ -1,5 +1,11 @@
 # Gameplay validation results
 
+## 2026-10-18: ongoing USA courier testing
+
+**Documented — first-hand user report:** the user is still testing Job Types Compat Mustang in the USA and has noticed no problems so far. They will report when finished. This is an interim observation, not confirmation of completed new-job acceptance/delivery, all job families or a controlled live-offer comparison. Canada fuel quantities/prices/billing and car rest remain pending. No additional screenshot, installed-package fingerprint or agent gameplay test accompanied this report.
+
+The user also reports an active 3x Ford fuel-capacity mod, which they intend to disable before the new [reasonable tank upgrade](REASONABLE_GAS_TANK_UPGRADES.md) test. Fuel observations during this courier session must retain that extra mod as a setup variable. No capacity-change runtime result has been reported; TASK-0007 remains active.
+
 ## 2026-10-17: Helena-area sample, first user test
 
 **Documented — user-reported gameplay:** the user created a first disposable test profile with ATS Expansion as its only baseline mod, then compared it with the Helena-area sample enabled. The user owns all DLCs. The eastern station became available to passenger cars and the user successfully refueled there. The drive required a substantial detour. The station inside Helena near the garage remained visible only for trucks.

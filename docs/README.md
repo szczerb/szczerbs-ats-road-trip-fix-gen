@@ -37,6 +37,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Separate vehicle-eligibility mod feasibility and override limits](reference/COURIER_VEHICLE_ELIGIBILITY_MOD.md).
 - [Eligibility generator design and practical-cargo policy](reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md).
 - [Implemented standalone Job Types Compat Mustang generator](reference/PRACTICAL_COURIER_GENERATOR.md).
+- [Reasonable Ford gas tank upgrades: automotive evidence, policy and generator](reference/REASONABLE_GAS_TANK_UPGRADES.md).
 - [Courier company selection markers and placed-node evidence](reference/COURIER_MARKER_RESEARCH.md).
 - [Source-relative courier analysis/reporting command and interpretation](reference/COURIER_REPORTING.md).
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).

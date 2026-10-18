@@ -1,5 +1,11 @@
 # Current State
 
+**Documented — user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA, with no problems noticed so far. Canada fuel prices/billing, car rest and completed new-job deliveries remain pending. [Dated report](../reference/VALIDATION_RESULTS.md#2026-10-18-ongoing-usa-courier-testing).
+
+The separate [reasonable gas tank upgrades](../reference/REASONABLE_GAS_TANK_UPGRADES.md) increment adds source-pinned reporting/generation and an r0 candidate: Mustang **61 → 76 L**, non-hybrid F-150 **98 → 136 L**; Crown Victoria/Bronco unchanged. Automotive research was delegated to three GPT-6 Luna/medium agents. Existing map r8/courier r3 outputs remain unchanged. Disable the old 3x mod for tank testing; saved fuel/capacity refresh remain unverified.
+
+**Observed locally:** all **266 authored tests** pass, including 18 new tank planner/workflow tests; the tank package passes an independent exact-byte/metadata audit. [R0 fingerprint and handoff](../reference/REASONABLE_GAS_TANK_UPGRADES.md#verified-r0-handoff).
+
 Updated: 2026-10-18. Target baseline: ATS **1.61.3.18**, Steam build **25952361**, installed map DLCs and Road Trip Ford. The user owns all DLCs. Documentation records static checks separately from gameplay.
 
 ## Delivered gameplay candidate and metadata refresh

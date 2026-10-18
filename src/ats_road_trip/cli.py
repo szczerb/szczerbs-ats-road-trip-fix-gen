@@ -76,6 +76,16 @@ def parser() -> argparse.ArgumentParser:
             eligibility.add_argument('--revision', type=int, default=3)
             eligibility.add_argument('--icon', help='Optional courier JPEG 276x162')
             eligibility.add_argument('--experimental', action='store_true')
+    for name in ('analyze-tank-upgrades', 'generate-tank-upgrades'):
+        tanks = sub.add_parser(name, help='Report or package source-pinned reasonable Ford tank upgrades')
+        tanks.add_argument('--config', required=True, help='Reviewed source-pinned tank TOML policy')
+        tanks.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        tanks.add_argument('--dependency', action='append', default=[], help='Declared archives, lowest priority first')
+        tanks.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            tanks.add_argument('--revision', type=int, default=0)
+            tanks.add_argument('--icon', help='Optional 276x162 JPEG tank icon')
+            tanks.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
@@ -153,6 +163,19 @@ def main(argv: list[str] | None = None) -> int:
                 result = generate_courier_eligibility(args.config, revision=args.revision, icon=args.icon, **options)
             else:
                 result = analyze_courier_eligibility(args.config, **options)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result['planner'].get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-tank-upgrades', 'generate-tank-upgrades'):
+            from .tank_run import run_tank_upgrades
+            options = dict(game_dir=args.game_dir, dependency=args.dependency,
+                           run_id=args.run_id, extractor=args.extractor)
+            generate = args.command.startswith('generate')
+            if generate:
+                options.update(revision=args.revision, icon=args.icon)
+            result = run_tank_upgrades(args.config, generate=generate, **options)
             _emit({'status': result['status'], 'output': result.get('output'),
                    'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
                    'coverage': result['planner'].get('coverage'),

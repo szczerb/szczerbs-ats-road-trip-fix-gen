@@ -2,6 +2,18 @@
 
 Updated: 2026-10-18. The user has resumed manual testing. Earlier overnight deferral remains history; prices/billing, rest and job delivery stay unverified until results are reported. Remind the user at package handoffs while these checks remain open. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
 
+**Interim user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA with no problems noticed yet. The checklist is incomplete; the active 3x-capacity mod will be disabled for the new tank test.
+
+## Reasonable tank upgrades: pending
+
+Use the separate [reasonable gas tank upgrades candidate](REASONABLE_GAS_TANK_UPGRADES.md); disable Ford Fuel X3 and conflicting chassis/tank overrides first. Keep map r8/courier r3 unchanged.
+
+- Existing Mustang: capacity 76 L, filling can exceed stock 61 L and stops at the new limit. Check the nominal 20-US-gallon capacity description.
+- F-150: capacity 136 L instead of 98 L; nominal description 36 US gal.
+- Crown Victoria/Bronco remain at stock 72/79 L; this mod packages neither chassis.
+- Check fuel retained on transition from 3x (including any over-capacity value), finite gauge/range, normal payment, consumption and save/reload. Do not assume the engine automatically clamps or preserves saved fuel.
+- No separate upgrade purchase is needed by this implementation; report if an owned vehicle does not refresh capacity. Do not edit the profile to force it.
+
 ## Petrol price and quantities: pending
 
 Use the newest [r8 map/r3 courier packages](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.

@@ -95,3 +95,7 @@ Nothing is installed in the game or mod directory. Generated fuel descriptors co
 ## Standalone job eligibility
 
 The [Practical Courier Jobs generator](PRACTICAL_COURIER_GENERATOR.md) is separate from map processors. `analyze-courier-eligibility --config PATH` writes a report only; `generate-courier-eligibility --config PATH --experimental` packages reviewed class-list additions after exact source/version/inventory checks. The preset enables 58 cargo units, disables 30 ambiguous candidates and preserves all nine vehicle transfers. No game/profile installation occurs. General map `courier` generation remains unsupported.
+
+## Separate reasonable tank upgrades
+
+Use `analyze-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml` for a report, or `generate-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental` for a standalone capacity mod. Both run under `PYTHONPATH=src python3 -m ats_road_trip`. [Automotive evidence, exact model policy, priority and manual checks](REASONABLE_GAS_TANK_UPGRADES.md). The default r0 changes only Mustang/F-150 capacities; it does not regenerate map or courier fixes.

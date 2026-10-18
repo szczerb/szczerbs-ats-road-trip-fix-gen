@@ -1,5 +1,7 @@
 # Original mod artwork
 
+The separate tank mod uses [reasonable-gas-tank-upgrades.jpg](reasonable-gas-tank-upgrades.jpg), a provisional original navy/cream/teal tank badge with Mustang/F-150, exported at 276x162. [Exact prompt and provenance](reasonable-gas-tank-upgrades-prompt.md). This does not change the approved M2D/J3C artwork.
+
 ## Current fuel/rest and courier proposals
 
 Created and inspected: 2026-10-18. **Current map selection: M2D**, the navy/cream/teal frame with pump/P sign and all four Ford vehicles. It replaces the initial three-car M2 selection in map r6; earlier alternatives remain as history. Courier **J3C is approved** and is the default artwork in Job Types Compat Mustang r3; earlier proposals remain as history. The user explicitly requested the courier headline `JOB TYPES COMPAT`.

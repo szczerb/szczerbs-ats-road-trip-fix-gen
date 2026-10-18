@@ -1,0 +1,52 @@
+# Reviewed on 2026-10-18; full automotive evidence: docs/reference/REASONABLE_GAS_TANK_UPGRADES.md
+schema_version = 1
+profile_id = "ford-reasonable-tanks-ats-1.61.3.18"
+game_version = "1.61.3.18"
+
+[[vehicles]]
+model = "ford.mustang_67"
+path = "def/vehicle/car/ford.mustang_67/chassis/rwd.sii"
+unit = "rwd.ford.mustang_67.chassis"
+sha256 = "3b340619b0e48b0faa114afa65033110955441830bccc123b604135392eabc5f"
+stock_liters = 61
+target_liters = 76
+stock_info = "16 @@gal@@"
+target_info = "20 @@gal@@"
+rationale = "Adapted 1969 20-US-gallon Mustang tank; rounded to 76 L. Taller tank needs suitable filler/sender; not an unchanged direct-fit claim."
+sources = ["https://www.dormanproducts.com/p-47090-576-175.aspx", "https://secure.cougarpartscatalog.com/store/p/12933-Fuel-Tank-Economy-Repro-1969-Mercury-Cougar-/-1969-Ford-Mustang.html"]
+
+[[vehicles]]
+model = "ford.victoria_06"
+path = "def/vehicle/car/ford.victoria_06/chassis/rwd.sii"
+unit = "rwd.ford.victoria_06.chassis"
+sha256 = "a71aed6107266397e23eec9ff01878262584ca25d04872cb9ad5cf539dd6ac6a"
+stock_liters = 72
+target_liters = 72
+stock_info = "19 @@gal@@"
+target_info = "19 @@gal@@"
+rationale = "Keep stock 72 L (nominal 19 US gal); no credible modest larger gasoline replacement established."
+sources = ["https://www.fordservicecontent.com/Ford_Content/catalog/owner_guides/06croog1e.pdf"]
+
+[[vehicles]]
+model = "ford.f150_23"
+path = "def/vehicle/car/ford.f150_23/chassis/4doors_55_awd.sii"
+unit = "4d55_awd.ford.f150_23.chassis"
+sha256 = "7713a335cb3778d7578c508437113c9232f8932e04971b0b7c827cc3359f2125"
+stock_liters = 98
+target_liters = 136
+stock_info = "26 @@gal@@"
+target_info = "36 @@gal@@"
+rationale = "Ford option 655: 36 US gal, rounded to 136 L, for the represented non-hybrid 5.0 V8 SuperCrew 5.5-ft box. Not a claim for PowerBoost."
+sources = ["https://dealerimages.dealereprocess.com/image/upload/v1679674915/1/ford/PDFs/2023_F-150_Order_Guide.pdf"]
+
+[[vehicles]]
+model = "ford.bronco_24"
+path = "def/vehicle/car/ford.bronco_24/chassis/4doors_awd.sii"
+unit = "4d_awd.ford.bronco_24.chassis"
+sha256 = "b039b14c427328dc1fe59ee76d158ff1b1ba1231755b57e4d4892414407c615a"
+stock_liters = 79
+target_liters = 79
+stock_info = "20 @@gal@@"
+target_info = "20 @@gal@@"
+rationale = "Keep stock game 79 L and its 20-gal label; no sufficiently verified moderate larger tank found. Do not normalize stock to other model-year published figures."
+sources = ["https://www.fordservicecontent.com/Ford_Content/Catalog/owner_information/24MY_Bronco_QRG_ENG_V1.pdf"]

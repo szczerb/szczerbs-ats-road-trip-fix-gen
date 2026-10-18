@@ -2,6 +2,8 @@
 
 A research utility for American Truck Simulator: inspect map archives, report Road Trip courier inputs, generate passenger-car fuel/rest map fixes, and separately broaden reviewed courier job eligibility.
 
+A separate [reasonable gas tank upgrades mod](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) now selects researched Mustang (61 → 76 L) and F-150 (98 → 136 L) capacities; Crown Victoria and Bronco remain stock. Disable the old 3x-capacity mod before testing it.
+
 **Current implementation:** selectable `fuel` and `rest` map processors, automatic missing petrol-price repair, and preservation of original prefab context classifications when cloning. A separate [Job Types Compat Mustang generator](docs/reference/PRACTICAL_COURIER_GENERATOR.md) enables 58 reviewed cargo definitions for muscle-tagged cars, preserving all vehicle-transfer jobs. The [r8 map / r3 courier handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md) uses the exact names Alaska Expansion and Western Canada Expansion for their source-specific fixes. The [r7/r3](docs/reference/MOD_METADATA_RENAME_1_61_R7_R3.md) and older batches remain historical. [Current state](docs/project/CURRENT_STATE.md) tracks verification and manual tests.
 
 Rest uses the user-selected 1,000 game-world-unit XZ proximity rule and a bounded source-sector/halo search. Original truck interactions, parking geometry and shared actions are preserved. [Courier map reporting](docs/reference/COURIER_REPORTING.md) remains read-only; general map courier generation is unsupported. Definition eligibility does not guarantee live offers or completed deliveries. Prices, billing, rest and courier behavior require [gameplay validation](docs/reference/MANUAL_TEST_CHECKLIST.md).
@@ -25,6 +27,7 @@ PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/ATS_Expan
 PYTHONPATH=src python3 -m ats_road_trip generate-map-fix local_inputs/Western_Canada_Expansion_v1.7.3.scs --processor fuel --processor rest --rest-radius 1000 --experimental
 PYTHONPATH=src python3 -m ats_road_trip analyze-map local_inputs/ATS_Expansion_v23.0_1.61.scs --processor courier
 PYTHONPATH=src python3 -m ats_road_trip generate-courier-eligibility --config docs/examples/mustang-practical-courier.toml --experimental
+PYTHONPATH=src python3 -m ats_road_trip generate-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental
 PYTHONPATH=src python3 -m ats_road_trip --help
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
