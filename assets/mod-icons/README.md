@@ -2,9 +2,9 @@
 
 ## Current fuel/rest and courier proposals
 
-Created and inspected: 2026-10-18. **Current map selection: M2D**, the navy/cream/teal frame with pump/P sign and all four Ford vehicles. It replaces the initial three-car M2 selection in map r6; earlier alternatives remain as history. Courier **J1B is provisional**, with the choice among J1B/J2B/J3B still open. The user explicitly requested the courier headline `JOB TYPES COMPAT`.
+Created and inspected: 2026-10-18. **Current map selection: M2D**, the navy/cream/teal frame with pump/P sign and all four Ford vehicles. It replaces the initial three-car M2 selection in map r6; earlier alternatives remain as history. Courier **J1B is provisional**, with the choice among J1B/J2B/J3B/J3C still open. The user explicitly requested the courier headline `JOB TYPES COMPAT`.
 
-**Documented — later user feedback, 2026-10-18:** the Windows-local HTML gallery displays successfully. J3B is the courier favorite, with reservations about its car-like key fob; it is not final approval. The existing provisional preset/package stays J1B. Corrected M2C/M2D retain M2A's rear-view parking layout, use Crown Victoria 2006, and add Bronco 2024 in the four-car option. That proposal round did not change packages. The user subsequently selected M2D and confirmed both new previews display in chat; the seven combined presets and map r6 packages now use M2D.
+**Documented — later user feedback, 2026-10-18:** the Windows-local HTML gallery displays successfully. J3B is the courier favorite, with reservations about its car-like key fob; it is not final approval. J3C replaces that fob with a bunch of metal access keys while preserving the rest of J3B. The existing provisional preset/package stays J1B until the courier choice is final. Corrected M2C/M2D retain M2A's rear-view parking layout, use Crown Victoria 2006, and add Bronco 2024 in the four-car option. That proposal round did not change packages. The user subsequently selected M2D and confirmed both new previews display in chat; the seven combined presets and map r6 packages now use M2D.
 
 | Label | Small export | Motif / status |
 | --- | --- | --- |
@@ -19,6 +19,7 @@ Created and inspected: 2026-10-18. **Current map selection: M2D**, the navy/crea
 | J2 / J2B | [Original](proposals-v2/j2.jpg) / [new headline](proposals-v3/j2b.jpg) | Navy/gold, cream Mustang, route and parcel |
 | J3 | [JPEG](proposals-v2/j3.jpg) | Cream/green original alternative |
 | J3B | [JPEG](proposals-v3/j4.jpg) | New navy/teal checklist, red Mustang; current favorite, not final selection |
+| J3C | [JPEG](proposals-v5/j3c-access-keys.jpg) | J3B with a bunch of metal access keys replacing its car-style key fob; proposal, not selected |
 
 The seven [combined-map presets](map-compatibility/) reuse M2D with each map/connector's own footer. The separate [courier preset](practical-courier-jobs.jpg) currently copies J1B. These are original project artwork, not copied game assets. The art is illustrative, not an authoritative specification of vehicle geometry or cargo capacity. OtherMaps uses shared family art while its description states its price-only scope.
 
@@ -57,3 +58,5 @@ For another map, prepare a separately reviewed icon with that map's own bottom l
 ## Key motif evidence
 
 **Observed locally — ATS 1.61.3.18, inspected 2026-10-18:** the enabled practical policy includes `car_job.subkeys_26` and `car_job.subkeys_v46`, commented Substation Access Keys, using `car_cargo.subst_keys` and `car_cargo.v_subst_keys`. The key motif has a real cargo basis, but the stock definitions do not describe car ignition keys; J3B's automotive-looking fob can therefore mislead. All nine vehicle-transfer definitions remain unchanged. The adjacent `keys_seals` policy group also includes intermodal seal cargo; these are not vehicle transfers. [Cargo review](../../docs/reference/MUSTANG_COURIER_CARGO_REVIEW.md), [enabled policy](../../docs/examples/mustang-practical-courier.toml). Bounded evidence review by GPT-6 Luna / medium confirmed exact IDs and installed vehicle series tokens.
+
+The exact J3C edit prompt is [PROMPT_J3C_KEYS.md](PROMPT_J3C_KEYS.md). Root generated and inspected the edit and 276x162 JPEG export; the large original and export provenance remain under `local_outputs/work/2026-10-18_16-25-09/artwork/`. This proposal does not change the J1B courier preset or r1 package.

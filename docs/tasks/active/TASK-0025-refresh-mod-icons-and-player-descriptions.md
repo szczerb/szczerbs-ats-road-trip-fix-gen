@@ -54,6 +54,8 @@ Implementation and package verification completed; final courier artwork selecti
 
 - M2D acceptance: six new footer-only imagegen edits plus exact ATS Expansion selected JPEG now supply all seven combined presets. Map r6 generation defaults and descriptions advance together; 56 focused metadata/CLI/workflow tests pass. Seven JPEGs decode/validate and gameplay inventories remain byte-identical to r5. Courier r1 is copied byte-for-byte; no J3B swap is inferred. Independent Luna checks confirm the seven map packages, exact ATS Expansion selected icon, unchanged courier archive and outer ZIP inventory/CRC/SHA. Documentation QA passes 726 links, 25 task records, 12 unchanged input identities and 26 artifact exclusions. New run: `local_outputs/work/2026-10-18_16-16-22/`.
 
+- J3C is an additional courier-art proposal: it replaces J3B's automotive-looking key/fob with four metal access keys and preserves its checklist, Mustang, headline and frame. The exact prompt is [PROMPT_J3C_KEYS.md](../../../assets/mod-icons/PROMPT_J3C_KEYS.md); the 276x162 export is [j3c-access-keys.jpg](../../../assets/mod-icons/proposals-v5/j3c-access-keys.jpg). Root generated and inspected the image and export; the large original is in `local_outputs/work/2026-10-18_16-25-09/artwork/`. GPT-6 Luna / medium recorded the proposal in this task and the artwork guide. The user has not selected a final courier icon: J1B and r1 remain unchanged. No code or gameplay changed, and no utility tests needed rerunning.
+
 # Links
 
 - [Selected M2D r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md)
