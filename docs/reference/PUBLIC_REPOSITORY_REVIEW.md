@@ -2,6 +2,8 @@
 
 Reviewed 2026-10-18 (Europe/Warsaw), baseline `f7f05c2` on `codex/overnight-test-mods`. This is a publication inventory and code/provenance review, not a legal opinion or a review of generated `.scs` releases. **Observed locally:** 205 tracked paths, 32 commits reachable through `--all`, 218 distinct historical path names, and 572 distinct reachable blobs were inspected: 534 text blobs (4,060,510 bytes) and 38 image blobs (1,304,690 bytes). The pattern scan covered all reachable text blobs and commit messages, not just `HEAD`; binary image content was checked for container metadata. All 38 historical thumbnails were viewed together in a contact sheet, and three current examples were opened at native size. Ignored scratch summaries are at `local_outputs/work/2026-10-18_19-11-25/repo-review/`. Findings below distinguish evidence from legal uncertainty.
 
+**Subsequent decision, 2026-10-18:** [ADR-0016](../architecture/decisions/ADR-0016-license-project-under-agpl-v3.md) resolves the missing-project-license finding with **AGPL-3.0-only**, [LICENSE](../../LICENSE) and [explicit scope](../../LICENSING.md). It does not change the historical inventory, clear upstream/asset rights, or publish anything. A later bounded [local-path explanation](PUBLIC_GIT_IDENTITY_PRACTICES.md#local-paths-in-the-publication-review) records concrete disclosure and portability examples; the underlying paths/history remain unchanged.
+
 ## Publication decision points
 
 | Severity | Finding and evidence | Action before a public push |

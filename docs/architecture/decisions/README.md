@@ -8,6 +8,8 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
+- [ADR-0016: License project-authored materials under AGPLv3](ADR-0016-license-project-under-agpl-v3.md): AGPL-3.0-only, explicit scope and third-party exclusions, and matching package notices.
+
 - [ADR-0001: Use a documentation and evidence workflow before generator implementation](ADR-0001-documentation-and-evidence-workflow.md).
 
 - [ADR-0002: Use Python inspection and bounded experimental patches](ADR-0002-use-python-inspection-and-bounded-experimental-patches.md).

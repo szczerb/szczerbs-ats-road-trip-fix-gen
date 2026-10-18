@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Evidence-based ATS Road Trip map compatibility inspection and generation"
 requires-python = ">=3.11"
 dependencies = []
+license = {text = "AGPL-3.0-only"}
+
+[tool.setuptools]
+license-files = ["LICENSE", "LICENSING.md", "THIRD_PARTY_NOTICES.md"]
 
 [project.scripts]
 ats-road-trip = "ats_road_trip.cli:main"

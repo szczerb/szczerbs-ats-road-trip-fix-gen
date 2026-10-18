@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0031: Apply AGPLv3 and explain local paths](done/TASK-0031-apply-agpl-and-explain-local-paths.md) — AGPL-3.0-only, verified source-distribution notices and concrete path disclosure/portability explanation; paths/history unchanged.
+
 - [TASK-0030: Deepen code provenance and maintainer license review](done/TASK-0030-deepen-code-provenance-and-maintainer-license-review.md) — full parser/helper comparison, 19 verified historical source blobs, corrected placeholder identity and practical MIT/MPL/GPL recommendations; no license applied.
 
 - [TASK-0029: Review publication rights and license options](done/TASK-0029-review-publication-rights-and-license-options.md) — three sourced reports, current/history audit, conservative GPLv2 recommendation and explicit release decisions; no publication/license applied.

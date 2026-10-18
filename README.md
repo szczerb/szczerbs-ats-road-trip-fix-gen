@@ -36,7 +36,9 @@ The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extr
 
 ## Publication status
 
-Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [open-source license options](docs/reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). A root license has not been selected. The [deeper source assessment](docs/reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md) and [maintainer license comparison](docs/reference/MAINTAINER_LICENSE_CHOICES.md) now inform that decision; [public Git identity notes](docs/reference/PUBLIC_GIT_IDENTITY_PRACTICES.md) explain the intentional alias/placeholder. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
+Copyright (C) 2026 szczerb. Project-authored materials are licensed under **AGPL-3.0-only**: [full license](LICENSE), [scope, warranty and contribution terms](LICENSING.md). The user selected strong copyleft, including modified network-service versions, on 2026-10-18. Third-party tools, game/map inputs, trademarks and generated resources retain their separate rights.
+
+Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [the license decision](docs/architecture/decisions/ADR-0016-license-project-under-agpl-v3.md). The [deeper source assessment](docs/reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md) records the source-guided implementation and review limits; [public Git identity notes](docs/reference/PUBLIC_GIT_IDENTITY_PRACTICES.md) explain the intentional alias/placeholder and local-path disclosure. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
 
 ## Project navigation
 
