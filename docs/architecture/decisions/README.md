@@ -43,3 +43,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0015: Source-pinned reasonable tank upgrades](ADR-0015-source-pinned-reasonable-tank-upgrades.md): documented model-specific capacities, unchanged unsupported models, separate packaging and manual saved-fuel checks.
 
 - [ADR-0014: Shorten generated map package filenames](ADR-0014-shorten-map-package-cache-paths.md): preserve full map identities while reducing the icon-cache path budget after a logged connector failure.
+
+- [ADR-0018: Isolate source-pinned station-parking experiments](ADR-0018-isolate-source-pinned-station-parking-poc.md): separate per-station methods, exact input pins, model-derived geometry, native car-only triggers and fuel/context preservation; no proximity integration.

@@ -86,6 +86,21 @@ def parser() -> argparse.ArgumentParser:
             tanks.add_argument('--revision', type=int, default=0)
             tanks.add_argument('--icon', help='Optional 276x162 JPEG tank icon')
             tanks.add_argument('--experimental', action='store_true')
+    for name in ('analyze-station-parking', 'generate-station-parking'):
+        station = sub.add_parser(name, help=('Analyze one source-pinned station parking candidate'
+                                             if name == 'analyze-station-parking' else
+                                             'Generate one experimental station parking candidate'))
+        station.add_argument('--config', required=True, help='Source-pinned station JSON config')
+        station.add_argument('--mesh', required=True, help='Converted station PIM mesh used by the planner')
+        station.add_argument('--map-package', required=True, help='Pinned source map archive')
+        station.add_argument('--package', action='append', required=True,
+                             help='Map/dependency archive, repeat in explicit LOW-HIGH priority order; include source map once')
+        station.add_argument('--base-fix', help='Optional pinned fuel-only base fix mounted above explicit map packages')
+        station.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        station.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            station.add_argument('--revision', type=int, default=0)
+            station.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
@@ -176,6 +191,20 @@ def main(argv: list[str] | None = None) -> int:
             if generate:
                 options.update(revision=args.revision, icon=args.icon)
             result = run_tank_upgrades(args.config, generate=generate, **options)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result['planner'].get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-station-parking', 'generate-station-parking'):
+            from .station_run import run_station_parking
+            generate = args.command.startswith('generate')
+            result = run_station_parking(
+                args.config, args.mesh, args.map_package, packages=args.package,
+                base_fix=args.base_fix, game_dir=args.game_dir, run_id=args.run_id,
+                extractor=args.extractor, generate=generate,
+                revision=args.revision if generate else 0,
+                experimental=getattr(args, 'experimental', False))
             _emit({'status': result['status'], 'output': result.get('output'),
                    'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
                    'coverage': result['planner'].get('coverage'),
