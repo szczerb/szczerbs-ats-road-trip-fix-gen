@@ -254,7 +254,7 @@ class BulkRunTests(unittest.TestCase):
                                               run_id='2026-10-18_17-04-30')
         output = Path(audit['output'])
         self.assertEqual(output.name,
-                         'szczerbs-road-trip-map-fix-western-canada-promods-connections-1.61-r8-experimental.scs')
+                         'szczerbs-road-trip-map-fix-western-canada-promods-connections-1.61-r9-experimental.scs')
         # Reproduce the cache-name transformation observed in the user's log.
         # This checks our mitigation's path budget, not the game's Win32 code.
         home = 'C:/Users/guest/Documents/American Truck Simulator'

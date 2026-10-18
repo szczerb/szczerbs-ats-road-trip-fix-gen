@@ -38,6 +38,8 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 Runtime fix validation and general map-sector authoring remain open.
 
+- [ADR-0017: Separate car rest marker geometry](ADR-0017-separate-car-rest-marker-geometry.md): native car-only trigger twins avoid truck-first marker classification; preserves the local rule and original geometry, superseding mixed-action edits.
+
 - [ADR-0015: Source-pinned reasonable tank upgrades](ADR-0015-source-pinned-reasonable-tank-upgrades.md): documented model-specific capacities, unchanged unsupported models, separate packaging and manual saved-fuel checks.
 
 - [ADR-0014: Shorten generated map package filenames](ADR-0014-shorten-map-package-cache-paths.md): preserve full map identities while reducing the icon-cache path budget after a logged connector failure.

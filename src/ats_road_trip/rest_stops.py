@@ -2,7 +2,7 @@
 
 Distances are minimum XZ polygon separation in game-world units, inclusive at
 ``radius``. They do not describe driving distance or physical access. Original
-truck/bus eligibility remains intact; polygon geometry and topology stay unchanged. Unsupported
+truck/bus eligibility remains intact; separate car-only twins retain the original geometry. Unsupported
 source coverage blocks publication; static validation cannot establish fatigue recovery.
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ from .archive import Archive
 from .bulk_fuel import _alias_definition, _sha, _splice, prefab_definitions
 from .fuel_matching import _control_positions, _node
 from .local_fuel import token
-from .map_sector import _Reader, parse_sector
+from .map_sector import _Reader, extend_layer, parse_sector
 from .ppd import inspect_ppd
 from .sii import parse_units, _expand_includes, _HEADER, _mask_strings
 
@@ -112,7 +112,7 @@ def inspect_rest_triggers(data: bytes, *, actions=None) -> list[dict]:
 
 
 def retarget_rest_polygons(data: bytes, group_ids: set[int], action: int, *, actions=None) -> tuple[bytes, dict]:
-    """Retarget selected truck polygons to a private truck/bus/car action.
+    """Legacy action-only experiment; not used for car map-marker generation.
 
     Only each selected vertex's eight action-token bytes change. Geometry,
     indices, flags, ranges and all other sections are preserved exactly.
@@ -134,6 +134,52 @@ def retarget_rest_polygons(data: bytes, group_ids: set[int], action: int, *, act
     inspect_rest_triggers(bytes(result),actions=set(actions or {_CAR,_TRUCK}) | {action})
     return bytes(result), {'groups_retargeted':sorted(group_ids),
                            'original_geometry_topology_and_other_sections_preserved':True}
+
+
+def duplicate_car_rest_polygons(data: bytes, group_ids: set[int], *, actions=None,
+                                source_actions=None) -> tuple[bytes, dict]:
+    """Append car-only twins without changing any original trigger record.
+
+    ATS 1.61's map marker builder checks truck/bus before car on each group.
+    A mixed-mode action therefore produces only its truck marker. Distinct
+    group IDs and the original car-only action let both markers be classified.
+    The raw shape, range, flags and activation parameters are copied exactly.
+    """
+    groups = inspect_rest_triggers(data, actions=actions)
+    source_actions = {_TRUCK} if source_actions is None else set(source_actions)
+    selected = [g for g in groups if g['action'] in source_actions and g['id'] in group_ids]
+    if {g['id'] for g in selected} != group_ids or len(selected)!=len(group_ids):
+        raise ValueError('Selected truck rest groups are absent or ambiguous')
+    h = list(struct.unpack_from('<24I', data))
+    next_id = max((struct.unpack_from('<I', data, h[21]+48*i)[0]
+                   for i in range(h[9])), default=-1) + 1
+    if next_id + len(selected) > 0x100000000:
+        raise ValueError('No unused PPD trigger group IDs remain')
+    records, pairs = [], []
+    for group in selected:
+        indexes = group['indices']
+        remap = {old:h[9]+len(records)+i for i,old in enumerate(indexes)}
+        for old in indexes:
+            raw = bytearray(data[h[21]+48*old:h[21]+48*(old+1)])
+            struct.pack_into('<IQ', raw, 0, next_id, _CAR)
+            neighbors = struct.unpack_from('<2i', raw, 40)
+            struct.pack_into('<2i', raw, 40, *(remap[n] for n in neighbors))
+            records.append(bytes(raw))
+        pairs.append({'original_group_id':group['id'],'car_group_id':next_id})
+        next_id += 1
+    extra = b''.join(records)
+    insertion = h[22]
+    h[9] += len(records)
+    h[22] += len(extra)
+    h[23] += len(extra)
+    result = struct.pack('<24I', *h) + data[96:insertion] + extra + data[insertion:]
+    checked = inspect_rest_triggers(result, actions=set(actions or {_CAR,_TRUCK}) | {_CAR})
+    if (result[96:insertion] != data[96:insertion]
+            or result[insertion+len(extra):] != data[insertion:]
+            or len([g for g in checked if g['id'] in {p['car_group_id'] for p in pairs}]) != len(pairs)):
+        raise ValueError('Car rest duplication did not preserve original descriptor sections')
+    return result, {'groups_duplicated':pairs,'car_action':'parking_car',
+                    'original_trigger_records_and_other_sections_preserved':True}
 
 
 def _validate_polygon(points):
@@ -328,15 +374,19 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
         raise ValueError('Rest radius must be finite and nonnegative')
     overrides = resource_overrides or {}
     effective = _Overlay(stack, overrides)
-    report = {'schema_version':1,'analysis':'localized_missing_car_rest','map_name':map_name,
+    report = {'schema_version':2,'analysis':'localized_missing_car_rest','map_name':map_name,
+              'marker_strategy':'separate_native_car_only_twins',
               'radius':radius,'distance_metric':('minimum Euclidean XZ polygon separation for simple polygons; '
                                                 'vertex-pair upper-bound proof for irregular source polygons'),
               'inclusive_radius':True,'package_order':[str(p.path) for p in stack.packages],
               'coverage':{'blockers':[],'truck_polygons':0,'existing_car_locations':0,
-                          'already_supported':0,'added_car_polygons':0,'placements_changed':0},
+                          'already_supported':0,'added_car_polygons':0,'placements_changed':0,
+                          'added_standalone_triggers':0,'added_standalone_nodes':0,
+                          'marker_repairs_existing_car_permissions':0,'new_car_permissions':0},
               'locations':[],'changed_sectors':[],'source_resources':[],
               'legacy_irregular_polygons':[],
               'conservative_proximity_for_irregular_source':[],
+              'standalone_twins':[],
               'composed_resource_paths':[],
               'scope':{'mode':'source_sectors_with_approximate_halo','omissions':[],
                        'boundary_over_additions_accepted':True,'nominal_sector_width':4000.,
@@ -348,7 +398,7 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                              'Full-sector overrides require the declared effective stack.',
                              'Single-control-node rest prefabs and compound rest placement are unsupported.',
                              'Car rests outside source sectors and the approximate halo can be missed, causing accepted boundary additions.',
-                             'Existing irregular standalone polygons count as nearby only when an original vertex pair proves the distance; otherwise action-only truck retargeting may add extra car permissions.',
+                             'Existing irregular standalone polygons count as nearby only when an original vertex pair proves the distance; otherwise exact-geometry car-only twins may add extra car permissions.',
                              'DLC guards remain unchanged; actual runtime availability still depends on the declared game setup.']}
     coverage,blockers = report['coverage'],report['coverage']['blockers']
     resources = {}
@@ -366,7 +416,7 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                                 'halo_sector_paths': []})
         return report, {}
     try:
-        modes,truck_action_block,action_tokens,hud_actions = _validate_actions(effective)
+        modes,_truck_action_block,_action_tokens,hud_actions = _validate_actions(effective)
         definitions = prefab_definitions(effective)
     except (ValueError,KeyError) as exc:
         blockers.append({'reason':str(exc)})
@@ -381,11 +431,16 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
             package.prefetch([p for p in paths if p not in overrides and stack.resources[p][0] is package],
                              disk_cache=Archive._scratch_root().parent/'package-cache'/_sha(str(package.path).encode())[:12])
     placements,standalones,nodes = [],[],defaultdict(list)
+    sectors, all_uids = {}, set()
     nested,nonempty_sources = [],[]
     def load(path):
         try:
             data = effective.read(path,max_bytes=64*1024*1024)
             parsed = parse_sector(data)
+            sectors[path] = (data,parsed)
+            all_uids.update(i.uid for i in parsed.items)
+            all_uids.update(n.uid for n in parsed.nodes)
+            all_uids.update(parsed.visibility_children)
             if path in source_set and parsed.items:
                 nonempty_sources.append(path)
             placements.extend((path,item) for item in parsed.prefabs)
@@ -394,9 +449,11 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                 nodes[node.uid].append((path,node))
             def walk(items):
                 for item in items:
+                    all_uids.add(item.uid)
                     if item.kind in (4,0x22):
                         nested.append((path,item))
                     if item.kind == 0x28:
+                        all_uids.update(n.uid for n in item.details['compound_nodes'])
                         walk(item.details['items'])
             for item in parsed.items:
                 if item.kind==0x28:
@@ -472,7 +529,10 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                 points = _placed_vertices(entry[-2],item,controls,group['vertices'])
                 locations.append({'path':path,'item':item,'entry':entry,'group':group,
                                   'points':points,'radius':0.,'car':'car' in modes[group['action']],
-                                  'truck':bool(modes[group['action']] & {'truck','bus'}),'kind':'prefab'})
+                                  'truck':bool(modes[group['action']] & {'truck','bus'}),
+                                  'car_marker':('car' in modes[group['action']]
+                                                and not modes[group['action']] & {'truck','bus'}),
+                                  'kind':'prefab'})
         except (ValueError,KeyError,struct.error) as exc:
             problem(path,str(exc),uid=hex(item.uid))
     for path,item,trigger in standalones:
@@ -512,7 +572,9 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
             vehicles = set().union(*(modes[a['action']] for a in rest_actions))
             locations.append({'path':path,'item':item,'trigger':trigger,'points':points,
                               'radius':trigger['radius'],'car':'car' in vehicles,
-                              'truck':bool(vehicles & {'truck','bus'}),'kind':'standalone',
+                              'truck':bool(vehicles & {'truck','bus'}),
+                              'car_marker':('car' in vehicles and not vehicles & {'truck','bus'}),
+                              'kind':'standalone',
                               'activation':activation,
                               'legacy_irregular_polygon':legacy_irregular_polygon})
             if legacy_irregular_polygon:
@@ -523,6 +585,7 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
             problem(path,str(exc),uid=hex(item.uid))
     cars = [location for location in locations if location['car']]
     coverage['existing_car_locations'] = len(cars)
+    coverage['existing_car_marker_locations'] = sum(c['car_marker'] for c in cars)
     scope['guarded_standalone_rest_locations'] = sum(bool(v.get('activation',{}).get('dlc_guard')) for v in locations)
     selected = defaultdict(list)
     def bbox(points):
@@ -552,8 +615,14 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                              -location['radius']-car['radius'])
             if distance<=radius:
                 nearby.append((distance,car))
+        # Never expand car permission if any original physical car neighbor
+        # satisfies the radius rule. A mixed-mode location already permits cars
+        # but needs a separate car-only twin to repair its marker classification.
+        if location['car']:
+            nearby=[pair for pair in nearby if pair[1]['car_marker']]
         row={'path':path,'uid':hex(location['item'].uid),'kind':location['kind'],
              'status':'already_supported' if nearby else 'selected',
+             'original_car_eligible':location['car'],
              'polygon_xz':[list(p) for p in location['points']]}
         if location['kind']=='prefab':
             row['group_id']=location['group']['id']
@@ -565,12 +634,14 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                 row['distance_method']='vertex_pair_upper_bound_for_original_irregular_polygon'
             coverage['already_supported'] += 1
         else:
+            row['addition_reason']=('repair_existing_car_marker' if location['car']
+                                    else 'no_original_car_rest_within_radius')
             if location.get('legacy_irregular_polygon'):
                 row['proximity_method']='conservative_vertex_proof_only_for_original_irregular_polygon'
                 report['conservative_proximity_for_irregular_source'].append({
                     'path':path,'uid':hex(location['item'].uid),
                     'reason':'No original car vertex pair proved proximity; interior proximity remains unknown',
-                    'action_only_retarget':True})
+                    'exact_original_geometry_cloned':True})
             selected[(path,location['item'].uid)].append(location)
         report['locations'].append(row)
     # Unsafe source parsing blocks edits. Neighbor omissions may hide car rests;
@@ -578,32 +649,23 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
     if blockers:
         coverage['complete']=False
         return report,{}
-    edits=defaultdict(list)
-    action_alias = 'rta'+_sha((map_name+':'+truck_action_block).encode())[:8]
-    action_token = token(action_alias)
-    action_path = f'def/world/trigger_action.{action_alias}.sii'
-    if selected:
-        if action_token in action_tokens or action_path in effective.resources:
-            blockers.append({'reason':'Private rest action resource/unit collision'})
-            coverage['complete']=False
-            return report,{}
-        action_block,count = re.subn(r'(\btrigger_action\s*:\s*)trig_action\.hud_parking\b',
-                                     lambda m:m[1]+'trig_action.'+action_alias,truck_action_block,count=1)
-        if count != 1:
-            raise ValueError('Unable to clone reviewed truck rest action')
-        action_block = action_block[:-1]+'\n str_params[]: "car"\n}'
-        resources[action_path] = ('SiiNunit\n{\n'+action_block+'\n}\n').encode()
-        report['private_action']={'token':action_alias,'resource':action_path,
-                                  'vehicles':['truck','bus','car']}
+    edits,new_items,new_nodes = defaultdict(list),defaultdict(list),defaultdict(list)
+    standalone_clones = {}
+    report['car_action']={'token':'parking_car','vehicles':['car'],
+                          'shared_definition_unchanged':True}
+    def new_uid(seed):
+        value = int.from_bytes(hashlib.sha256(seed.encode()).digest()[:8],'little')
+        if value in (0,0xffffffffffffffff) or value in all_uids:
+            raise ValueError('Generated rest UID collision; refusing ambiguous output')
+        all_uids.add(value)
+        return value
     for (path,uid),chosen in sorted(selected.items()):
         first=chosen[0]; item=first['item']
         try:
             if first['kind']=='prefab':
                 unit,block,definition,descriptor,original,groups=first['entry']
-                if any(v['group']['action'] != _TRUCK for v in chosen):
-                    raise ValueError('Custom truck-only rest action requires explicit definition cloning')
-                changed,change=retarget_rest_polygons(original,{v['group']['id'] for v in chosen},
-                                                       action_token,actions=modes.keys())
+                changed,change=duplicate_car_rest_polygons(original,{v['group']['id'] for v in chosen},
+                    actions=modes.keys(),source_actions={v['group']['action'] for v in chosen})
                 seed=f'{map_name}:{path}:{uid:x}:{_sha(changed)}'
                 alias='rtr'+hashlib.sha256(seed.encode()).hexdigest()[:8]
                 private=f'prefab/rtfix/{alias}.ppd'; defpath=f'def/world/prefab.{alias}.sii'
@@ -617,34 +679,143 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                                                    'private_alias':alias,**change})
             else:
                 trigger=first['trigger']
-                rest_actions = [a for a in trigger['actions'] if a['action'] in modes]
-                if any(a['action'] != _TRUCK for a in rest_actions):
-                    raise ValueError('Custom truck-only rest action requires explicit definition cloning')
-                for action in rest_actions:
-                    offset=action['offset']
-                    edits[path].append((offset,offset+8,struct.pack('<Q',action_token)))
+                original = sectors[path][0]
+                seed=f'{map_name}:{path}:{uid:x}:{_sha(original)}:car-rest'
+                car_uid = new_uid(seed+':item')
+                car_nodes=[]
+                for index,node_uid in enumerate(trigger['nodes']):
+                    node = node_for(node_uid,path)
+                    twin_uid = new_uid(seed+f':node:{index}')
+                    raw = bytearray(node.raw)
+                    struct.pack_into('<Q',raw,0,twin_uid)
+                    # A trigger twin owns independent nodes. Original shared
+                    # boundary links remain byte-identical and are not copied.
+                    struct.pack_into('<QQ',raw,36,0,car_uid)
+                    new_nodes[path].append(bytes(raw))
+                    car_nodes.append(twin_uid)
+                raw = bytearray(original[item.offset:item.offset+57])
+                struct.pack_into('<Q',raw,4,car_uid)
+                # Preserve tag-targeted enable/disable lifecycle for both twins,
+                # but do not duplicate unrelated entry effects on car activation.
+                raw += struct.pack('<I',len(trigger['tags']))
+                raw += b''.join(struct.pack('<Q',tag) for tag in trigger['tags'])
+                raw += struct.pack('<I',len(car_nodes))
+                raw += struct.pack('<'+'Q'*len(car_nodes),*car_nodes)
+                raw += struct.pack('<IQI',1,_CAR,0xffffffff)
+                if len(car_nodes)==1:
+                    raw += original[item.end-4:item.end]
+                new_items[path].append(bytes(raw))
+                standalone_clones[uid]=car_uid
+                report['standalone_twins'].append({'path':path,'original_uid':hex(uid),
+                    'car_uid':hex(car_uid),'original_nodes':[hex(n) for n in trigger['nodes']],
+                    'car_nodes':[hex(n) for n in car_nodes],
+                    'original_trigger_and_nodes_preserved':True,
+                    'geometry_flags_and_range_preserved':True,
+                    'car_only_action':'parking_car','original_tags_preserved':True,
+                    'unrelated_actions_copied':False})
+                coverage['added_standalone_triggers'] += 1
+                coverage['added_standalone_nodes'] += len(car_nodes)
             coverage['added_car_polygons'] += len(chosen)
+            coverage['marker_repairs_existing_car_permissions'] += sum(v['car'] for v in chosen)
+            coverage['new_car_permissions'] += sum(not v['car'] for v in chosen)
             coverage['placements_changed'] += 1
         except (ValueError,KeyError,struct.error) as exc:
             blockers.append({'path':path,'uid':hex(uid),'reason':str(exc)})
-    for path,operations in sorted(edits.items()):
-        original=effective.read(path,max_bytes=64*1024*1024)
+    # Mirror visibility and layer membership for independent standalone twins.
+    for path,(original,parsed) in sorted(sectors.items()):
+        operations=[]
+        for item in parsed.items:
+            children=item.details.get('children',())
+            additions=[standalone_clones[u] for u in children if u in standalone_clones]
+            if additions:
+                offset=item.details['child_count_offset']; insertion=item.details['child_insert_offset']
+                operations.extend([(offset,offset+4,struct.pack('<I',len(children)+len(additions))),
+                    (insertion,insertion,b''.join(struct.pack('<Q',u) for u in additions))])
+        additions=[standalone_clones[u] for u in parsed.visibility_children if u in standalone_clones]
+        if additions:
+            offset=parsed.visibility_children_offset
+            operations.append((offset,len(original),struct.pack('<I',len(parsed.visibility_children)+len(additions))
+                               +original[offset+4:]+b''.join(struct.pack('<Q',u) for u in additions)))
+        if operations:
+            if path not in source_set:
+                blockers.append({'path':path,'reason':'Rest twin visibility requires a non-source sector edit'})
+            else:
+                edits[path].extend(operations)
+    for path in sorted(set(edits)|set(new_items)):
+        original,before=sectors[path]
+        operations=list(edits[path])
+        if new_items[path]:
+            combined_nodes=[n.raw for n in before.nodes]+new_nodes[path]
+            combined_nodes.sort(key=lambda raw:struct.unpack_from('<Q',raw)[0])
+            operations.extend([(16,20,struct.pack('<I',before.item_count+len(new_items[path]))),
+                (before.node_count_offset,before.visibility_children_offset,
+                 b''.join(new_items[path])+struct.pack('<I',len(combined_nodes))+b''.join(combined_nodes))])
         changed=_splice(original,operations)
-        before,after=parse_sector(original),parse_sector(changed)
-        if tuple(n.raw for n in before.nodes)!=tuple(n.raw for n in after.nodes):
+        after=parse_sector(changed)
+        after_nodes={n.uid:n.raw for n in after.nodes}
+        if any(after_nodes.get(n.uid)!=n.raw for n in before.nodes):
             raise ValueError('Rest planner changed original map nodes')
-        if before.visibility_children!=after.visibility_children or before.item_count!=after.item_count:
-            raise ValueError('Rest planner changed sector topology')
+        after_items={i.uid:i for i in after.items}
+        for item in before.items:
+            # Only prefab aliases and explicit visibility child lists change;
+            # original standalone triggers, services and companies stay exact.
+            if item.kind==4 or item.details.get('children'):
+                continue
+            twin=after_items[item.uid]
+            if original[item.offset:item.end]!=changed[twin.offset:twin.end]:
+                raise ValueError('Rest planner changed an original map item')
         resources[path]=changed
         report['changed_sectors'].append({'path':path,'source_package':str(stack.resources[path][0].path),
-                                         'source_sha256':_sha(original),'output_sha256':_sha(changed)})
+                                         'source_sha256':_sha(original),'output_sha256':_sha(changed),
+                                         'added_items':len(new_items[path]),'added_nodes':len(new_nodes[path])})
         if path in overrides:
             report['composed_resource_paths'].append(path)
+    for stem in sorted({p.rsplit('.',1)[0] for p in new_items if new_items[p]}):
+        path=stem+'.layer'
+        if path in effective.resources:
+            try:
+                original=effective.read(path)
+                changed=extend_layer(original,standalone_clones)
+                if changed!=original:
+                    resources[path]=changed
+                    if path in overrides:
+                        report['composed_resource_paths'].append(path)
+            except (ValueError,KeyError,struct.error) as exc:
+                blockers.append({'path':path,'area':'rest_twin_layer','reason':str(exc)})
+    # Independently check each new item's resolved action/geometry/ownership,
+    # rather than treating edit counters as proof of a usable car counterpart.
+    parsed_outputs={}
+    for twin in report['standalone_twins']:
+        path=twin['path']
+        if path not in parsed_outputs:
+            data=resources[path]
+            parsed=parse_sector(data)
+            parsed_outputs[path]=(data,{i.uid:i for i in parsed.items},
+                                   {n.uid:n for n in parsed.nodes})
+        data,items_by_uid,nodes_by_uid=parsed_outputs[path]
+        source_item=items_by_uid[int(twin['original_uid'],16)]
+        car_item=items_by_uid[int(twin['car_uid'],16)]
+        source_trigger=_standalone(data,source_item)
+        car_trigger=_standalone(data,car_item)
+        if (car_item.kind!=0x22 or car_item.flags!=source_item.flags
+                or car_trigger['tags']!=source_trigger['tags'] or len(car_trigger['actions'])!=1
+                or car_trigger['actions'][0]['action']!=_CAR
+                or car_trigger['actions'][0]['custom']
+                or car_trigger['radius']!=source_trigger['radius']
+                or len(car_trigger['nodes'])!=len(source_trigger['nodes'])):
+            raise ValueError('Car rest twin does not have independent native car-only semantics')
+        for old_uid,new_uid_value in zip(source_trigger['nodes'],car_trigger['nodes']):
+            old=nodes_by_uid.get(old_uid) or node_for(old_uid,path)
+            new=nodes_by_uid[new_uid_value]
+            if (old.raw[8:36]!=new.raw[8:36] or old.flags!=new.flags
+                    or new.backward or new.forward!=car_item.uid):
+                raise ValueError('Car rest twin geometry or reciprocal node ownership differs')
     coverage['complete']=not blockers
     if blockers:
         return report,{}
     report['static_validation']={'original_truck_bus_eligibility_preserved':True,
-                                 'original_map_nodes_and_topology_preserved':True,
+                                 'original_map_nodes_and_standalone_triggers_preserved':True,
+                                 'separate_native_car_only_marker_groups':True,
                                  'proximity_index_uses_original_car_locations':True,
                                  'all_selected_source_sectors_inspected':True,
                                  'bounded_halo_index':True}

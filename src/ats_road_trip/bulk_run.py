@@ -180,7 +180,7 @@ def _write_audit(path: Path, audit: dict) -> None:
 
 
 def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
-                     map_name=None, revision=8, run_id=None, extractor=None,
+                     map_name=None, revision=9, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      _legacy_fuel=False, _analysis_only=False) -> dict:

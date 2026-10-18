@@ -1,5 +1,7 @@
 # ADR-0012: Preserve irregular standalone rest geometry during action-only edits
 
+**Partially superseded by [ADR-0017](ADR-0017-separate-car-rest-marker-geometry.md):** retain conservative proximity and exact source geometry; clone separate car-only twins instead of changing the original action token.
+
 ## Context
 
 Date: 2026-10-18. Broad rest generation found existing standalone map triggers with crossed edges or repeated XZ vertices. ATS Expansion has a truck/bus trigger with no vertex-proven car neighbor. These are original source bytes, not damage introduced by generation. The user wants local car permission while preserving trucks and accepts extra permissions from bounded proximity inspection. That instruction explicitly discussed map boundaries; applying a conservative proximity fallback to malformed source geometry is an implementation decision recorded here, not a new user quote.

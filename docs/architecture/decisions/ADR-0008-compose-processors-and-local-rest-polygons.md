@@ -1,5 +1,7 @@
 # ADR-0008: Compose selected processors and apply rest eligibility locally
 
+**Partially superseded by [ADR-0017](ADR-0017-separate-car-rest-marker-geometry.md):** retain composition, local proximity and source ownership; replace mixed private actions with separate native car-only trigger twins for marker classification.
+
 ## Context
 
 Date: 2026-10-18. The user requests independently selectable fuel, rest and future Courier Job processing. For rest, add car eligibility to a truck/bus area only if no existing car rest lies within one kilometre. The user explicitly selects straight-line distance in the game world rather than navigation distance.

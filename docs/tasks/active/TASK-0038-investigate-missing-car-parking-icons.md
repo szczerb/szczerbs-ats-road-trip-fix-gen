@@ -18,6 +18,9 @@ Identify why r8 passenger-car parking icons are absent in the reported Canadian/
 
 # Scope
 
+- **Subsequent explicit goal authorization:** implement and test the supported repair, independently review code/archives, prepare local r9 replacements, update documentation and commit locally. Do not publish, push, install, launch ATS or modify a profile.
+- Implementation evidence is under ignored `local_outputs/work/2026-10-18_23-37-08/` and delegated timestamped inventory/mechanism directories. Work branch: `codex/car-parking-icons`.
+
 - Read-only installed r8/package/log inspection and screenshot review; investigate map-marker representation separately from rest eligibility.
 - Preserve original inputs, outputs and live profile. No game launch, installation, save changes or immediate manual test request.
 - New artifacts: ignored `local_outputs/work/2026-10-18_23-24-54/`.
@@ -36,6 +39,10 @@ Identify why r8 passenger-car parking icons are absent in the reported Canadian/
 - Do not label the issue fixed from archive counts or static eligibility alone.
 
 # Verification
+
+**Observed locally — subsequent implementation research:** root and GPT-6 Sol/high independently inspected the installed ATS executable (`c60e8ee02cc97b3cc6ef8c6298bb5c3c23c4ffd330b8185b646fb1b608a3c7b4`) without running/modifying it. Both prefab and standalone map-marker paths classify truck/bus before car, explaining why the mixed r8 action lacks a separate car category. Native action names are dynamically resolved; no overlay/fuel flag change is required. [ADR-0017](../../architecture/decisions/ADR-0017-separate-car-rest-marker-geometry.md) records the now-supported replacement strategy.
+
+Implementation in progress: separate car-only prefab groups and standalone Trigger twins preserve original geometry/actions; fresh UIDs, visibility/layer closure and fuel overlays are validated. Independent review identified and corrected mixed-mode proximity suppression and source tag preservation. GPT-6 Luna/medium owns paired source inventory, GPT-6 Luna/high owns bounded regression-test changes, GPT-6 Sol/high owns mechanism and independent review, root owns production/integration/docs/artifacts.
 
 **Observed locally — 2026-10-18:** all seven installed map r8 archives match the delivered archives by SHA-256. Every `map/`, `prefab/` and `def/` resource is byte-identical to its r7 predecessor. The 22:49:31 game-log session lists all seven r8 fixes active in the expected source-relative sequence. This excludes an r7-to-r8 gameplay payload change; it does not exclude an earlier defect or uninspected effective-resource interaction.
 

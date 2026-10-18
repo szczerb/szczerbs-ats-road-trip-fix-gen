@@ -46,7 +46,7 @@ def map_description(
     map_name: str,
     topics: tuple[str, ...] = ('fuel', 'rest'),
     *,
-    version: str = '1.61-r8-experimental',
+    version: str = '1.61-r9-experimental',
     rest_radius: int = 1000,
 ) -> str:
     """Describe a map package without claiming untested gameplay results."""
@@ -77,7 +77,7 @@ def map_description(
             paragraphs.append(
                 'Adds passenger-car rest access where the inspected nearby area has no '
                 f'existing car rest within {rest_radius:,g} game-world units. '
-                'Existing truck and bus rest access stays in place. Check rest prompts '
+                'Existing truck and bus rest access stays in place. Check parking icons, rest prompts '
                 'and fatigue recovery in game.'
             )
     paragraphs.append(_load_order(name))
@@ -86,9 +86,9 @@ def map_description(
     elif selected == {'fuel'}:
         checks = 'Refueling, petrol display, and billing still need in-game confirmation.'
     elif selected == {'rest'}:
-        checks = 'Rest prompts and fatigue recovery still need in-game confirmation.'
+        checks = 'Parking icons, rest prompts and fatigue recovery still need in-game confirmation.'
     else:
-        checks = ('Refueling, petrol display, billing, rest prompts, and fatigue '
+        checks = ('Refueling, petrol display, billing, parking icons, rest prompts, and fatigue '
                   'recovery still need in-game confirmation.')
     paragraphs.append('Test with a copy of your profile. ' + checks)
     return '\n\n'.join(paragraphs) + '\n'
