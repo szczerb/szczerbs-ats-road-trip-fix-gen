@@ -4,7 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0025: Refresh icons and player descriptions](active/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — implementation and eight metadata-only packages verified; courier artwork selection and visible-preview confirmation pending.
+- [TASK-0025: Refresh icons and player descriptions](active/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — implementation and eight metadata-only packages verified; HTML preview visibility confirmed; final artwork selection pending.
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
