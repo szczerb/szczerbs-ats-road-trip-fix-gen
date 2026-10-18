@@ -9,7 +9,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Backlog
 
-No unstarted tasks. Record newly discovered implementation gaps as bounded follow-up tasks; manual gameplay validation remains active.
+- [TASK-0019: Preserve contexts for generated prefab aliases](backlog/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) — high priority: 14 WCE r3 Company-parent aliases lose static classification; review fuel/rest cloning and preserve exact effective tags. Runtime effect remains unknown.
 
 ## Done
 
@@ -42,5 +42,7 @@ No unstarted tasks. Record newly discovered implementation gaps as bounded follo
 - [TASK-0016: Implement proximity-filtered rest eligibility](done/TASK-0016-prepare-rest-eligibility-experiment.md) — bounded source-plus-halo rule, private truck/bus/car action, 202 WCE additions with explicit boundary limits and manual testing pending.
 
 - [TASK-0017: Compose selectable compatibility processors](done/TASK-0017-compose-selectable-compatibility-processors.md) — enum/CLI selection, atomic composed output, accurate topic metadata, 179 tests and independently verified WCE fuel/rest package.
+
+- [TASK-0018: Report courier company locations](done/TASK-0018-report-courier-company-locations.md) — read-only selectable analysis, shared-marker evidence, 194 tests and real ATS Expansion/WCE patch reports; existing alias-context risk tracked separately.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

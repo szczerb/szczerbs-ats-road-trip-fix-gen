@@ -27,6 +27,8 @@ The user selects independent `fuel`/`rest` processors and a local rest rule: add
 
 ## Task and evidence rules
 
+Courier's current increment is [analysis/reporting only](docs/reference/COURIER_REPORTING.md), through `analyze-map --processor courier`; generation remains unsupported. Read [company marker evidence](docs/reference/COURIER_MARKER_RESEARCH.md) before interpreting company nodes or raw spawn flags. Resolve editor definitions by semantic company/city/prefab data, including DLC-suffixed filenames; do not assume `<city>.sii` is the only valid path. Distinguish generic check-in, load/delivery positions, context matches and runtime offers. This processor must not emit courier resources or invoke the mod writer in analysis mode. Existing private prefab aliases can change context inputs: [TASK-0019](docs/tasks/backlog/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) records the proven WCE r3 static gap and unverified runtime effect. Do not equate preserved Company bytes with preserved courier classification.
+
 - Use `TASK-XXXX-<slug>.md` with frontmatter `id`, `title`, `status`, `priority`, `repositories`, `depends_on`, `owner`; sections `Goal`, `Context`, `Scope`, `Implementation Plan`, `Acceptance Criteria`, `Verification`, `Links`. For this single repository, use `repositories: [.]`.
 - Keep directory and status synchronized: `docs/tasks/backlog/` → `active/` → `done/`. Record blockers inside the task; move to done only after acceptance and verification. Preserve history and update links when tasks move.
 - Record durable architecture/interface/workflow choices as ADRs. Use incidents for reproducible failures needing a separate evidence trail; ordinary planned research stays in tasks.

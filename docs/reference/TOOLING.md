@@ -35,6 +35,8 @@ Selection is batched to keep subprocess arguments bounded. Re-extract after sour
 
 ## Virtual packages and courier coverage
 
+The newer [source-relative courier report](COURIER_REPORTING.md) uses `analyze-map SOURCE --processor courier` and inspects placed companies, nodes and descriptors as well as definitions. It does not require `--experimental` or create a mod. The older command below retains its narrower definition/context scope.
+
 ```bash
 PYTHONPATH=src python3 -m ats_road_trip courier-audit --baseline local_outputs/extracted/game-def --map local_inputs/ATS_Expansion_v23.0_1.61.scs --map local_inputs/Alaska_Expansion_v1.2.3.scs --map local_inputs/Western_Canada_Expansion_v1.7.3.scs --output local_outputs/reports/courier-coverage.json
 ```

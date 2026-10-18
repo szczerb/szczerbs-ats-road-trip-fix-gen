@@ -60,6 +60,10 @@ class Sector:
         return tuple(i for i in self.items if i.kind in (7, 0x23))
 
     @property
+    def companies(self) -> tuple[MapItem, ...]:
+        return tuple(i for i in self.items if i.kind == 6)
+
+    @property
     def item_count(self) -> int:
         return len(self.items)
 
@@ -188,9 +192,12 @@ def _item(r: _Reader, depth: int = 0) -> MapItem:
         r.array(8)
         r.skip(8 + 12 + 8 + 4 + 4)
     elif kind == 6:
-        r.skip(32)
-        n = r.array(8)
-        r.skip(n * 4)
+        # CompanySerializer: economy-link identity, placed prefab and marker
+        # node, then parallel spawn-node and raw flag arrays. Exposing these
+        # fields does not infer any new ATS 1.61 vehicle-bit semantics.
+        d['city'], d['prefab'], d['company'], d['node'] = r.read('4Q')
+        d['spawn_nodes'] = r.refs()
+        d['spawn_flags'] = tuple(r.read('I') for _ in d['spawn_nodes'])
     elif kind == 8:
         r.array(8)
     elif kind == 9:

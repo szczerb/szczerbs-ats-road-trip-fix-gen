@@ -66,24 +66,28 @@ def parser() -> argparse.ArgumentParser:
     courier.add_argument('--map', action='append', required=True)
     courier.add_argument('--dlc', action='append', default=[])
     courier.add_argument('--output')
-    for name in ('generate-map-fuel', 'generate-map-fix'):
+    for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
+                                          'Report selected compatibility topics without creating a mod'
+                                          if name == 'analyze-map' else
                                           'Generate selected map-wide Road Trip compatibility fixes'))
         bulk.add_argument('source', help='Source map .scs; known companion packages are resolved beside it')
         bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
         bulk.add_argument('--map-name', help='Short map name; inferred for known map families')
-        bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 3)
+        if name != 'analyze-map':
+            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 3)
         bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,
                           help='Game-only mounted country path for the petrol/diesel fallback ratio')
-        bulk.add_argument('--icon', help='Optional map-labelled JPEG 276x162')
-        bulk.add_argument('--experimental', action='store_true')
-        if name == 'generate-map-fix':
+        if name != 'analyze-map':
+            bulk.add_argument('--icon', help='Optional map-labelled JPEG 276x162')
+            bulk.add_argument('--experimental', action='store_true')
+        if name in ('generate-map-fix', 'analyze-map'):
             bulk.add_argument('--processor', action='append', required=True,
                               choices=[p.value for p in Processor],
-                              help='Enable a fix: fuel, rest, or reserved courier; repeat as needed')
+                              help='Select fuel, rest, or analysis-only courier; repeat as needed')
             bulk.add_argument('--rest-radius', type=float, default=1000,
                               help='Straight-line rest search distance in map coordinate units (default: 1000)')
     for name in ('fuel-audit', 'generate-fuel'):
@@ -131,14 +135,24 @@ def main(argv: list[str] | None = None) -> int:
             args.prefix = prefix
         if args.command.startswith('generate') and not args.experimental:
             raise ValueError('Generation requires --experimental; no candidate is verified in game')
-        if args.command in ('generate-map-fuel', 'generate-map-fix'):
+        if args.command in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
             import logging
             logging.basicConfig(level=logging.INFO, format='%(message)s')
-            from .bulk_run import generate_map_fix, generate_map_fuel
+            from .bulk_run import analyze_map, generate_map_fix, generate_map_fuel
             options = dict(game_dir=args.game_dir, map_name=args.map_name,
-                           revision=args.revision, run_id=args.run_id,
+                           run_id=args.run_id,
                            extractor=args.extractor, dependency=args.dependency,
-                           icon=args.icon, petrol_reference=args.petrol_reference)
+                           petrol_reference=args.petrol_reference)
+            if args.command == 'analyze-map':
+                result = analyze_map(args.source, processors=args.processor,
+                                     rest_radius=args.rest_radius, **options)
+                _emit({'status': result['status'], 'analysis_only': True,
+                       'report_path': result['report_path'],
+                       'work_dir': result['workflow']['work_dir'],
+                       'coverage': result['planner'].get('coverage'),
+                       'generated_mod_count': 0}, None)
+                return 0
+            options.update(revision=args.revision, icon=args.icon)
             if args.command == 'generate-map-fuel':
                 result = generate_map_fuel(args.source, **options)
             else:

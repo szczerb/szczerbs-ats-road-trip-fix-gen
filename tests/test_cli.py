@@ -153,6 +153,20 @@ company_def : .city { city: test_city prefab: alias }
         self.run_cli(['generate-map-fix', 'source.scs', '--experimental',
                       '--processor', 'courier'], expected=2)
 
+    def test_map_courier_analysis_needs_no_experimental_acknowledgment(self):
+        result = {'status': 'reported_partial', 'report_path': 'work/audit.json',
+                  'workflow': {'work_dir': 'work'},
+                  'planner': {'coverage': {'complete': False}}}
+        with patch('ats_road_trip.bulk_run.analyze_map', return_value=result) as analyze:
+            output = self.run_cli(['analyze-map', 'source.scs', '--processor', 'courier'])
+        self.assertTrue(output['analysis_only'])
+        self.assertEqual(output['generated_mod_count'], 0)
+        self.assertEqual(output['report_path'], 'work/audit.json')
+        self.assertEqual(output['status'], 'reported_partial')
+        self.assertEqual(analyze.call_args.kwargs['processors'], ['courier'])
+        self.assertNotIn('revision', analyze.call_args.kwargs)
+        self.run_cli(['analyze-map', 'source.scs'], expected=2)
+
 
 if __name__ == '__main__':
     unittest.main()

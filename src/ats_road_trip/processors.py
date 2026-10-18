@@ -18,6 +18,11 @@ class Processor(str, Enum):
     COURIER = 'courier'
 
 
+class ProcessorMode(str, Enum):
+    GENERATE = 'generate'
+    ANALYZE = 'analyze'
+
+
 @dataclass(frozen=True)
 class ProcessorConfig:
     """The ordered, independent fixes selected for one source map."""
@@ -25,6 +30,7 @@ class ProcessorConfig:
     enabled: tuple[Processor, ...] = (Processor.FUEL,)
     rest_radius: float = 1000
     petrol_reference: str = DEFAULT_REFERENCE
+    mode: ProcessorMode = ProcessorMode.GENERATE
 
     def __post_init__(self) -> None:
         selected = tuple(Processor(value) for value in self.enabled)
@@ -32,11 +38,13 @@ class ProcessorConfig:
             raise ValueError('Select at least one map fix processor')
         if len(selected) != len(set(selected)):
             raise ValueError('Map fix processors must not be repeated')
-        if Processor.COURIER in selected:
+        mode = ProcessorMode(self.mode)
+        if Processor.COURIER in selected and mode is ProcessorMode.GENERATE:
             raise ValueError('Courier Jobs map-wide generation is not implemented')
         if isinstance(self.rest_radius, bool) or not isinstance(self.rest_radius, (int, float)) or not math.isfinite(self.rest_radius) or self.rest_radius < 0:
             raise ValueError('Rest radius must be a nonnegative finite coordinate distance')
         object.__setattr__(self, 'enabled', selected)
+        object.__setattr__(self, 'mode', mode)
 
     @classmethod
     def from_names(cls, names: Iterable[str | Processor], **kwargs) -> ProcessorConfig:
@@ -96,19 +104,23 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
     blockers: list[dict] = []
     # Canonical order makes output identical even when callers specify a
     # different selection order. Fuel's edits are available to the rest pass.
-    for processor in (Processor.FUEL, Processor.REST):
+    for processor in (Processor.FUEL, Processor.REST, Processor.COURIER):
         if processor not in config.enabled:
             continue
         if processor is Processor.FUEL:
             report, changes = _fuel_plan(effective, game_only, source=source,
                                          map_name=map_name,
                                          petrol_reference=config.petrol_reference)
-        else:
+        elif processor is Processor.REST:
             from .rest_stops import plan_rest_stops
             report, changes = plan_rest_stops(effective, map_packages={source},
                                               map_name=map_name,
                                               radius=config.rest_radius,
                                               resource_overrides=dict(resources))
+        else:
+            from .courier_locations import plan_courier_report
+            report = plan_courier_report(effective, map_packages={source}, map_name=map_name)
+            changes = {}
         reports[processor.value] = report
         processor_coverage = report.get('coverage', {})
         reported_blockers = processor_coverage.get('blockers', report.get('blockers', []))

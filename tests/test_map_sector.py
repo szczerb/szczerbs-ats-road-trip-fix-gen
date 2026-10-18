@@ -34,6 +34,24 @@ def sector(items, nodes=(), children=()):
 
 
 class SectorReaderTests(unittest.TestCase):
+    def test_company_identity_prefab_marker_and_raw_spawn_flags(self):
+        payload = (struct.pack('<4Q', token('helena'), 100, token('shop'), 300)
+                   + refs(301, 302) + struct.pack('<2I', 0, 0xf1234567))
+        company = item(6, 200, payload)
+        data = sector([company, prefab()], [node(300, 200)])
+        parsed = parse_sector(data)
+        self.assertEqual(parsed.companies[0].details,
+                         {'city': token('helena'), 'prefab': 100,
+                          'company': token('shop'), 'node': 300,
+                          'spawn_nodes': (301, 302), 'spawn_flags': (0, 0xf1234567)})
+        self.assertEqual(data[parsed.companies[0].offset:parsed.companies[0].end], company)
+        self.assertEqual(parsed.prefabs[0].uid, 100)
+
+    def test_company_parallel_spawn_arrays_require_all_flag_words(self):
+        payload = struct.pack('<4Q', 0, 0, 0, 0) + refs(1, 2) + struct.pack('<I', 7)
+        with self.assertRaises(SectorFormatError):
+            parse_sector(sector([item(6, 200, payload)]))
+
     def test_variable_prefab_and_service_refs_and_visibility(self):
         p = prefab()
         service = item(7, 200, struct.pack('<QQ', 15, 100) + refs(16, 17))

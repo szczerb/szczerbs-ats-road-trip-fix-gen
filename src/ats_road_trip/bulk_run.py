@@ -20,7 +20,7 @@ from .archive import Archive, ArchiveError
 from .mod_writer import write_mod
 from .package import Package, ResourceStack
 from .petrol_policy import DEFAULT_REFERENCE
-from .processors import Processor, ProcessorConfig, run_processors
+from .processors import Processor, ProcessorConfig, ProcessorMode, run_processors
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -151,7 +151,7 @@ def _map_packages(source: Path, dependency: list[str]) -> list[Path]:
 
 
 def _run_paths(map_name: str, revision: int, run_id: str | None,
-               *, topic: str = 'fuel') -> tuple[Path, Path, str]:
+               *, topic: str = 'fuel', analysis_only=False) -> tuple[Path, Path | None, str]:
     if not re.fullmatch(r'[A-Za-z][A-Za-z0-9 ._\-]{0,63}', map_name) or map_name != map_name.strip():
         raise ValueError('Map name must be a short plain-text name')
     if type(revision) is not int or revision < 0:
@@ -160,7 +160,9 @@ def _run_paths(map_name: str, revision: int, run_id: str | None,
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}', stamp):
         raise ValueError('Run ID must use YYYY-MM-DD_HH-MM-SS')
     slug = re.sub(r'[^a-z0-9]+', '-', map_name.lower()).strip('-')
-    work = REPO_ROOT / 'local_outputs/work' / stamp / slug
+    work = REPO_ROOT / 'local_outputs/work' / stamp / (slug + ('-analysis' if analysis_only else ''))
+    if analysis_only:
+        return work, None, stamp
     topic_slug = {'fuel': 'gas-stations', 'rest': 'rest-stops',
                   'fuel-rest': 'map-compatibility'}.get(topic)
     if topic_slug is None:
@@ -181,7 +183,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
                      map_name=None, revision=3, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
-                     _legacy_fuel=False) -> dict:
+                     _legacy_fuel=False, _analysis_only=False) -> dict:
     """Audit one supplied map and emit a complete selected compatibility package.
 
     Explicit dependencies retain their low-to-high order. Known missing
@@ -189,8 +191,9 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
     The actual profile load order is unknown and recorded for review.
     """
     config = ProcessorConfig.from_names(processors, rest_radius=rest_radius,
-                                        petrol_reference=petrol_reference)
-    topics = tuple(p.value for p in (Processor.FUEL, Processor.REST)
+                                        petrol_reference=petrol_reference,
+                                        mode=ProcessorMode.ANALYZE if _analysis_only else ProcessorMode.GENERATE)
+    topics = tuple(p.value for p in (Processor.FUEL, Processor.REST, Processor.COURIER)
                    if p in config.enabled)
     topic = '-'.join(topics)
 
@@ -201,15 +204,16 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
     name = map_name or inferred
     if name is None:
         raise ValueError('Unknown map archive name; pass --map-name')
-    if icon is None and topics == ('fuel',):
+    if icon is None and topics == ('fuel',) and not _analysis_only:
         slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
         icon_slug = {'reforma-othermaps-patch': 'reforma',
                      'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
         preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
         if preset.is_file():
             icon = preset
-    work, output, stamp = _run_paths(name, revision, run_id, topic=topic)
-    if (work / 'audit.json').exists() or output.exists():
+    work, output, stamp = _run_paths(name, revision, run_id, topic=topic,
+                                    analysis_only=_analysis_only)
+    if (work / 'audit.json').exists() or (output is not None and output.exists()):
         raise FileExistsError('Run audit or generated package already exists; choose a new run ID')
     work.mkdir(parents=True, exist_ok=True)
     prior_work_root = Archive._work_root
@@ -240,6 +244,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             'source_package_identities': [{'path':str(path), 'size':size, 'mtime_ns':mtime}
                                           for path,(size,mtime) in identities.items()],
         }
+        if _analysis_only:
+            workflow['operation'] = 'analysis_only'
         with ExitStack() as manager:
             packages = []
             for index, path in enumerate(order, 1):
@@ -249,6 +255,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             game_only = ResourceStack(packages[:len(game_paths)])
             planned = run_processors(effective, game_only, source=str(source),
                                      map_name=name, config=config)
+            if 'courier' in planned.reports:
+                planned.reports['courier']['ats_version'] = version
             resources = planned.resources
             if _legacy_fuel:
                 report = planned.reports['fuel']
@@ -268,6 +276,13 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
         audit = {'workflow': workflow, 'planner': report,
                  'planned_resource_count': len(resources)}
         blockers = planned.blockers
+        if _analysis_only:
+            audit.update({'status': 'reported_partial' if blockers else 'reported',
+                          'analysis_only': True, 'in_game_verified': False,
+                          'report_path': str(work / 'audit.json'),
+                          'generated_mod_count': 0})
+            _write_audit(work / 'audit.json', audit)
+            return audit
         if blockers:
             audit['status'] = 'blocked'
             _write_audit(work / 'audit.json', audit)
@@ -325,3 +340,17 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
                             run_id=run_id, extractor=extractor, dependency=dependency,
                             icon=icon, petrol_reference=petrol_reference,
                             _legacy_fuel=True)
+
+
+def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
+                map_name=None, run_id=None, extractor=None, dependency=(),
+                petrol_reference=DEFAULT_REFERENCE, rest_radius=1000) -> dict:
+    """Write source-relative reports without packaging or installing a mod.
+
+    Incomplete inspection is a reported partial result, not a statement about
+    unavailable jobs. Original assets and the live profile remain read-only.
+    """
+    return generate_map_fix(source, processors=processors, game_dir=game_dir,
+                            map_name=map_name, run_id=run_id, extractor=extractor,
+                            dependency=dependency, petrol_reference=petrol_reference,
+                            rest_radius=rest_radius, _analysis_only=True)

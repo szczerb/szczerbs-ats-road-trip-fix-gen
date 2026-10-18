@@ -24,4 +24,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0008: Compose selected processors and apply rest eligibility locally](ADR-0008-compose-processors-and-local-rest-polygons.md).
 
+- [ADR-0009: Report courier inputs before generating fixes](ADR-0009-report-courier-inputs-before-generating-fixes.md).
+
 Runtime fix validation and general map-sector authoring remain open.

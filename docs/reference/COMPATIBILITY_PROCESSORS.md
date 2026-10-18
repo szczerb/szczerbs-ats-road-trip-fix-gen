@@ -24,9 +24,9 @@ These are generation commands, not evidence that every supplied map passes cover
 | --- | --- | --- |
 | `fuel` | Missing car fuel interactions plus country petrol-price repair | Existing r2 algorithm; [price policy](../architecture/decisions/ADR-0007-repair-missing-petrol-prices.md) |
 | `rest` | Local car rest eligibility subject to the proximity rule | Experimental; supported layouts and coverage must pass before packaging |
-| `courier` | Future Courier Job compatibility | Reserved; selection raises an explicit unimplemented error |
+| `courier` | Source-relative company locations, marker evidence and context/job inputs | [Analysis/reporting only](COURIER_REPORTING.md); generation still raises an explicit unimplemented error |
 
-Python callers use `Processor` and `ProcessorConfig` from `ats_road_trip.processors`. Disabled processors do not run. Duplicate/empty selections, unknown names, reserved unimplemented topics, or negative/nonfinite radii fail validation. Fuel runs before rest regardless of selection order.
+Python callers use `Processor`, `ProcessorConfig` and `ProcessorMode` from `ats_road_trip.processors`. Disabled processors do not run. Duplicate/empty selections, unknown names, generation of unimplemented topics, or negative/nonfinite radii fail validation. Fuel runs before rest regardless of selection order. Courier reporting is available in explicit analysis mode through `analyze-map --processor courier`; that mode writes an audit and never calls the mod writer.
 
 ```python
 from ats_road_trip.processors import Processor, ProcessorConfig
@@ -68,6 +68,8 @@ All enabled processors finish analysis before a mod is written. Unsupported sour
 Manual acceptance remains separate: car rest prompt with engine off, actual fatigue recovery, truck/bus preservation where applicable, icons/discovery and save/reload. When fuel is included, also test positive petrol price, finite quantities, tank increase and correct payment. No automatic installation, game launch or save/economy/fatigue changes occur.
 
 ## Verified Western Canada candidate
+
+**Later static finding, 2026-10-18:** [14 Company-parent aliases lose their original context mappings](COURIER_MARKER_RESEARCH.md#existing-generated-prefab-aliases-a-static-cross-feature-risk). The fuel/rest checks below do not establish courier preservation. Runtime effect remains unknown; [TASK-0019](../tasks/backlog/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) tracks the required preservation review. This reporting milestone leaves the candidate untouched.
 
 **Observed locally — 2026-10-18:** the combined `fuel` + `rest` workflow generated `local_outputs/generated/2026-10-18_02-18-17/szczerbs-road-trip-map-compatibility-fix-western-canada-1.61-r3-experimental.scs`. Size **7,168,670 bytes**; SHA-256 `49ade9be22ea02d0ba73335352a4495c2a71430aff183249b366dd84d61a64ec`. Manifest title: `szczerb's Road Trip Map Compatibility Fix for Western Canada`; author `szczerb`; selected topics `fuel`, `rest`; no automatic gas-only icon.
 

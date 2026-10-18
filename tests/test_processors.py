@@ -9,11 +9,24 @@ from unittest.mock import patch
 
 from ats_road_trip.map_sector import parse_sector
 from ats_road_trip.package import Package, ResourceStack
-from ats_road_trip.processors import Processor, ProcessorConfig, run_processors
+from ats_road_trip.processors import Processor, ProcessorConfig, ProcessorMode, run_processors
 from tests.test_rest_stops import SECTOR, source as rest_source
 
 
 class ProcessorTests(unittest.TestCase):
+    def test_courier_is_an_analysis_only_processor_with_no_resources(self):
+        expected = {'analysis_only': True, 'coverage': {'complete': True, 'blockers': []}}
+        module = SimpleNamespace(plan_courier_report=lambda *args, **kwargs: expected)
+        config = ProcessorConfig.from_names(['courier'], mode=ProcessorMode.ANALYZE)
+        with patch.dict(sys.modules, {'ats_road_trip.courier_locations': module}), \
+             patch('ats_road_trip.processors._fuel_plan', side_effect=AssertionError('fuel ran')):
+            result = run_processors(None, None, source='source', map_name='Test', config=config)
+        self.assertEqual(result.resources, {})
+        self.assertEqual(result.reports, {'courier': expected})
+        self.assertTrue(result.coverage['complete'])
+        with self.assertRaisesRegex(ValueError, 'not implemented'):
+            ProcessorConfig.from_names(['courier'], mode=ProcessorMode.GENERATE)
+
     def test_config_requires_distinct_supported_processors_and_finite_radius(self):
         self.assertEqual(ProcessorConfig().enabled, (Processor.FUEL,))
         self.assertEqual(ProcessorConfig.from_names(['rest']).enabled, (Processor.REST,))

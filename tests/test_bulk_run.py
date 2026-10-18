@@ -37,6 +37,39 @@ class BulkRunTests(unittest.TestCase):
         self.source = self.inputs / 'ATS_Expansion_v23.0_1.61.scs'
         archive(self.source, {'map/usa/sec+0000+0000.base': b'placeholder'})
 
+    def test_courier_analysis_writes_audit_but_never_calls_mod_writer(self):
+        for suffix, blockers in (('10', []), ('11', [{'reason': 'unknown definition'}])):
+            plan = SimpleNamespace(reports={'courier': {'analysis_only': True}},
+                                   resources={'must-not-be-written': b'candidate'},
+                                   blockers=blockers,
+                                   coverage={'complete': not blockers, 'blockers': blockers})
+            stamp = '2026-10-18_03-00-' + suffix
+            with patch.object(bulk_run, 'REPO_ROOT', self.root), \
+                 patch.object(bulk_run, 'run_processors', return_value=plan) as run, \
+                 patch.object(bulk_run, 'write_mod') as writer:
+                report = bulk_run.analyze_map(self.source, game_dir=self.game, run_id=stamp)
+            writer.assert_not_called()
+            self.assertEqual(run.call_args.kwargs['config'].mode.value, 'analyze')
+            self.assertEqual(report['status'], 'reported_partial' if blockers else 'reported')
+            self.assertTrue(report['analysis_only'])
+            self.assertEqual(report['generated_mod_count'], 0)
+            self.assertNotIn('output', report)
+            self.assertEqual(json.loads(Path(report['report_path']).read_text()), report)
+            self.assertFalse((self.root / 'local_outputs/generated').exists())
+            self.assertEqual(report['workflow']['processors_enabled'], ['courier'])
+
+    def test_analysis_report_cannot_overwrite_an_existing_audit(self):
+        stamp = '2026-10-18_03-00-12'
+        with patch.object(bulk_run, 'REPO_ROOT', self.root):
+            work, output, _ = bulk_run._run_paths('ATS Expansion', 3, stamp,
+                                                 analysis_only=True)
+            self.assertIsNone(output)
+            work.mkdir(parents=True)
+            (work / 'audit.json').write_text('retain original')
+            with self.assertRaises(FileExistsError):
+                bulk_run.analyze_map(self.source, game_dir=self.game, run_id=stamp)
+        self.assertEqual((work / 'audit.json').read_text(), 'retain original')
+
     def test_game_version_from_version_archive_and_refuses_other_release(self):
         self.assertEqual(bulk_run._game_version(self.game, None), '1.61.3.18')
         archive(self.game / 'version.scs',
