@@ -1,5 +1,9 @@
 # Current State
 
+## Gas-station car rest experiment
+
+**Unknown — 2026-10-19:** a separate investigation is active for passenger-car rest access at individually selected gas stations, covering painted car bays and the user-reported Dawson City unmarked-lot case. The processor must remain optional and deterministic, with no 1,000-unit/density selection, no integration with existing rest policy, and no truck-geometry clone fallback. The three user screenshots are preserved with verified hashes; they establish visual location context only. No source geometry or runtime rest behavior is yet established. See [TASK-0039](../tasks/active/TASK-0039-research-gas-station-car-rest.md) and [the research report](../reference/GAS_STATION_CAR_REST_RESEARCH.md).
+
 **History note:** historical review paragraphs use pre-cleanup repository commit IDs; see the [old-to-new mapping](../reference/HISTORY_CLEANUP.md#commit-identifiers). The uploaded baseline below uses the cleaned history. Upstream object IDs and artifact checksums are unchanged.
 
 ## Publication review
