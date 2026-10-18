@@ -68,6 +68,8 @@ The older candidates below are historical controls; do not enable them together 
 
 # Verification
 
+**Documented — latest maintainer report, 2026-10-18:** the maintainer updated the local jobs r3 and tanks r0 packages, launched ATS and confirmed that they work. [Dated report](../../reference/VALIDATION_RESULTS.md#2026-10-18-updated-job-and-tank-packages-work-in-game). Specific completed deliveries, cargo fit, numerical displays/billing and reload outcomes were not enumerated; this task remains open for its individually outstanding checks.
+
 2026-10-18: user-reported Canada/Mexico refueling and rest success closes those internal functional milestones. Do not infer individual price/quantity/payment values, exact tested sites or truck/reload results. GPT-6 Luna / low reviewed the evidence scope; root updated linked references and task status language. Documentation-only QA checks links, task metadata/status, immutable inputs, artifact exclusions and whitespace; no code/package changes require rerunning utility tests. Evidence: `local_outputs/work/2026-10-18_18-52-11/`. This broader task remains active for its other checks.
 
 2026-10-18: [tank r0 user acceptance](../../reference/VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally) closes that separate internal milestone. The report provides general success, without individual measurements. It does not close this broader courier/map validation task.

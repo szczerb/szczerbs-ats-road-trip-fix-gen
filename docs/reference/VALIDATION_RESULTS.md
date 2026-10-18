@@ -1,5 +1,11 @@
 # Gameplay validation results
 
+## 2026-10-18: updated job and tank packages work in game
+
+**Documented — first-hand maintainer report:** after receiving the updated jobs r3 and tanks r0 publication packages, the maintainer manually updated the local installation, launched ATS and reported that they work. The report concerns the prepared copies recorded in [TASK-0036](../tasks/done/TASK-0036-prepare-report-free-publication-packages.md). The agent did not launch the game or inspect the live profile.
+
+This confirms operation at the maintainer-reported scope. It does not enumerate the running build, active load order, installed-copy fingerprints, individual completed deliveries, cargo fit, measured capacity displays, billing or save/reload outcomes. The generation baseline remains ATS 1.61.3.18; it is not a newly measured runtime version. Prior tank acceptance and Canada/Mexico refueling/rest confirmations remain valid. More detailed checks retain their separate status in TASK-0007.
+
 ## 2026-10-18: refueling and rest confirmed in Canada and Mexico
 
 **Documented — first-hand user report:** the user confirms that refueling and parking/rest also work in both Canada and Mexico. This adds positive runtime evidence for the generated map fuel/rest fixes in both regions. Following the user's internal-completion decision, the functional refueling-access and rest milestones are accepted at this reported scope; community testing can broaden coverage.

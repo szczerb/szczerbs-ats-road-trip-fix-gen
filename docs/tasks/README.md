@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0037: Publish experimental job and tank releases](done/TASK-0037-publish-experimental-mod-releases.md) — separate public prereleases with approved notes, fixed tags, independently verified downloads and recorded maintainer gameplay confirmation.
+
 - [TASK-0036: Prepare report-free publication packages](done/TASK-0036-prepare-report-free-publication-packages.md) — jobs r3 and tanks r0 copies omit only the internal report; retained bytes and original archives unchanged; local preparation only.
 
 - [TASK-0034: Document ready-to-use GitHub releases](done/TASK-0034-document-ready-to-use-github-releases.md) — README links to the maintainer-reported experimental tank and job downloads; local source and release assets clearly separated.

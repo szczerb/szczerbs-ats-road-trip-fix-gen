@@ -8,8 +8,8 @@ You can download the ready-to-use mods below or run the Python tools locally to 
 
 The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):
 
-- **Reasonable gas tank upgrades** — the separate Mustang/F-150 tank-capacity mod.
-- **Job Types Compat Mustang** — the separate courier job-eligibility mod.
+- **[Reasonable gas tank upgrades — ATS 1.61 r0](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases/tag/reasonable-gas-tank-upgrades-1.61-r0-experimental)** — the separate Mustang/F-150 tank-capacity mod.
+- **[Job Types Compat Mustang — ATS 1.61 r3](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases/tag/job-types-compat-mustang-1.61-r3-experimental)** — the separate courier job-eligibility mod.
 
 Download the attached mod asset from the relevant release (`.scs`, or extract it from a supplied release ZIP), install the `.scs` in your ATS mod directory and enable it in Mod Manager. Read that release’s notes for the supported game version, DLC requirements and installation instructions. Python and the Extractor are only needed if you want to run the generators yourself; the downloadable mods are ready to use. GitHub’s automatic **Source code** archives contain the project sources.
 
