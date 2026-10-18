@@ -4,7 +4,7 @@ Inspected: 2026-10-18. Target: installed ATS **1.61.3.18**, Steam build **259523
 
 Subsequent implementation: the user selects a local 1,000-unit proximity rule instead of the global diagnostic proposed below. The [processor guide](COMPATIBILITY_PROCESSORS.md) and [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) describe private truck/bus/car actions and per-placement references. This research record's original "no patch" boundary remains historical; new static implementation checks do not establish runtime rest behavior.
 
-[TASK-0015](../tasks/done/TASK-0015-investigate-passenger-car-rest-areas.md) records the completed investigation; [TASK-0016](../tasks/done/TASK-0016-prepare-rest-eligibility-experiment.md) scopes an independent diagnostic. Keep the [later manual checklist](MANUAL_TEST_CHECKLIST.md) pending; the user has closed the game/rig for tonight.
+[TASK-0015](../tasks/done/TASK-0015-investigate-passenger-car-rest-areas.md) records the completed investigation; [TASK-0016](../tasks/done/TASK-0016-prepare-rest-eligibility-experiment.md) scopes an independent diagnostic. That overnight deferral is historical. **Subsequent user report, 2026-10-18:** parking/rest works in Canada and Mexico, closing internal functional validation at that reported scope. [Dated result](VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico); [additional regression coverage](MANUAL_TEST_CHECKLIST.md) remains optional.
 
 ## Result
 

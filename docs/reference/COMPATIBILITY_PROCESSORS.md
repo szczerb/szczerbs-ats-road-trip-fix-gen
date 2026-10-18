@@ -1,6 +1,6 @@
 # Selectable compatibility processors
 
-Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. Runtime behavior remains subject to the [manual checklist](MANUAL_TEST_CHECKLIST.md).
+Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. **Documented — subsequent user report, 2026-10-18:** refueling and parking/rest work in Canada and Mexico. [Dated acceptance](VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico) closes the internal functional milestones at that scope; the [checklist](MANUAL_TEST_CHECKLIST.md) distinguishes remaining controls.
 
 ## Selection and commands
 

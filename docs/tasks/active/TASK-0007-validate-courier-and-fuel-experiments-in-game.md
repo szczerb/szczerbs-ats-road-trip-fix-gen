@@ -20,6 +20,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
+- **Accepted functional milestones, 2026-10-18:** the user confirms refueling and parking/rest work in Canada and Mexico. These internal functional checks are complete at the reported scope. Detailed UI/accounting and truck/reload controls were not individually enumerated. Courier and connector-icon validation remain separate; historical test instructions below do not reopen accepted milestones. [Dated evidence](../../reference/VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico).
+
 - Separate [reasonable tank r0](../../reference/REASONABLE_GAS_TANK_UPGRADES.md): **internally complete by user acceptance, 2026-10-18**. The user reports it works and may offer it for community testing. Detailed per-model/transition/reload checks remain optional community coverage; they are not open internal tank blockers. Other feature validation remains in this task.
 
 - Current metadata handoff: [r8/r3](../../reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), with full Expansion labels and unchanged gameplay. Confirm the Western Canada ProMods Connections r8 picture after its shorter filename; [INC-0001](../../incidents/INC-0001-connector-icon-cache/README.md) remains open until that runtime result is reported. No automatic cache/settings changes.
@@ -65,6 +67,8 @@ The older candidates below are historical controls; do not enable them together 
 - Live profile and original inputs remain preserved; negative results are recorded.
 
 # Verification
+
+2026-10-18: user-reported Canada/Mexico refueling and rest success closes those internal functional milestones. Do not infer individual price/quantity/payment values, exact tested sites or truck/reload results. GPT-6 Luna / low reviewed the evidence scope; root updated linked references and task status language. Documentation-only QA checks links, task metadata/status, immutable inputs, artifact exclusions and whitespace; no code/package changes require rerunning utility tests. Evidence: `local_outputs/work/2026-10-18_18-52-11/`. This broader task remains active for its other checks.
 
 2026-10-18: [tank r0 user acceptance](../../reference/VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally) closes that separate internal milestone. The report provides general success, without individual measurements. It does not close this broader courier/map validation task.
 

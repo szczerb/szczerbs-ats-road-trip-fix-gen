@@ -1,5 +1,13 @@
 # Gameplay validation results
 
+## 2026-10-18: refueling and rest confirmed in Canada and Mexico
+
+**Documented — first-hand user report:** the user confirms that refueling and parking/rest also work in both Canada and Mexico. This adds positive runtime evidence for the generated map fuel/rest fixes in both regions. Following the user's internal-completion decision, the functional refueling-access and rest milestones are accepted at this reported scope; community testing can broaden coverage.
+
+The prepared map handoff is [r8](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), but the exact installed filenames/hashes, individual stations/parking areas and running versions were not supplied with this report. It does not enumerate petrol prices, initial/filled quantities, charged amounts, truck/bus controls or save/reload. Do not turn the general success report into separate numerical billing validation or a claim that every location was tested. The earlier Canadian zero-price/invalid-quantity observation remains historical evidence; its detailed UI/accounting retest is not individually described here.
+
+No agent gameplay run, installation or profile modification occurred. Existing packages and their generation-time reports remain unchanged. Tank upgrades already have separate user acceptance; courier delivery and the connector-icon result retain their existing status.
+
 ## 2026-10-18: tank upgrades accepted internally
 
 **Documented — first-hand user report:** directly after the reasonable gas tank upgrades r0 handoff, the user confirms that everything works and explicitly considers it internally done. They plan to propose it to other people for testing. This closes internal tank validation; community feedback is a possible next stage rather than a blocker.
