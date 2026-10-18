@@ -1,5 +1,7 @@
 # Selected M2D artwork: map r6 and unchanged courier r1
 
+Historical handoff: the [approved final r6/r2 delivery](MOD_METADATA_FINAL_1_61_R6_R2.md) reuses these exact map archives and adds the approved J3C courier icon. This r6/r1 archive and its recorded hashes remain unchanged.
+
 **Documented — user selection, 2026-10-18:** use M2D, the navy fuel/parking icon with Mustang 1967, Crown Victoria 2006, Bronco 2024 and F-150 2023, for map fixes. The user confirms both corrected previews display in chat and the Windows-local HTML gallery is useful. J3B remains the courier favorite with a key-fob reservation; no final courier replacement is approved.
 
 **Observed locally — ATS 1.61.3.18 project, inspected 2026-10-18:** all seven map presets now use M2D with the matching map/connector footer. The current generator default is map revision **6**. Legacy fuel remains r2 and courier remains r1. [Original corrected model prompts](../../assets/mod-icons/PROMPTS_V3.md), [selected map-label edit prompts](../../assets/mod-icons/PROMPTS_M2D_SELECTED.md).
@@ -24,4 +26,4 @@ The **56 focused metadata, artwork, writer, bulk-workflow and CLI tests pass** f
 
 **Unknown — gameplay:** fuel quantity/price/payment, car rest/fatigue recovery and Mustang job pickup/cargo fit/completed delivery remain under the existing [manual checklist](MANUAL_TEST_CHECKLIST.md) and [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md). Artwork selection and byte preservation do not settle these tests.
 
-Related: [metadata contract](MOD_METADATA.md), [current state](../project/CURRENT_STATE.md), [artwork guide](../../assets/mod-icons/README.md), [TASK-0025](../tasks/active/TASK-0025-refresh-mod-icons-and-player-descriptions.md).
+Related: [metadata contract](MOD_METADATA.md), [current state](../project/CURRENT_STATE.md), [artwork guide](../../assets/mod-icons/README.md), [TASK-0025](../tasks/done/TASK-0025-refresh-mod-icons-and-player-descriptions.md).

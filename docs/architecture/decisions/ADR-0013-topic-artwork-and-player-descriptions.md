@@ -2,7 +2,7 @@
 
 ## Context
 
-**Documented — user requests, 2026-10-18:** fuel/rest fixes lost their fuel-only image when rest was added. The user wants fuel/parking imagery, separate Mustang job art, readable paragraphs and the complete known map priority list with the current fix clearly marked in parentheses. [TASK-0025](../../tasks/active/TASK-0025-refresh-mod-icons-and-player-descriptions.md).
+**Documented — user requests, 2026-10-18:** fuel/rest fixes lost their fuel-only image when rest was added. The user wants fuel/parking imagery, separate Mustang job art, readable paragraphs and the complete known map priority list with the current fix clearly marked in parentheses. [TASK-0025](../../tasks/done/TASK-0025-refresh-mod-icons-and-player-descriptions.md).
 
 **Observed locally — ATS 1.61 project, inspected 2026-10-18:** r4 map and r0 courier packages have no icon field. Omitting fuel-only art was deliberate under [ADR-0008](ADR-0008-compose-processors-and-local-rest-polygons.md), but combined-scope replacement artwork was missing. The user is testing those payloads independently; metadata changes should preserve that experiment.
 
@@ -19,8 +19,8 @@ Accepted 2026-10-18. Extend [ADR-0005](ADR-0005-standardize-fuel-package-metadat
 
 ## Consequences
 
-The user initially selected M2's navy fuel/parking scene, then explicitly selected the corrected four-Ford M2D variant for map r6. Earlier proposals remain as history. J1B courier art is provisional pending selection. [Art guide and prompts](../../../assets/mod-icons/README.md). Shared fuel/rest family artwork on OtherMaps does not imply station or rest changes; its description states the narrower scope.
+The user initially selected M2's navy fuel/parking scene, then explicitly selected the corrected four-Ford M2D variant for map r6. Earlier proposals remain as history. The user then approved J3C courier art with mechanical access keys, used in courier r2. Earlier J1B artwork remains historical. [Art guide and prompts](../../../assets/mod-icons/README.md). Shared fuel/rest family artwork on OtherMaps does not imply station or rest changes; its description states the narrower scope.
 
 The priority list describes this supplied combination. Other replacements and unknown combinations still require review; no automatic profile inspection is implied. Human descriptions and artwork must be maintained when supported topics or the known combination change.
 
-The [current r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md) and historical [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) record hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.
+The [final r6/r2 handoff](../../reference/MOD_METADATA_FINAL_1_61_R6_R2.md), historical [r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md) and historical [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) record hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.

@@ -98,7 +98,7 @@ def courier_description(
     selected_job_count: int = 58,
     transfer_count: int = 9,
     *,
-    version: str = '1.61-r1-experimental',
+    version: str = '1.61-r2-experimental',
 ) -> str:
     """Describe the source-pinned Practical Courier Jobs eligibility package."""
     if selected_job_count < 0 or transfer_count < 0:

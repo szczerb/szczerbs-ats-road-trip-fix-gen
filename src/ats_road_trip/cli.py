@@ -73,7 +73,7 @@ def parser() -> argparse.ArgumentParser:
         eligibility.add_argument('--dependency', action='append', default=[], help='Declared archives, lowest priority first')
         eligibility.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         if name.startswith('generate'):
-            eligibility.add_argument('--revision', type=int, default=1)
+            eligibility.add_argument('--revision', type=int, default=2)
             eligibility.add_argument('--icon', help='Optional courier JPEG 276x162')
             eligibility.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):

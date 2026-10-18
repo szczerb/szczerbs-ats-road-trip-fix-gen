@@ -19,7 +19,7 @@ TITLE = "szczerb's Road Trip Practical Courier Jobs"
 
 
 def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency=(),
-                            revision=1, run_id=None, extractor=None, icon=None):
+                            revision=2, run_id=None, extractor=None, icon=None):
     """Analyze a declared definition stack; optionally package its reviewed edits."""
     if type(generate) is not bool:
         raise ValueError('generate must be a boolean')

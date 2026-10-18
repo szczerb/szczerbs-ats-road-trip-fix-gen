@@ -88,7 +88,7 @@ class EligibilityWorkflowTests(unittest.TestCase):
             manifest = z.read('manifest.sii').decode()
             self.assertIn('category[]: "other"', manifest)
             self.assertIn('Practical Courier Jobs', manifest)
-            self.assertIn('1.61-r1-experimental', manifest)
+            self.assertIn('1.61-r2-experimental', manifest)
             self.assertEqual(z.read('def/car_job_data.sii'), b'patched')
             self.assertNotIn('mod_icon.jpg', z.namelist())
             self.assertFalse(json.loads(z.read('road_trip_fix_report.json'))['in_game_verified'])

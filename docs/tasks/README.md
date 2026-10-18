@@ -4,8 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0025: Refresh icons and player descriptions](active/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — implementation and eight metadata-only packages verified; M2D map artwork applied and verified; final courier artwork selection pending.
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 ## Backlog
@@ -15,6 +13,8 @@ No unstarted tasks.
 
 
 ## Done
+
+- [TASK-0025: Refresh icons and player descriptions](done/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — approved M2D/J3C artwork, readable priority descriptions, final r6/r2 batch, 246 tests and independent payload checks.
 
 - [TASK-0024: Deliver overnight test mods](done/TASK-0024-deliver-overnight-test-mod-batch.md) — eight reviewed mods, 233 tests, effective-stack/namespace checks and one ZIP with installation/test instructions. Manual acceptance remains TASK-0007.
 
