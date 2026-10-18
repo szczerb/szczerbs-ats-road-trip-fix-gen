@@ -1,7 +1,8 @@
 """Structural ATS map-907 reader; preserve uninterpreted payload bytes on edits.
 
-Layouts are independently implemented from TruckLib c42dbe4f2d6bfb7b87c9ff1199c3cf5b7d1e27b0
-(ScsMap/Serialization, Node, ActionBase, TerrainQuadData and related structs).
+Layouts were implemented after consulting TruckLib inspected tree
+c42dbe4f2d6bfb7b87c9ff1199c3cf5b7d1e27b0 (ScsMap/Serialization, Node,
+ActionBase, TerrainQuadData and related structs); see THIRD_PARTY_NOTICES.md.
 Unlike pattern searching, every item is reached by consuming the preceding item.
 Unknown layouts, truncation and trailing data fail closed. This is not a .data
 payload serializer, and compound-contained fuel is reported as nested, not a

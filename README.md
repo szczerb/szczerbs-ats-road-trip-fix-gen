@@ -1,53 +1,110 @@
 # szczerb’s ATS Road Trip Fix Generator
 
-A research utility for American Truck Simulator: inspect map archives, report Road Trip courier inputs, generate passenger-car fuel/rest map fixes, and separately broaden reviewed courier job eligibility.
+A small personal project for making experimental **American Truck Simulator: Road Trip** fixes from your own game files and map mods. It started with passenger-car fuel stops and courier jobs, and now also covers rest areas and modest fuel-tank upgrades.
 
-A separate [reasonable gas tank upgrades mod](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) now selects researched Mustang (61 → 76 L) and F-150 (98 → 136 L) capacities; Crown Victoria and Bronco remain stock. The user confirmed it works and accepts it as internally complete; community testing may follow. Disable the old 3x-capacity mod when using it.
+You run the Python tools locally to generate `.scs` mods, then install them yourself. Game files, third-party maps, prepared mod packs and local research artifacts are excluded from this repository. Development is driven by the maintainer’s own setup and community feedback; compatibility is limited to the evidence below.
 
-**Current implementation:** selectable `fuel` and `rest` map processors, automatic missing petrol-price repair, and preservation of original prefab context classifications when cloning. A separate [Job Types Compat Mustang generator](docs/reference/PRACTICAL_COURIER_GENERATOR.md) enables 58 reviewed cargo definitions for muscle-tagged cars, preserving all vehicle-transfer jobs. The [r8 map / r3 courier handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md) uses the exact names Alaska Expansion and Western Canada Expansion for their source-specific fixes. The [r7/r3](docs/reference/MOD_METADATA_RENAME_1_61_R7_R3.md) and older batches remain historical. [Current state](docs/project/CURRENT_STATE.md) tracks verification and manual tests.
+## What can it do?
 
-Rest uses the user-selected 1,000 game-world-unit XZ proximity rule and a bounded source-sector/halo search. Original truck interactions, parking geometry and shared actions are preserved. [Courier map reporting](docs/reference/COURIER_REPORTING.md) remains read-only; general map courier generation is unsupported. Definition eligibility does not guarantee live offers or completed deliveries. The user confirms refueling and rest work in Canada and Mexico. Detailed price/billing controls and courier delivery retain their [validation status](docs/reference/MANUAL_TEST_CHECKLIST.md).
+| Tool | What it changes |
+| --- | --- |
+| **Map fuel/rest fixes** | Add passenger-car fuel interactions while retaining original truck interactions; enable car rest areas where the local proximity rule calls for them; repair missing petrol-price fields. |
+| **Job Types Compat Mustang** | Add the `muscle` vehicle class to 58 reviewed cargo job definitions. Other muscle-tagged cars and Quick Jobs may also be affected; all nine vehicle-transfer definitions stay unchanged. |
+| **Reasonable gas tank upgrades** | Change the Mustang from 61 to 76 L and the non-hybrid 5.0 V8 F-150 from 98 to 136 L. Crown Victoria and Bronco stay unchanged. Disable conflicting tank mods, including the old 3× override. |
+| **Inspection and reports** | Inspect archives and report map-company/context data to investigate courier compatibility. General map courier generation remains unsupported. |
 
-## Findings and first experiments
+Fuel and rest are independently selectable. Rest uses a 1,000 game-world-unit straight-line XZ search within the inspected source sectors and a bounded neighboring area; existing geometry and shared actions are retained. [Processor behavior and limits](docs/reference/COMPATIBILITY_PROCESSORS.md).
 
-- Courier jobs select prefab context tags, not merely company-name prefixes. Most sampled ZIP-map company definitions are already classified; some omissions are intentional SCS exclusions. Reforma's `ahorrara` alias reuses an official supermarket model/descriptor but lacks its `retail` tag: [courier findings](docs/reference/COURIER_RESEARCH_FINDINGS.md).
-- Official Road Trip gas-station descriptors consistently contain a GAS locator flag missing from selected Reforma stations. A v25 descriptor experiment adds that locator while preserving the truck record; separately serialized map services may also need rebuilding: [refueling findings](docs/reference/REFUELING_RESEARCH_FINDINGS.md).
-- Neither experiment is a verified gameplay repair. See the [validation handoff](docs/reference/VALIDATION_HANDOFF.md) for generated artifacts, evidence, limits, and copied-profile testing.
+## Game and map versions checked
 
-[Helena-area and Great Falls samples](docs/reference/STARTER_AREA_SAMPLE.md) target individual ATS Expansion fuel interactions. Helena retains a standard garage class. The [first user test](docs/reference/VALIDATION_RESULTS.md) reports successful refueling at the eastern target and a substantial driving detour; the closer city station remains unchanged.
+**Research and generation baseline:** ATS **1.61.3.18** (existing game log: `1.61.3.18s`), Steam build **25952361**, with **Road Trip: Ford** and the installed map DLCs. The maintainer owns all DLCs; follow each source mod’s own DLC requirements. Tooling was exercised on **Linux/WSL with Python 3.12**. Python 3.11+ is required.
 
-The historical [sample 2](docs/reference/OVERLAPPING_FUEL_SAMPLE.md) retains the original truck interaction and adds a car interaction at exactly the same position/rotation. The user reports successful refueling in both modes for this fixture. Disable sample 1 when testing it. Fuel packages now use [consistent branding, game-based revision versions and original icons](docs/reference/MOD_METADATA.md); this title does not imply map-wide coverage.
+The following exact supplied sources were inspected, used for generation and checked structurally against that baseline. **This table records static/package verification; it does not claim every map or location was tested in game.**
 
-## Run the tooling
+| Map or connector | Source version | Source archive | Generated fix scope |
+| --- | --- | --- | --- |
+| ATS Expansion | **23.0** | `ATS_Expansion_v23.0_1.61.scs` | Fuel + rest |
+| Reforma | **3.0.1.161** | `Reforma_3_0_1_161.scs` | Fuel + rest + missing petrol prices |
+| ProMods Canada | **1.6.4** | `promods-ats-map-v164.scs` | Fuel + rest |
+| Western Canada Expansion | **1.7.3** | `Western_Canada_Expansion_v1.7.3.scs` | Fuel + rest + missing petrol prices |
+| Alaska Expansion | **1.2.3** | `Alaska_Expansion_v1.2.3.scs` | Fuel + rest + missing petrol prices |
+| Western Canada ProMods Connections | **1.7.3** | `Western_Canada_Promods_Connections_v1.7.3.scs` | Connector-specific fuel + rest + missing petrol prices |
+| Reforma OtherMaps Compatibility Patch | **40.161** | `Reforma_OtherMaps_Patch_40_161.scs` | Missing petrol prices only; this source has no station/rest sectors |
 
-Requires Python 3.11+; ZIP inspection has no third-party Python dependencies. HashFS uses a separately installed external extractor.
+Reforma generation also uses **Mega Resources 3.0.1.161** (`Reforma_MegaResources_v3_0_1_161.scs`). ProMods uses its **1.6.4 assets, models and definitions** packages alongside the map. The Western Canada connector uses Western Canada Expansion 1.7.3 and the ProMods Canada 1.6.4 set. OtherMaps’ manifest says 40.161 while its description still says 39.161; the manifest and exact supplied archive identify the inspected input.
+
+These Expansion names identify the specific sources above. They do not imply support for every map covering Alaska or western Canada. OtherMaps naming other maps in its description does not establish testing of those maps. Exact input metadata, dependencies and historical observations are in the [input inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [research baseline](docs/reference/RESEARCH_BASELINE.md).
+
+The latest prepared local candidates are **map fixes r8**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and fingerprints. These local packages are not downloads supplied by this Git repository.
+
+## What has been tried in game?
+
+**Maintainer-reported results, 17–18 October 2026:**
+
+- The ATS Expansion Helena-area sample enabled car refueling at its selected target. The later same-position sample worked for both a truck and a car.
+- Car refueling and parking/rest work in **Canada and Mexico**, at the scope of the maintainer’s report. That report did not enumerate individual maps, stations, installed package hashes or the running build.
+- The reasonable tank-upgrade mod works and is accepted as internally complete.
+- Job Types Compat Mustang testing in the USA is ongoing, with no problems noticed so far; completed newly eligible deliveries have not been reported.
+
+Detailed fuel quantities/prices/billing, remaining truck/bus and reload controls, courier delivery and the connector’s Mod Manager icon retain their individual verification status. A valid package or a new map icon does not establish those gameplay results. [Dated gameplay evidence](docs/reference/VALIDATION_RESULTS.md) · [Remaining manual checks](docs/reference/MANUAL_TEST_CHECKLIST.md).
+
+## Getting started
+
+1. Obtain your own ATS/Road Trip installation and the source maps/resources you want to inspect. Keep the supplied map archives together under `local_inputs/`.
+2. Use Python **3.11+** in Linux/WSL. The project has **no third-party runtime Python dependencies**.
+3. Install the separate Linux x64 [sk-zk Extractor, release 2026-07-29](https://github.com/sk-zk/Extractor/releases/tag/2026-07-29) for HashFS archives. This includes installed game packages, even when the source map itself is ZIP. Place its executable at `local_outputs/tools/extractor-2026-07-29/extractor`, with executable permission, or pass `--extractor /path/to/extractor` before the subcommand. The executable is not bundled here.
+4. Point the tool at your actual ATS installation using `--game-dir` or `ATS_GAME_DIR`.
+
+Run commands from the repository root. Replace the game-directory placeholder with the path on your machine:
 
 ```bash
-PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/ATS_Expansion_v23.0_1.61.scs --experimental
-PYTHONPATH=src python3 -m ats_road_trip generate-map-fix local_inputs/Western_Canada_Expansion_v1.7.3.scs --processor fuel --processor rest --rest-radius 1000 --experimental
-PYTHONPATH=src python3 -m ats_road_trip analyze-map local_inputs/ATS_Expansion_v23.0_1.61.scs --processor courier
-PYTHONPATH=src python3 -m ats_road_trip generate-courier-eligibility --config docs/examples/mustang-practical-courier.toml --experimental
-PYTHONPATH=src python3 -m ats_road_trip generate-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental
+export ATS_GAME_DIR='/path/to/American Truck Simulator'
+
 PYTHONPATH=src python3 -m ats_road_trip --help
+
+# Generate a combined fuel/rest fix for one source map.
+PYTHONPATH=src python3 -m ats_road_trip generate-map-fix \
+  local_inputs/ATS_Expansion_v23.0_1.61.scs \
+  --processor fuel --processor rest --experimental
+
+# Inspect courier inputs without generating a map mod.
+PYTHONPATH=src python3 -m ats_road_trip analyze-map \
+  local_inputs/ATS_Expansion_v23.0_1.61.scs --processor courier
+
+# Generate the separate source-pinned job-eligibility mod.
+PYTHONPATH=src python3 -m ats_road_trip generate-courier-eligibility \
+  --config docs/examples/mustang-practical-courier.toml --experimental
+
+# Generate the separate source-pinned tank-upgrade mod.
+PYTHONPATH=src python3 -m ats_road_trip generate-tank-upgrades \
+  --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental
+```
+
+Known source families resolve required companion archives beside the source. For a combined map setup, supply the relevant `--dependency` archives **from lowest to highest priority**, with the target source highest. Generation inputs and Mod Manager installation order are separate: the tool does not read or reconstruct your live profile. Follow the [map generation guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md), [processor guide](docs/reference/COMPATIBILITY_PROCESSORS.md) and [confirmed connector/dependency order](docs/reference/CONNECTOR_FUEL_FIXES.md) for the full setup.
+
+Generation writes packages under `local_outputs/generated/<timestamp>/` and audits/staging under `local_outputs/work/<timestamp>/`. Both directories are ignored by Git. Unsafe or unsupported inputs stop generation; source/version drift requires re-review, especially for the exact-hash job and tank presets. Reports and generated packages can record local source paths: review those separately before sharing them.
+
+## Installing your generated fixes
+
+- Use a copied/disposable test profile while checking a new setup. The tool writes outputs for manual installation and does not install mods, launch ATS or edit profiles.
+- Put **each map fix directly above its own source mod** in Mod Manager, retaining the source mods’ relative order. Keep the appropriate connector fix with its connector source.
+- Replace older copies of a fix instead of stacking revisions. Whole-sector overrides do not merge automatically; follow the documented generation dependencies and load order.
+- Install the job and tank packages separately as described in their guides. A job-class change does not guarantee a live offer or a successful delivery.
+
+## Tests, feedback and research
+
+Run the authored test suite:
+
+```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```
 
-The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extraction, explicit package order and mounts, context audits, dependencies, and experimental generation. The [map-wide guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md) documents automatic companions, timestamped work/output directories and required source-relative load priority. Combined map packages now default to r8 with shorter `szczerbs-road-trip-map-fix-...` filenames; Job Types Compat Mustang remains r3 and the legacy fuel command remains r2. Outputs contain a manifest, icon, player description and provenance/change report; they are not automatically installed.
+For useful feedback, include the ATS version, exact source-map and fix revisions, relevant load order, location and observed behavior. Review logs and reports for personal paths before posting them. Do not attach paid game/DLC or map files.
 
-## Publication status
+[Command reference](docs/reference/TOOLING.md) · [Current state](docs/project/CURRENT_STATE.md) · [Documentation index](docs/README.md) · [Task board](docs/tasks/README.md)
 
-Copyright (C) 2026 szczerb. Project-authored materials are licensed under **AGPL-3.0-only**: [full license](LICENSE), [scope, warranty and contribution terms](LICENSING.md). The user selected strong copyleft, including modified network-service versions, on 2026-10-18. Third-party tools, game/map inputs, trademarks and generated resources retain their separate rights.
+## License and provenance
 
-Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [the license decision](docs/architecture/decisions/ADR-0016-license-project-under-agpl-v3.md). The [deeper source assessment](docs/reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md) records the source-guided implementation and review limits; [public Git identity notes](docs/reference/PUBLIC_GIT_IDENTITY_PRACTICES.md) explain the intentional alias/placeholder and local-path disclosure. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
+Copyright (C) 2026 szczerb. Project-authored materials use **AGPL-3.0-only**: [LICENSE](LICENSE), [scope and contribution terms](LICENSING.md). This is an unofficial personal project; third-party names and artwork subjects do not imply endorsement.
 
-## Project navigation
-
-- [Current state](docs/project/CURRENT_STATE.md) and [task board](docs/tasks/README.md).
-- [Project brief](docs/project/PROJECT_BRIEF.md) and [architecture decisions](docs/architecture/decisions/README.md).
-- [Documentation index](docs/README.md), [agent guide](AGENTS.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
-
-## Local artifacts and Git
-
-`local_inputs/` contains immutable supplied map mods. `local_outputs/` holds ignored extracted/reference data, reports, tools, and generated experiments; the [inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [baseline](docs/reference/RESEARCH_BASELINE.md) record provenance without committing source assets.
-
-Verified milestones are committed locally. This single-contributor project has no remote; no push or remote setup is part of the workflow. Use branches for experiments and master for integrated verified work, as described in [working agreements](docs/project/WORKING_AGREEMENTS.md).
+The parsers were informed by format research including TruckLib C# sources. [Third-party notices](THIRD_PARTY_NOTICES.md) and the [implementation assessment](docs/reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md) preserve the sources and review limits. Game/DLC files, map mods and generated resources retain separate rights; the project license does not itself authorize redistribution of those resources. See the [source publication re-audit](docs/reference/PUBLIC_SOURCE_REAUDIT_2026_10_18.md) and the separate [generated-mod publication research](docs/reference/SCS_MOD_PUBLICATION_TERMS.md).

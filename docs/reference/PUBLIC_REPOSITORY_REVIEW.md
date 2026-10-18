@@ -8,6 +8,8 @@ Reviewed 2026-10-18 (Europe/Warsaw), baseline `f7f05c2` on `codex/overnight-test
 
 **Subsequent user-authorized cleanup:** [TASK-0032 and its verification](HISTORY_CLEANUP.md) replace the personal paths and historical author/committer email across all existing refs. The original inventory and corrected placeholder-email finding below remain historical evidence; the license/provenance/artwork questions are not cleared by sanitization.
 
+**Post-upload re-audit:** the maintainer subsequently pushed the cleaned 37-commit history privately. [The new source audit](PUBLIC_SOURCE_REAUDIT_2026_10_18.md) checks the advertised remote Git graph, all historical contents and current publication guidance. The original findings below remain historical; read the newer report for current privacy/license/path dispositions.
+
 ## Publication decision points
 
 | Severity | Finding and evidence | Action before a public push |

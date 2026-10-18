@@ -66,6 +66,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).
 - [AGPLv3 license](../LICENSE) and [scope, copyright and contribution terms](../LICENSING.md).
 - [SCS stock-definition mod publication terms](reference/SCS_MOD_PUBLICATION_TERMS.md).
+- [Post-upload source publication re-audit and remaining decisions](reference/PUBLIC_SOURCE_REAUDIT_2026_10_18.md).
 - [Versioned content, history, privacy and provenance review](reference/PUBLIC_REPOSITORY_REVIEW.md).
 - [Open-source license recommendation and prerequisites](reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md).
 - [Integrated deeper implementation assessment](reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md).

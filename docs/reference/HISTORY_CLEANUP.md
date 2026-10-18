@@ -2,6 +2,8 @@
 
 **Documented — user authorization, 2026-10-18 (Europe/Warsaw):** the sole contributor reports an external project backup and explicitly authorizes a local history rewrite, personal-path neutralization and GitHub commit attribution. Publication, remote configuration, push, game launch and changes to ignored inputs/existing outputs are excluded. This supersedes the earlier recommendation to leave the intentional placeholder identity unchanged; that earlier address was not a leaked private mailbox.
 
+**Subsequent state:** the maintainer later integrated the cleaned history into master and uploaded it privately. The early-master/no-remote statements below describe the cleanup baseline, not the current repository. See the [post-upload source re-audit](PUBLIC_SOURCE_REAUDIT_2026_10_18.md) for current state; the mapping and original findings remain historical evidence.
+
 ## Scope and method
 
 **Observed locally — 2026-10-18:** the initial checkout was clean on `codex/overnight-test-mods`. There were six branches, two Codex capture refs pointing directly to trees, one worktree, no tags, stashes or remotes, and 35 reachable commits. All refs were inventoried before modification. No unknown ref or worktree was deleted. Inspection of the backed-up Git administrative files also found `ORIG_HEAD`; it was preserved and mapped from pre-cleanup commit `698ba9a959099cd314969cc5824563b6068add4b` to `8a5e978e05890231733ca34c3a5cced3f3951b2d`. No other inspected recovery/operation pseudo-ref files existed. The current branch remains the same; `master` retains its earlier research position rather than being advanced to the latest implementation.

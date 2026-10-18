@@ -1,6 +1,6 @@
 # Overnight test delivery: map r4 and practical courier r0
 
-**Observed locally — generated and statically verified 2026-10-18, ATS 1.61.3.18.** [Download the delivery ZIP](../../local_outputs/generated/2026-10-18_04-25-54/szczerbs-road-trip-test-batch-ats-1.61-map-r4-courier-r0-experimental.zip). It contains **eight** `.scs` files, `README_TESTING.md`, SHA-256 checksums and a delivery manifest. Extract the individual mods before installing manually. ZIP SHA-256: `11688bd8f64b2183615c803106c2f1fd13c4df513f1566e98ca6920cf5602902`; size 68,147,151 bytes.
+**Observed locally — generated and statically verified 2026-10-18, ATS 1.61.3.18.** delivery ZIP (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_04-25-54/szczerbs-road-trip-test-batch-ats-1.61-map-r4-courier-r0-experimental.zip`). It contains **eight** `.scs` files, `README_TESTING.md`, SHA-256 checksums and a delivery manifest. Extract the individual mods before installing manually. ZIP SHA-256: `11688bd8f64b2183615c803106c2f1fd13c4df513f1566e98ca6920cf5602902`; size 68,147,151 bytes.
 
 ## Package contents
 
@@ -8,18 +8,18 @@ The seven map/connector packages are `1.61-r4-experimental`, combining selected 
 
 | Source-specific fix | Added car fuel points | Added car rest areas | Petrol fields | Classified aliases preserved |
 | --- | ---: | ---: | ---: | ---: |
-| [ATS Expansion](../../local_outputs/generated/2026-10-18_04-08-02/szczerbs-road-trip-map-compatibility-fix-ats-expansion-1.61-r4-experimental.scs) | 894 | 766 | 0 | 19 |
-| [Reforma](../../local_outputs/generated/2026-10-18_04-00-48/szczerbs-road-trip-map-compatibility-fix-reforma-1.61-r4-experimental.scs) | 954 | 119 | 19 | 7 |
-| [ProMods Canada](../../local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-promods-canada-1.61-r4-experimental.scs) | 102 | 95 | 0 | 2 |
-| [Western Canada](../../local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-western-canada-1.61-r4-experimental.scs) | 288 | 202 | 6 | 14 |
-| [Alaska](../../local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-alaska-1.61-r4-experimental.scs) | 43 | 31 | 1 | 2 |
-| [Reforma OtherMaps Patch](../../local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-reforma-othermaps-patch-1.61-r4-experimental.scs) | 0 | 0 | 19 | 0 |
-| [Western Canada ProMods Connections](../../local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-western-canada-promods-connections-1.61-r4-experimental.scs) | 50 | 41 | 1 | 2 |
+| ATS Expansion (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_04-08-02/szczerbs-road-trip-map-compatibility-fix-ats-expansion-1.61-r4-experimental.scs`) | 894 | 766 | 0 | 19 |
+| Reforma (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_04-00-48/szczerbs-road-trip-map-compatibility-fix-reforma-1.61-r4-experimental.scs`) | 954 | 119 | 19 | 7 |
+| ProMods Canada (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-promods-canada-1.61-r4-experimental.scs`) | 102 | 95 | 0 | 2 |
+| Western Canada (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-western-canada-1.61-r4-experimental.scs`) | 288 | 202 | 6 | 14 |
+| Alaska (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-alaska-1.61-r4-experimental.scs`) | 43 | 31 | 1 | 2 |
+| Reforma OtherMaps Patch (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-reforma-othermaps-patch-1.61-r4-experimental.scs`) | 0 | 0 | 19 | 0 |
+| Western Canada ProMods Connections (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-52-00/szczerbs-road-trip-map-compatibility-fix-western-canada-promods-connections-1.61-r4-experimental.scs`) | 50 | 41 | 1 | 2 |
 | Package totals | 2331 | 1254 | 46 | 46 |
 
 OtherMaps has no source-sector fuel/rest targets; its package contains only country petrol fields. Existing diesel and other country attributes remain unchanged. Price values use lower same-unit data where available or the explicit stock-game ratio; these are not real-world price claims.
 
-The separate [Practical Courier Jobs r0](../../local_outputs/generated/2026-10-18_03-56-10/szczerbs-road-trip-practical-courier-jobs-muscle-1.61-r0-experimental.scs) adds `muscle` to **58** reviewed cargo job definitions. Thirty ambiguous candidates remain off. All nine vehicle transfers and all non-target original bytes are unchanged. It preserves ratings, rewards, contexts, distance fields and vehicle tags. It affects a class/shared definitions, potentially including other muscle-tagged cars and Quick Jobs, rather than exclusively the owned Mustang/Dispatch. [Configuration, commands and limits](PRACTICAL_COURIER_GENERATOR.md).
+The separate Practical Courier Jobs r0 (local artifact, excluded from Git: `local_outputs/generated/2026-10-18_03-56-10/szczerbs-road-trip-practical-courier-jobs-muscle-1.61-r0-experimental.scs`) adds `muscle` to **58** reviewed cargo job definitions. Thirty ambiguous candidates remain off. All nine vehicle transfers and all non-target original bytes are unchanged. It preserves ratings, rewards, contexts, distance fields and vehicle tags. It affects a class/shared definitions, potentially including other muscle-tagged cars and Quick Jobs, rather than exclusively the owned Mustang/Dispatch. [Configuration, commands and limits](PRACTICAL_COURIER_GENERATOR.md).
 
 ## Installation priority
 
@@ -43,13 +43,13 @@ Two displayed branding/traffic mods remain unsupplied and uninspected. The decla
 
 ## Static verification
 
-- Full authored suite: **233 tests pass**, [final log](../../local_outputs/work/2026-10-18_04-08-02/tests-final.log).
-- Independent read-only output checks: ZIP CRC, inventory/resource hashes, source-owned sector pins, original Service/FuelPump records and nodes, unchanged r2 fuel payloads, rest descriptor/standalone action-only edits, actual private truck/bus/car parameters, original context resources versus generated tags, and finite positive petrol with unchanged non-petrol fields. [Per-package evidence](../../local_outputs/work/2026-10-18_03-47-10/batch-review/).
-- [WCE Company comparison](../../local_outputs/work/2026-10-18_04-00-48/verify_wce_companies.json) retains all 380 original Company records in edited sectors byte-for-byte and accounts for all 14 classified Company-parent aliases.
+- Full authored suite: **233 tests pass**, final log (local artifact, excluded from Git: `local_outputs/work/2026-10-18_04-08-02/tests-final.log`).
+- Independent read-only output checks: ZIP CRC, inventory/resource hashes, source-owned sector pins, original Service/FuelPump records and nodes, unchanged r2 fuel payloads, rest descriptor/standalone action-only edits, actual private truck/bus/car parameters, original context resources versus generated tags, and finite positive petrol with unchanged non-petrol fields. Per-package evidence (local artifact, excluded from Git: `local_outputs/work/2026-10-18_03-47-10/batch-review`).
+- WCE Company comparison (local artifact, excluded from Git: `local_outputs/work/2026-10-18_04-00-48/verify_wce_companies.json`) retains all 380 original Company records in edited sectors byte-for-byte and accounts for all 14 classified Company-parent aliases.
 - Standalone proof removes exactly 58 inserted declarations to recover the canonical source file byte-for-byte; all nine transfer bodies are checked separately.
-- [Winning-sector graph](../../local_outputs/work/2026-10-18_04-00-48/verify_composed_graph.json) passes across 583 relevant effective paths: 2202 surviving generated truck targets retain co-located car interactions, and 3518 car services have reciprocal nodes. It does not infer gameplay or unseen mods. Unrelated original truck points in copied neighbors are listed separately.
-- [Namespace check](../../local_outputs/work/2026-10-18_04-00-48/verify_definition_collisions.json) passes for 556 generated definition units; no conflicting non-sector definition/descriptor paths or duplicate additive unit IDs. Country precedence is reviewed separately.
-- Input archive/sidecar identities and shared source versions are checked before delivery. No supplied archives, extracted data or generated mods are tracked in Git. [Delivery provenance](../../local_outputs/work/2026-10-18_04-00-48/delivery-result.json).
+- Winning-sector graph (local artifact, excluded from Git: `local_outputs/work/2026-10-18_04-00-48/verify_composed_graph.json`) passes across 583 relevant effective paths: 2202 surviving generated truck targets retain co-located car interactions, and 3518 car services have reciprocal nodes. It does not infer gameplay or unseen mods. Unrelated original truck points in copied neighbors are listed separately.
+- Namespace check (local artifact, excluded from Git: `local_outputs/work/2026-10-18_04-00-48/verify_definition_collisions.json`) passes for 556 generated definition units; no conflicting non-sector definition/descriptor paths or duplicate additive unit IDs. Country precedence is reviewed separately.
+- Input archive/sidecar identities and shared source versions are checked before delivery. No supplied archives, extracted data or generated mods are tracked in Git. Delivery provenance (local artifact, excluded from Git: `local_outputs/work/2026-10-18_04-00-48/delivery-result.json`).
 
 ## Scope and pending game tests
 

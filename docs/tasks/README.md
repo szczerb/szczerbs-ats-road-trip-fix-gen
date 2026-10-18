@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0033: Audit private GitHub history and refresh README](done/TASK-0033-audit-private-github-and-refresh-readme.md) — uploaded 37-commit source history re-audited, exact game/map baseline README, corrected provenance/local links; local commit only, no push or visibility change.
+
 - [TASK-0032: Clean publication history and Git identity](done/TASK-0032-clean-publication-history-and-git-identity.md) — six branches and two Codex tree refs sanitized, GitHub noreply identity, verified backup and durable commit mapping; no publication or gameplay changes.
 
 - [TASK-0031: Apply AGPLv3 and explain local paths](done/TASK-0031-apply-agpl-and-explain-local-paths.md) — AGPL-3.0-only, verified source-distribution notices and concrete path disclosure/portability explanation; paths/history unchanged.
