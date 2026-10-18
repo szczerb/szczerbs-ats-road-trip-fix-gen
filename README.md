@@ -2,7 +2,18 @@
 
 A small personal project for making experimental **American Truck Simulator: Road Trip** fixes from your own game files and map mods. It started with passenger-car fuel stops and courier jobs, and now also covers rest areas and modest fuel-tank upgrades.
 
-You run the Python tools locally to generate `.scs` mods, then install them yourself. Game files, third-party maps, prepared mod packs and local research artifacts are excluded from this repository. Development is driven by the maintainer’s own setup and community feedback; compatibility is limited to the evidence below.
+You can download the ready-to-use mods below or run the Python tools locally to generate your own `.scs` files. Game files, third-party map archives, generated packages and local research artifacts are excluded from the Git source history; downloadable builds are attached separately to GitHub Releases. Development is driven by the maintainer’s own setup and community feedback; compatibility is limited to the evidence below.
+
+## Download ready-to-use experimental mods
+
+The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):
+
+- **Reasonable gas tank upgrades** — the separate Mustang/F-150 tank-capacity mod.
+- **Job Types Compat Mustang** — the separate courier job-eligibility mod.
+
+Download the attached mod asset from the relevant release (`.scs`, or extract it from a supplied release ZIP), install the `.scs` in your ATS mod directory and enable it in Mod Manager. Read that release’s notes for the supported game version, DLC requirements and installation instructions. Python and the Extractor are only needed if you want to run the generators yourself; the downloadable mods are ready to use. GitHub’s automatic **Source code** archives contain the project sources.
+
+These are experimental builds for community testing. The map/connector fixes described below remain available through local generation from your own source maps.
 
 ## What can it do?
 
@@ -35,7 +46,7 @@ Reforma generation also uses **Mega Resources 3.0.1.161** (`Reforma_MegaResource
 
 These Expansion names identify the specific sources above. They do not imply support for every map covering Alaska or western Canada. OtherMaps naming other maps in its description does not establish testing of those maps. Exact input metadata, dependencies and historical observations are in the [input inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [research baseline](docs/reference/RESEARCH_BASELINE.md).
 
-The latest prepared local candidates are **map fixes r8**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and fingerprints. These local packages are not downloads supplied by this Git repository.
+The latest documented generated candidates are **map fixes r8**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
 
 ## What has been tried in game?
 
