@@ -1,5 +1,7 @@
 # Fuel access and petrol-price batch: ATS 1.61, revision r2
 
+Historical r2 delivery. The [current r4/r0 overnight batch](OVERNIGHT_TEST_BATCH_1_61_R4.md) replaces these map fixes, adds car rest/context preservation and includes separate practical-courier eligibility. Older artifacts below remain unchanged.
+
 Prepared: 2026-10-18. Run timestamp: `2026-10-18_01-27-24` (Europe/Warsaw). Applies to the eleven supplied map/resource archives and installed ATS 1.61.3.18. **Documented — user authorization:** fill the evident missing petrol fields now, with manual confirmation of the Canadian display/billing issue later. The user has finished gameplay for tonight. [ADR-0007](../architecture/decisions/ADR-0007-repair-missing-petrol-prices.md) records the policy.
 
 ## Generation scope

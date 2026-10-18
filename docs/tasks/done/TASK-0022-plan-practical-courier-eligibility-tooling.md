@@ -60,4 +60,4 @@ The plan specifies analysis and explicit experimental generation, expected sourc
 
 - [Tooling plan](../../reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md)
 - [Proposed configuration](../../examples/mustang-practical-courier.toml)
-- [Future implementation](../backlog/TASK-0023-build-configurable-courier-eligibility-generator.md)
+- [Future implementation](../done/TASK-0023-build-configurable-courier-eligibility-generator.md)

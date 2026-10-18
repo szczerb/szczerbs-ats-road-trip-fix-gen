@@ -19,6 +19,20 @@ def fuel_descriptor(flags=0):
 
 
 class CliTests(unittest.TestCase):
+    def test_courier_eligibility_analysis_and_generation_gate(self):
+        result = {'status': 'reported', 'report_path': '/audit.json',
+                  'workflow': {'work_dir': '/work'}, 'planner': {'coverage': {'blockers': []}},
+                  'generated_mod_count': 0}
+        with patch('ats_road_trip.eligibility_run.analyze_courier_eligibility', return_value=result) as analyze:
+            response = self.run_cli(['analyze-courier-eligibility', '--config', 'review.toml'])
+        self.assertEqual(response['generated_mod_count'], 0)
+        self.assertEqual(analyze.call_args.args, ('review.toml',))
+        with patch('ats_road_trip.eligibility_run.generate_courier_eligibility', return_value=result) as generate:
+            self.run_cli(['generate-courier-eligibility', '--config', 'review.toml'], expected=2)
+            generate.assert_not_called()
+            self.run_cli(['generate-courier-eligibility', '--config', 'review.toml', '--experimental'])
+            self.assertEqual(generate.call_args.kwargs['revision'], 0)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -136,7 +150,7 @@ company_def : .city { city: test_city prefab: alias }
         options = parser().parse_args(['generate-map-fix', 'source.scs', '--experimental',
                                        '--processor', 'rest', '--processor', 'fuel',
                                        '--rest-radius', '750'])
-        self.assertEqual(options.revision, 3)
+        self.assertEqual(options.revision, 4)
         self.assertEqual(options.processor, ['rest', 'fuel'])
         self.assertEqual(options.rest_radius, 750)
         result = {'status': 'generated', 'output': 'generated.scs',

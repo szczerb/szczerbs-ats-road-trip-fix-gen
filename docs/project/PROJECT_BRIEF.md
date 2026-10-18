@@ -8,7 +8,7 @@ The two features have equal research priority. Automation and small patch size a
 
 **Documented — expanded user direction, 2026-10-18:** include passenger-car rest eligibility as its own selectable processor alongside fuel and future Courier Jobs. Only add car support to a truck/bus rest area if no existing car rest lies within 1,000 game-world units in a straight line. Preserve truck/bus behavior and shared action definitions; compose selected changes into one source-specific mod. See [processor scope](../reference/COMPATIBILITY_PROCESSORS.md).
 
-**Documented — exploratory scope extension, 2026-10-18:** research a standalone courier vehicle-eligibility mod, starting with Crown Victoria jobs excluded for the Mustang. This is separate from source-map compatibility fixes and does not authorize silently bundling eligibility changes into them. Physical cargo suitability, class-wide effects and runtime behavior remain unverified; broader economy rebalancing remains outside the goal.
+**Documented — authorized scope extension, 2026-10-18:** implement a standalone courier vehicle-eligibility generator, starting with reviewed practical Crown Victoria cargo jobs excluded for the Mustang. See the [generator guide](../reference/PRACTICAL_COURIER_GENERATOR.md). This is separate from source-map compatibility fixes and does not authorize silently bundling eligibility changes into them. Physical cargo suitability, class-wide effects and runtime behavior remain unverified; broader economy rebalancing remains outside the goal.
 
 ## Reported problem and evidence boundary
 
@@ -16,7 +16,7 @@ The two features have equal research priority. Automation and small patch size a
 
 **Hypothesis:** Gemini suggested missing car-specific job markers and reuse of standard company identifiers explain the difference. This has not been confirmed by game data or experiments. See [economy and Courier Jobs](../reference/ECONOMY_AND_COURIER_JOBS.md).
 
-**Unknown:** whether the courier and refueling failures share a mechanism, whether either permits definition-only overrides, and whether fixes can be generated without editing prefabs or map sectors. See [car refueling](../reference/PASSENGER_CAR_REFUELING.md).
+**Observed locally — later research, 2026-10-18:** fuel compatibility uses placed service/prefab and sector edits; rest uses vehicle-filtered polygon actions. Standalone courier eligibility uses job-class definitions. General map courier repair and any common cause remain **Unknown**. See [car refueling](../reference/PASSENGER_CAR_REFUELING.md).
 
 ## Initialization deliverable (completed)
 

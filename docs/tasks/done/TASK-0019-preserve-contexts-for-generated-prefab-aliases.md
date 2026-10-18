@@ -1,7 +1,7 @@
 ---
 id: TASK-0019
 title: Preserve courier contexts when generating private prefab aliases
-status: backlog
+status: done
 priority: high
 repositories:
   - .
@@ -31,10 +31,10 @@ Prevent fuel/rest prefab cloning from silently losing existing static courier cl
 
 # Implementation Plan
 
-| Assignment | Proposed model / effort | Result |
+| Assignment | Actual model / effort | Result |
 | --- | --- | --- |
-| Review context semantics and alias-preservation design | GPT-6.1 Sol / high | Evidence-backed policy and ambiguous-case boundary |
-| Implement bounded preservation and regression tests | GPT-6 Sol / high | Deterministic processor integration |
+| Context policy, implementation and bounded rest-layout triage | GPT-6 Sol / medium | Proven sector transition lineage, exact tag preservation and fail-closed conflicts |
+| Integration review, batch generation and source-order graph | Root | Public workflow, combined resources and metadata |
 | Independently compare generated classifications and unchanged records | GPT-6 Luna / medium | Ignored audit and authored summary |
 
 # Acceptance Criteria
@@ -47,9 +47,13 @@ Prevent fuel/rest prefab cloning from silently losing existing static courier cl
 
 # Verification
 
-Not started. Required evidence: original-to-alias context audit, generated resource provenance, regression tests and subsequent manual controls. The initial discovery audit is recorded in the marker research document; it is not repair verification.
+Implemented `prefab_contexts.py` and composed processor transitions. Unique additive resources retain exact supported original tags; original exclusions/unclassified models are left unclassified. Conflicting live tags/exclusion comments, duplicate units, conflicting aliases and missing lineage block publication. Chained fuel-to-rest aliases retain the original model's classification. [ADR-0010](../../architecture/decisions/ADR-0010-preserve-contexts-for-generated-prefab-aliases.md).
+
+The real WCE r4 planner reports 190 aliases, 14 classified and 176 unclassified/excluded. Independent source/output checks and final batch acceptance are recorded in TASK-0024. Final authored suite: **233 passing tests**, `local_outputs/work/2026-10-18_04-08-02/tests-final.log`. Independent WCE source/output comparison retains **380 Company records** across 123 edited sectors byte-for-byte and accounts for all **14** Company-parent aliases; `local_outputs/work/2026-10-18_04-00-48/verify_wce_companies.json`. The independent WCE package review verifies actual original context units against all generated classifications. Runtime courier behavior remains unknown; TASK-0007 stays active.
 
 # Links
+
+- [Overnight delivery task](../done/TASK-0024-deliver-overnight-test-mod-batch.md).
 
 - [Reporting milestone](../done/TASK-0018-report-courier-company-locations.md)
 - [Processor composition](../done/TASK-0017-compose-selectable-compatibility-processors.md)

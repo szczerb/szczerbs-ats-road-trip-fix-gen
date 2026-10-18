@@ -35,7 +35,8 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Courier job quantities, discovery hypotheses and stock vehicle restrictions](reference/COURIER_JOB_AVAILABILITY_RESEARCH.md).
 - [Mustang versus Crown Victoria cargo exclusions](reference/MUSTANG_COURIER_CARGO_REVIEW.md).
 - [Separate vehicle-eligibility mod feasibility and override limits](reference/COURIER_VEHICLE_ELIGIBILITY_MOD.md).
-- [Planned eligibility generator and practical-cargo policy](reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md).
+- [Eligibility generator design and practical-cargo policy](reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md).
+- [Implemented standalone Practical Courier Jobs generator](reference/PRACTICAL_COURIER_GENERATOR.md).
 - [Courier company selection markers and placed-node evidence](reference/COURIER_MARKER_RESEARCH.md).
 - [Source-relative courier analysis/reporting command and interpretation](reference/COURIER_REPORTING.md).
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).
@@ -45,13 +46,15 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [User gameplay results and nearest-station selection review](reference/VALIDATION_RESULTS.md).
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
+- [Current overnight r4 map/r0 courier delivery, load order and static checks](reference/OVERNIGHT_TEST_BATCH_1_61_R4.md).
 - [Five verified r1 fuel packages, fingerprints and next test](reference/FUEL_FIX_BATCH_1_61_R1.md).
-- [Current r2 fuel/price packages and pending gameplay checks](reference/FUEL_FIX_BATCH_1_61_R2.md).
+- [Historical r2 fuel/price packages and pending gameplay checks](reference/FUEL_FIX_BATCH_1_61_R2.md).
 - [Map-wide fuel generator, one-command usage and coverage boundaries](reference/MAP_WIDE_FUEL_GENERATOR.md).
 - [Connector findings, screenshot-confirmed priority and fuel fixes](reference/CONNECTOR_FUEL_FIXES.md).
 - [Canadian refueling quantity/zero-price research and minimal test](reference/CANADA_FUEL_DISPLAY_RESEARCH.md).
 - [Pending manual tests and reminder agreement](reference/MANUAL_TEST_CHECKLIST.md).
 - [Passenger-car rest actions, polygons and selected map placements](reference/PASSENGER_CAR_REST_RESEARCH.md).
 - [Selectable fuel/rest processors, proximity rule and composition](reference/COMPATIBILITY_PROCESSORS.md).
+- [Legacy rest layouts, unchanged geometry and bounded support](reference/REST_LEGACY_LAYOUT_TRIAGE.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

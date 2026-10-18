@@ -129,6 +129,29 @@ class ProcessorTests(unittest.TestCase):
         self.assertNotEqual(result.resources[SECTOR], bytes(overlay))
         self.assertIn(SECTOR, result.reports['rest']['composed_resource_paths'])
 
+    def test_real_rest_pipeline_adds_context_for_cloned_prefab(self):
+        fixture = rest_source()
+        fixture['def/data_context.sii'] = (b'SiiNunit\n{\n'
+                                           b'data_context : context.original {\n'
+                                           b' target_data[]: prefab.rest\n'
+                                           b' tags[]: truck_dealer\n}\n}\n')
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            for path, contents in fixture.items():
+                target = root / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(contents)
+            with Package(root) as package:
+                stack = ResourceStack([package])
+                result = run_processors(stack, stack, source=str(package.path),
+                                        map_name='Fixture',
+                                        config=ProcessorConfig.from_names(['rest']))
+        self.assertTrue(result.coverage['complete'], result.blockers)
+        context_report = result.reports['context_preservation']
+        self.assertEqual(context_report['coverage']['aliases_classified'], 1)
+        self.assertIn(context_report['generated_resource'], result.resources)
+        self.assertEqual(context_report['aliases'][0]['original'], 'prefab.rest')
+
 
 if __name__ == '__main__':
     unittest.main()

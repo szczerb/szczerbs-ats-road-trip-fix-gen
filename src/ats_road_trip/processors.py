@@ -102,6 +102,7 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
     reports: dict[str, dict] = {}
     resources: dict[str, bytes] = {}
     blockers: list[dict] = []
+    transitions: list[tuple[str, str, bytes, bytes]] = []
     # Canonical order makes output identical even when callers specify a
     # different selection order. Fuel's edits are available to the rest pass.
     for processor in (Processor.FUEL, Processor.REST, Processor.COURIER):
@@ -135,7 +136,30 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
                 blockers.append({'processor': processor.value, 'area': 'resource_collision',
                                  'path': path,
                                  'reason': 'processors emitted the same path without an explicit composed overlay'})
+        if processor in (Processor.FUEL, Processor.REST) and effective is not None:
+            for path, after in sorted(changes.items()):
+                if not path.startswith('map/') or not path.endswith(('.base', '.aux')):
+                    continue
+                if path not in resources and path not in effective.resources:
+                    # A planner may emit a new sector. If it also emits a
+                    # private prefab alias, the context audit below will
+                    # block that unproven alias before packaging.
+                    continue
+                before = resources[path] if path in resources else effective.read(path, max_bytes=64*1024*1024)
+                transitions.append((processor.value, path, before, after))
         resources.update(changes)
+    if config.mode is ProcessorMode.GENERATE and any(p in config.enabled for p in (Processor.FUEL, Processor.REST)):
+        from .prefab_contexts import plan_prefab_contexts
+        context_report, context_resources = plan_prefab_contexts(
+            effective, resources, transitions, source=source, map_name=map_name)
+        reports['context_preservation'] = context_report
+        blockers.extend({'processor': 'context_preservation', **blocker}
+                        for blocker in context_report['coverage']['blockers'])
+        for path in context_resources:
+            if path in resources:
+                blockers.append({'processor': 'context_preservation', 'area': 'resource_collision',
+                                 'path': path, 'reason': 'Context planner output collides with processor output'})
+        resources.update(context_resources)
     coverage = {'complete': not blockers, 'blockers': blockers,
                 'planned_resource_count': len(resources)}
     return PipelineResult(reports, resources, blockers, coverage)

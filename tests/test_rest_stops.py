@@ -7,7 +7,7 @@ import unittest
 from ats_road_trip.local_fuel import token
 from ats_road_trip.map_sector import parse_sector
 from ats_road_trip.package import Package,ResourceStack
-from ats_road_trip.rest_stops import (inspect_rest_triggers, plan_rest_stops,
+from ats_road_trip.rest_stops import (_standalone, inspect_rest_triggers, plan_rest_stops,
                                       polygon_distance,retarget_rest_polygons)
 from ats_road_trip.sii import parse_units
 from tests.test_map_sector import item,refs,sector
@@ -90,6 +90,19 @@ def source(placements=((100,0.,0.),),groups=None,standalones=()):
             'def/world/prefab.rest.sii':DEFINITION,'def/world/trigger_action.sii':ACTIONS}
 
 
+def self_crossing_standalones(*entries):
+    """Original trigger nodes form an asymmetric crossed ring with real area."""
+    data=source(placements=())
+    items,nodes=[],[]
+    shape=((0.,0.),(10.,0.),(1.,10.),(10.,5.))
+    for uid,action,dx in entries:
+        raw,_=standalone(uid,dx,0.,action=action)
+        items.append(raw)
+        nodes.extend(map_node(uid+2000+i,dx+x,z,uid) for i,(x,z) in enumerate(shape))
+    data[SECTOR]=sector(items,nodes)
+    return data
+
+
 class RestTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
@@ -117,6 +130,14 @@ class RestTests(unittest.TestCase):
         self.assertEqual(polygon_distance(a,[(3999,0),(4009,0),(4009,10),(3999,10)]),999)
         self.assertEqual(polygon_distance(a,[(5,5)]),0)
         self.assertEqual(polygon_distance([(1,2)],[(4,6)]),5)
+
+    def test_definition_only_source_has_no_rest_targets_and_does_not_block_prices(self):
+        _, (report, resources) = self.plan({'def/country/example.sui': b'country_data : x {}'})
+        self.complete(report)
+        self.assertEqual(report['status'], 'not_applicable')
+        self.assertEqual(report['scope']['source_sector_count'], 0)
+        self.assertEqual(report['coverage']['added_car_polygons'], 0)
+        self.assertEqual(resources, {})
 
     def test_local_private_action_retains_truck_bus_and_all_geometry(self):
         original=source()
@@ -265,6 +286,113 @@ class RestTests(unittest.TestCase):
         self.complete(report)
         self.assertEqual(report['coverage']['already_supported'],1)
         self.assertEqual(out,{})
+
+    def test_existing_crossed_car_and_nearby_truck_are_proven_supported(self):
+        original=self_crossing_standalones((500,'parking_car',0.),
+                                           (600,'hud_parking',2.))
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(out,{})
+        self.assertEqual(report['coverage']['already_supported'],1)
+        self.assertEqual(len(report['legacy_irregular_polygons']),2)
+        self.assertEqual(report['locations'][0]['distance_method'],
+                         'vertex_pair_upper_bound_for_original_irregular_polygon')
+        self.assertLess(report['locations'][0]['nearest_car_distance'],3.)
+
+    def test_crossed_truck_without_vertex_proven_car_neighbor_changes_only_action(self):
+        original=self_crossing_standalones((600,'hud_parking',0.))
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(report['coverage']['added_car_polygons'],1)
+        self.assertEqual(len(report['conservative_proximity_for_irregular_source']),1)
+        self.assertEqual(report['locations'][0]['proximity_method'],
+                         'conservative_vertex_proof_only_for_original_irregular_polygon')
+        before=original[SECTOR];after=out[SECTOR]
+        item=parse_sector(before).items[0]
+        action_offset=_standalone(before,item)['actions'][0]['offset']
+        changed={index for index,(a,b) in enumerate(zip(before,after)) if a!=b}
+        self.assertTrue(changed)
+        self.assertTrue(changed<=set(range(action_offset,action_offset+8)))
+        self.assertEqual(len(before),len(after))
+        self.assertEqual([n.raw for n in parse_sector(before).nodes],
+                         [n.raw for n in parse_sector(after).nodes])
+
+    def test_far_irregular_car_does_not_hide_extra_permission(self):
+        original=self_crossing_standalones((500,'parking_car',3000.),
+                                           (600,'hud_parking',0.))
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(report['coverage']['added_car_polygons'],1)
+        self.assertEqual(len(report['conservative_proximity_for_irregular_source']),1)
+        self.assertIn(SECTOR,out)
+
+    def test_crossed_car_without_truck_does_not_block(self):
+        original=self_crossing_standalones((500,'parking_car',0.))
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(out,{})
+        self.assertEqual(report['coverage']['existing_car_locations'],1)
+
+    def test_repeated_car_vertex_uses_vertex_proximity_without_mutation(self):
+        raw,_=standalone(500,0.,0.,action='parking_car')
+        shape=((0.,0.),(10.,0.),(10.,0.),(0.,10.))
+        nodes=[map_node(2500+i,x,z,500) for i,(x,z) in enumerate(shape)]
+        original=source()
+        parsed=parse_sector(original[SECTOR]);old=original[SECTOR]
+        original[SECTOR]=sector([old[i.offset:i.end] for i in parsed.items]+[raw],
+                                [n.raw for n in parsed.nodes]+nodes)
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(out,{})
+        self.assertEqual(report['legacy_irregular_polygons'][0]['reason'],
+                         'Rest polygon is degenerate')
+        self.assertEqual(report['locations'][0]['distance_method'],
+                         'vertex_pair_upper_bound_for_original_irregular_polygon')
+
+    def test_legacy_ppd_versions_retain_exact_trigger_records(self):
+        for version in (23,24):
+            with self.subTest(version=version):
+                data=bytearray(descriptor())
+                struct.pack_into('<I',data,0,version)
+                self.assertEqual(len(inspect_rest_triggers(bytes(data))),1)
+                changed,report=retarget_rest_polygons(bytes(data),{0},token('rtatest'),
+                                                       actions={token('hud_parking'),token('parking_car')})
+                self.assertEqual(struct.unpack_from('<I',changed)[0],version)
+                self.assertTrue(report['original_geometry_topology_and_other_sections_preserved'])
+
+    def test_partial_activation_flag4_is_preserved_in_action_token_only_clone(self):
+        original=source()
+        data=bytearray(original[PPD]);h=struct.unpack_from('<24I',data)
+        for index in range(h[9]):
+            struct.pack_into('<I',data,h[21]+48*index+24,4)
+        original[PPD]=bytes(data)
+        _,(report,out)=self.plan(original)
+        self.complete(report)
+        self.assertEqual(report['coverage']['added_car_polygons'],1)
+        private=next(contents for path,contents in out.items() if path.endswith('.ppd'))
+        allowed={h[21]+48*index+offset for index in range(h[9]) for offset in range(4,12)}
+        differences={index for index,(before,after) in enumerate(zip(data,private)) if before!=after}
+        self.assertTrue(differences)
+        self.assertTrue(differences<=allowed)
+        self.assertEqual([g['flags'] for g in inspect_rest_triggers(private,
+                         actions={token(report['private_action']['token'])})],[4])
+        with_car=dict(original)
+        raw,nodes=standalone(500,0.,0.,action='parking_car')
+        parsed=parse_sector(original[SECTOR]);old=original[SECTOR]
+        with_car[SECTOR]=sector([old[i.offset:i.end] for i in parsed.items]+[raw],
+                                [n.raw for n in parsed.nodes]+nodes)
+        _,(report,out)=self.plan(with_car)
+        self.complete(report)
+        self.assertEqual(out,{})
+
+    def test_mixed_or_unknown_prefab_trigger_flags_remain_blocked(self):
+        for flags in ((4,0,4,4),(8,8,8,8)):
+            with self.subTest(flags=flags):
+                data=bytearray(descriptor());h=struct.unpack_from('<24I',data)
+                for index,value in enumerate(flags):
+                    struct.pack_into('<I',data,h[21]+48*index+24,value)
+                with self.assertRaisesRegex(ValueError,'Unsupported rest trigger flags'):
+                    inspect_rest_triggers(bytes(data))
 
     def test_generated_alias_on_baseline_is_in_car_index(self):
         original=source()

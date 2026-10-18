@@ -64,13 +64,16 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
               *, game_version: str, display_name: str | None = None,
               description: str | None = None, map_name: str | None = None,
               revision: int = 0, icon: bytes | None = None,
-              fix_topics: tuple[str, ...] | None = None) -> dict:
+              fix_topics: tuple[str, ...] | None = None,
+              category: str = 'map') -> dict:
     """Write a new ZIP_STORED .scs, with source/change report included.
 
     Existing outputs are never overwritten. Caller must explicitly acknowledge
     experimental generation before invoking this function.
     """
     output = Path(output)
+    if category not in ('map', 'other'):
+        raise ValueError('Supported manifest categories are map and other')
     if output.suffix.lower() != '.scs':
         raise ValueError('Output must have a .scs extension')
     if not re.fullmatch(r'1\.61(?:\.\d+)*', game_version):
@@ -117,6 +120,8 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
                 'revision': revision}
     if fix_topics is not None:
         metadata['fix_topics'] = sorted(fix_topics)
+    if category != 'map':
+        metadata['category'] = category
     if icon is not None:
         metadata['icon'] = {'path': 'mod_icon.jpg', 'size': len(icon), 'sha256': sha256(icon)}
     final_report = {**report, 'experimental': True, 'in_game_verified': False,
@@ -131,7 +136,7 @@ mod_package : .roadtrip_fix
     package_version: {json.dumps(package_version)}
     display_name: {display_literal}
     author: "szczerb"
-    category[]: "map"
+    category[]: {json.dumps(category)}
     compatible_versions[]: "1.61.*"
     dlc_dependencies[]: "dlc_rt_ford"
     description_file: "mod_description.txt"

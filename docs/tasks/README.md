@@ -4,15 +4,21 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
 ## Backlog
 
-- [TASK-0023: Build configurable courier eligibility tooling](backlog/TASK-0023-build-configurable-courier-eligibility-generator.md) — implement the planned standalone generator and reviewed practical-cargo preset.
+No unstarted tasks.
 
-- [TASK-0019: Preserve contexts for generated prefab aliases](backlog/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) — high priority: 14 WCE r3 Company-parent aliases lose static classification; review fuel/rest cloning and preserve exact effective tags. Runtime effect remains unknown.
+
 
 ## Done
+
+- [TASK-0024: Deliver overnight test mods](done/TASK-0024-deliver-overnight-test-mod-batch.md) — eight reviewed mods, 233 tests, effective-stack/namespace checks and one ZIP with installation/test instructions. Manual acceptance remains TASK-0007.
+
+- [TASK-0019: Preserve contexts for generated prefab aliases](done/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) — integrated exact-tag preservation; all 14 WCE Company-parent aliases and 380 unchanged Company records verified.
+- [TASK-0023: Build configurable courier eligibility tooling](done/TASK-0023-build-configurable-courier-eligibility-generator.md) — standalone source-pinned generation and reporting, reviewed 58-job preset, nine transfers unchanged, independently verified r0.
 
 | Task | Outcome |
 | --- | --- |

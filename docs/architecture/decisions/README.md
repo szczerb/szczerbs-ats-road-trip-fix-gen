@@ -26,4 +26,10 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0009: Report courier inputs before generating fixes](ADR-0009-report-courier-inputs-before-generating-fixes.md).
 
+- [ADR-0010: Preserve contexts for generated prefab aliases](ADR-0010-preserve-contexts-for-generated-prefab-aliases.md).
+
+- [ADR-0011: Generate practical courier eligibility as a separate mod](ADR-0011-generate-standalone-practical-courier-eligibility.md).
+
+- [ADR-0012: Preserve irregular source rest geometry](ADR-0012-preserve-irregular-source-rest-geometry.md): action-only edits with explicit conservative proximity, no geometry repair.
+
 Runtime fix validation and general map-sector authoring remain open.

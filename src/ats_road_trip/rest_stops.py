@@ -55,7 +55,7 @@ class _Overlay:
 
 
 def inspect_rest_triggers(data: bytes, *, actions=None) -> list[dict]:
-    """Validate v25 trigger topology; return complete connected rest polygons.
+    """Validate v23-v25 trigger topology; return complete connected rest polygons.
 
     Group IDs may be reused by different actions, but disconnected components,
     dangling neighbors and branching cycles are refused instead of guessed.
@@ -67,8 +67,8 @@ def inspect_rest_triggers(data: bytes, *, actions=None) -> list[dict]:
         if h[21] != h[22]:
             raise ValueError('PPD zero trigger count disagrees with section extent')
         return []
-    if info['version'] != 25 or h[21] + 48*h[9] != h[22]:
-        raise ValueError('Rest trigger analysis requires exact PPD v25 records')
+    if info['version'] not in (23,24,25) or h[21] + 48*h[9] != h[22]:
+        raise ValueError('Rest trigger analysis requires exact PPD v23-v25 records')
     records = []
     for i in range(h[9]):
         values = struct.unpack_from('<IQfffI3f2i', data, h[21] + 48*i)
@@ -84,7 +84,8 @@ def inspect_rest_triggers(data: bytes, *, actions=None) -> list[dict]:
     for (group_id, action), group in groups.items():
         if action not in actions:
             continue
-        if any(r['flags'] != 0 for r in group):
+        flags = {r['flags'] for r in group}
+        if len(flags) != 1 or not flags <= {0,4}:
             raise ValueError('Unsupported rest trigger flags')
         indexes = {r['index'] for r in group}
         if len(group) < 3:
@@ -105,6 +106,7 @@ def inspect_rest_triggers(data: bytes, *, actions=None) -> list[dict]:
         vertices = [records[i]['position'] for i in order]
         _validate_polygon([(p[0], p[2]) for p in vertices])
         result.append({'id': group_id, 'action': action, 'indices': order,
+                       'flags': next(iter(flags)),
                        'vertices': vertices})
     return result
 
@@ -327,11 +329,14 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
     overrides = resource_overrides or {}
     effective = _Overlay(stack, overrides)
     report = {'schema_version':1,'analysis':'localized_missing_car_rest','map_name':map_name,
-              'radius':radius,'distance_metric':'minimum Euclidean XZ polygon separation in game-world units',
+              'radius':radius,'distance_metric':('minimum Euclidean XZ polygon separation for simple polygons; '
+                                                'vertex-pair upper-bound proof for irregular source polygons'),
               'inclusive_radius':True,'package_order':[str(p.path) for p in stack.packages],
               'coverage':{'blockers':[],'truck_polygons':0,'existing_car_locations':0,
                           'already_supported':0,'added_car_polygons':0,'placements_changed':0},
               'locations':[],'changed_sectors':[],'source_resources':[],
+              'legacy_irregular_polygons':[],
+              'conservative_proximity_for_irregular_source':[],
               'composed_resource_paths':[],
               'scope':{'mode':'source_sectors_with_approximate_halo','omissions':[],
                        'boundary_over_additions_accepted':True,'nominal_sector_width':4000.,
@@ -343,9 +348,23 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                              'Full-sector overrides require the declared effective stack.',
                              'Single-control-node rest prefabs and compound rest placement are unsupported.',
                              'Car rests outside source sectors and the approximate halo can be missed, causing accepted boundary additions.',
+                             'Existing irregular standalone polygons count as nearby only when an original vertex pair proves the distance; otherwise action-only truck retargeting may add extra car permissions.',
                              'DLC guards remain unchanged; actual runtime availability still depends on the declared game setup.']}
     coverage,blockers = report['coverage'],report['coverage']['blockers']
     resources = {}
+    all_paths = effective.matching(r'map/[^/]+/sec[+-]\d{4}[+-]\d{4}\.(?:base|aux)')
+    source_paths = [p for p in all_paths if p in stack.resources
+                    and str(stack.resources[p][0].path) in map_packages]
+    source_set = set(source_paths)
+    if not source_paths:
+        report['status'] = 'not_applicable'
+        report['reason'] = 'No effective source-owned map sectors; no rest edits apply'
+        coverage['complete'] = True
+        report['sectors_inspected'] = 0
+        report['scope'].update({'source_sector_count': 0, 'nonempty_source_sector_count': 0,
+                                'halo_sector_count': 0, 'source_sector_paths': [],
+                                'halo_sector_paths': []})
+        return report, {}
     try:
         modes,truck_action_block,action_tokens,hud_actions = _validate_actions(effective)
         definitions = prefab_definitions(effective)
@@ -353,12 +372,6 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
         blockers.append({'reason':str(exc)})
         coverage['complete'] = False
         return report,resources
-    all_paths = effective.matching(r'map/[^/]+/sec[+-]\d{4}[+-]\d{4}\.(?:base|aux)')
-    source_paths = [p for p in all_paths if p in stack.resources
-                    and str(stack.resources[p][0].path) in map_packages]
-    source_set = set(source_paths)
-    if not source_paths:
-        blockers.append({'reason':'No effective sectors owned by selected map packages'})
     scope = report['scope']
     def problem(path,reason,**details):
         target = blockers if path in source_set else scope['omissions']
@@ -477,16 +490,35 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
                 continue
             placed = [node_for(uid,path).position for uid in trigger['nodes']]
             points = [(p[0],p[2]) for p in placed]
+            legacy_irregular_polygon = False
+            irregular_reason = None
             if len(points)==2:
                 trigger = {**trigger,'radius':math.dist(placed[0],placed[1])}
                 points = points[:1]
             elif len(points)>2:
-                _validate_polygon(points)
+                try:
+                    _validate_polygon(points)
+                except ValueError as exc:
+                    area = sum(a[0]*b[1]-b[0]*a[1]
+                               for a,b in zip(points,points[1:]+points[:1]))
+                    if (str(exc) not in ('Rest polygon self-intersects','Rest polygon is degenerate')
+                            or len(set(points)) < 3 or abs(area) < 1e-6):
+                        raise
+                    # Some source map triggers have a real crossing in their
+                    # unchanged vertex order or repeated XZ vertices. A node
+                    # pair bounds separation without guessing their interior.
+                    legacy_irregular_polygon = True
+                    irregular_reason = str(exc)
             vehicles = set().union(*(modes[a['action']] for a in rest_actions))
             locations.append({'path':path,'item':item,'trigger':trigger,'points':points,
                               'radius':trigger['radius'],'car':'car' in vehicles,
                               'truck':bool(vehicles & {'truck','bus'}),'kind':'standalone',
-                              'activation':activation})
+                              'activation':activation,
+                              'legacy_irregular_polygon':legacy_irregular_polygon})
+            if legacy_irregular_polygon:
+                report['legacy_irregular_polygons'].append({
+                    'path':path,'uid':hex(item.uid),'vehicles':sorted(vehicles),
+                    'reason':irregular_reason})
         except (ValueError,KeyError,struct.error) as exc:
             problem(path,str(exc),uid=hex(item.uid))
     cars = [location for location in locations if location['car']]
@@ -512,7 +544,12 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
             dx=max(0,bounds[0]-cb[2],cb[0]-bounds[2]); dz=max(0,bounds[1]-cb[3],cb[1]-bounds[3])
             if math.hypot(dx,dz)>limit:
                 continue
-            distance=max(0.,polygon_distance(location['points'],car['points'])-location['radius']-car['radius'])
+            if location.get('legacy_irregular_polygon') or car.get('legacy_irregular_polygon'):
+                distance=max(0.,min(math.dist(a,b) for a in location['points'] for b in car['points'])
+                             -location['radius']-car['radius'])
+            else:
+                distance=max(0.,polygon_distance(location['points'],car['points'])
+                             -location['radius']-car['radius'])
             if distance<=radius:
                 nearby.append((distance,car))
         row={'path':path,'uid':hex(location['item'].uid),'kind':location['kind'],
@@ -524,8 +561,16 @@ def plan_rest_stops(stack, *, map_packages: set[str], radius=1000., map_name='re
             distance,car=min(nearby,key=lambda pair:pair[0])
             row.update({'nearest_car_distance':distance,'nearby_car_path':car['path'],
                         'nearby_car_uid':hex(car['item'].uid)})
+            if location.get('legacy_irregular_polygon') or car.get('legacy_irregular_polygon'):
+                row['distance_method']='vertex_pair_upper_bound_for_original_irregular_polygon'
             coverage['already_supported'] += 1
         else:
+            if location.get('legacy_irregular_polygon'):
+                row['proximity_method']='conservative_vertex_proof_only_for_original_irregular_polygon'
+                report['conservative_proximity_for_irregular_source'].append({
+                    'path':path,'uid':hex(location['item'].uid),
+                    'reason':'No original car vertex pair proved proximity; interior proximity remains unknown',
+                    'action_only_retarget':True})
             selected[(path,location['item'].uid)].append(location)
         report['locations'].append(row)
     # Unsafe source parsing blocks edits. Neighbor omissions may hide car rests;

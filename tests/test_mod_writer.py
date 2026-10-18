@@ -10,6 +10,19 @@ from ats_road_trip.sii import parse_units
 
 
 class ModWriterTest(unittest.TestCase):
+    def test_standalone_other_category_and_rejection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / 'courier.scs'
+            report = write_mod(output, {'def/example.sii': b'x'}, {}, game_version='1.61',
+                               display_name='Courier experiment', category='other')
+            with zipfile.ZipFile(output) as archive:
+                manifest = parse_units(archive.read('manifest.sii').decode())[0]
+                self.assertEqual(manifest.values('category'), ('other',))
+                self.assertEqual(report['package_metadata']['category'], 'other')
+            with self.assertRaises(ValueError):
+                write_mod(Path(temporary) / 'bad.scs', {'x': b'x'}, {},
+                          game_version='1.61', category='invalid')
+
     def test_selected_topics_have_accurate_branding(self):
         with tempfile.TemporaryDirectory() as temporary:
             for topics, title in ((('fuel',), 'Gas Stations Fix'),

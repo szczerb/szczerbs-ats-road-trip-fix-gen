@@ -1,6 +1,6 @@
 # Plan: explicit Mustang courier eligibility experiment
 
-**Status: plan only.** This document and [the example TOML](../examples/mustang-practical-courier.toml) define a proposed configuration. No generator, package, or game/profile change is part of this increment.
+**Status: implemented 2026-10-18.** This document preserves the reviewed design rationale and initial proposal. For actual commands, generated-package evidence, and current limits, see the [implemented generator guide](PRACTICAL_COURIER_GENERATOR.md). The example TOML remains the reviewed input. No game/profile installation or runtime validation has occurred.
 
 ## Goal and source boundary
 

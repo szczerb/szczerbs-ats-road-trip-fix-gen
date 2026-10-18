@@ -66,6 +66,15 @@ def parser() -> argparse.ArgumentParser:
     courier.add_argument('--map', action='append', required=True)
     courier.add_argument('--dlc', action='append', default=[])
     courier.add_argument('--output')
+    for name in ('analyze-courier-eligibility', 'generate-courier-eligibility'):
+        eligibility = sub.add_parser(name, help='Analyze or package reviewed practical-cargo vehicle eligibility')
+        eligibility.add_argument('--config', required=True, help='Reviewed source-pinned TOML policy')
+        eligibility.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        eligibility.add_argument('--dependency', action='append', default=[], help='Declared archives, lowest priority first')
+        eligibility.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            eligibility.add_argument('--revision', type=int, default=0)
+            eligibility.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
@@ -76,7 +85,7 @@ def parser() -> argparse.ArgumentParser:
         bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
         bulk.add_argument('--map-name', help='Short map name; inferred for known map families')
         if name != 'analyze-map':
-            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 3)
+            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 4)
         bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,
@@ -135,6 +144,19 @@ def main(argv: list[str] | None = None) -> int:
             args.prefix = prefix
         if args.command.startswith('generate') and not args.experimental:
             raise ValueError('Generation requires --experimental; no candidate is verified in game')
+        if args.command in ('analyze-courier-eligibility', 'generate-courier-eligibility'):
+            from .eligibility_run import analyze_courier_eligibility, generate_courier_eligibility
+            options = dict(game_dir=args.game_dir, dependency=args.dependency,
+                           run_id=args.run_id, extractor=args.extractor)
+            if args.command.startswith('generate'):
+                result = generate_courier_eligibility(args.config, revision=args.revision, **options)
+            else:
+                result = analyze_courier_eligibility(args.config, **options)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result['planner'].get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
         if args.command in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
             import logging
             logging.basicConfig(level=logging.INFO, format='%(message)s')

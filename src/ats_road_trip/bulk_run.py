@@ -180,7 +180,7 @@ def _write_audit(path: Path, audit: dict) -> None:
 
 
 def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
-                     map_name=None, revision=3, run_id=None, extractor=None,
+                     map_name=None, revision=4, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      _legacy_fuel=False, _analysis_only=False) -> dict:
@@ -261,6 +261,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             if _legacy_fuel:
                 report = planned.reports['fuel']
                 report['processors_enabled'] = list(topics)
+                report['context_preservation'] = planned.reports.get('context_preservation')
             else:
                 report = {
                     'schema_version': 1,

@@ -4,7 +4,7 @@ Updated: 2026-10-18. **Documented — user instruction:** the game is closed and
 
 ## Petrol price and quantities: pending
 
-Use the newest r2 packages, disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The new OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.
+Use the newest delivered r4 combined packages, disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.
 
 - In ProMods BC and Western Canada areas, the petrol price is positive and the initial quantity is finite zero, not `-nan(ind)`.
 - While filling, the quantity increases with a finite value; fuel in the tank increases and the balance decreases consistently with the displayed price/amount. Do not judge success only by the initial zero.
@@ -16,7 +16,7 @@ Price provenance: same-unit lower-source values are restored where available. Ot
 
 ## Rest areas: local processor implemented; runtime test pending
 
-The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The separate [rest processor and verified WCE r3 candidate](COMPATIBILITY_PROCESSORS.md) applies the user-selected local distance rule and retains the shared truck action. WCE r3 combines fuel and rest; replace its older WCE r2 fix at the same priority, keeping other maps' r2 fixes. The previously delivered r2 fuel packages contain no rest changes. [Original mechanism and source evidence](PASSENGER_CAR_REST_RESEARCH.md).
+The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The [rest processor](COMPATIBILITY_PROCESSORS.md) applies the local distance rule and retains shared truck actions. The r4 combined packages replace earlier fuel-only r2 and WCE r3 packages at the same source-relative priority. Do not keep both versions enabled. The historical r2 fuel packages contain no rest changes. [Original mechanism](PASSENGER_CAR_REST_RESEARCH.md).
 
 When a complete-coverage rest candidate is prepared, compare car-mode map/discovery icons, the engine-off/rest prompt inside the actual polygon, successful fatigue recovery, truck/bus behavior where applicable and save/reload. Include a selected truck area with no car rest within 1,000 map-world units, an unchanged truck area with a nearby car rest, and a working stock car area. The absence of a fuel-style upright hologram is expected and is not the failure criterion. Do not copy the petrol service bit into parking records. Bounded static fixture outputs are not complete-map install candidates.
 
@@ -31,3 +31,11 @@ The existing WCE r3 candidate has a [static context-preservation risk at 14 comp
 ## Courier quantity and discovery: later controlled observation
 
 Follow the [availability research controls](COURIER_JOB_AVAILABILITY_RESEARCH.md#low-risk-controlled-observations-for-a-later-game-session): record departures from fixed old cities and the total visible market separately, with car/rating/market/filters unchanged. Compare equal elapsed-time copied-profile runs with and without a new city discovery; natural market variation remains a confounder requiring repetition. If still using the Mustang, separately compare a broader-class car under matched conditions. Counts of stock job definitions are not live offers, and an observed rise in empty visible cities alone does not prove global dilution.
+
+## Standalone Practical Courier Jobs: pending
+
+Enable only the new standalone r0 candidate from the [generator guide](PRACTICAL_COURIER_GENERATOR.md), above any reviewed job-definition replacement. Record car, rating, current city, selected market, active filters, time elapsed, game version and exact enabled packages. Use an owned Mustang in Dispatch Market and a matched control without the mod. Existing offers may not change immediately; record natural market refresh rather than resetting the economy.
+
+Check newly eligible practical cargo categories at sufficient rating, acceptance, reachable pickup, attached/carried cargo, driving and completed delivery/payment. Check at least one unchanged originally eligible job. Inspect Quick Jobs and logs separately because the same definitions are shared. Verify vehicle-transfer definitions remain unaffected in behavior where practical; their bytes are unchanged statically. Additional eligibility does not guarantee offers in every city, prove a discovery-budget mechanism or establish exact physical cargo fit.
+
+R4 adds original classifications to private prefab aliases; compare the historical WCE dealer controls with and without r4. Static classification preservation does not close runtime courier testing.

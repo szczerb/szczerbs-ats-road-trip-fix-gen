@@ -1,4 +1,4 @@
-# Proposed, version-pinned human review configuration; no generator consumes this yet.
+# Reviewed, version-pinned practical-cargo policy for the courier eligibility commands.
 schema_version = 1
 profile_id = "mustang-practical-courier-v1"
 game_version = "1.61.3.18"

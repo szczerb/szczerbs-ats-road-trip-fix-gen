@@ -91,3 +91,7 @@ Nothing is installed in the game or mod directory. Generated fuel descriptors co
 ## Full source-map fuel generation
 
 `PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/ATS_Expansion_v23.0_1.61.scs --experimental` discovers and patches complete supported fuel coverage without a per-station recipe. See the [map-wide guide](MAP_WIDE_FUEL_GENERATOR.md) for all five commands, automatic companion packages, timestamped audit/output paths, failure behavior, icons and required source-relative load order. The historical pinned commands above retain their narrower semantics.
+
+## Standalone job eligibility
+
+The [Practical Courier Jobs generator](PRACTICAL_COURIER_GENERATOR.md) is separate from map processors. `analyze-courier-eligibility --config PATH` writes a report only; `generate-courier-eligibility --config PATH --experimental` packages reviewed class-list additions after exact source/version/inventory checks. The preset enables 58 cargo units, disables 30 ambiguous candidates and preserves all nine vehicle transfers. No game/profile installation occurs. General map `courier` generation remains unsupported.
