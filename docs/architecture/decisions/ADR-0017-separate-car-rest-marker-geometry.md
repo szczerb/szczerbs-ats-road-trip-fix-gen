@@ -2,7 +2,7 @@
 
 ## Context
 
-Date: 2026-10-18. [TASK-0038](../../tasks/active/TASK-0038-investigate-missing-car-parking-icons.md) investigates absent car-map parking icons with r8 despite its mixed truck/bus/car rest action. The user authorizes an implementation, automated verification and local r9 handoff, without launching ATS or changing a live profile.
+Date: 2026-10-18. [TASK-0038](../../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md) investigates absent car-map parking icons with r8 despite its mixed truck/bus/car rest action. The user authorizes an implementation, automated verification and local r9 handoff, without launching ATS or changing a live profile.
 
 **Observed locally — ATS 1.61.3.18:** read-only inspection of the installed executable, independently repeated by GPT-6 Sol/high, identifies a truck-first map-marker classification. Prefab trigger groups are tested for truck/bus mask 3 before car mask 4; a truck match selects marker category 7 and skips car category 25. Standalone Trigger items use the same truck-first decision across their action list. Thus adding `car` to one truck action, or adding a car action to the same standalone item, does not create an independent car marker. The action matcher resolves command/parameters dynamically; custom alias spelling is not the cause. The executable also identifies Parking overlays as obsolete in favor of parking triggers. Exact identity and bounded evidence are in the [investigation](../../reference/CAR_PARKING_ICON_INVESTIGATION.md).
 

@@ -1,6 +1,6 @@
 # Pending manual game tests
 
-Updated: 2026-10-18. The user confirms functional refueling in Canada and Mexico and accepts tank upgrades internally. The earlier rest-success report is qualified by a later missing-icon report; physical rest remains uncertain. [Current clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). The user is completing a job in Mexico; do not request immediate rest testing. Numerical billing controls, courier delivery and the connector icon retain separate evidence/status. Remind only about remaining checks. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
+Updated: 2026-10-19. The user confirms functional refueling in Canada and Mexico and accepts tank upgrades internally. The earlier rest-success report is qualified by the later missing-icon report; physical rest remains unconfirmed. [Current clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). The static r9 marker repair has passed final package audits; use its [handoff](MOD_REST_MARKERS_1_61_R9.md). The user was completing a job in Mexico; do not interrupt for rest testing. Numerical billing controls, courier delivery and the connector icon retain separate evidence/status. Remind only about remaining checks. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
 
 **Interim user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA with no problems noticed yet. This interim report predates the subsequent tank and Canada/Mexico fuel/rest confirmations recorded below.
 
@@ -8,7 +8,7 @@ Updated: 2026-10-18. The user confirms functional refueling in Canada and Mexico
 
 **Documented — first-hand user report, 2026-10-18:** the user confirms that everything works following the tank r0 handoff and explicitly accepts this mod as internally done. They may invite community testers. This closes the internal tank validation; the individual checks below remain useful optional regression coverage, not outstanding internal requirements. The report does not enumerate measurements or each test separately. [Acceptance evidence](VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally).
 
-Use the separate [reasonable gas tank upgrades candidate](REASONABLE_GAS_TANK_UPGRADES.md); disable Ford Fuel X3 and conflicting chassis/tank overrides first. Keep map r8/courier r3 unchanged.
+Use the separate [reasonable gas tank upgrades candidate](REASONABLE_GAS_TANK_UPGRADES.md); disable Ford Fuel X3 and conflicting chassis/tank overrides first. Keep the map package set at its final audited r9 state, and keep courier r3 unchanged.
 
 - Existing Mustang: capacity 76 L, filling can exceed stock 61 L and stops at the new limit. Check the nominal 20-US-gallon capacity description.
 - F-150: capacity 136 L instead of 98 L; nominal description 36 US gal.
@@ -20,7 +20,7 @@ Use the separate [reasonable gas tank upgrades candidate](REASONABLE_GAS_TANK_UP
 
 **Documented — user report, 2026-10-18:** refueling works in Canada and Mexico. General functional refueling is internally accepted. The following numerical/accounting and regression checks are not individually described by that report; they remain useful additional coverage rather than reopening functional access. [Dated evidence](VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico).
 
-Use the newest [r8 map/r3 courier packages](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.
+Use the final audited r9 map packages with the unchanged [courier r3](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md) package, disable superseded map/r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical. Tank r0 and courier r3 are separate, unchanged acceptance tracks.
 
 - In ProMods BC and Western Canada areas, the petrol price is positive and the initial quantity is finite zero, not `-nan(ind)`.
 - While filling, the quantity increases with a finite value; fuel in the tank increases and the balance decreases consistently with the displayed price/amount. Do not judge success only by the initial zero.
@@ -30,21 +30,21 @@ Use the newest [r8 map/r3 courier packages](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md
 
 Price provenance: same-unit lower-source values are restored where available. Other new values use the recorded stock ATS petrol/diesel ratio and are estimates, not real-world price assertions. A positive definition alone does not establish that it completely repairs the reported UI problem.
 
-## Rest areas: Canada/Mexico user-confirmed
+## Passenger-car parking markers and rest: r9 runtime check pending
 
-**Documented — user report, 2026-10-18:** parking/rest works in Canada and Mexico. This closes internal functional rest validation at the reported scope. The controls below are optional extended regression coverage; exact sites, fatigue values, truck/bus behavior and reload outcomes were not enumerated. [Dated evidence](VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico).
+**Current status:** the user's later missing-icon report reopens confidence in car rest. The earlier Canada/Mexico success report remains history, but physical rest at the affected sites and fatigue recovery are not confirmed. See the [dated evidence](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report).
 
-The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The [rest processor](COMPATIBILITY_PROCESSORS.md) applies the local distance rule and retains shared truck actions. Combined fuel/rest behavior was first delivered in r4; current r8 retains those gameplay bytes and replaces earlier source-specific fixes at the same priority. Do not keep both versions enabled. The historical r2 fuel packages contain no rest changes. [Original mechanism](PASSENGER_CAR_REST_RESEARCH.md).
+Static inspection identified the marker issue: the original mixed action is classified truck-first for the map marker, while native `parking_car` locations have car-only actions. The r9 repair adds reviewed car twins while retaining the original truck triggers. The static suite reported 281 passing tests; final package audits pass, while in-game behavior remains pending. See the [r9 marker handoff](MOD_REST_MARKERS_1_61_R9.md), [rest processor](COMPATIBILITY_PROCESSORS.md), and [original mechanism research](PASSENGER_CAR_REST_RESEARCH.md).
 
-For additional community regression coverage, compare car-mode map/discovery icons, the engine-off/rest prompt inside the actual polygon, successful fatigue recovery, truck/bus behavior where applicable and save/reload. Include a selected truck area with no car rest within 1,000 map-world units, an unchanged truck area with a nearby car rest, and a working stock car area. The absence of a fuel-style upright hologram is expected and is not the failure criterion. Do not copy the petrol service bit into parking records. Bounded static fixture outputs are not complete-map install candidates.
+When convenient, test the final audited r9 packages using a copied profile and the as-delivered filenames. Check car parking icons in Canada, Alaska, and areas covered by the map mod in Montana. At one selected affected location, verify the actual parking/rest prompt and fatigue recovery; separately confirm the original truck parking control still works, then reload and check the icon and access again. Record the map, sector/location, vehicle, mode, exact package filenames and observed result. Icon discovery, an interaction prompt, and successful fatigue recovery are three separate observations. Do not interrupt the user's current job, modify the live profile, or infer physical rest from static tests.
 
-Keep [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) active for the remaining courier/icon and detailed control evidence; the accepted fuel/rest and tank milestones are not blockers. Record station, vehicle/mode, package version and observed price/quantity/tank/payment/rest results in [validation results](VALIDATION_RESULTS.md); never rewrite historical generated reports to claim later validation.
+Keep [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) active for the remaining courier, r9 rest, detailed fuel-accounting and connector-icon evidence. Canada/Mexico refueling access remains user-confirmed and is not being reopened by the parking issue. Record station, vehicle/mode, package version and observed price/quantity/tank/payment/rest results in [validation results](VALIDATION_RESULTS.md); never rewrite historical generated reports to claim later validation.
 
 ## Courier company check-in and alias controls: pending
 
 The [read-only courier report](COURIER_REPORTING.md) generates no package and does not prove playable offers. Later compare an officially classified stock depot and a classified map-mod depot in truck/car modes: record the visible selection avatar, its activation position and the market it opens before any active job. Test a courier offer, reachable pickup and completed delivery separately; record game/mod versions, source order, rating/vehicle and job state. Collect the user's working/affected city examples when that investigation begins.
 
-The existing WCE r3 candidate has a [static context-preservation risk at 14 company-linked prefab aliases](COURIER_MARKER_RESEARCH.md#existing-generated-prefab-aliases-a-static-cross-feature-risk). Before considering it validated for courier use, compare the same dealer/company locations with and without the candidate, and repeat after any future preservation repair. This is a risk requiring controls, not an observed gameplay failure. The detailed fuel-accounting controls remain unreported; general rest success is recorded above.
+The existing WCE r3 candidate has a [static context-preservation risk at 14 company-linked prefab aliases](COURIER_MARKER_RESEARCH.md#existing-generated-prefab-aliases-a-static-cross-feature-risk). Before considering it validated for courier use, compare the same dealer/company locations with and without the candidate, and repeat after any future preservation repair. This is a risk requiring controls, not an observed gameplay failure. The detailed fuel-accounting controls remain unreported; the earlier positive rest report is qualified by the later missing-icon report, and physical rest remains unconfirmed.
 
 ## Courier quantity and discovery: later controlled observation
 
@@ -58,8 +58,8 @@ Check newly eligible practical cargo categories at sufficient rating, acceptance
 
 R4 adds original classifications to private prefab aliases; compare the historical WCE dealer controls with and without r4. Static classification preservation does not close runtime courier testing.
 
-## Connector Mod Manager icon: pending r8 confirmation
+## Connector Mod Manager icon: pending r9 filename confirmation
 
-- Replace the old connector fix with `szczerbs-road-trip-map-fix-western-canada-promods-connections-1.61-r8-experimental.scs`, disabling its older copy. Keep it directly above Western Canada ProMods Connections.
-- Open Mod Manager and check its dedicated M2D image appears. The r7 log reported icon-cache creation failure despite a valid packaged JPEG; the shortened filename is a mitigation for a strong path-length hypothesis, not confirmed rendering.
-- If missing, preserve the new game log and actual package filename/version. Do not delete cache or change Windows settings as an incidental step. [Incident evidence](../incidents/INC-0001-connector-icon-cache/README.md).
+- Use the final r9 Western Canada ProMods Connections package filename, disable older copies, and keep it directly above that source.
+- Open Mod Manager and check its dedicated M2D image appears. The r7 log reported icon-cache creation failure despite a valid packaged JPEG; the r8 shortened filename was a mitigation, not confirmed rendering.
+- If missing, preserve the new game log and exact r9 package filename/version. Do not delete cache or change Windows settings as an incidental step. [Incident evidence](../incidents/INC-0001-connector-icon-cache/README.md).

@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0038: Investigate missing car parking icons](active/TASK-0038-investigate-missing-car-parking-icons.md) — Canada/Alaska icons absent, Montana sparse; installed r8 matches delivery/r7 gameplay; physical rest untested and prior rest confidence qualified.
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -14,6 +13,8 @@ No unstarted tasks.
 
 
 ## Done
+
+- [TASK-0038: Repair missing car parking markers](done/TASK-0038-investigate-missing-car-parking-icons.md) — truck-first marker cause verified, native car-only twins, 281 tests and independent seven-package/effective-stack audits; local r9 handoff ready, runtime check remains TASK-0007.
 
 - [TASK-0037: Publish experimental job and tank releases](done/TASK-0037-publish-experimental-mod-releases.md) — separate public prereleases with approved notes, fixed tags, independently verified downloads and recorded maintainer gameplay confirmation.
 

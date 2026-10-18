@@ -1,6 +1,6 @@
 # Missing passenger-car parking icons
 
-Inspected: 2026-10-18. Baseline ATS 1.61.3.18; original supplied sources and r8 packages remain unchanged. [TASK-0038](../tasks/active/TASK-0038-investigate-missing-car-parking-icons.md) implements a source-specific r9 repair; in-game rendering remains unverified.
+Inspected: 2026-10-18–19. Baseline ATS 1.61.3.18; original supplied sources and r8 packages remain unchanged. [TASK-0038](../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md) implements a source-specific r9 repair; in-game rendering remains unverified.
 
 ## Resolved static cause
 
@@ -44,7 +44,7 @@ Root reviewed GPT-6 Luna/medium's exact sector/record hashes, action parameters,
 
 **Observed locally:** a read-only scan of the eleven logged higher-priority Workshop package directories found no exact collisions with r8 sector paths, private descriptors or private definitions. The sole opaque `No DeadEnds!` archive was separately listed with the HashFS adapter and has no map/world/private-descriptor paths. This bounded path scan does not verify all underlying descriptor semantics or the engine's filtering behavior.
 
-**Observed locally:** `rest_stops.py` changes selected PPD/standalone action tokens to private actions with `hud_activate`, parameter 3, and truck/bus/car strings. It preserves original geometry and does not explicitly create parking services or map overlays. Both stock and private actions retain the “Parking - Large vehicles” display label. Five log messages reject a parking action for car mode; without tokens, UIDs or coordinates they do not identify a failed generated location.
+**Observed locally — historical r8 implementation:** `rest_stops.py` changed selected PPD/standalone action tokens to private actions with `hud_activate`, parameter 3, and truck/bus/car strings. It preserved original geometry and did not explicitly create parking services or map overlays. Both stock and private actions retain the “Parking - Large vehicles” display label. Five log messages reject a parking action for car mode; without tokens, UIDs or coordinates they do not identify a failed generated location.
 
 ## Marker mechanism: established and unknown
 
@@ -60,6 +60,8 @@ Root reviewed GPT-6 Luna/medium's exact sector/record hashes, action parameters,
 
 ## Reproduction artifacts
 
-Ignored `local_outputs/work/2026-10-18_23-24-54/` contains the log snapshot, seven embedded reports, `package-audit.json`, `rest-coverage.json` and screenshot fingerprint/corrected observation. Original screenshot remains outside the repository. GPT-6 Luna / high performed bounded read-only implementation and primary-source research; root reviewed findings, exact archive equality, log and screenshot. No live installation, profile changes, game operation or replacement package was performed.
+Initial investigation checkpoint: ignored `local_outputs/work/2026-10-18_23-24-54/` contains the log snapshot, seven embedded reports, `package-audit.json`, `rest-coverage.json` and screenshot fingerprint/corrected observation. Original screenshot remains outside the repository. GPT-6 Luna / high performed bounded read-only implementation and primary-source research; root reviewed findings, exact archive equality, log and screenshot. That checkpoint performed no live installation, profile changes, game operation or replacement package generation.
 
-Subsequent authorized implementation evidence: root's `local_outputs/work/2026-10-18_23-37-08/engine-evidence.json` and bounded executable-inspection excerpts; independent GPT-6 Sol/high evidence under `local_outputs/work/2026-10-18_23-37-00/mechanism/`; paired inventory under `local_outputs/work/2026-10-18_23-37-37/parking-inventory/`; final generation/audits under `local_outputs/work/2026-10-18_23-48-10/`. Large binary excerpts and generated resources remain ignored.
+Subsequent authorized implementation evidence: root's `local_outputs/work/2026-10-18_23-37-08/engine-evidence.json` and bounded executable-inspection excerpts; independent GPT-6 Sol/high evidence under `local_outputs/work/2026-10-18_23-37-00/mechanism/`; paired inventory under `local_outputs/work/2026-10-18_23-37-37/parking-inventory/`; first batch generation/audits under `local_outputs/work/2026-10-18_23-48-10/`, with corrected Expansion finals and consolidated handoff checks under `local_outputs/work/2026-10-19_00-03-23/`. Large binary excerpts and generated resources remain ignored.
+
+The completed local [r9 handoff](MOD_REST_MARKERS_1_61_R9.md) records final artifact fingerprints, independent output checks and the deferred runtime test. R9 fixes the statically identified marker representation; it is not an in-game acceptance report.

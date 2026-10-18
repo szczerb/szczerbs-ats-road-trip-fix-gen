@@ -1,5 +1,13 @@
 # Gameplay validation results
 
+## 2026-10-19: r9 parking-marker repair statically verified; runtime pending
+
+**Observed locally — static implementation finding:** the map marker issue is traced to the mixed rest action being classified truck-first for marker discovery. Native car-rest sites use car-only `parking_car` actions. The r9 candidate adds those car twins while retaining the original truck triggers. Its static test suite reports **281 passing tests**.
+
+**Observed locally — package verification:** final independent seven-archive and effective-stack audits pass; the local r9 batch is ready for a later game test. No game launch, installation or profile operation was performed for this work. There is no r9 in-game icon, prompt, fatigue-recovery, truck-control or reload result yet. The [r9 marker handoff](MOD_REST_MARKERS_1_61_R9.md) records the audited output and technical evidence.
+
+The later icon report continues to qualify the earlier general rest-success report below: physical rest remains unconfirmed. When convenient, test final audited r9 packages on a copied profile in Canada, Alaska and mod-covered Montana. At one selected location, record the car map icon, actual prompt and fatigue recovery separately; also check a truck parking control and repeat icon/access checks after reload. Do not interrupt the user's current job. Refueling access in Canada and Mexico remains independently user-confirmed; numerical prices, quantities and billing are not thereby inferred. Job Types Compat r3 and tank r0 are separate accepted packages and are unchanged by this rest work. The Western Canada ProMods Connections Mod Manager icon also remains runtime-unknown for its exact r9 package filename.
+
 ## 2026-10-18: missing car parking icons and qualified rest report
 
 **Documented — subsequent first-hand user clarification:** car-mode world-map parking icons are missing in Canada and Alaska and sparse in Montana, despite installed r8. The user has not tested physical rest there and is completing a job in Mexico. They explicitly question the earlier late-night general rest-success report; rest confidence is reopened, without declaring a physical rest failure. Refueling, jobs and tank reports remain separate.
@@ -8,7 +16,7 @@
 
 **Observed locally:** second screenshot `ats_20261018_232848_00.png` shows dense icons across Mexico. **Hypothesis — user:** every fix except Reforma may be affected. Existing native car locations may contribute those icons; this does not validate generated Reforma rest additions or every other package's failure.
 
-**Observed locally:** all seven installed r8 map archives match the delivered SHA-256 fingerprints, with gameplay resources identical to r7 and expected source-relative active order in the 22:49:31 log. These checks do not establish successful rest or icon display. [Investigation and remaining unknowns](CAR_PARKING_ICON_INVESTIGATION.md), [TASK-0038](../tasks/active/TASK-0038-investigate-missing-car-parking-icons.md). No immediate in-game test is requested and no profile/package was changed.
+**Observed locally:** all seven installed r8 map archives match the delivered SHA-256 fingerprints, with gameplay resources identical to r7 and expected source-relative active order in the 22:49:31 log. These checks do not establish successful rest or icon display. [Investigation and remaining unknowns](CAR_PARKING_ICON_INVESTIGATION.md), [TASK-0038](../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md). No immediate in-game test is requested and no profile/package was changed.
 
 ## 2026-10-18: updated job and tank packages work in game
 

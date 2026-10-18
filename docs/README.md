@@ -74,3 +74,5 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Helper provenance, all-module/test inventory and historical sources](reference/DEEP_HELPER_PROVENANCE_REVIEW.md).
 - [License choices from the maintainer perspective](reference/MAINTAINER_LICENSE_CHOICES.md).
 - [Public Git identity, placeholder correction and first-release practices](reference/PUBLIC_GIT_IDENTITY_PRACTICES.md).
+
+- [R9 car parking-marker handoff](reference/MOD_REST_MARKERS_1_61_R9.md) — local seven-map replacement batch, static evidence and later manual test.
