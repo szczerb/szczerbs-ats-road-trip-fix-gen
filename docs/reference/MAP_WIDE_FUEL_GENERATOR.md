@@ -1,6 +1,6 @@
 # Map-wide gas station fix generation
 
-Updated: 2026-10-17. Applies to installed ATS 1.61.3.18 and the eleven current input archives. **Observed locally:** automated structural audits and generated packages. **Documented — user report:** only the original single-point Helena pair has actual car/truck refueling evidence. Broader gameplay remains unverified.
+Updated: 2026-10-18. Applies to installed ATS 1.61.3.18 and the eleven current input archives. **Observed locally:** automated structural audits and generated packages. **Documented — user report:** only the original single-point Helena pair has actual car/truck refueling evidence. Broader gameplay remains unverified. Current inferred names identify the supplied **Alaska Expansion** and **Western Canada Expansion** archives exactly; they do not include unrelated maps covering those regions. [R8/r3 branding handoff](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md).
 
 ## Run one command
 
@@ -17,7 +17,7 @@ PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/Western_C
 
 Each invocation discovers targets and builds its fix with Python and the external HashFS extractor. It needs no per-station recipe or language-model call. Known sibling companions are selected automatically. The game path comes from `--game-dir`, `ATS_GAME_DIR`, or the detected Windows Steam installation. Source-map contents remain read-only.
 
-Optional arguments: `--map-name`, `--revision` (current default `2`), `--run-id YYYY-MM-DD_HH-MM-SS`, repeated `--dependency` (low-to-high additional resources), `--petrol-reference` (default `def/country/washington.sui` resolved only from game data), and `--icon`. Known map/connector names and map-labelled C icons are automatic. Connectors reuse their parent map's selected C artwork; their titles and filenames distinguish the connection patch. Current generated version is `1.61-r2-experimental`; earlier full-map packages were r1 and isolated samples r0. The command reads the actual game version from `version.scs:/version.sii` and rejects other game families/releases.
+Optional arguments: `--map-name`, `--revision` (current default `2`), `--run-id YYYY-MM-DD_HH-MM-SS`, repeated `--dependency` (low-to-high additional resources), `--petrol-reference` (default `def/country/washington.sui` resolved only from game data), and `--icon`. Known map/connector names and map-labelled C icons are automatic. The Alaska and Western Canada sources use the full Expansion names and `alaska-expansion-c.jpg` / `western-canada-expansion-c.jpg` icon presets. Connectors reuse their parent map's selected C artwork while retaining distinct connector titles and filenames; Western Canada ProMods Connections keeps its name. Current generated fuel-only version is `1.61-r2-experimental`; combined `generate-map-fix` defaults to r8. Earlier full-map fuel-only packages were r1 and isolated samples r0. The command reads the actual game version from `version.scs:/version.sii` and rejects other game families/releases.
 
 Explicit dependency order is authoritative. Missing known companions are inserted without reordering the supplied sequence; the source is highest and must not be repeated as a dependency. Source-only companion order is a declared baseline, not a substitute for the user's combined stack. See [connector reproduction](CONNECTOR_FUEL_FIXES.md#reproduction) for the full screenshot-derived order.
 
@@ -32,9 +32,9 @@ The installed baseline consists of base, shared assets, base map, definitions, i
 | ATS Expansion | None |
 | Reforma | Mega Resources |
 | ProMods Canada map | Assets, models and definitions |
-| Western Canada | Complete ProMods companion set when provided; partial/ambiguous sets are rejected |
-| Alaska | None |
-| Western Canada ProMods Connections | Western Canada, then ProMods models, assets, map and definitions; connector highest |
+| Western Canada Expansion | Complete ProMods companion set when provided; partial/ambiguous sets are rejected |
+| Alaska Expansion | None |
+| Western Canada ProMods Connections | Western Canada Expansion, then ProMods models, assets, map and definitions; connector highest |
 | Reforma OtherMaps Patch | Mega Resources and Reforma; zero sector fuel targets, but r2 adds missing petrol-price definitions |
 
 Extra connection/OtherMaps patches are not silently pulled from the live mod directory. The two known connector families are recognized when explicitly selected as the source. Additional dependencies and changed source/resource versions alter the effective data and require review/regeneration. The [input inventory](LOCAL_INPUT_INVENTORY.md) records supplied versions and the [connector findings](CONNECTOR_FUEL_FIXES.md) distinguish the inspected patches' actual roles.

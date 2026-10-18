@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0027: Clarify Expansion map branding](done/TASK-0027-clarify-expansion-map-branding.md) — full source identities/icons, shorter r8 filenames, 248 tests and unchanged gameplay. Connector cache mitigation awaits runtime confirmation in INC-0001/TASK-0007.
+
 - [TASK-0026: Unify Job Types Compat Mustang naming](done/TASK-0026-unify-job-types-compat-mustang-branding.md) — consistent filenames/metadata/priority labels, r7/r3 batch and unchanged gameplay/icons; 246 tests and independent archive review.
 
 - [TASK-0025: Refresh icons and player descriptions](done/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — approved M2D/J3C artwork, readable priority descriptions, final r6/r2 batch, 246 tests and independent payload checks.

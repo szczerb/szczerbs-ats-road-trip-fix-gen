@@ -35,3 +35,5 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 - [ADR-0013: Package topic artwork and readable player descriptions](ADR-0013-topic-artwork-and-player-descriptions.md): restore combined fuel/parking and separate courier art, document source priority and preserve gameplay during metadata refresh.
 
 Runtime fix validation and general map-sector authoring remain open.
+
+- [ADR-0014: Shorten generated map package filenames](ADR-0014-shorten-map-package-cache-paths.md): preserve full map identities while reducing the icon-cache path budget after a logged connector failure.

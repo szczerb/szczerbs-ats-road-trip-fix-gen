@@ -22,20 +22,20 @@ class MapArtworkTests(unittest.TestCase):
         return path
 
     def test_combined_artwork_is_selected_by_exact_map_label(self):
-        alaska = self.put('map-compatibility/alaska.jpg')
-        western_canada = self.put('map-compatibility/western-canada.jpg')
+        alaska = self.put('map-compatibility/alaska-expansion.jpg')
+        western_canada = self.put('map-compatibility/western-canada-expansion.jpg')
 
-        self.assertEqual(map_icon(self.root, 'Alaska', ('fuel', 'rest')), alaska)
-        self.assertEqual(map_icon(self.root, 'Western Canada', ('rest', 'fuel')),
+        self.assertEqual(map_icon(self.root, 'Alaska Expansion', ('fuel', 'rest')), alaska)
+        self.assertEqual(map_icon(self.root, 'Western Canada Expansion', ('rest', 'fuel')),
                          western_canada)
 
     def test_fuel_only_artwork_uses_its_map_specific_fuel_icon(self):
-        alaska = self.put('alaska-c.jpg')
-        self.assertEqual(map_icon(self.root, 'Alaska', ('fuel',)), alaska)
+        alaska = self.put('alaska-expansion-c.jpg')
+        self.assertEqual(map_icon(self.root, 'Alaska Expansion', ('fuel',)), alaska)
 
     def test_rest_only_does_not_reuse_fuel_artwork(self):
-        fuel = self.put('alaska-c.jpg')
-        self.assertIsNone(map_icon(self.root, 'Alaska', ('rest',)))
+        fuel = self.put('alaska-expansion-c.jpg')
+        self.assertIsNone(map_icon(self.root, 'Alaska Expansion', ('rest',)))
         self.assertTrue(fuel.is_file())
 
     def test_unknown_map_never_gets_another_maps_label(self):
@@ -43,6 +43,15 @@ class MapArtworkTests(unittest.TestCase):
         self.put('ats-expansion-c.jpg')
         self.assertIsNone(map_icon(self.root, 'Unlisted Map', ('fuel', 'rest')))
         self.assertIsNone(map_icon(self.root, 'Unlisted Map', ('fuel',)))
+
+    def test_generic_regional_names_do_not_reuse_expansion_artwork(self):
+        self.put('alaska-c.jpg')
+        self.put('western-canada-c.jpg')
+        self.put('map-compatibility/alaska-expansion.jpg')
+        self.put('map-compatibility/western-canada-expansion.jpg')
+        for name in ('Alaska', 'Western Canada'):
+            self.assertIsNone(map_icon(self.root, name, ('fuel',)))
+            self.assertIsNone(map_icon(self.root, name, ('fuel', 'rest')))
 
 
 class CourierArtworkTests(unittest.TestCase):
@@ -58,7 +67,7 @@ class CourierArtworkTests(unittest.TestCase):
 
         courier = self.icons / 'job-types-compat-mustang.jpg'
         courier.write_bytes(b'courier fixture')
-        (self.icons / 'alaska-c.jpg').write_bytes(b'map fixture')
+        (self.icons / 'alaska-expansion-c.jpg').write_bytes(b'map fixture')
 
         self.assertEqual(courier_icon(self.root), courier)
 

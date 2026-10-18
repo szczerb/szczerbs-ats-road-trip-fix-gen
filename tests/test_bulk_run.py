@@ -89,6 +89,9 @@ class BulkRunTests(unittest.TestCase):
             archive(path)
         wce = self.inputs / 'Western_Canada_Expansion_v1.7.3.scs'
         archive(wce)
+        self.assertEqual(bulk_run._profile(wce)[0], 'Western Canada Expansion')
+        self.assertEqual(bulk_run._profile(self.inputs / 'Alaska_Expansion_v1.2.3.scs')[0],
+                         'Alaska Expansion')
         self.assertEqual(bulk_run._map_packages(siblings[-1], []), siblings)
         self.assertEqual(bulk_run._map_packages(wce, []), [*siblings, wce])
         with patch.object(bulk_run, 'REPO_ROOT', self.root):
@@ -198,7 +201,7 @@ class BulkRunTests(unittest.TestCase):
         source_icons = bulk_run.REPO_ROOT / 'assets/mod-icons'
         target_icons = self.root / 'assets/mod-icons'
         target_icons.mkdir(parents=True)
-        for base in ('reforma', 'western-canada'):
+        for base in ('reforma', 'western-canada-expansion'):
             (target_icons / f'{base}-c.jpg').write_bytes(
                 (source_icons / f'{base}-c.jpg').read_bytes())
         names = ('Reforma_MegaResources_v3.scs', 'Reforma_3.scs',
@@ -214,7 +217,7 @@ class BulkRunTests(unittest.TestCase):
         cases = (('Reforma_OtherMaps_Patch_40_161.scs',
                   'Reforma OtherMaps Patch', 'reforma', '2026-10-17_22-11-10'),
                  ('Western_Canada_Promods_Connections_v1.7.3.scs',
-                  'Western Canada ProMods Connections', 'western-canada',
+                  'Western Canada ProMods Connections', 'western-canada-expansion',
                   '2026-10-17_22-11-11'))
         with patch.object(bulk_run, 'REPO_ROOT', self.root), \
              patch.dict(sys.modules, {'ats_road_trip.bulk_fuel': module}):
@@ -230,6 +233,38 @@ class BulkRunTests(unittest.TestCase):
                     report = json.loads(z.read('road_trip_fix_report.json'))
                     self.assertEqual(report['workflow']['target_map_package'],
                                      str((self.inputs / source_name).resolve()))
+
+    def test_combined_connector_packages_own_icon_with_short_cache_name(self):
+        original = bulk_run.REPO_ROOT / 'assets/mod-icons/map-compatibility/western-canada-promods-connections.jpg'
+        preset = self.root / 'assets/mod-icons/map-compatibility' / original.name
+        preset.parent.mkdir(parents=True)
+        preset.write_bytes(original.read_bytes())
+        for name in ('Western_Canada_Expansion_v1.7.3.scs',
+                     'promods-ats-models-v164.scs', 'promods-ats-assets-v164.scs',
+                     'promods-ats-map-v164.scs', 'promods-ats-def-v164.scs',
+                     'Western_Canada_Promods_Connections_v1.7.3.scs'):
+            archive(self.inputs / name)
+        source = self.inputs / 'Western_Canada_Promods_Connections_v1.7.3.scs'
+        plan = SimpleNamespace(reports={}, resources={'map/usa/fixture.base': b'unchanged'},
+                               blockers=[], coverage={'complete': True, 'blockers': []})
+        with patch.object(bulk_run, 'REPO_ROOT', self.root), \
+             patch.object(bulk_run, 'run_processors', return_value=plan):
+            audit = bulk_run.generate_map_fix(source, game_dir=self.game,
+                                              processors=('fuel', 'rest'),
+                                              run_id='2026-10-18_17-04-30')
+        output = Path(audit['output'])
+        self.assertEqual(output.name,
+                         'szczerbs-road-trip-map-fix-western-canada-promods-connections-1.61-r8-experimental.scs')
+        # Reproduce the cache-name transformation observed in the user's log.
+        # This checks our mitigation's path budget, not the game's Win32 code.
+        home = 'C:/Users/guest/Documents/American Truck Simulator'
+        cache_path = home + '/cache/mod_icons/' + output.stem.encode().hex() + '.jpg'
+        self.assertLess(len(cache_path) + 1, 260)
+        with zipfile.ZipFile(output) as z:
+            self.assertIn('icon: "mod_icon.jpg"', z.read('manifest.sii').decode())
+            self.assertEqual(z.read('mod_icon.jpg'), original.read_bytes())
+            self.assertEqual(z.read('map/usa/fixture.base'), b'unchanged')
+            self.assertIsNone(z.testzip())
 
     def _run_with_plan(self, planner):
         module = SimpleNamespace(plan_map_fuel=planner)
@@ -367,7 +402,7 @@ class BulkRunTests(unittest.TestCase):
                                               run_id='2026-10-17_22-11-10')
         self.assertEqual(audit['status'], 'generated')
         self.assertEqual(audit['workflow']['processors_enabled'], ['fuel', 'rest'])
-        self.assertIn('map-compatibility-fix', audit['output'])
+        self.assertIn('map-fix', audit['output'])
         with zipfile.ZipFile(audit['output']) as z:
             self.assertEqual(z.read('map/usa/sec+0000+0000.base'), b'fuel+rest')
             self.assertIn('Map Compatibility Fix', z.read('manifest.sii').decode())

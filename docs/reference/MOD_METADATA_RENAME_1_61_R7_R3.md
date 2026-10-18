@@ -1,5 +1,7 @@
 # Job Types Compat Mustang naming: map r7 and courier r3
 
+Historical delivery: [r8 maps with exact Expansion names](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md) retain these gameplay bytes and shorten map filenames after a connector icon-cache failure. This r7/r3 batch and its fingerprints remain unchanged.
+
 **Documented — user instruction, 2026-10-18:** align the courier mod's filename and metadata with the approved icon's JOB TYPES COMPAT / MUSTANG wording. The current display name is **szczerb's Road Trip Job Types Compat Mustang**. Author remains **szczerb**.
 
 ## Download

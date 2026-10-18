@@ -76,7 +76,7 @@ def _profile(source: Path) -> tuple[str | None, tuple[tuple[str, ...], ...]]:
     if name.startswith('ats_expansion'):
         return 'ATS Expansion', ()
     if name.startswith('alaska_expansion'):
-        return 'Alaska', ()
+        return 'Alaska Expansion', ()
     if name.startswith('reforma_othermaps_patch_'):
         return 'Reforma OtherMaps Patch', (('Reforma_MegaResources*.scs',),
                                           ('Reforma_[0-9]*.scs',))
@@ -97,7 +97,7 @@ def _profile(source: Path) -> tuple[str | None, tuple[tuple[str, ...], ...]]:
     if name.startswith('western_canada_expansion'):
         # Western Canada can use the ProMods stack if the complete companion
         # set is supplied next to it. A partial set is an ambiguous input.
-        return 'Western Canada', ()
+        return 'Western Canada Expansion', ()
     return None, ()
 
 
@@ -118,7 +118,7 @@ def _map_packages(source: Path, dependency: list[str]) -> list[Path]:
     # Resolve one archive for each known slot. The caller's explicit sequence is
     # already low-to-high; missing companions are inserted around those slots
     # instead of being appended above explicitly supplied maps.
-    if label == 'Western Canada':
+    if label == 'Western Canada Expansion':
         patterns = ('promods-ats-assets-*.scs', 'promods-ats-models-*.scs',
                     'promods-ats-def-*.scs', 'promods-ats-map-*.scs')
         found = []
@@ -164,7 +164,7 @@ def _run_paths(map_name: str, revision: int, run_id: str | None,
     if analysis_only:
         return work, None, stamp
     topic_slug = {'fuel': 'gas-stations', 'rest': 'rest-stops',
-                  'fuel-rest': 'map-compatibility'}.get(topic)
+                  'fuel-rest': 'map'}.get(topic)
     if topic_slug is None:
         raise ValueError(f'Unsupported map fix topic: {topic}')
     output = (REPO_ROOT / 'local_outputs/generated' / stamp /
@@ -180,7 +180,7 @@ def _write_audit(path: Path, audit: dict) -> None:
 
 
 def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
-                     map_name=None, revision=7, run_id=None, extractor=None,
+                     map_name=None, revision=8, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      _legacy_fuel=False, _analysis_only=False) -> dict:

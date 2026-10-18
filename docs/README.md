@@ -46,7 +46,8 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [User gameplay results and nearest-station selection review](reference/VALIDATION_RESULTS.md).
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
-- [Current r7 map / r3 courier naming handoff and package comparison](reference/MOD_METADATA_RENAME_1_61_R7_R3.md).
+- [Current r8 map / r3 courier exact-name handoff and package comparison](reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md).
+- [Historical r7 map / r3 courier naming handoff](reference/MOD_METADATA_RENAME_1_61_R7_R3.md).
 - [Historical r6 map / r2 courier metadata handoff](reference/MOD_METADATA_FINAL_1_61_R6_R2.md).
 - [Historical r6 map / r1 courier metadata handoff](reference/MOD_METADATA_REFRESH_1_61_R6.md).
 - [Historical r5 map / r1 courier metadata refresh](reference/MOD_METADATA_REFRESH_1_61_R5.md).

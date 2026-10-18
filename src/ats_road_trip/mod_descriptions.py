@@ -6,11 +6,11 @@ import math
 
 
 _STACK = (
-    ('Alaska', 'Alaska Expansion'),
+    ('Alaska Expansion', 'Alaska Expansion'),
     ('Western Canada ProMods Connections', 'Western Canada ProMods Connections'),
     ('Reforma OtherMaps Patch', 'Reforma OtherMaps Patch'),
     ('ProMods Canada', 'ProMods Canada Map Package'),
-    ('Western Canada', 'Western Canada Expansion'),
+    ('Western Canada Expansion', 'Western Canada Expansion'),
     ('ATS Expansion', 'ATS Expansion'),
     ('Reforma', 'Reforma'),
 )
@@ -46,7 +46,7 @@ def map_description(
     map_name: str,
     topics: tuple[str, ...] = ('fuel', 'rest'),
     *,
-    version: str = '1.61-r7-experimental',
+    version: str = '1.61-r8-experimental',
     rest_radius: int = 1000,
 ) -> str:
     """Describe a map package without claiming untested gameplay results."""

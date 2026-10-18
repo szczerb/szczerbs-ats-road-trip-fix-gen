@@ -8,11 +8,11 @@ from ats_road_trip.mod_descriptions import courier_description, map_description
 class MapDescriptionTests(unittest.TestCase):
     def test_each_known_fix_marks_only_its_own_source_pair(self):
         pairs = (
-            ('Alaska', 'Alaska Expansion'),
+            ('Alaska Expansion', 'Alaska Expansion'),
             ('Western Canada ProMods Connections', 'Western Canada ProMods Connections'),
             ('Reforma OtherMaps Patch', 'Reforma OtherMaps Patch'),
             ('ProMods Canada', 'ProMods Canada Map Package'),
-            ('Western Canada', 'Western Canada Expansion'),
+            ('Western Canada Expansion', 'Western Canada Expansion'),
             ('ATS Expansion', 'ATS Expansion'),
             ('Reforma', 'Reforma'),
         )
@@ -27,25 +27,25 @@ class MapDescriptionTests(unittest.TestCase):
                 self.assertLess(lines.index('Job Types Compat Mustang'), lines.index(marker))
 
     def test_stack_keeps_sources_and_promods_components_in_documented_order(self):
-        text = map_description('Western Canada')
+        text = map_description('Western Canada Expansion')
         ordered = (
-            'Alaska fix', 'Alaska Expansion',
+            'Alaska Expansion fix', 'Alaska Expansion',
             'Western Canada ProMods Connections fix',
             'Reforma OtherMaps Patch fix', 'ProMods Canada Definition Package',
             'ProMods Canada fix', 'ProMods Canada Map Package',
             'ProMods Canada Assets Package', 'ProMods Canada Models Package',
-            'Western Canada fix (THIS MOD)', 'Western Canada Expansion',
+            'Western Canada Expansion fix (THIS MOD)', 'Western Canada Expansion',
             'ATS Expansion fix', 'ATS Expansion',
             'Reforma fix', 'Reforma', 'Reforma Mega Resources',
         )
-        positions = [text.index(line + '\n') for line in ordered]
+        positions = [text.splitlines().index(line) for line in ordered]
         self.assertEqual(positions, sorted(positions))
         self.assertIn('Enable only fixes for maps and connectors you use', text)
 
     def test_fuel_and_rest_claims_follow_selected_topics(self):
-        fuel = map_description('Alaska', ('fuel',))
-        rest = map_description('Alaska', ('rest',), rest_radius=750)
-        both = map_description('Alaska')
+        fuel = map_description('Alaska Expansion', ('fuel',))
+        rest = map_description('Alaska Expansion', ('rest',), rest_radius=750)
+        both = map_description('Alaska Expansion')
         self.assertIn('Lets passenger cars refuel', fuel)
         self.assertIn('original truck interactions', fuel)
         self.assertIn('experimental estimate', fuel)
@@ -71,13 +71,13 @@ class MapDescriptionTests(unittest.TestCase):
         self.assertIn('Place (THIS MOD) directly above Custom Map.', text)
         self.assertIn('supplied map combination as an example', text)
         self.assertEqual(text.count('(THIS MOD)'), 1)
-        self.assertNotIn('Alaska fix (THIS MOD)', text)
+        self.assertNotIn('Alaska Expansion fix (THIS MOD)', text)
 
     def test_invalid_topics_rejected(self):
         with self.assertRaises(ValueError):
-            map_description('Alaska', ())
+            map_description('Alaska Expansion', ())
         with self.assertRaises(ValueError):
-            map_description('Alaska', ('courier',))
+            map_description('Alaska Expansion', ('courier',))
 
 
 class CourierDescriptionTests(unittest.TestCase):

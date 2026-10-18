@@ -1,10 +1,10 @@
 # Pending manual game tests
 
-Updated: 2026-10-18. **Documented — user instruction:** the game is closed and the sim rig is put away; no more gameplay tests tonight. Implement the evident missing petrol-price correction now, but keep the symptom repair unverified until the user tests it. Remind the user at subsequent package handoffs/progress updates while these checks remain pending. A one-time thread reminder is scheduled for **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
+Updated: 2026-10-18. The user has resumed manual testing. Earlier overnight deferral remains history; prices/billing, rest and job delivery stay unverified until results are reported. Remind the user at package handoffs while these checks remain open. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
 
 ## Petrol price and quantities: pending
 
-Use the newest delivered r4 combined packages, disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.
+Use the newest [r8 map/r3 courier packages](MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), disable superseded r1/r0/sample versions, and keep each fix immediately above its own source. The OtherMaps price package also belongs above OtherMaps. Record the actual game/mod versions and station location. Use the same car/pump for comparisons where practical.
 
 - In ProMods BC and Western Canada areas, the petrol price is positive and the initial quantity is finite zero, not `-nan(ind)`.
 - While filling, the quantity increases with a finite value; fuel in the tank increases and the balance decreases consistently with the displayed price/amount. Do not judge success only by the initial zero.
@@ -16,7 +16,7 @@ Price provenance: same-unit lower-source values are restored where available. Ot
 
 ## Rest areas: local processor implemented; runtime test pending
 
-The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The [rest processor](COMPATIBILITY_PROCESSORS.md) applies the local distance rule and retains shared truck actions. The r4 combined packages replace earlier fuel-only r2 and WCE r3 packages at the same source-relative priority. Do not keep both versions enabled. The historical r2 fuel packages contain no rest changes. [Original mechanism](PASSENGER_CAR_REST_RESEARCH.md).
+The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The [rest processor](COMPATIBILITY_PROCESSORS.md) applies the local distance rule and retains shared truck actions. Combined fuel/rest behavior was first delivered in r4; current r8 retains those gameplay bytes and replaces earlier source-specific fixes at the same priority. Do not keep both versions enabled. The historical r2 fuel packages contain no rest changes. [Original mechanism](PASSENGER_CAR_REST_RESEARCH.md).
 
 When a complete-coverage rest candidate is prepared, compare car-mode map/discovery icons, the engine-off/rest prompt inside the actual polygon, successful fatigue recovery, truck/bus behavior where applicable and save/reload. Include a selected truck area with no car rest within 1,000 map-world units, an unchanged truck area with a nearby car rest, and a working stock car area. The absence of a fuel-style upright hologram is expected and is not the failure criterion. Do not copy the petrol service bit into parking records. Bounded static fixture outputs are not complete-map install candidates.
 
@@ -39,3 +39,9 @@ Enable only the new standalone r0 candidate from the [generator guide](PRACTICAL
 Check newly eligible practical cargo categories at sufficient rating, acceptance, reachable pickup, attached/carried cargo, driving and completed delivery/payment. Check at least one unchanged originally eligible job. Inspect Quick Jobs and logs separately because the same definitions are shared. Verify vehicle-transfer definitions remain unaffected in behavior where practical; their bytes are unchanged statically. Additional eligibility does not guarantee offers in every city, prove a discovery-budget mechanism or establish exact physical cargo fit.
 
 R4 adds original classifications to private prefab aliases; compare the historical WCE dealer controls with and without r4. Static classification preservation does not close runtime courier testing.
+
+## Connector Mod Manager icon: pending r8 confirmation
+
+- Replace the old connector fix with `szczerbs-road-trip-map-fix-western-canada-promods-connections-1.61-r8-experimental.scs`, disabling its older copy. Keep it directly above Western Canada ProMods Connections.
+- Open Mod Manager and check its dedicated M2D image appears. The r7 log reported icon-cache creation failure despite a valid packaged JPEG; the shortened filename is a mitigation for a strong path-length hypothesis, not confirmed rendering.
+- If missing, preserve the new game log and actual package filename/version. Do not delete cache or change Windows settings as an incidental step. [Incident evidence](../incidents/INC-0001-connector-icon-cache/README.md).

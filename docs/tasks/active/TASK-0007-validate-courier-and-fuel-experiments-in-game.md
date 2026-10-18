@@ -20,6 +20,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
+- Current metadata handoff: [r8/r3](../../reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), with full Expansion labels and unchanged gameplay. Confirm the Western Canada ProMods Connections r8 picture after its shorter filename; [INC-0001](../../incidents/INC-0001-connector-icon-cache/README.md) remains open until that runtime result is reported. No automatic cache/settings changes.
+
 - Current overnight handoff: seven r4 combined source-map/connector fixes plus the separate Practical Courier Jobs r0. Replace superseded fixes at the same source-relative priority. Follow the [manual checklist](../../reference/MANUAL_TEST_CHECKLIST.md) for fuel quantities/payment, rest prompt/fatigue recovery, truck/garage/reload and owned-Mustang Dispatch pickup/completed delivery. The class edit preserves nine vehicle transfers statically; it is not a promise of 58 live offers. Check context-preserved WCE dealer aliases and shared Quick Jobs/logs separately. No more gameplay tests are expected tonight.
 
 The older candidates below are historical controls; do not enable them together with their r4 replacements.
