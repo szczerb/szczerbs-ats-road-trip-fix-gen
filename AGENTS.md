@@ -6,6 +6,8 @@ Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs
 
 Workspace-authored documentation must be in English.
 
+Before a public repository or mod release, read the [SCS definition-mod publication terms](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [versioned content/history review](docs/reference/PUBLIC_REPOSITORY_REVIEW.md) and [license recommendation](docs/reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). SCS's definition-edit example supports the two DLC-gated job/tank packages, without clearing third-party map files. Root licensing remains unselected; `GPL-2.0-only` is a conditional recommendation. Do not equate different implementation language, `.gitignore`, or a provenance comment with license clearance. Preserve privacy decisions and the tree-versus-commit source correction. No publication/history rewrite is authorized by this research.
+
 The user also authorizes the separate [reasonable gas tank upgrades](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) mod. Its four-Ford source-pinned policy changes Mustang to 76 L and the non-hybrid 5.0 V8 F-150 to 136 L, leaving Crown Victoria/Bronco unchanged. Keep it separate from map/courier fixes, preserve all other chassis/sibling-unit bytes, and reject source/version drift. Disable conflicting 3x tank overrides. The user confirmed the tank mod works on 2026-10-18 and accepts it as internally complete; community testing is the next optional stage. Do not invent per-model measurements or fuel-migration details absent from that report. See [ADR-0015](docs/architecture/decisions/ADR-0015-source-pinned-reasonable-tank-upgrades.md).
 
 ## Reading order

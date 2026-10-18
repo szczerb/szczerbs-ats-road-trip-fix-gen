@@ -64,3 +64,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Legacy rest layouts, unchanged geometry and bounded support](reference/REST_LEGACY_LAYOUT_TRIAGE.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).
+- [SCS stock-definition mod publication terms](reference/SCS_MOD_PUBLICATION_TERMS.md).
+- [Versioned content, history, privacy and provenance review](reference/PUBLIC_REPOSITORY_REVIEW.md).
+- [Open-source license recommendation and prerequisites](reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md).

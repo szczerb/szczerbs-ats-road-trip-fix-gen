@@ -34,6 +34,10 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 
 The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extraction, explicit package order and mounts, context audits, dependencies, and experimental generation. The [map-wide guide](docs/reference/MAP_WIDE_FUEL_GENERATOR.md) documents automatic companions, timestamped work/output directories and required source-relative load priority. Combined map packages now default to r8 with shorter `szczerbs-road-trip-map-fix-...` filenames; Job Types Compat Mustang remains r3 and the legacy fuel command remains r2. Outputs contain a manifest, icon, player description and provenance/change report; they are not automatically installed.
 
+## Publication status
+
+Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [open-source license options](docs/reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). A root license has not been selected. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
+
 ## Project navigation
 
 - [Current state](docs/project/CURRENT_STATE.md) and [task board](docs/tasks/README.md).

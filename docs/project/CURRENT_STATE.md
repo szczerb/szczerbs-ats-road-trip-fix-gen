@@ -1,5 +1,15 @@
 # Current State
 
+## Publication review
+
+**Documented — 2026-10-18:** three GPT-6 Sol/high reviews cover [SCS stock-definition mod publication](../reference/SCS_MOD_PUBLICATION_TERMS.md), [versioned content/history](../reference/PUBLIC_REPOSITORY_REVIEW.md) and [license options](../reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). SCS's official 2019 scenario explicitly accepts DLC-dependent definition edits without copied art; applying it to our job/tank packages is a supported inference, not a bespoke legal clearance. Both current packages retain Ford DLC gates. Third-party map redistribution remains outside this review.
+
+**Observed locally:** baseline `f7f05c2` has 205 tracked files and 32 reachable commits; all 534 historical text blobs and 38 image blobs were reviewed by inventory/pattern checks, with image contact-sheet inspection and selected native-size checks. No likely secret or supplied game/mod archive was identified. Commit email, local user paths, Ford-like icon badges, missing root license and parser provenance are explicit publication decisions. Older TruckLib “commit” references are actually tree-snapshot hashes; no history was rewritten.
+
+**Recommendation, not applied:** prefer `GPL-2.0-only` as the conservative tool-license path, subject to the recorded upstream grant/notice checks. MIT/Apache options require confidence in independent implementation; GPLv3/later-version permission is not assumed. No root license, remote, public upload or contact with rights holders was added. Detailed rights questions do not change the accepted gameplay milestones below.
+
+## Gameplay status
+
 **Documented — latest user report, 2026-10-18:** refueling and parking/rest work in **Canada and Mexico**. Those internal functional milestones are accepted at the reported scope; community testing may extend coverage. Exact locations/versions and numerical UI/billing, truck/bus and reload controls were not enumerated. [Dated result](../reference/VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico).
 
 **Documented — user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA, with no problems noticed so far. This earlier report preceded the Canada/Mexico refueling/rest confirmation above; numerical billing and completed new-job delivery details remain individually unreported. [Dated report](../reference/VALIDATION_RESULTS.md#2026-10-18-ongoing-usa-courier-testing).
