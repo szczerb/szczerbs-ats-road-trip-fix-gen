@@ -58,6 +58,8 @@ Implementation and package verification completed; final courier artwork selecti
 
 # Links
 
+- J3C display retry: the user reports both chat and the new HTML link failed. Existing PNG/HTML and relative targets were checked; the original PNG is now embedded byte-identically in the earlier working gallery and standalone `j3c.html`. Retry uses the known gallery URL without a fragment. Client visibility remains unconfirmed; no artwork or package bytes changed.
+
 - [Selected M2D r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md)
 - [Metadata refresh](../../reference/MOD_METADATA_REFRESH_1_61_R5.md)
 - [Existing delivery](../../reference/OVERNIGHT_TEST_BATCH_1_61_R4.md)
