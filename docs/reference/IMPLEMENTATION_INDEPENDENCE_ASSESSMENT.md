@@ -1,0 +1,36 @@
+# Implementation provenance: deeper audit and practical conclusion
+
+Reviewed 2026-10-18 against repository baseline `d2e7d9c`. This integrates two technical source/history reviews, verified upstream snapshots and the [maintainer license comparison](MAINTAINER_LICENSE_CHOICES.md). It is a documented technical assessment, not a legal independence certificate. No implementation, Git identity, license or generated package was changed.
+
+## What the deeper work establishes
+
+**Observed locally:** the [map audit](DEEP_MAP_PARSER_PROVENANCE_REVIEW.md) covers the complete 393-line sequential parser, every helper and all 34 dispatch branches covering 35 item IDs, plus the 412-line fuel planner. The [helper audit](DEEP_HELPER_PROVENANCE_REVIEW.md) compares the PPD, rest, token, local/overlap fuel, geometry, archive/package, SII and courier surfaces and accounts for all 29 production modules and 25 test files. Both examine introducing commits and subsequent changes, rather than only current code or module comments. High-risk routines receive direct comparisons; lower-risk orchestration/test files receive inventory and principal-function checks, not a formal proof about every statement.
+
+**Observed locally:** 19 additional historical files were retrieved from the public GitHub blob API into ignored research storage. Every Git blob hash matches the already recorded tree entry. These include exact historical `Token.cs`, `TriggerPoint.cs`, `Trigger.cs`, the three license files, READMEs and project metadata. This closes specific missing-comparator gaps from TASK-0029. The manifest is `local_outputs/work/2026-10-18_19-28-19/upstream-blobs/fetch-results.json`. Upstream tree hashes identify exact file bytes even though their containing commit IDs remain unknown.
+
+| Question | Finding |
+| --- | --- |
+| Was TruckLib source consulted? | **Yes.** Provenance is source-guided. A different implementation language does not erase that fact. |
+| Did the compared code reproduce an obvious substantial routine, distinctive comment sequence, class hierarchy or unusual implementation/error path? | **None identified** in the reviewed original/current Python and exact retained/downloaded C# sources. This is a bounded negative finding, not an assertion that every possible source has been examined. |
+| What matches? | Binary field order, offsets/record lengths, enum/flag meanings, source-observed garage conventions, and the base-38 token equation. These explain how to read the same file format and reproduce the required behavior. |
+| What differs? | Python uses cursors, opaque byte skips, selected field extraction, strict validation and reversible byte splices; TruckLib builds and serializes typed object graphs. The original tracked versions already have that Python structure. Private aliases, source hashes, bounded halo/proximity policies, reports and rejection rules implement this project's workflow. |
+| Closest narrow comparison | The token encoder implements the same positional-number formula. Its Python validation and expression organization differ; the decoder uses repeated `divmod` while C# searches the length then extracts descending powers. This warrants disclosure, but a constrained formula is not evidence by itself of a substantial protected routine being copied. |
+| Does a legal obligation to license the whole project as GPL follow merely from reading GPL sources? | **Not established.** A protected adaptation would carry upstream obligations; research access and shared format facts alone do not settle that classification. |
+
+**Technical assessment:** the evidence supports treating this as a project-specific implementation informed by format research, rather than an identified wholesale port of TruckLib. No concrete substantial adapted routine requiring replacement was found. There is no technical basis in this review for rewriting the whole parser or erasing its development history. Do not elevate this to a claim of clean-room development, legal certainty or proof against unretained sources.
+
+## Legal framing and limits
+
+**Documented:** [Directive 2009/24/EC, Article 1(2)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32009L0024) distinguishes program expression from underlying ideas/principles. In [*SAS Institute v World Programming*, C-406/10](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62010CJ0406), paragraphs 39 and 43, the Court distinguishes functionality/data formats from program expression while warning that using obtained source to reproduce similar elements can amount to partial reproduction. This is a framework, not an automatic safe harbor for this source-guided project. Files or documentation can also raise other rights questions.
+
+**Observed locally:** the exact historical TruckLib README specifies GPL v2; the three library projects package the same standard GPLv2 license. The inspected notices do not grant later GPL versions. GPLv2 is therefore an established option for any relevant adapted upstream material; a later-version grant remains unverified. Merely matching a tree to a commit would not change the already verified file bytes or itself resolve copyright classification.
+
+**Unknown:** a final legal classification of the short token formula, all source-informed schema handling, or sources not preserved in the research set. If a stronger assurance is required for a permissive release, a qualified rights review or rightsholder permission is the route to that assurance. Changing syntax or adopting GPL does not automatically cure every possible copyright, notice, asset or trademark issue.
+
+## Recommendation after this audit
+
+**Project recommendation, not a license assignment:** for this small local utility, choose **MIT** if the goal is straightforward reuse, broad contribution and little maintainer paperwork, accepting that a distributor may keep an improved fork closed. The technical review did not identify a mandatory whole-project GPL dependency. This is a policy recommendation informed by the bounded audit, not a statement that permissive licensing has been legally certified.
+
+Choose **MPL-2.0** if keeping distributed improvements to existing project files available matters more than maximum simplicity. Choose **Apache-2.0** if an explicit contributor patent grant is a priority; it adds notice requirements and is incompatible with GPLv2-only combined derivatives. Choose **GPL-2.0-only** if strong reciprocity is desired or if a relevant GPLv2-only adaptation is later identified. GPLv3 is an option for code whose rights permit it, but is not a substitute for a GPLv2-only upstream grant. None of these choices forbids commercial use or guarantees that improvements return as pull requests.
+
+The earlier blanket conservative preference for GPLv2 preceded this deeper comparison; it should now be read as a fallback/policy option, not a demonstrated requirement. [Practical scenarios and contribution implications](MAINTAINER_LICENSE_CHOICES.md) explain these tradeoffs. The user's intentional alias/placeholder is covered by [Git identity practices](PUBLIC_GIT_IDENTITY_PRACTICES.md); it is not a privacy blocker. Game/map outputs and Ford-themed icon presentation retain separate scope from the code license. No root `LICENSE` is added until the user selects a license.

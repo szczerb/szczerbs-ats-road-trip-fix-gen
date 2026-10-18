@@ -48,12 +48,14 @@ Completed 2026-10-18. Baseline branch: `codex/overnight-test-mods`, HEAD `f7f05c
 
 - Three GPT-6 Sol/high agents wrote the separate SCS terms, versioned-content review and license recommendation. Root reviewed all reports and requested corrections for artwork badges, existing local generation support and Git tree/commit identity.
 - Root independently opened the official SCS first post, scenario 3: a DLC-dependent, art-free DLC definition-property edit is accepted. The 2019 post is concrete policy evidence, not a bespoke ATS 1.61/Ford approval or a replacement for current upload terms. An ATS-specific EULA was not located; that is an evidence limit, not a prohibition.
-- Versioned-content baseline: 205 paths, 32 reachable commits, 218 historical paths, 534 text blobs and 38 JPEG blobs. Credential patterns/commit messages and image metadata/contact-sheet checks found no likely secrets or supplied game/mod archives. Commit email, local account paths and Ford-like badges are explicit publication choices. A bounded side-by-side parser/source comparison found no obvious copied routine; legal independence remains unresolved.
+- Versioned-content baseline: 205 paths, 32 reachable commits, 218 historical paths, 534 text blobs and 38 JPEG blobs. Credential patterns/commit messages and image metadata/contact-sheet checks found no likely secrets or supplied game/mod archives. The initial email concern was later withdrawn: the user deliberately uses an alias and reserved `.invalid` placeholder. Local account paths and Ford-like badges remain separate publication choices. A bounded side-by-side parser/source comparison found no obvious copied routine; legal independence remains unresolved.
 - Root checked saved Git tree object identities, exact research-copy Git blob hashes (78 TruckLib, five Models, three Core local file instances), and the LICENSE blob against `/usr/share/common-licenses/GPL-2`: `d159169d1050894d3ea3b98e1c965c4058208fe1`. Historical “commit” terminology was corrected in canonical notices; exact operative later-version grants remain unverified.
 - Recommendation: `GPL-2.0-only` as a conservative path after the listed notice/grant checks; MIT/Apache require confidence in independent code provenance. No license was chosen/applied, no remote/publication/contact/history rewrite occurred, and existing generated packages remain unchanged.
 - Documentation QA checks relative links/fragments, task IDs/status/dependencies, 12 immutable input identities, artifact exclusions and staged whitespace. Utility/game tests were not rerun for this documentation-only milestone. Evidence: `local_outputs/work/2026-10-18_19-11-25/`.
 
 Remaining release decisions are recorded in the three reports. They do not block completion of this requested research task.
+
+Follow-up: [TASK-0030](../done/TASK-0030-deepen-code-provenance-and-maintainer-license-review.md) expands the implementation audit and corrects the placeholder-email assessment. No Git configuration/history change is needed for that address.
 
 # Links
 

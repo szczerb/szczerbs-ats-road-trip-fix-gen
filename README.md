@@ -36,7 +36,7 @@ The [tooling guide](docs/reference/TOOLING.md) documents archive inspection/extr
 
 ## Publication status
 
-Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [open-source license options](docs/reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). A root license has not been selected. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
+Research covers [SCS definition-mod sharing](docs/reference/SCS_MOD_PUBLICATION_TERMS.md), [tracked files and Git history](docs/reference/PUBLIC_REPOSITORY_REVIEW.md), and [open-source license options](docs/reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md). A root license has not been selected. The [deeper source assessment](docs/reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md) and [maintainer license comparison](docs/reference/MAINTAINER_LICENSE_CHOICES.md) now inform that decision; [public Git identity notes](docs/reference/PUBLIC_GIT_IDENTITY_PRACTICES.md) explain the intentional alias/placeholder. Public source release and generated game/map-resource distribution have separate terms; the tool license cannot grant rights to those source-owned resources.
 
 ## Project navigation
 

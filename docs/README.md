@@ -67,3 +67,8 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [SCS stock-definition mod publication terms](reference/SCS_MOD_PUBLICATION_TERMS.md).
 - [Versioned content, history, privacy and provenance review](reference/PUBLIC_REPOSITORY_REVIEW.md).
 - [Open-source license recommendation and prerequisites](reference/OPEN_SOURCE_LICENSE_RECOMMENDATION.md).
+- [Integrated deeper implementation assessment](reference/IMPLEMENTATION_INDEPENDENCE_ASSESSMENT.md).
+- [Complete map parser/planner provenance comparison](reference/DEEP_MAP_PARSER_PROVENANCE_REVIEW.md).
+- [Helper provenance, all-module/test inventory and historical sources](reference/DEEP_HELPER_PROVENANCE_REVIEW.md).
+- [License choices from the maintainer perspective](reference/MAINTAINER_LICENSE_CHOICES.md).
+- [Public Git identity, placeholder correction and first-release practices](reference/PUBLIC_GIT_IDENTITY_PRACTICES.md).
