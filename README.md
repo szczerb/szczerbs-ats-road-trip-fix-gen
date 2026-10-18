@@ -1,4 +1,4 @@
-# ATS Road Trip Map Compatibility Fix Generator
+# szczerb’s ATS Road Trip Fix Generator
 
 A research utility for American Truck Simulator: inspect map archives, report Road Trip courier inputs, generate passenger-car fuel/rest map fixes, and separately broaden reviewed courier job eligibility.
 
