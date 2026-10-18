@@ -10,6 +10,20 @@ from ats_road_trip.sii import parse_units
 
 
 class ModWriterTest(unittest.TestCase):
+    def test_selected_topics_have_accurate_branding(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            for topics, title in ((('fuel',), 'Gas Stations Fix'),
+                                  (('rest',), 'Rest Stops Fix'),
+                                  (('fuel', 'rest'), 'Map Compatibility Fix')):
+                output = Path(temporary) / ('-'.join(topics) + '.scs')
+                report = write_mod(output, {'test': b'payload'}, {}, game_version='1.61',
+                                   map_name='Test Map', revision=3, fix_topics=topics)
+                with zipfile.ZipFile(output) as archive:
+                    manifest = parse_units(archive.read('manifest.sii').decode())[0]
+                    self.assertEqual(manifest.one('display_name'),
+                                     f"szczerb's Road Trip {title} for Test Map")
+                    self.assertEqual(report['package_metadata']['fix_topics'], sorted(topics))
+
     def test_fuel_branding_escaping_version_and_icon_manifest_agree(self):
         # This synthetic frame exercises metadata validation, not JPEG decoding.
         icon = (b'\xff\xd8\xff\xc0' + struct.pack('>HBHHB', 17, 8, 162, 276, 3)
@@ -41,6 +55,9 @@ class ModWriterTest(unittest.TestCase):
         cases = [{'revision': x} for x in (-1, True, 0.5, 'r0')]
         cases += [{'map_name': x} for x in ('', ' ', ' Map', 'Map\nInjected: true')]
         cases += [{'map_name': 'Map', 'display_name': 'ambiguous'}]
+        cases += [{'map_name': 'Map', 'fix_topics': x}
+                  for x in ((), ('courier',), ('rest', 'rest'), ['rest'], ('rest', 1))]
+        cases += [{'fix_topics': ('rest',)}]
         cases += [{'icon': x} for x in (b'not-jpeg', icon[:-1], bytes(bad_size), b'\xff\xd8\xff\xc0\0\x02\xff\xd9')]
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary)/'a.scs'

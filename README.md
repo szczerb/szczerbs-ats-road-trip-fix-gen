@@ -2,7 +2,9 @@
 
 A research utility for American Truck Simulator map expansions and reworks: inspect archives, audit Road Trip courier context coverage, and generate bounded experimental compatibility mods for courier locations and passenger-car refueling.
 
-**Current result:** a single source-map command generates experimental passenger-car fuel and missing-petrol-price fixes for the supplied maps/connectors. [Batch r2](docs/reference/FUEL_FIX_BATCH_1_61_R2.md) includes seven packages, adding an OtherMaps price-only fix while retaining the six r1 station payloads. Positive petrol prices are restored from lower same-unit sources or estimated using a documented stock-game ratio; diesel and other country fields are preserved. All **131 tests pass**. The user reports working Canadian car refueling; the price/quantity/billing repair still needs [manual tests](docs/reference/MANUAL_TEST_CHECKLIST.md). [Rest research](docs/reference/PASSENGER_CAR_REST_RESEARCH.md) found a separate vehicle-filtered polygon action; no rest patch is included.
+**Current result:** [selectable compatibility processors](docs/reference/COMPATIBILITY_PROCESSORS.md) separate `fuel` and `rest` analysis/generation. Rest adds car eligibility locally when no original car rest is found within 1,000 game-world units in straight-line XZ distance; private actions retain truck/bus support and parking geometry. Search is bounded to the source area and nearby sectors; the user accepts extra additions from missed neighbors at that boundary. Both processors compose their changes before packaging, and unsafe source edits block output. Courier generation remains explicitly unimplemented. All **179 tests pass**; an independently verified WCE r3 package includes 202 rest additions plus existing fuel/price fixes. Actual rest behavior still needs manual validation.
+
+The existing [r2 fuel/price batch](docs/reference/FUEL_FIX_BATCH_1_61_R2.md) contains seven packages, adding an OtherMaps price-only fix while retaining the six r1 station payloads. Positive petrol prices are restored from lower same-unit sources or estimated using a documented stock-game ratio; diesel and other country fields are preserved. The user reports working Canadian car refueling; the price/quantity/billing repair still needs [manual tests](docs/reference/MANUAL_TEST_CHECKLIST.md). Those r2 artifacts contain no rest changes.
 
 ## Findings and first experiments
 
@@ -20,6 +22,7 @@ Requires Python 3.11+; ZIP inspection has no third-party Python dependencies. Ha
 
 ```bash
 PYTHONPATH=src python3 -m ats_road_trip generate-map-fuel local_inputs/ATS_Expansion_v23.0_1.61.scs --experimental
+PYTHONPATH=src python3 -m ats_road_trip generate-map-fix local_inputs/Western_Canada_Expansion_v1.7.3.scs --processor fuel --processor rest --rest-radius 1000 --experimental
 PYTHONPATH=src python3 -m ats_road_trip --help
 PYTHONPATH=src python3 -m unittest discover -s tests -v
 ```

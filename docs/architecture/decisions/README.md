@@ -22,4 +22,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0007: Repair missing petrol prices with explicit provenance](ADR-0007-repair-missing-petrol-prices.md).
 
+- [ADR-0008: Compose selected processors and apply rest eligibility locally](ADR-0008-compose-processors-and-local-rest-polygons.md).
+
 Runtime fix validation and general map-sector authoring remain open.

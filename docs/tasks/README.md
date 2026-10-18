@@ -6,9 +6,10 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
+
 ## Backlog
 
-- [TASK-0016: Prepare a rest-eligibility experiment](backlog/TASK-0016-prepare-rest-eligibility-experiment.md) — separate bounded action-filter diagnostic, preserving trucks/buses and explicit later icon/prompt/fatigue/reload tests.
+No unstarted tasks. Record newly discovered implementation gaps as bounded follow-up tasks; manual gameplay validation remains active.
 
 ## Done
 
@@ -37,5 +38,9 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 - [TASK-0014: Repair missing petrol prices](done/TASK-0014-audit-and-test-petrol-price-overrides.md) — seven r2 packages, 27 effective country paths, r1 station payloads retained, 131 tests and independent checks; manual symptom/billing validation pending.
 
 - [TASK-0015: Investigate car rest areas](done/TASK-0015-investigate-passenger-car-rest-areas.md) — separate vehicle-filtered polygon actions and two concrete truck-stop placements; no rest package or gameplay repair claimed.
+
+- [TASK-0016: Implement proximity-filtered rest eligibility](done/TASK-0016-prepare-rest-eligibility-experiment.md) — bounded source-plus-halo rule, private truck/bus/car action, 202 WCE additions with explicit boundary limits and manual testing pending.
+
+- [TASK-0017: Compose selectable compatibility processors](done/TASK-0017-compose-selectable-compatibility-processors.md) — enum/CLI selection, atomic composed output, accurate topic metadata, 179 tests and independently verified WCE fuel/rest package.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.

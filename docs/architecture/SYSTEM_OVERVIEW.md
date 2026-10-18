@@ -2,11 +2,15 @@
 
 ## Current implementation
 
-The Python prototype implements archive inspection/extraction, explicit virtual package order/mounts, include-aware SII reading, static courier coverage, and bounded experimental context/PPD generation and pinned single-pump conversion/overlap sector experiments. Outputs include deterministic packages and change/provenance reports; they are not installed or validated in game. See [tool usage](../reference/TOOLING.md).
+The Python prototype implements archive inspection/extraction, explicit virtual package order/mounts, include-aware SII reading, static courier coverage, and deterministic experimental packaging. Fuel generation includes source-map station interactions and country petrol-price repair. Selected compatibility processors compose independent fuel/rest analysis before a package is written; Courier Job generation remains reserved for later implementation. See [processor configuration and boundaries](../reference/COMPATIBILITY_PROCESSORS.md) and [tool usage](../reference/TOOLING.md).
+
+`ResourceStack` establishes effective game/DLC/map data. `ProcessorConfig` selects enum topics. The pipeline runs fuel before rest; the rest planner reads fuel's staged resources while retaining original source ownership. All enabled coverage checks must pass. A single writer then creates a source-specific experimental `.scs` with topic metadata and a provenance report. Live profiles and game files are never output targets.
+
+Rest proximity uses original effective car areas from source sectors and a bounded neighbor halo. The user accepts extra permissions caused by missed car neighbors beyond that perimeter. Decisions are local to placed truck/bus areas, not shared prefab definitions. A private truck/bus/car action and selected placement aliases retain geometry and original shared actions. The 1,000-unit XZ threshold is a straight-line heuristic, not a route or runtime usability guarantee. [ADR-0008](decisions/ADR-0008-compose-processors-and-local-rest-polygons.md).
 
 ## Prospective pipeline
 
-The following stages describe the intended direction, subject to [research](../tasks/README.md). They do not select implementation modules, wire formats, or file-editing strategies.
+The following stages describe the broader direction, subject to [research](../tasks/README.md). Implemented processors have bounded support; this table does not establish automatic-fix feasibility for every topic or map layout.
 
 | Stage | Intended result | Evidence needed before implementation |
 | --- | --- | --- |
@@ -21,7 +25,7 @@ Courier and refueling research may lead to distinct mechanisms. Definition-only 
 
 ## Open design decisions
 
-[ADR-0002](decisions/ADR-0002-use-python-inspection-and-bounded-experimental-patches.md) selects Python, CLI behavior, external extraction, deterministic ZIP packaging, and bounded static patch rules. [ADR-0003](decisions/ADR-0003-allow-pinned-single-pump-sector-experiments.md) adds only a reviewed single-pump sector transformation. [ADR-0004](decisions/ADR-0004-add-pinned-overlapping-fuel-services.md) adds a separate original-preserving overlap experiment with explicit source/layout pins. Stable public APIs, general map-sector editing, legacy PPD conversion, and automated gameplay validation remain open. [TASK-0005](../tasks/done/TASK-0005-design-first-generator-increment.md) reviews both investigation outcomes before choosing the first implementation target. Record durable choices as [ADRs](decisions/README.md).
+[ADR-0002](decisions/ADR-0002-use-python-inspection-and-bounded-experimental-patches.md) selects Python, CLI behavior, external extraction, deterministic ZIP packaging, and bounded static patch rules. Later ADRs record pinned fuel samples, map-wide fuel graph edits, price policy and processor composition. Stable public APIs, unrestricted map-sector editing, full rest-layout coverage and automated gameplay validation remain open. [TASK-0005](../tasks/done/TASK-0005-design-first-generator-increment.md) records the historical first-increment decision. Record durable choices as [ADRs](decisions/README.md).
 
 ## Data and documentation boundaries
 

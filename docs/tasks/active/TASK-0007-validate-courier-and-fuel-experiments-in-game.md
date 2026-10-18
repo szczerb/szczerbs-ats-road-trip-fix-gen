@@ -20,6 +20,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
+- Later rest candidate: WCE `1.61-r3-experimental` combines fuel/price fixes with 202 local car-rest additions. Replace only that source's r2 fix; keep the other maps' r2 fixes. Compare selected/rest-suppressed locations, engine-off prompt, fatigue recovery, truck behavior, icons and reload. The [processor guide](../../reference/COMPATIBILITY_PROCESSORS.md) records exact output/hash and accepted boundary over-additions. No gameplay test is expected tonight.
+
 - Current handoff is [r2](../../reference/FUEL_FIX_BATCH_1_61_R2.md), retaining r1 station resources and adding sourced/estimated petrol prices. Follow the [manual checklist](../../reference/MANUAL_TEST_CHECKLIST.md): finite positive price, finite initial and changing quantity, tank/payment, truck diesel, garage and reload controls. The user accepts implementation now and explicitly defers gameplay after putting the rig away; the one-time reminder is set for 2026-10-18 18:00 Europe/Warsaw. Do not mark runtime work done from static definition checks.
 - [Rest research](../../reference/PASSENGER_CAR_REST_RESEARCH.md) found filtered polygon actions and actual truck-stop placements. No rest patch is included. The later separate candidate needs car prompt/fatigue recovery, map/discovery, retained truck and reload tests.
 

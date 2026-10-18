@@ -295,6 +295,68 @@ class BulkRunTests(unittest.TestCase):
                             for item in audit['planner']['coverage']['blockers']))
         self.assertFalse((self.root / 'local_outputs/generated/2026-10-17_22-11-10').exists())
 
+    def test_generic_rest_only_uses_rest_branding_and_no_fuel_icon(self):
+        module = SimpleNamespace(plan_rest_stops=lambda *args, **kwargs:
+                                 ({'coverage': {'blockers': []}},
+                                  {'map/usa/rest.base': b'rest'}))
+        with patch.object(bulk_run, 'REPO_ROOT', self.root), \
+             patch.dict(sys.modules, {'ats_road_trip.rest_stops': module}):
+            audit = bulk_run.generate_map_fix(self.source, processors=('rest',),
+                                              game_dir=self.game,
+                                              run_id='2026-10-17_22-11-10')
+        self.assertEqual(audit['status'], 'generated')
+        self.assertEqual(audit['workflow']['processors_enabled'], ['rest'])
+        self.assertIn('rest-stops-fix', audit['output'])
+        with zipfile.ZipFile(audit['output']) as z:
+            self.assertIn('Rest Stops Fix', z.read('manifest.sii').decode())
+            self.assertNotIn('mod_icon.jpg', z.namelist())
+            self.assertIn('map/usa/rest.base', z.namelist())
+            report = json.loads(z.read('road_trip_fix_report.json'))
+            self.assertEqual(report['processors_enabled'], ['rest'])
+            self.assertEqual(report['package_metadata']['fix_topics'], ['rest'])
+
+    def test_generic_mixed_uses_composed_resource_and_accurate_branding(self):
+        fuel = SimpleNamespace(plan_map_fuel=lambda *args, **kwargs:
+                               ({'coverage': {'blockers': []}},
+                                {'map/usa/sec+0000+0000.base': b'fuel'}))
+
+        def rest(stack, *, map_packages, map_name, radius, resource_overrides):
+            self.assertEqual(resource_overrides['map/usa/sec+0000+0000.base'], b'fuel')
+            return ({'coverage': {'blockers': []},
+                     'composed_resource_paths': ['map/usa/sec+0000+0000.base']},
+                    {'map/usa/sec+0000+0000.base': b'fuel+rest'})
+
+        with patch.object(bulk_run, 'REPO_ROOT', self.root), \
+             patch.dict(sys.modules, {'ats_road_trip.bulk_fuel': fuel,
+                                      'ats_road_trip.rest_stops': SimpleNamespace(plan_rest_stops=rest)}):
+            audit = bulk_run.generate_map_fix(self.source, processors=('rest', 'fuel'),
+                                              game_dir=self.game,
+                                              run_id='2026-10-17_22-11-10')
+        self.assertEqual(audit['status'], 'generated')
+        self.assertEqual(audit['workflow']['processors_enabled'], ['fuel', 'rest'])
+        self.assertIn('map-compatibility-fix', audit['output'])
+        with zipfile.ZipFile(audit['output']) as z:
+            self.assertEqual(z.read('map/usa/sec+0000+0000.base'), b'fuel+rest')
+            self.assertIn('Map Compatibility Fix', z.read('manifest.sii').decode())
+
+    def test_generic_mixed_blocker_writes_audit_without_partial_package(self):
+        fuel = SimpleNamespace(plan_map_fuel=lambda *args, **kwargs:
+                               ({'coverage': {'blockers': []}}, {'same.path': b'fuel'}))
+        rest = SimpleNamespace(plan_rest_stops=lambda *args, **kwargs:
+                               ({'coverage': {'blockers': []}}, {'same.path': b'rest'}))
+        with patch.object(bulk_run, 'REPO_ROOT', self.root), \
+             patch.dict(sys.modules, {'ats_road_trip.bulk_fuel': fuel,
+                                      'ats_road_trip.rest_stops': rest}):
+            with self.assertRaisesRegex(ValueError, 'coverage blocker'):
+                bulk_run.generate_map_fix(self.source, processors=('fuel', 'rest'),
+                                          game_dir=self.game,
+                                          run_id='2026-10-17_22-11-10')
+        audit = json.loads((self.root / 'local_outputs/work/2026-10-17_22-11-10/ats-expansion/audit.json').read_text())
+        self.assertEqual(audit['status'], 'blocked')
+        self.assertTrue(any(b.get('area') == 'resource_collision'
+                            for b in audit['planner']['coverage']['blockers']))
+        self.assertFalse((self.root / 'local_outputs/generated/2026-10-17_22-11-10').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

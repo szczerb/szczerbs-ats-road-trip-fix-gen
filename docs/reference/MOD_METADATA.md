@@ -2,6 +2,8 @@
 
 Updated: 2026-10-17. Applies to this prototype's ATS 1.61 fuel packages. [ADR-0005](../architecture/decisions/ADR-0005-standardize-fuel-package-metadata.md) records the user-requested policy.
 
+Extension, 2026-10-18: the general [processor command](COMPATIBILITY_PROCESSORS.md) uses `Gas Stations Fix` for fuel-only, `Rest Stops Fix` for rest-only, and `Map Compatibility Fix` for fuel plus rest, retaining `szczerb's Road Trip ... for <short map name>` and author `szczerb`. Its default is `1.61-r3-experimental`; the legacy fuel command remains r2. The report records selected `fix_topics`. Rest-containing packages omit automatic gas-labelled artwork; an explicitly supplied valid icon is accepted. Historical fuel branding and artifacts remain unchanged. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md).
+
 ## Project contract
 
 | Field | Value / rule |

@@ -23,6 +23,8 @@ The user reports broad Canadian car-refueling access, with a separate invalid qu
 
 The user authorizes missing petrol-price repair now with manual confirmation later. Follow [ADR-0007](docs/architecture/decisions/ADR-0007-repair-missing-petrol-prices.md), the [manual checklist](docs/reference/MANUAL_TEST_CHECKLIST.md), and [rest-area research](docs/reference/PASSENGER_CAR_REST_RESEARCH.md). Remind the user of pending game tests at subsequent package handoffs; do not label pricing/billing or rest behavior confirmed from static checks. No more manual tests are expected during this night's work.
 
+The user selects independent `fuel`/`rest` processors and a local rest rule: add car eligibility when no original car rest is found within 1,000 game-world units in straight-line XZ distance. Shared rest actions must remain unchanged; use selected placement-local references to a private truck/bus/car action. Read [processor configuration and coverage limits](docs/reference/COMPATIBILITY_PROCESSORS.md) and [ADR-0008](docs/architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md). Courier generation remains reserved/unimplemented. The user accepts extra permissions from missed car neighbors beyond the inspected source-area/halo boundary; report that limit instead of requiring a full-world scan. Never silently overwrite one processor's sector edits with another's or claim a whole-world absence proof from bounded inspection.
+
 ## Task and evidence rules
 
 - Use `TASK-XXXX-<slug>.md` with frontmatter `id`, `title`, `status`, `priority`, `repositories`, `depends_on`, `owner`; sections `Goal`, `Context`, `Scope`, `Implementation Plan`, `Acceptance Criteria`, `Verification`, `Links`. For this single repository, use `repositories: [.]`.

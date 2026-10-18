@@ -1,8 +1,8 @@
-"""One-source map-wide fuel generation with explicit game and map inputs.
+"""One-source map-wide compatibility generation with explicit game and map inputs.
 
 The workflow reads installed ATS packages and supplied map archives, writes an
-audit beneath ignored local_outputs/work, and emits a package only when the
-planner reports complete supported coverage. It never touches game profiles.
+audit beneath ignored local_outputs/work, and emits a package only when every
+selected planner reports complete coverage. It never touches game profiles.
 """
 
 from __future__ import annotations
@@ -19,8 +19,8 @@ import re
 from .archive import Archive, ArchiveError
 from .mod_writer import write_mod
 from .package import Package, ResourceStack
-from .petrol_policy import DEFAULT_REFERENCE, build_policy
-from .petrol_prices import plan_petrol_prices
+from .petrol_policy import DEFAULT_REFERENCE
+from .processors import Processor, ProcessorConfig, run_processors
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -150,7 +150,8 @@ def _map_packages(source: Path, dependency: list[str]) -> list[Path]:
     return result
 
 
-def _run_paths(map_name: str, revision: int, run_id: str | None) -> tuple[Path, Path, str]:
+def _run_paths(map_name: str, revision: int, run_id: str | None,
+               *, topic: str = 'fuel') -> tuple[Path, Path, str]:
     if not re.fullmatch(r'[A-Za-z][A-Za-z0-9 ._\-]{0,63}', map_name) or map_name != map_name.strip():
         raise ValueError('Map name must be a short plain-text name')
     if type(revision) is not int or revision < 0:
@@ -160,8 +161,12 @@ def _run_paths(map_name: str, revision: int, run_id: str | None) -> tuple[Path, 
         raise ValueError('Run ID must use YYYY-MM-DD_HH-MM-SS')
     slug = re.sub(r'[^a-z0-9]+', '-', map_name.lower()).strip('-')
     work = REPO_ROOT / 'local_outputs/work' / stamp / slug
+    topic_slug = {'fuel': 'gas-stations', 'rest': 'rest-stops',
+                  'fuel-rest': 'map-compatibility'}.get(topic)
+    if topic_slug is None:
+        raise ValueError(f'Unsupported map fix topic: {topic}')
     output = (REPO_ROOT / 'local_outputs/generated' / stamp /
-              f'szczerbs-road-trip-gas-stations-fix-{slug}-1.61-r{revision}-experimental.scs')
+              f'szczerbs-road-trip-{topic_slug}-fix-{slug}-1.61-r{revision}-experimental.scs')
     return work, output, stamp
 
 
@@ -172,16 +177,22 @@ def _write_audit(path: Path, audit: dict) -> None:
         stream.write('\n')
 
 
-def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
-                      run_id=None, extractor=None, dependency: list[str] = (),
-                      icon=None, petrol_reference=DEFAULT_REFERENCE) -> dict:
-    """Audit one supplied map and emit a complete experimental fuel package.
+def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
+                     map_name=None, revision=3, run_id=None, extractor=None,
+                     dependency: list[str] = (), icon=None,
+                     petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
+                     _legacy_fuel=False) -> dict:
+    """Audit one supplied map and emit a complete selected compatibility package.
 
     Explicit dependencies retain their low-to-high order. Known missing
     companions are inserted into their family slots, with the source highest.
     The actual profile load order is unknown and recorded for review.
     """
-    from .bulk_fuel import plan_map_fuel
+    config = ProcessorConfig.from_names(processors, rest_radius=rest_radius,
+                                        petrol_reference=petrol_reference)
+    topics = tuple(p.value for p in (Processor.FUEL, Processor.REST)
+                   if p in config.enabled)
+    topic = '-'.join(topics)
 
     source = Path(source).expanduser().resolve()
     if not source.is_file():
@@ -190,14 +201,14 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
     name = map_name or inferred
     if name is None:
         raise ValueError('Unknown map archive name; pass --map-name')
-    if icon is None:
+    if icon is None and topics == ('fuel',):
         slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
         icon_slug = {'reforma-othermaps-patch': 'reforma',
                      'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
         preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
         if preset.is_file():
             icon = preset
-    work, output, stamp = _run_paths(name, revision, run_id)
+    work, output, stamp = _run_paths(name, revision, run_id, topic=topic)
     if (work / 'audit.json').exists() or output.exists():
         raise FileExistsError('Run audit or generated package already exists; choose a new run ID')
     work.mkdir(parents=True, exist_ok=True)
@@ -217,10 +228,12 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
                       for path in identity_paths}
         workflow = {
             'run_id': stamp, 'map_name': name, 'source': str(source),
+            'processors_enabled': list(topics),
+            'rest_radius_coordinate_units': config.rest_radius if Processor.REST in config.enabled else None,
             'game_dir': str(installed), 'game_version': version,
             'packages_low_to_high': [str(path) for path in order],
             'target_map_package': str(source),
-            'petrol_reference': petrol_reference,
+            'petrol_reference': petrol_reference if Processor.FUEL in config.enabled else None,
             'owned_dlc_assumption': list(dlcs),
             'load_order_assumption': 'Declared order is a generation baseline, not a live profile observation.',
             'work_dir': str(work),
@@ -234,36 +247,27 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
                 packages.append(manager.enter_context(Package(path, extractor=extractor, dlcs=dlcs)))
             effective = ResourceStack(packages)
             game_only = ResourceStack(packages[:len(game_paths)])
-            report, station_resources = plan_map_fuel(effective,
-                                                      map_packages={str(source)}, map_name=name)
-            policy, policy_report = build_policy(effective, game_only,
-                                                 target_packages={str(source)},
-                                                 reference_path=petrol_reference)
-            price_report, price_resources = plan_petrol_prices(effective,
-                                                               target_packages={str(source)},
-                                                               policy=policy)
-            price_report['policy'] = policy_report
-            report['petrol_prices'] = price_report
-            coverage = report.setdefault('coverage', {})
-            blockers = list(coverage.get('blockers', report.get('blockers', [])))
-            blockers.extend({'area': 'petrol_price_policy', **blocker}
-                            for blocker in policy_report['coverage']['blockers'])
-            blockers.extend({'area': 'petrol_prices', **blocker}
-                            for blocker in price_report['coverage']['blockers'])
-            conflicts = sorted(set(station_resources) & set(price_resources))
-            blockers.extend({'area': 'resource_collision', 'path': path,
-                             'reason': 'station and price planners emitted the same path'}
-                            for path in conflicts)
-            coverage['blockers'] = blockers
-            coverage['complete'] = not blockers
-            coverage['petrol_price_changed'] = price_report['coverage']['changed']
-            resources = {**station_resources, **price_resources}
+            planned = run_processors(effective, game_only, source=str(source),
+                                     map_name=name, config=config)
+            resources = planned.resources
+            if _legacy_fuel:
+                report = planned.reports['fuel']
+                report['processors_enabled'] = list(topics)
+            else:
+                report = {
+                    'schema_version': 1,
+                    'analysis': 'map_wide_selected_compatibility',
+                    'map_name': name,
+                    'processors_enabled': list(topics),
+                    'processor_reports': planned.reports,
+                    'coverage': planned.coverage,
+                }
         for path, identity in identities.items():
             if (path.stat().st_size, path.stat().st_mtime_ns) != identity:
                 raise ValueError(f'Source package changed during generation; retry from a stable stack: {path}')
         audit = {'workflow': workflow, 'planner': report,
                  'planned_resource_count': len(resources)}
-        blockers = report['coverage']['blockers']
+        blockers = planned.blockers
         if blockers:
             audit['status'] = 'blocked'
             _write_audit(work / 'audit.json', audit)
@@ -273,19 +277,33 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
             _write_audit(work / 'audit.json', audit)
             return audit
         icon_bytes = Path(icon).read_bytes() if isinstance(icon, (str, Path)) else icon
-        description = (f'Experimental map-wide passenger-car refueling and petrol-price package for {name}.\n'
-                       'Every supported missing truck fuel point receives a car interaction at the same position.\n'
-                       'Country petrol prices may be restored from lower definitions or estimated from stock ATS ratios.\n'
-                       'Keep this package above its listed source/dependency maps in a copied test profile.\n'
-                       'Read road_trip_fix_report.json for coverage, source assumptions and static verification.\n'
-                       'Gameplay and reload behavior outside the tested sample remain unverified.\n')
+        if topics == ('fuel',):
+            description = (f'Experimental map-wide passenger-car refueling and petrol-price package for {name}.\n'
+                           'Every supported missing truck fuel point receives a car interaction at the same position.\n'
+                           'Country petrol prices may be restored from lower definitions or estimated from stock ATS ratios.\n'
+                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
+                           'Read road_trip_fix_report.json for coverage, source assumptions and static verification.\n'
+                           'Gameplay and reload behavior outside the tested sample remain unverified.\n')
+        elif topics == ('rest',):
+            description = (f'Experimental map-wide passenger-car rest-stop package for {name}.\n'
+                           f'Rest selection uses a {config.rest_radius:g} coordinate-unit straight-line radius.\n'
+                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
+                           'Read road_trip_fix_report.json for coverage and source assumptions.\n'
+                           'Rest eligibility and reload behavior require in-game validation.\n')
+        else:
+            description = (f'Experimental map-wide passenger-car fuel, petrol-price and rest-stop package for {name}.\n'
+                           f'Rest selection uses a {config.rest_radius:g} coordinate-unit straight-line radius.\n'
+                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
+                           'Read road_trip_fix_report.json for coverage and source assumptions.\n'
+                           'Pricing, billing, rest eligibility and reload behavior require in-game validation.\n')
         # Time/run paths belong to the external audit, keeping generated mod
         # content stable across timestamped runs with identical source inputs.
         provenance = {k:v for k,v in workflow.items() if k not in ('run_id', 'work_dir')}
         full_report = {**report, 'workflow': provenance}
         written = write_mod(output, resources, full_report, game_version=version,
                             map_name=name, revision=revision, icon=icon_bytes,
-                            description=description)
+                            description=description,
+                            **({} if _legacy_fuel else {'fix_topics': topics}))
         audit.update({'status': 'generated', 'output': str(output), 'written_report': written})
         _write_audit(work / 'audit.json', audit)
         return audit
@@ -296,3 +314,14 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
         raise
     finally:
         Archive.configure_work_root(prior_work_root)
+
+
+def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
+                      run_id=None, extractor=None, dependency: list[str] = (),
+                      icon=None, petrol_reference=DEFAULT_REFERENCE) -> dict:
+    """Preserve the r2 fuel-and-petrol interface and package contract."""
+    return generate_map_fix(source, processors=(Processor.FUEL,),
+                            game_dir=game_dir, map_name=map_name, revision=revision,
+                            run_id=run_id, extractor=extractor, dependency=dependency,
+                            icon=icon, petrol_reference=petrol_reference,
+                            _legacy_fuel=True)

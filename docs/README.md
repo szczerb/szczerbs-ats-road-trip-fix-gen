@@ -46,5 +46,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Canadian refueling quantity/zero-price research and minimal test](reference/CANADA_FUEL_DISPLAY_RESEARCH.md).
 - [Pending manual tests and reminder agreement](reference/MANUAL_TEST_CHECKLIST.md).
 - [Passenger-car rest actions, polygons and selected map placements](reference/PASSENGER_CAR_REST_RESEARCH.md).
+- [Selectable fuel/rest processors, proximity rule and composition](reference/COMPATIBILITY_PROCESSORS.md).
 - [Original icon proposals and prompts](../assets/mod-icons/README.md).
 - [Third-party notices](../THIRD_PARTY_NOTICES.md).

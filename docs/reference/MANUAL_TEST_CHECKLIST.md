@@ -14,10 +14,10 @@ Use the newest r2 packages, disable superseded r1/r0/sample versions, and keep e
 
 Price provenance: same-unit lower-source values are restored where available. Other new values use the recorded stock ATS petrol/diesel ratio and are estimates, not real-world price assertions. A positive definition alone does not establish that it completely repairs the reported UI problem.
 
-## Rest areas: research complete; implementation/test pending
+## Rest areas: local processor implemented; runtime test pending
 
-The rest investigation found vehicle-filtered actions and concrete truck-stop placements, but no rest fix was generated. [Mechanism and source evidence](PASSENGER_CAR_REST_RESEARCH.md).
+The rest investigation found vehicle-filtered actions and concrete truck-stop placements. The separate [rest processor and verified WCE r3 candidate](COMPATIBILITY_PROCESSORS.md) applies the user-selected local distance rule and retains the shared truck action. WCE r3 combines fuel and rest; replace its older WCE r2 fix at the same priority, keeping other maps' r2 fixes. The previously delivered r2 fuel packages contain no rest changes. [Original mechanism and source evidence](PASSENGER_CAR_REST_RESEARCH.md).
 
-When a separate rest candidate is prepared, compare car-mode map/discovery icons, the engine-off/rest prompt inside the actual polygon, successful fatigue recovery, truck/bus behavior where applicable and save/reload. Include a working stock car rest area and an unchanged control. The absence of a fuel-style upright hologram is expected and is not the failure criterion. Do not copy the petrol service bit into parking records.
+When a complete-coverage rest candidate is prepared, compare car-mode map/discovery icons, the engine-off/rest prompt inside the actual polygon, successful fatigue recovery, truck/bus behavior where applicable and save/reload. Include a selected truck area with no car rest within 1,000 map-world units, an unchanged truck area with a nearby car rest, and a working stock car area. The absence of a fuel-style upright hologram is expected and is not the failure criterion. Do not copy the petrol service bit into parking records. Bounded static fixture outputs are not complete-map install candidates.
 
 Keep [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) active until its runtime evidence is supplied. Record station, vehicle/mode, package version and observed price/quantity/tank/payment/rest results in [validation results](VALIDATION_RESULTS.md); never rewrite historical generated reports to claim later validation.

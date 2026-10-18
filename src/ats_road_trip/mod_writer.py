@@ -63,7 +63,8 @@ def _validate_icon(data: bytes) -> None:
 def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
               *, game_version: str, display_name: str | None = None,
               description: str | None = None, map_name: str | None = None,
-              revision: int = 0, icon: bytes | None = None) -> dict:
+              revision: int = 0, icon: bytes | None = None,
+              fix_topics: tuple[str, ...] | None = None) -> dict:
     """Write a new ZIP_STORED .scs, with source/change report included.
 
     Existing outputs are never overwritten. Caller must explicitly acknowledge
@@ -76,13 +77,25 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
         raise ValueError('This experimental prototype targets ATS 1.61 only')
     if isinstance(revision, bool) or not isinstance(revision, int) or revision < 0:
         raise ValueError('Revision must be a nonnegative integer')
+    topic_titles = {frozenset({'fuel'}): 'Gas Stations Fix',
+                    frozenset({'rest'}): 'Rest Stops Fix',
+                    frozenset({'fuel', 'rest'}): 'Map Compatibility Fix'}
+    if fix_topics is not None:
+        if (not isinstance(fix_topics, tuple) or not fix_topics
+                or any(not isinstance(topic, str) for topic in fix_topics)
+                or len(set(fix_topics)) != len(fix_topics)
+                or frozenset(fix_topics) not in topic_titles):
+            raise ValueError('Fix topics must be a nonempty tuple of unique supported topics: fuel, rest')
+        if map_name is None:
+            raise ValueError('Fix topics require a map name')
     if map_name is not None:
         _manifest_text(map_name, 'Map name')
         if map_name != map_name.strip():
             raise ValueError('Map name must not have leading or trailing whitespace')
         if display_name is not None:
             raise ValueError('Specify map_name or display_name, not both')
-        display_name = f"szczerb's Road Trip Gas Stations Fix for {map_name}"
+        title = topic_titles[frozenset(fix_topics)] if fix_topics is not None else 'Gas Stations Fix'
+        display_name = f"szczerb's Road Trip {title} for {map_name}"
     display_name = display_name if display_name is not None else 'Road Trip map compatibility experiment'
     display_literal = _manifest_text(display_name, 'Display name')
     package_version = '.'.join(game_version.split('.')[:2]) + f'-r{revision}-experimental'
@@ -102,6 +115,8 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
     metadata = {'display_name': display_name, 'author': 'szczerb',
                 'package_version': package_version, 'map_name': map_name,
                 'revision': revision}
+    if fix_topics is not None:
+        metadata['fix_topics'] = sorted(fix_topics)
     if icon is not None:
         metadata['icon'] = {'path': 'mod_icon.jpg', 'size': len(icon), 'sha256': sha256(icon)}
     final_report = {**report, 'experimental': True, 'in_game_verified': False,

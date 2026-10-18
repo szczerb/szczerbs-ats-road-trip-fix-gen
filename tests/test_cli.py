@@ -5,6 +5,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 from ats_road_trip.cli import main, parser
@@ -129,6 +130,28 @@ company_def : .city { city: test_city prefab: alias }
         options = parser().parse_args(['generate-map-fuel', 'source.scs', '--experimental',
                                        '--petrol-reference', 'def/country/montana.sui'])
         self.assertEqual(options.petrol_reference, 'def/country/montana.sui')
+
+    def test_map_fix_processor_options_and_dispatch(self):
+        self.run_cli(['generate-map-fix', 'source.scs', '--experimental'], expected=2)
+        options = parser().parse_args(['generate-map-fix', 'source.scs', '--experimental',
+                                       '--processor', 'rest', '--processor', 'fuel',
+                                       '--rest-radius', '750'])
+        self.assertEqual(options.revision, 3)
+        self.assertEqual(options.processor, ['rest', 'fuel'])
+        self.assertEqual(options.rest_radius, 750)
+        result = {'status': 'generated', 'output': 'generated.scs',
+                  'workflow': {'work_dir': 'work'},
+                  'planner': {'coverage': {'complete': True}}}
+        with patch('ats_road_trip.bulk_run.generate_map_fix', return_value=result) as generate:
+            output = self.run_cli(['generate-map-fix', 'source.scs', '--experimental',
+                                   '--processor', 'rest', '--rest-radius', '750'])
+        self.assertEqual(output['status'], 'generated')
+        self.assertEqual(generate.call_args.kwargs['processors'], ['rest'])
+        self.assertEqual(generate.call_args.kwargs['rest_radius'], 750)
+
+    def test_map_fix_rejects_unimplemented_courier(self):
+        self.run_cli(['generate-map-fix', 'source.scs', '--experimental',
+                      '--processor', 'courier'], expected=2)
 
 
 if __name__ == '__main__':

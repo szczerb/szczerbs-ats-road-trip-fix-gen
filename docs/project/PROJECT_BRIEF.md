@@ -6,6 +6,8 @@ Build a utility that automatically produces small compatibility mods for America
 
 The two features have equal research priority. Automation and small patch size are goals whose feasibility must be established from evidence.
 
+**Documented — expanded user direction, 2026-10-18:** include passenger-car rest eligibility as its own selectable processor alongside fuel and future Courier Jobs. Only add car support to a truck/bus rest area if no existing car rest lies within 1,000 game-world units in a straight line. Preserve truck/bus behavior and shared action definitions; compose selected changes into one source-specific mod. See [processor scope](../reference/COMPATIBILITY_PROCESSORS.md).
+
 ## Reported problem and evidence boundary
 
 **User report (2026-10-17, ATS 1.61 / Road Trip context):** some modded cities offer Courier Jobs while others appear not to, and passenger cars cannot refuel at some stations in modded areas. Specific city/station examples have deliberately been deferred.
