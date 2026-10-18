@@ -20,6 +20,8 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
+- **Latest clarification, 2026-10-18:** the user reports missing car-map parking icons in Canada/Alaska and sparse Montana coverage, without a physical rest attempt. They question the earlier late-night rest-success report. Rest confidence is reopened; earlier acceptance wording below is historical. Refueling and tank acceptance remain separate. [TASK-0038](TASK-0038-investigate-missing-car-parking-icons.md) owns static icon investigation. The user is completing a job in Mexico; no immediate test is requested.
+
 - **Accepted functional milestones, 2026-10-18:** the user confirms refueling and parking/rest work in Canada and Mexico. These internal functional checks are complete at the reported scope. Detailed UI/accounting and truck/reload controls were not individually enumerated. Courier and connector-icon validation remain separate; historical test instructions below do not reopen accepted milestones. [Dated evidence](../../reference/VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico).
 
 - Separate [reasonable tank r0](../../reference/REASONABLE_GAS_TANK_UPGRADES.md): **internally complete by user acceptance, 2026-10-18**. The user reports it works and may offer it for community testing. Detailed per-model/transition/reload checks remain optional community coverage; they are not open internal tank blockers. Other feature validation remains in this task.
@@ -67,6 +69,8 @@ The older candidates below are historical controls; do not enable them together 
 - Live profile and original inputs remain preserved; negative results are recorded.
 
 # Verification
+
+2026-10-18: subsequent user clarification qualifies the earlier rest acceptance; missing icons are confirmed as the reported symptom, while actual rest is untested. Root inspected the screenshot, installed r8 fingerprints and active log order; see TASK-0038. Earlier positive report remains recorded below as history.
 
 **Documented — latest maintainer report, 2026-10-18:** the maintainer updated the local jobs r3 and tanks r0 packages, launched ATS and confirmed that they work. [Dated report](../../reference/VALIDATION_RESULTS.md#2026-10-18-updated-job-and-tank-packages-work-in-game). Specific completed deliveries, cargo fit, numerical displays/billing and reload outcomes were not enumerated; this task remains open for its individually outstanding checks.
 

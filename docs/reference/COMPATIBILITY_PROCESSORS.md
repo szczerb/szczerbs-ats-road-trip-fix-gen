@@ -1,6 +1,6 @@
 # Selectable compatibility processors
 
-Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. **Documented — subsequent user report, 2026-10-18:** refueling and parking/rest work in Canada and Mexico. [Dated acceptance](VALIDATION_RESULTS.md#2026-10-18-refueling-and-rest-confirmed-in-canada-and-mexico) closes the internal functional milestones at that scope; the [checklist](MANUAL_TEST_CHECKLIST.md) distinguishes remaining controls.
+Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. **Documented — latest clarification, 2026-10-18:** refueling remains user-confirmed, but the earlier rest-success report is qualified. Car-map parking icons are absent in Canada/Alaska and sparse in Montana; physical rest has not been retested. [Current investigation](CAR_PARKING_ICON_INVESTIGATION.md), [dated clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). No immediate game test is requested.
 
 ## Selection and commands
 

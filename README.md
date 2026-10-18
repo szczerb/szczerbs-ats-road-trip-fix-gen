@@ -53,7 +53,7 @@ The latest documented generated candidates are **map fixes r8**, **Job Types Com
 **Maintainer-reported results, 17–18 October 2026:**
 
 - The ATS Expansion Helena-area sample enabled car refueling at its selected target. The later same-position sample worked for both a truck and a car.
-- Car refueling and parking/rest work in **Canada and Mexico**, at the scope of the maintainer’s report. That report did not enumerate individual maps, stations, installed package hashes or the running build.
+- Car refueling works in **Canada and Mexico** at the maintainer-reported scope. The earlier rest-success report is now qualified: the maintainer reports missing car-map parking icons in Canada/Alaska and sparse Montana coverage, without a physical rest check. [Current rest/icon investigation](docs/reference/CAR_PARKING_ICON_INVESTIGATION.md).
 - The reasonable tank-upgrade mod works and is accepted as internally complete.
 - Job Types Compat Mustang testing in the USA is ongoing, with no problems noticed so far; completed newly eligible deliveries have not been reported.
 

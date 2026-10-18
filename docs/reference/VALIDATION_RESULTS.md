@@ -1,12 +1,24 @@
 # Gameplay validation results
 
+## 2026-10-18: missing car parking icons and qualified rest report
+
+**Documented — subsequent first-hand user clarification:** car-mode world-map parking icons are missing in Canada and Alaska and sparse in Montana, despite installed r8. The user has not tested physical rest there and is completing a job in Mexico. They explicitly question the earlier late-night general rest-success report; rest confidence is reopened, without declaring a physical rest failure. Refueling, jobs and tank reports remain separate.
+
+**Observed locally / corrected by user:** screenshot `ats_20261018_232603_00.png` shows bed icons in Washington, USA, and none north of the Canadian border at the shown zoom. The agent initially misidentified Washington as southern British Columbia; that reading is corrected. Montana's sparse icons help explain the misleading shape of the visible cluster; Alaska is offscreen.
+
+**Observed locally:** second screenshot `ats_20261018_232848_00.png` shows dense icons across Mexico. **Hypothesis — user:** every fix except Reforma may be affected. Existing native car locations may contribute those icons; this does not validate generated Reforma rest additions or every other package's failure.
+
+**Observed locally:** all seven installed r8 map archives match the delivered SHA-256 fingerprints, with gameplay resources identical to r7 and expected source-relative active order in the 22:49:31 log. These checks do not establish successful rest or icon display. [Investigation and remaining unknowns](CAR_PARKING_ICON_INVESTIGATION.md), [TASK-0038](../tasks/active/TASK-0038-investigate-missing-car-parking-icons.md). No immediate in-game test is requested and no profile/package was changed.
+
 ## 2026-10-18: updated job and tank packages work in game
 
 **Documented — first-hand maintainer report:** after receiving the updated jobs r3 and tanks r0 publication packages, the maintainer manually updated the local installation, launched ATS and reported that they work. The report concerns the prepared copies recorded in [TASK-0036](../tasks/done/TASK-0036-prepare-report-free-publication-packages.md). The agent did not launch the game or inspect the live profile.
 
-This confirms operation at the maintainer-reported scope. It does not enumerate the running build, active load order, installed-copy fingerprints, individual completed deliveries, cargo fit, measured capacity displays, billing or save/reload outcomes. The generation baseline remains ATS 1.61.3.18; it is not a newly measured runtime version. Prior tank acceptance and Canada/Mexico refueling/rest confirmations remain valid. More detailed checks retain their separate status in TASK-0007.
+This confirms operation at the maintainer-reported scope. It does not enumerate the running build, active load order, installed-copy fingerprints, individual completed deliveries, cargo fit, measured capacity displays, billing or save/reload outcomes. The generation baseline remains ATS 1.61.3.18; it is not a newly measured runtime version. Prior tank acceptance and Canada/Mexico refueling confirmation remain valid; the later clarification above qualifies the rest report. More detailed checks retain their separate status in TASK-0007.
 
 ## 2026-10-18: refueling and rest confirmed in Canada and Mexico
+
+**Later qualification:** the user questions the rest portion of this late-night report; [the subsequent icon report](#2026-10-18-missing-car-parking-icons-and-qualified-rest-report) is the current evidence. The original report below is retained as history.
 
 **Documented — first-hand user report:** the user confirms that refueling and parking/rest also work in both Canada and Mexico. This adds positive runtime evidence for the generated map fuel/rest fixes in both regions. Following the user's internal-completion decision, the functional refueling-access and rest milestones are accepted at this reported scope; community testing can broaden coverage.
 

@@ -1,6 +1,6 @@
 # Pending manual game tests
 
-Updated: 2026-10-18. The user confirms functional refueling and parking/rest in Canada and Mexico; those internal checks are complete at the reported scope. Tank upgrades are also internally accepted. Numerical billing controls, courier delivery and the connector icon retain separate evidence/status. Remind only about remaining checks. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
+Updated: 2026-10-18. The user confirms functional refueling in Canada and Mexico and accepts tank upgrades internally. The earlier rest-success report is qualified by a later missing-icon report; physical rest remains uncertain. [Current clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). The user is completing a job in Mexico; do not request immediate rest testing. Numerical billing controls, courier delivery and the connector icon retain separate evidence/status. Remind only about remaining checks. Existing one-time reminder: **2026-10-18 18:00 Europe/Warsaw**; do not create duplicates.
 
 **Interim user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA with no problems noticed yet. This interim report predates the subsequent tank and Canada/Mexico fuel/rest confirmations recorded below.
 

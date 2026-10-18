@@ -4,7 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user confirms refueling and rest in Canada/Mexico, and tank upgrades are internally accepted; detailed controls, courier delivery and connector icon remain separate.
+- [TASK-0038: Investigate missing car parking icons](active/TASK-0038-investigate-missing-car-parking-icons.md) — Canada/Alaska icons absent, Montana sparse; installed r8 matches delivery/r7 gameplay; physical rest untested and prior rest confidence qualified.
+- [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
 
@@ -69,7 +70,7 @@ No unstarted tasks.
 
 - [TASK-0015: Investigate car rest areas](done/TASK-0015-investigate-passenger-car-rest-areas.md) — separate vehicle-filtered polygon actions and two concrete truck-stop placements; no rest package or gameplay repair claimed.
 
-- [TASK-0016: Implement proximity-filtered rest eligibility](done/TASK-0016-prepare-rest-eligibility-experiment.md) — bounded source-plus-halo rule, private truck/bus/car action, 202 WCE additions with explicit boundary limits; later user confirms rest works in Canada/Mexico.
+- [TASK-0016: Implement proximity-filtered rest eligibility](done/TASK-0016-prepare-rest-eligibility-experiment.md) — bounded source-plus-halo rule, private truck/bus/car action, 202 WCE additions with explicit boundary limits; earlier user rest confirmation is qualified by TASK-0038.
 
 - [TASK-0017: Compose selectable compatibility processors](done/TASK-0017-compose-selectable-compatibility-processors.md) — enum/CLI selection, atomic composed output, accurate topic metadata, 179 tests and independently verified WCE fuel/rest package.
 
