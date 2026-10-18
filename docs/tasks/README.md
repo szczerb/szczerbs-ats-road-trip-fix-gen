@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0036: Prepare report-free publication packages](done/TASK-0036-prepare-report-free-publication-packages.md) — jobs r3 and tanks r0 copies omit only the internal report; retained bytes and original archives unchanged; local preparation only.
+
 - [TASK-0034: Document ready-to-use GitHub releases](done/TASK-0034-document-ready-to-use-github-releases.md) — README links to the maintainer-reported experimental tank and job downloads; local source and release assets clearly separated.
 
 - [TASK-0033: Audit private GitHub history and refresh README](done/TASK-0033-audit-private-github-and-refresh-readme.md) — uploaded 37-commit source history re-audited, exact game/map baseline README, corrected provenance/local links; local commit only, no push or visibility change.
