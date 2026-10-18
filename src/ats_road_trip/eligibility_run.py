@@ -15,11 +15,11 @@ from .mod_writer import write_mod
 from .package import Package, ResourceStack
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TITLE = "szczerb's Road Trip Practical Courier Jobs"
+TITLE = "szczerb's Road Trip Job Types Compat Mustang"
 
 
 def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency=(),
-                            revision=2, run_id=None, extractor=None, icon=None):
+                            revision=3, run_id=None, extractor=None, icon=None):
     """Analyze a declared definition stack; optionally package its reviewed edits."""
     if type(generate) is not bool:
         raise ValueError('generate must be a boolean')
@@ -34,10 +34,10 @@ def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency
     stamp = run_id or datetime.now(ZoneInfo('Europe/Warsaw')).strftime('%Y-%m-%d_%H-%M-%S')
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}', stamp):
         raise ValueError('Run ID must use YYYY-MM-DD_HH-MM-SS')
-    slug = 'practical-courier-jobs' + ('' if generate else '-analysis')
+    slug = 'job-types-compat-mustang' + ('' if generate else '-analysis')
     work = REPO_ROOT / 'local_outputs/work' / stamp / slug
     output = REPO_ROOT / 'local_outputs/generated' / stamp / (
-        f'szczerbs-road-trip-practical-courier-jobs-muscle-1.61-r{revision}-experimental.scs')
+        f'szczerbs-road-trip-job-types-compat-mustang-1.61-r{revision}-experimental.scs')
     audit_path = work / 'audit.json'
     if audit_path.exists() or (generate and output.exists()):
         raise FileExistsError('Run audit or generated package already exists; choose a new run ID')

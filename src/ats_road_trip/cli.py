@@ -73,7 +73,7 @@ def parser() -> argparse.ArgumentParser:
         eligibility.add_argument('--dependency', action='append', default=[], help='Declared archives, lowest priority first')
         eligibility.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         if name.startswith('generate'):
-            eligibility.add_argument('--revision', type=int, default=2)
+            eligibility.add_argument('--revision', type=int, default=3)
             eligibility.add_argument('--icon', help='Optional courier JPEG 276x162')
             eligibility.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
@@ -86,7 +86,7 @@ def parser() -> argparse.ArgumentParser:
         bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
         bulk.add_argument('--map-name', help='Short map name; inferred for known map families')
         if name != 'analyze-map':
-            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 6)
+            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 7)
         bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,

@@ -19,5 +19,5 @@ def map_icon(root, map_name, topics):
 
 
 def courier_icon(root):
-    candidate = Path(root) / 'assets/mod-icons/practical-courier-jobs.jpg'
+    candidate = Path(root) / 'assets/mod-icons/job-types-compat-mustang.jpg'
     return candidate if candidate.is_file() else None

@@ -19,8 +19,10 @@ Accepted 2026-10-18. Extend [ADR-0005](ADR-0005-standardize-fuel-package-metadat
 
 ## Consequences
 
+Subsequent user naming instruction, 2026-10-18: the display-name wording above describes the initial artwork milestone. TASK-0026 supersedes it with `szczerb's Road Trip Job Types Compat Mustang` and the matching archive filename. Gameplay scope is unchanged; the current naming handoff is linked below.
+
 The user initially selected M2's navy fuel/parking scene, then explicitly selected the corrected four-Ford M2D variant for map r6. Earlier proposals remain as history. The user then approved J3C courier art with mechanical access keys, used in courier r2. Earlier J1B artwork remains historical. [Art guide and prompts](../../../assets/mod-icons/README.md). Shared fuel/rest family artwork on OtherMaps does not imply station or rest changes; its description states the narrower scope.
 
 The priority list describes this supplied combination. Other replacements and unknown combinations still require review; no automatic profile inspection is implied. Human descriptions and artwork must be maintained when supported topics or the known combination change.
 
-The [final r6/r2 handoff](../../reference/MOD_METADATA_FINAL_1_61_R6_R2.md), historical [r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md) and historical [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) record hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.
+The [current r7/r3 naming handoff](../../reference/MOD_METADATA_RENAME_1_61_R7_R3.md), historical [r6/r2 handoff](../../reference/MOD_METADATA_FINAL_1_61_R6_R2.md), historical [r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md) and historical [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) record hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.

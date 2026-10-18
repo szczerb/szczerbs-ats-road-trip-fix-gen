@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0026: Unify Job Types Compat Mustang naming](done/TASK-0026-unify-job-types-compat-mustang-branding.md) — consistent filenames/metadata/priority labels, r7/r3 batch and unchanged gameplay/icons; 246 tests and independent archive review.
+
 - [TASK-0025: Refresh icons and player descriptions](done/TASK-0025-refresh-mod-icons-and-player-descriptions.md) — approved M2D/J3C artwork, readable priority descriptions, final r6/r2 batch, 246 tests and independent payload checks.
 
 - [TASK-0024: Deliver overnight test mods](done/TASK-0024-deliver-overnight-test-mod-batch.md) — eight reviewed mods, 233 tests, effective-stack/namespace checks and one ZIP with installation/test instructions. Manual acceptance remains TASK-0007.

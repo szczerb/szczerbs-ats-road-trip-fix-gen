@@ -1,5 +1,7 @@
 # Approved metadata delivery: map r6 and courier r2
 
+Historical delivery: [Job Types Compat Mustang r3 and map r7](MOD_METADATA_RENAME_1_61_R7_R3.md) use the requested unified name while preserving these exact gameplay resources and approved icons. This earlier archive and its fingerprints remain unchanged.
+
 **Documented — user approvals, 2026-10-18:** M2D is the selected four-Ford fuel/parking artwork for all seven map fixes. J3C is the selected Mustang courier artwork, with a mechanical access-key bunch, parcel, envelope and three compatibility check marks. The user confirms J3C is visible and explicitly approves it. The original job-cargo evidence and exact edit prompt are linked from the [artwork guide](../../assets/mod-icons/README.md).
 
 ## Download

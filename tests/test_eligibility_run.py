@@ -45,7 +45,7 @@ class EligibilityWorkflowTests(unittest.TestCase):
     def test_selected_courier_artwork_is_embedded_without_changing_job_payload(self):
         # Real decoded project artwork also checks the default preset's format.
         original = Path(__file__).resolve().parents[1] / 'assets/mod-icons/proposals-v3/j1b.jpg'
-        preset = self.root / 'assets/mod-icons/practical-courier-jobs.jpg'
+        preset = self.root / 'assets/mod-icons/job-types-compat-mustang.jpg'
         preset.parent.mkdir(parents=True)
         preset.write_bytes(original.read_bytes())
         for explicit in (False, True):
@@ -83,12 +83,14 @@ class EligibilityWorkflowTests(unittest.TestCase):
         result = self.invoke(generate=True)
         self.assertEqual(result['status'], 'generated')
         self.assertEqual(result['generated_mod_count'], 1)
+        self.assertEqual(Path(result['output']).name,
+                         'szczerbs-road-trip-job-types-compat-mustang-1.61-r3-experimental.scs')
         self.assertEqual(self.config.read_bytes(), before)
         with zipfile.ZipFile(result['output']) as z:
             manifest = z.read('manifest.sii').decode()
             self.assertIn('category[]: "other"', manifest)
-            self.assertIn('Practical Courier Jobs', manifest)
-            self.assertIn('1.61-r2-experimental', manifest)
+            self.assertIn('display_name: "szczerb\'s Road Trip Job Types Compat Mustang"', manifest)
+            self.assertIn('1.61-r3-experimental', manifest)
             self.assertEqual(z.read('def/car_job_data.sii'), b'patched')
             self.assertNotIn('mod_icon.jpg', z.namelist())
             self.assertFalse(json.loads(z.read('road_trip_fix_report.json'))['in_game_verified'])
@@ -98,7 +100,7 @@ class EligibilityWorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'blockers'), patch.object(run, 'write_mod') as writer:
             self.invoke(generate=True, blockers=[{'reason': 'unknown cargo'}])
         writer.assert_not_called()
-        audit = self.root/'local_outputs/work'/self.stamp/'practical-courier-jobs/audit.json'
+        audit = self.root/'local_outputs/work'/self.stamp/'job-types-compat-mustang/audit.json'
         self.assertEqual(json.loads(audit.read_text())['status'], 'blocked')
         self.assertFalse((self.root/'local_outputs/generated').exists())
 

@@ -31,7 +31,7 @@ class CliTests(unittest.TestCase):
             self.run_cli(['generate-courier-eligibility', '--config', 'review.toml'], expected=2)
             generate.assert_not_called()
             self.run_cli(['generate-courier-eligibility', '--config', 'review.toml', '--experimental'])
-            self.assertEqual(generate.call_args.kwargs['revision'], 2)
+            self.assertEqual(generate.call_args.kwargs['revision'], 3)
             self.run_cli(['generate-courier-eligibility', '--config', 'review.toml', '--experimental', '--icon', 'selected.jpg'])
             self.assertEqual(generate.call_args.kwargs['icon'], 'selected.jpg')
 
@@ -152,7 +152,7 @@ company_def : .city { city: test_city prefab: alias }
         options = parser().parse_args(['generate-map-fix', 'source.scs', '--experimental',
                                        '--processor', 'rest', '--processor', 'fuel',
                                        '--rest-radius', '750'])
-        self.assertEqual(options.revision, 6)
+        self.assertEqual(options.revision, 7)
         self.assertEqual(options.processor, ['rest', 'fuel'])
         self.assertEqual(options.rest_radius, 750)
         result = {'status': 'generated', 'output': 'generated.scs',

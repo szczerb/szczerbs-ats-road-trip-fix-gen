@@ -23,7 +23,7 @@ def _load_order(map_name: str) -> str:
         'Load order for the supplied ATS 1.61 map combination (top to bottom). '
         'Enable only fixes for maps and connectors you use:',
         'North America Background Map (optional)',
-        'Practical Courier Jobs',
+        'Job Types Compat Mustang',
         'Food Courier Jobs, Medical Courier Jobs, Rideshare Jobs (optional)',
     ]
     for fix, source in _STACK:
@@ -46,7 +46,7 @@ def map_description(
     map_name: str,
     topics: tuple[str, ...] = ('fuel', 'rest'),
     *,
-    version: str = '1.61-r6-experimental',
+    version: str = '1.61-r7-experimental',
     rest_radius: int = 1000,
 ) -> str:
     """Describe a map package without claiming untested gameplay results."""
@@ -98,19 +98,19 @@ def courier_description(
     selected_job_count: int = 58,
     transfer_count: int = 9,
     *,
-    version: str = '1.61-r2-experimental',
+    version: str = '1.61-r3-experimental',
 ) -> str:
-    """Describe the source-pinned Practical Courier Jobs eligibility package."""
+    """Describe the source-pinned Job Types Compat Mustang eligibility package."""
     if selected_job_count < 0 or transfer_count < 0:
         raise ValueError('definition counts must be nonnegative')
     paragraphs = [
-        f'Practical Courier Jobs for the Mustang\nVersion: {version}',
+        f'Job Types Compat Mustang\nVersion: {version}',
         f'Opens {selected_job_count} additional reviewed courier job types from the '
         'base game to your own Mustang. Also affects other cars in the same '
         'vehicle class and Quick Jobs. '
         f'All {transfer_count} vehicle-transfer jobs stay unchanged.',
         'LOAD ORDER (top to bottom):\nNorth America Background Map (if used)\n'
-        'Practical Courier Jobs (THIS MOD)\n'
+        'Job Types Compat Mustang (THIS MOD)\n'
         'Food Courier Jobs / Medical Courier Jobs / Rideshare Jobs (if used)\n'
         'Your map mods and their matching fixes\n\n'
         'Other mods replacing the base-game car job list require a compatibility check. '

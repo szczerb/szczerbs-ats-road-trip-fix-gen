@@ -56,7 +56,7 @@ class CourierArtworkTests(unittest.TestCase):
     def test_default_courier_artwork_is_optional_and_does_not_fall_back_to_map_art(self):
         self.assertIsNone(courier_icon(self.root))
 
-        courier = self.icons / 'practical-courier-jobs.jpg'
+        courier = self.icons / 'job-types-compat-mustang.jpg'
         courier.write_bytes(b'courier fixture')
         (self.icons / 'alaska-c.jpg').write_bytes(b'map fixture')
 

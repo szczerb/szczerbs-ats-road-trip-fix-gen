@@ -36,7 +36,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Mustang versus Crown Victoria cargo exclusions](reference/MUSTANG_COURIER_CARGO_REVIEW.md).
 - [Separate vehicle-eligibility mod feasibility and override limits](reference/COURIER_VEHICLE_ELIGIBILITY_MOD.md).
 - [Eligibility generator design and practical-cargo policy](reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md).
-- [Implemented standalone Practical Courier Jobs generator](reference/PRACTICAL_COURIER_GENERATOR.md).
+- [Implemented standalone Job Types Compat Mustang generator](reference/PRACTICAL_COURIER_GENERATOR.md).
 - [Courier company selection markers and placed-node evidence](reference/COURIER_MARKER_RESEARCH.md).
 - [Source-relative courier analysis/reporting command and interpretation](reference/COURIER_REPORTING.md).
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).
@@ -46,7 +46,8 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [User gameplay results and nearest-station selection review](reference/VALIDATION_RESULTS.md).
 - [Sample 2: overlapping truck/car interactions at one pump](reference/OVERLAPPING_FUEL_SAMPLE.md).
 - [Fuel mod metadata, version convention and icon requirements](reference/MOD_METADATA.md).
-- [Final r6 map / r2 courier metadata handoff and package comparison](reference/MOD_METADATA_FINAL_1_61_R6_R2.md).
+- [Current r7 map / r3 courier naming handoff and package comparison](reference/MOD_METADATA_RENAME_1_61_R7_R3.md).
+- [Historical r6 map / r2 courier metadata handoff](reference/MOD_METADATA_FINAL_1_61_R6_R2.md).
 - [Historical r6 map / r1 courier metadata handoff](reference/MOD_METADATA_REFRESH_1_61_R6.md).
 - [Historical r5 map / r1 courier metadata refresh](reference/MOD_METADATA_REFRESH_1_61_R5.md).
 - [Historical overnight r4 map/r0 courier delivery, load order and static checks](reference/OVERNIGHT_TEST_BATCH_1_61_R4.md).

@@ -24,7 +24,7 @@ class MapDescriptionTests(unittest.TestCase):
                 self.assertEqual(lines.count('(THIS MOD)'), 0)
                 self.assertEqual(sum('(THIS MOD)' in line for line in lines), 1)
                 self.assertEqual(lines[lines.index(marker) + 1], source)
-                self.assertLess(lines.index('Practical Courier Jobs'), lines.index(marker))
+                self.assertLess(lines.index('Job Types Compat Mustang'), lines.index(marker))
 
     def test_stack_keeps_sources_and_promods_components_in_documented_order(self):
         text = map_description('Western Canada')
@@ -83,6 +83,7 @@ class MapDescriptionTests(unittest.TestCase):
 class CourierDescriptionTests(unittest.TestCase):
     def test_counts_and_scope_come_from_arguments(self):
         text = courier_description(42, 7)
+        self.assertNotIn('Practical Courier Jobs', text)
         self.assertIn('42 additional reviewed courier job types', text)
         self.assertIn('All 7 vehicle-transfer jobs stay unchanged', text)
         self.assertNotIn('58 additional', text)
@@ -90,7 +91,7 @@ class CourierDescriptionTests(unittest.TestCase):
         self.assertIn('other cars in the same vehicle class and Quick Jobs', text)
         self.assertIn('this mod does not change their eligibility rules', text)
         self.assertIn('Driver rating and job-list refresh', text)
-        self.assertIn('North America Background Map (if used)\nPractical Courier Jobs (THIS MOD)', text)
+        self.assertIn('North America Background Map (if used)\nJob Types Compat Mustang (THIS MOD)', text)
         self.assertIn('replacing the base-game car job list require a compatibility check', text)
 
 
