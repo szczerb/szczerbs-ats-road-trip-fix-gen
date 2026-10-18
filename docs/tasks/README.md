@@ -14,7 +14,7 @@ No unstarted tasks.
 
 ## Done
 
-- [TASK-0028: Build reasonable gas tank upgrades](done/TASK-0028-build-reasonable-gas-tank-upgrades.md) — researched Mustang/F-150 capacities, source-pinned commands, original icon, 266 tests and independently verified r0; runtime tests remain TASK-0007.
+- [TASK-0028: Build reasonable gas tank upgrades](done/TASK-0028-build-reasonable-gas-tank-upgrades.md) — researched Mustang/F-150 capacities, source-pinned commands, original icon, 266 tests and independently verified r0; user accepts the tank mod as internally complete. Optional community tests may follow; other feature tests remain TASK-0007.
 
 - [TASK-0027: Clarify Expansion map branding](done/TASK-0027-clarify-expansion-map-branding.md) — full source identities/icons, shorter r8 filenames, 248 tests and unchanged gameplay. Connector cache mitigation awaits runtime confirmation in INC-0001/TASK-0007.
 

@@ -20,7 +20,7 @@ Static analysis and package generation do not prove runtime behavior. Courier al
 
 # Scope
 
-- Separate [reasonable tank r0](../../reference/REASONABLE_GAS_TANK_UPGRADES.md): disable the old 3x mod; verify Mustang 76 L and F-150 136 L, stock Crown Victoria/Bronco, saved fuel on transition, refueling/payment and save/reload. The user is currently testing Job Types Compat Mustang in the USA with no problems noticed yet; this interim report does not complete acceptance.
+- Separate [reasonable tank r0](../../reference/REASONABLE_GAS_TANK_UPGRADES.md): **internally complete by user acceptance, 2026-10-18**. The user reports it works and may offer it for community testing. Detailed per-model/transition/reload checks remain optional community coverage; they are not open internal tank blockers. Other feature validation remains in this task.
 
 - Current metadata handoff: [r8/r3](../../reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md), with full Expansion labels and unchanged gameplay. Confirm the Western Canada ProMods Connections r8 picture after its shorter filename; [INC-0001](../../incidents/INC-0001-connector-icon-cache/README.md) remains open until that runtime result is reported. No automatic cache/settings changes.
 
@@ -65,6 +65,8 @@ The older candidates below are historical controls; do not enable them together 
 - Live profile and original inputs remain preserved; negative results are recorded.
 
 # Verification
+
+2026-10-18: [tank r0 user acceptance](../../reference/VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally) closes that separate internal milestone. The report provides general success, without individual measurements. It does not close this broader courier/map validation task.
 
 2026-10-18: the user reports functioning passenger-car refueling at many visited Canadian stations, but invalid gallon quantities in Canada and normal initial zero in the USA. The supplied screenshot also shows price `$0,00`. [Dated validation evidence](../../reference/VALIDATION_RESULTS.md#2026-10-18-canadian-r1-refueling-and-invalid-quantity-display) and [country-price research](../../reference/CANADA_FUEL_DISPLAY_RESEARCH.md) separate this expanded access result from the unresolved price/display cause. No numerical purchase/balance comparison or broad Canadian truck/reload result was supplied. TASK-0014 scopes the minimal sourced-price validation; this task remains active.
 

@@ -58,6 +58,10 @@ Completed 2026-10-18 against installed ATS 1.61.3.18 / Ford DLC.
 - Documentation QA checks reading links/fragments, task metadata/status/dependencies, unchanged 12 input identities, ignored artifacts and whitespace. No supplied/game assets are staged. Work and reports: `local_outputs/work/2026-10-18_18-06-57/`.
 - Updated current state and manual checklist with the user's interim USA courier report and the tank transition test. No installation, game launch, profile edits, existing map/courier package changes or runtime validation occurred. TASK-0007 remains active.
 
+Follow-up, 2026-10-18: the user confirms that the tank mod works and explicitly accepts it as internally done; community testing may follow. [Dated acceptance](../../reference/VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally). This closes the internal runtime milestone in addition to the already completed implementation. Per-model measurements and individual migration/reload results were not supplied. The r0 archive and its generation-time report remain unchanged.
+
+GPT-6 Luna / low independently reviewed the acceptance scope and documentation consistency. Documentation-only follow-up checks cover links, task metadata/status, artifact exclusions and whitespace; the passing 266-test implementation baseline was not rerun because no code or package changed. Evidence/check report: `local_outputs/work/2026-10-18_18-47-55/`.
+
 # Links
 
 - [Task board](../README.md)

@@ -1,5 +1,11 @@
 # Gameplay validation results
 
+## 2026-10-18: tank upgrades accepted internally
+
+**Documented — first-hand user report:** directly after the reasonable gas tank upgrades r0 handoff, the user confirms that everything works and explicitly considers it internally done. They plan to propose it to other people for testing. This closes internal tank validation; community feedback is a possible next stage rather than a blocker.
+
+The prepared candidate is [reasonable gas tank upgrades r0](REASONABLE_GAS_TANK_UPGRADES.md#verified-r0-handoff), SHA-256 `95bf7495c1274917ac1eccd5b13b367ce66376b363a884629a649ce99b51dc5e`. The report does not enumerate tested models, measured capacities, saved-fuel migration, price/payment or save/reload results, and the installed copy was not independently fingerprinted. No additional agent gameplay test occurred. Preserve the tested package and its generation-time report unchanged. This acceptance concerns the tank mod; separate Canadian fuel-price, rest, courier and connector-icon checks retain their existing evidence/status.
+
 ## 2026-10-18: ongoing USA courier testing
 
 **Documented — first-hand user report:** the user is still testing Job Types Compat Mustang in the USA and has noticed no problems so far. They will report when finished. This is an interim observation, not confirmation of completed new-job acceptance/delivery, all job families or a controlled live-offer comparison. Canada fuel quantities/prices/billing and car rest remain pending. No additional screenshot, installed-package fingerprint or agent gameplay test accompanied this report.

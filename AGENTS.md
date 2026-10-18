@@ -6,7 +6,7 @@ Investigate and generate small ATS compatibility mods for Road Trip Courier Jobs
 
 Workspace-authored documentation must be in English.
 
-The user also authorizes the separate [reasonable gas tank upgrades](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) mod. Its four-Ford source-pinned policy changes Mustang to 76 L and the non-hybrid 5.0 V8 F-150 to 136 L, leaving Crown Victoria/Bronco unchanged. Keep it separate from map/courier fixes, preserve all other chassis/sibling-unit bytes, and reject source/version drift. Disable conflicting 3x tank overrides for manual tests; saved fuel and capacity refresh remain unverified. See [ADR-0015](docs/architecture/decisions/ADR-0015-source-pinned-reasonable-tank-upgrades.md).
+The user also authorizes the separate [reasonable gas tank upgrades](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) mod. Its four-Ford source-pinned policy changes Mustang to 76 L and the non-hybrid 5.0 V8 F-150 to 136 L, leaving Crown Victoria/Bronco unchanged. Keep it separate from map/courier fixes, preserve all other chassis/sibling-unit bytes, and reject source/version drift. Disable conflicting 3x tank overrides. The user confirmed the tank mod works on 2026-10-18 and accepts it as internally complete; community testing is the next optional stage. Do not invent per-model measurements or fuel-migration details absent from that report. See [ADR-0015](docs/architecture/decisions/ADR-0015-source-pinned-reasonable-tank-upgrades.md).
 
 ## Reading order
 

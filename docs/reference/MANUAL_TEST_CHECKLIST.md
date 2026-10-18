@@ -4,7 +4,9 @@ Updated: 2026-10-18. The user has resumed manual testing. Earlier overnight defe
 
 **Interim user report, 2026-10-18:** Job Types Compat Mustang testing is ongoing in the USA with no problems noticed yet. The checklist is incomplete; the active 3x-capacity mod will be disabled for the new tank test.
 
-## Reasonable tank upgrades: pending
+## Reasonable tank upgrades: internally complete; community checks optional
+
+**Documented — first-hand user report, 2026-10-18:** the user confirms that everything works following the tank r0 handoff and explicitly accepts this mod as internally done. They may invite community testers. This closes the internal tank validation; the individual checks below remain useful optional regression coverage, not outstanding internal requirements. The report does not enumerate measurements or each test separately. [Acceptance evidence](VALIDATION_RESULTS.md#2026-10-18-tank-upgrades-accepted-internally).
 
 Use the separate [reasonable gas tank upgrades candidate](REASONABLE_GAS_TANK_UPGRADES.md); disable Ford Fuel X3 and conflicting chassis/tank overrides first. Keep map r8/courier r3 unchanged.
 

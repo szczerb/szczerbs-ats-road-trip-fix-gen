@@ -2,7 +2,7 @@
 
 A research utility for American Truck Simulator: inspect map archives, report Road Trip courier inputs, generate passenger-car fuel/rest map fixes, and separately broaden reviewed courier job eligibility.
 
-A separate [reasonable gas tank upgrades mod](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) now selects researched Mustang (61 → 76 L) and F-150 (98 → 136 L) capacities; Crown Victoria and Bronco remain stock. Disable the old 3x-capacity mod before testing it.
+A separate [reasonable gas tank upgrades mod](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) now selects researched Mustang (61 → 76 L) and F-150 (98 → 136 L) capacities; Crown Victoria and Bronco remain stock. The user confirmed it works and accepts it as internally complete; community testing may follow. Disable the old 3x-capacity mod when using it.
 
 **Current implementation:** selectable `fuel` and `rest` map processors, automatic missing petrol-price repair, and preservation of original prefab context classifications when cloning. A separate [Job Types Compat Mustang generator](docs/reference/PRACTICAL_COURIER_GENERATOR.md) enables 58 reviewed cargo definitions for muscle-tagged cars, preserving all vehicle-transfer jobs. The [r8 map / r3 courier handoff](docs/reference/MOD_METADATA_MAP_NAMES_1_61_R8_R3.md) uses the exact names Alaska Expansion and Western Canada Expansion for their source-specific fixes. The [r7/r3](docs/reference/MOD_METADATA_RENAME_1_61_R7_R3.md) and older batches remain historical. [Current state](docs/project/CURRENT_STATE.md) tracks verification and manual tests.
 
