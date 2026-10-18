@@ -46,14 +46,15 @@ Reforma generation also uses **Mega Resources 3.0.1.161** (`Reforma_MegaResource
 
 These Expansion names identify the specific sources above. They do not imply support for every map covering Alaska or western Canada. OtherMaps naming other maps in its description does not establish testing of those maps. Exact input metadata, dependencies and historical observations are in the [input inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [research baseline](docs/reference/RESEARCH_BASELINE.md).
 
-The latest local generated candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; rendering and physical rest still need an in-game check. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
+The latest local generated candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; the maintainer confirms parking icons in Alaska and Canada after checking two towns, with denser map coverage. Individual fatigue/truck/reload checks were not enumerated. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
 
 ## What has been tried in game?
 
-**Maintainer-reported results, 17–18 October 2026:**
+**Maintainer-reported results, 17–19 October 2026:**
 
 - The ATS Expansion Helena-area sample enabled car refueling at its selected target. The later same-position sample worked for both a truck and a car.
-- Car refueling works in **Canada and Mexico** at the maintainer-reported scope. The earlier rest-success report is now qualified: the maintainer reports missing car-map parking icons in Canada/Alaska and sparse Montana coverage, without a physical rest check. [Current rest/icon investigation](docs/reference/CAR_PARKING_ICON_INVESTIGATION.md).
+- Car refueling works in **Canada and Mexico** at the maintainer-reported scope. The earlier rest-success report is now qualified: the maintainer reports missing car-map parking icons in Canada/Alaska and sparse Montana coverage, without a physical rest check. [Rest/icon investigation and repair](docs/reference/CAR_PARKING_ICON_INVESTIGATION.md).
+- **19 October 2026:** the maintainer confirms the **r9 parking-icon repair in Alaska and Canada**, after checks in two towns, and reports denser icon coverage on the map. [Dated result](docs/reference/VALIDATION_RESULTS.md#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada).
 - The reasonable tank-upgrade mod works and is accepted as internally complete.
 - Job Types Compat Mustang testing in the USA is ongoing, with no problems noticed so far; completed newly eligible deliveries have not been reported.
 

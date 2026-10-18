@@ -57,6 +57,10 @@ The initial documentation checkpoint also used bounded GPT-6 Luna/high read-only
 
 # Verification
 
+**Subsequent user validation and authorization, 2026-10-19:** the maintainer confirms r9 parking icons in Alaska and Canada after checking two towns, with denser map coverage. This supersedes the handoff's lack of runtime icon evidence at that scope; individual fatigue/truck/reload steps were not enumerated. The user explicitly requests commit and push of the work, authorizing the subsequent source update beyond the original local-only boundary. A GPT-6 Luna/medium read-only review checks evidence wording; root owns edits, documentation QA, commit and push. [Dated evidence](../../reference/VALIDATION_RESULTS.md#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada).
+
+**Observed locally — validation-record follow-up:** documentation QA passes 133 Markdown files, 1,051 relative links, 76 heading fragments and 37 task records, plus whitespace/exclusion checks. The r9 delivery ZIP hash is unchanged. This update changes only documentation; the previous 281-test code baseline is retained without an unnecessary rerun. Evidence: ignored `local_outputs/work/2026-10-19_00-44-45/`.
+
 **Observed locally — 2026-10-19:** the [r9 handoff](../../reference/MOD_REST_MARKERS_1_61_R9.md) records final fingerprints, commands, independent byte checks, scope and manual test. All six implementation/delivery requirements are satisfied at the explicitly authorized static boundary:
 
 1. Placed native Washington/Reforma and source/r8 WCE/Alaska comparisons establish action/geometry differences. The [investigation](../../reference/CAR_PARKING_ICON_INVESTIGATION.md) preserves corrected screenshots, installed equality and bounded higher-mod path inspection.
@@ -68,7 +72,7 @@ The initial documentation checkpoint also used bounded GPT-6 Luna/high read-only
 
 Authoritative final evidence: `local_outputs/work/2026-10-19_00-03-23/` (full test log, command records, delivery manifest/receipt, independent-review hash matching, effective graph, namespace/company/preservation/layer checks, documentation/completion audit). Independent source/code/output evidence: `local_outputs/work/2026-10-18_23-37-00/mechanism/final-seven-audit.json` and `rejected-drafts-audit.json`; paired inventory: `local_outputs/work/2026-10-18_23-37-37/parking-inventory/`. Original seven-map generation/audits remain under `local_outputs/work/2026-10-18_23-48-10/`.
 
-**Unknown — runtime:** actual r9 icon rendering, rest prompt/fatigue recovery, truck/bus/tag/script controls and reload. This task completes the requested local implementation and ready experiment, not gameplay acceptance. [TASK-0007](../active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) remains active.
+**Historical handoff runtime status, superseded for icons by the later report above:** actual r9 icon rendering, rest prompt/fatigue recovery, truck/bus/tag/script controls and reload had not been reported at handoff. Individual rest/fatigue/truck/reload steps remain unreported. This task completes the requested local implementation and ready experiment, not gameplay acceptance. [TASK-0007](../active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) remains active.
 
 ## Initial investigation checkpoint, 2026-10-18
 

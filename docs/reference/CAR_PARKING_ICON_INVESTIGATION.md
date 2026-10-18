@@ -1,6 +1,6 @@
 # Missing passenger-car parking icons
 
-Inspected: 2026-10-18–19. Baseline ATS 1.61.3.18; original supplied sources and r8 packages remain unchanged. [TASK-0038](../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md) implements a source-specific r9 repair; in-game rendering remains unverified.
+Inspected: 2026-10-18–19. Baseline ATS 1.61.3.18; original supplied sources and r8 packages remain unchanged. [TASK-0038](../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md) implements a source-specific r9 repair; the user subsequently confirms car parking icons in two towns in Alaska/Canada and denser map coverage. [Dated result](VALIDATION_RESULTS.md#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada).
 
 ## Resolved static cause
 
@@ -12,7 +12,7 @@ The same binary labels Parking overlays obsolete and directs authors to parking 
 
 **Decision / implementation:** [ADR-0017](../architecture/decisions/ADR-0017-separate-car-rest-marker-geometry.md) replaces the mixed-action approach with separate native `parking_car` twins. Original truck groups/items and shared definitions remain intact. Selected PPDs gain independent groups with new IDs and neighbors; standalone rest areas gain separate Trigger items/nodes with exact geometry, flags, radius and tags. Visibility/layer links are copied. The 1,000-unit rule still governs new permissions; repair of an already mixed car-enabled area is separately counted and adds no new physical eligibility.
 
-**Unknown — runtime:** actual rendered car icons, fatigue recovery, truck controls and save/reload behavior after r9. Marker categories' exact UI assets were not symbolically identified; the classification follows verified mode branches. No game operation or live installation is part of this investigation.
+**Documented — user runtime report, 2026-10-19:** car parking icons now work in Alaska and Canada after checks in two towns, with denser map coverage reported. **Unknown — individually unreported:** fatigue recovery, truck controls and save/reload behavior after r9. Marker categories' exact UI assets were not symbolically identified; the classification follows verified mode branches. No game operation or live installation is part of this investigation.
 
 ## Concrete placed comparisons
 
@@ -56,7 +56,7 @@ Root reviewed GPT-6 Luna/medium's exact sector/record hashes, action parameters,
 
 **Historical hypothesis, now resolved statically above:** the action-only approach lacked a separate car-map marker classification. Custom action identity was investigated but is not the cause supported by the executable's dynamic matcher.
 
-**Observed locally:** r7 and r8 share the defective mixed-action marker structure, so the problem predates r8's metadata refresh. **Unknown:** whether physical rest failed at a particular visited site, and final runtime rendering after the repair. Do not infer physical rest failure from marker classification alone.
+**Observed locally:** r7 and r8 share the defective mixed-action marker structure, so the problem predates r8's metadata refresh. **Unknown:** whether physical rest failed at a particular visited site, and itemized physical-rest/fatigue/truck/reload outcomes after the repair; the later two-town report confirms icon rendering at its scope. Do not infer physical rest failure from marker classification alone.
 
 ## Reproduction artifacts
 
@@ -64,4 +64,4 @@ Initial investigation checkpoint: ignored `local_outputs/work/2026-10-18_23-24-5
 
 Subsequent authorized implementation evidence: root's `local_outputs/work/2026-10-18_23-37-08/engine-evidence.json` and bounded executable-inspection excerpts; independent GPT-6 Sol/high evidence under `local_outputs/work/2026-10-18_23-37-00/mechanism/`; paired inventory under `local_outputs/work/2026-10-18_23-37-37/parking-inventory/`; first batch generation/audits under `local_outputs/work/2026-10-18_23-48-10/`, with corrected Expansion finals and consolidated handoff checks under `local_outputs/work/2026-10-19_00-03-23/`. Large binary excerpts and generated resources remain ignored.
 
-The completed local [r9 handoff](MOD_REST_MARKERS_1_61_R9.md) records final artifact fingerprints, independent output checks and the deferred runtime test. R9 fixes the statically identified marker representation; it is not an in-game acceptance report.
+The completed local [r9 handoff](MOD_REST_MARKERS_1_61_R9.md) records final artifact fingerprints, independent output checks and the deferred runtime test. R9 fixes the statically identified marker representation; the subsequent [user report](VALIDATION_RESULTS.md#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada) confirms icons in game at the two-town scope.

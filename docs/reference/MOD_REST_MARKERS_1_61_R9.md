@@ -2,6 +2,8 @@
 
 Inspected and prepared: 18–19 October 2026. Baseline **ATS 1.61.3.18**, Steam build **25952361**, Road Trip Ford and the installed map DLCs. This is a local experimental handoff, with no publication, game launch, installation or profile edit.
 
+**Subsequent user validation, 2026-10-19:** the maintainer confirms parking icons in Alaska and Canada after checking two towns, and reports denser map coverage. [Dated evidence and limits](VALIDATION_RESULTS.md#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada). The tested archives below remain unchanged; their embedded runtime status records generation time.
+
 ## Package set and replacement
 
 Seven map/connector `.scs` files are supplied in the local ZIP below. **Replace the seven r8 map fixes one-for-one, disabling older copies.** Keep every fix directly above its own source; preserve the existing source order. The separate **Job Types Compat Mustang r3** and **reasonable tank upgrades r0** remain unchanged and are not in this ZIP.
@@ -66,10 +68,10 @@ Evidence: `local_outputs/work/2026-10-19_00-03-23/` contains the final selection
 
 Production commits are `42b6e9b` (native car-only rest twins) and `f561751` (historical fuel namespace). Full command records, embedded reports, independent byte checks, effective-stack and namespace results, source stat identities, hashes and ZIP checks are retained in ignored timestamped work directories. Original r8, preliminary r9 and rejected namespace-drift drafts remain in their original locations.
 
-**Unknown — gameplay:** rendered car icons, actual rest prompt/fatigue recovery, tag/script behavior and truck/bus/reload behavior after r9. Static classification, exact-byte preservation and valid graphs provide the basis for this experiment; they are not a gameplay acceptance result.
+**Documented — user gameplay report:** icons work at the reported two-town Alaska/Canada scope. Actual rest prompt/fatigue recovery, tag/script behavior and truck/bus/reload steps were not individually enumerated. Static classification, exact-byte preservation and valid graphs provide the basis for this experiment; they are not a gameplay acceptance result.
 
-## Short later test
+## Additional checks after the two-town confirmation
 
-When convenient, use a copied profile and the exact delivered filenames. In car map mode, inspect Canada, Alaska and map-mod-covered Montana. At one selected formerly missing location, check the icon, then the actual rest prompt with engine off and successful fatigue recovery. Check an original truck rest control and repeat icon/access checks after reload. Record location, mode, package versions and result; keep a fresh log if something fails. These are separate observations. No interruption of the current Mexico job is requested.
+The initial Alaska/Canada icon check is user-confirmed; do not request it again as a missing result. For broader coverage or individual controls when convenient, use a copied profile and the exact delivered filenames. In car map mode, inspect Canada, Alaska and map-mod-covered Montana. At one selected formerly missing location, check the icon, then the actual rest prompt with engine off and successful fatigue recovery. Check an original truck rest control and repeat icon/access checks after reload. Record location, mode, package versions and result; keep a fresh log if something fails. These are separate observations. No interruption of the current Mexico job is requested.
 
 Canada/Mexico refueling access remains user-confirmed; numerical prices/billing and courier delivery retain their separate status. The broader runtime task [TASK-0007](../tasks/active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) stays open. [TASK-0038](../tasks/done/TASK-0038-investigate-missing-car-parking-icons.md) covers the completed local implementation/handoff, not a new in-game success report.

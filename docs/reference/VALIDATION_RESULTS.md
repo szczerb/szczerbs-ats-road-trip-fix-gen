@@ -1,10 +1,18 @@
 # Gameplay validation results
 
+## 2026-10-19: r9 parking icons confirmed in Alaska and Canada
+
+**Documented — first-hand maintainer report:** after the r9 handoff, the maintainer reports successful verification in Alaska and Canada, limited to **two towns**, and says the map is now also “pretty full.” This confirms the parking-icon repair in game at the reported scope and adds a broader visual observation of denser icon coverage. The maintainer explicitly authorizes committing and pushing the work.
+
+The towns, exact installed hashes/running build, individual rest-prompt/fatigue-recovery steps, truck/bus controls and reload results were not enumerated. Do not infer complete regional coverage or those separate outcomes. The generation baseline remains ATS 1.61.3.18. The agent did not run ATS, install mods or modify a profile. Preserve the tested r9 artifacts and their generation-time reports unchanged; this dated record carries the subsequent user validation. [R9 handoff](MOD_REST_MARKERS_1_61_R9.md).
+
 ## 2026-10-19: r9 parking-marker repair statically verified; runtime pending
+
+**Historical handoff status:** the subsequent [two-town user report](#2026-10-19-r9-parking-icons-confirmed-in-alaska-and-canada) above supersedes this section’s initial lack of runtime icon evidence. Other individually unreported outcomes remain separate.
 
 **Observed locally — static implementation finding:** the map marker issue is traced to the mixed rest action being classified truck-first for marker discovery. Native car-rest sites use car-only `parking_car` actions. The r9 candidate adds those car twins while retaining the original truck triggers. Its static test suite reports **281 passing tests**.
 
-**Observed locally — package verification:** final independent seven-archive and effective-stack audits pass; the local r9 batch is ready for a later game test. No game launch, installation or profile operation was performed for this work. There is no r9 in-game icon, prompt, fatigue-recovery, truck-control or reload result yet. The [r9 marker handoff](MOD_REST_MARKERS_1_61_R9.md) records the audited output and technical evidence.
+**Observed locally — package verification:** final independent seven-archive and effective-stack audits pass; the local r9 batch is ready for a later game test. No game launch, installation or profile operation was performed for this work. At the time of that handoff, no r9 in-game icon, prompt, fatigue-recovery, truck-control or reload result had been reported; the subsequent two-town icon result above supersedes that status for icons. The [r9 marker handoff](MOD_REST_MARKERS_1_61_R9.md) records the audited output and technical evidence.
 
 The later icon report continues to qualify the earlier general rest-success report below: physical rest remains unconfirmed. When convenient, test final audited r9 packages on a copied profile in Canada, Alaska and mod-covered Montana. At one selected location, record the car map icon, actual prompt and fatigue recovery separately; also check a truck parking control and repeat icon/access checks after reload. Do not interrupt the user's current job. Refueling access in Canada and Mexico remains independently user-confirmed; numerical prices, quantities and billing are not thereby inferred. Job Types Compat r3 and tank r0 are separate accepted packages and are unchanged by this rest work. The Western Canada ProMods Connections Mod Manager icon also remains runtime-unknown for its exact r9 package filename.
 

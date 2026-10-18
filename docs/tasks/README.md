@@ -14,7 +14,7 @@ No unstarted tasks.
 
 ## Done
 
-- [TASK-0038: Repair missing car parking markers](done/TASK-0038-investigate-missing-car-parking-icons.md) — truck-first marker cause verified, native car-only twins, 281 tests and independent seven-package/effective-stack audits; local r9 handoff ready, runtime check remains TASK-0007.
+- [TASK-0038: Repair missing car parking markers](done/TASK-0038-investigate-missing-car-parking-icons.md) — truck-first marker cause verified, native car-only twins, 281 tests and independent seven-package/effective-stack audits; r9 icons subsequently user-confirmed in two towns in Alaska/Canada; detailed controls remain TASK-0007.
 
 - [TASK-0037: Publish experimental job and tank releases](done/TASK-0037-publish-experimental-mod-releases.md) — separate public prereleases with approved notes, fixed tags, independently verified downloads and recorded maintainer gameplay confirmation.
 
