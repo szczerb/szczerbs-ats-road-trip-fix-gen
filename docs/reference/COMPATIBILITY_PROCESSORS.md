@@ -37,7 +37,7 @@ config = ProcessorConfig(
 )
 ```
 
-The existing `generate-map-fuel` command retains fuel-only behavior and default revision 2. The general command defaults to revision 4 and uses names matching the selected topics: Gas Stations Fix, Rest Stops Fix, or Map Compatibility Fix. Author remains `szczerb`; all versions remain experimental. Rest-containing outputs do not automatically use the gas-only icon.
+The existing `generate-map-fuel` command retains fuel-only behavior and default revision 2. The general command defaults to revision 5 and uses names matching the selected topics: Gas Stations Fix, Rest Stops Fix, or Map Compatibility Fix. Author remains `szczerb`; all versions remain experimental. Combined fuel/rest output uses a reviewed map-specific icon for each of the seven supplied sources, selected from `assets/mod-icons/map-compatibility/<map-slug>.jpg`; an explicit valid `--icon` overrides it. Fuel-only output retains the historical icon selector. Rest-only output has no default icon. All packages get a topic-specific player description with source-relative priority and pending gameplay checks. [Metadata contract](MOD_METADATA.md) and [r5 refresh](MOD_METADATA_REFRESH_1_61_R5.md).
 
 Use **one generated fix per source map**. Select both topics in one run to retain both features. Independently generated rest-only and fuel-only packages can replace the same whole sector; placing one above the other does not merge their content. A combined package replaces that source's earlier fuel-only fix. Rest-only generation against the original source does not include previous fuel corrections and is not an add-on to the r2 fuel package.
 
@@ -71,9 +71,9 @@ Manual acceptance remains separate: car rest prompt with engine off, actual fati
 
 ## Verified Western Canada candidate
 
-Historical r3 result; the current overnight r4 implementation preserves alias context inputs as described in [ADR-0010](../architecture/decisions/ADR-0010-preserve-contexts-for-generated-prefab-aliases.md). Runtime preservation remains unverified.
+Historical r3 result; the overnight r4 implementation preserves alias context inputs as described in [ADR-0010](../architecture/decisions/ADR-0010-preserve-contexts-for-generated-prefab-aliases.md). The r5 metadata refresh must retain those gameplay bytes. Runtime preservation remains unverified.
 
-**Later static finding, 2026-10-18:** [14 Company-parent aliases lose their original context mappings](COURIER_MARKER_RESEARCH.md#existing-generated-prefab-aliases-a-static-cross-feature-risk). The fuel/rest checks below do not establish courier preservation. Runtime effect remains unknown; [TASK-0019](../tasks/done/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) tracks the required preservation review. The historical candidate remains untouched; newly generated r4 packages include preservation.
+**Later static finding, 2026-10-18:** [14 Company-parent aliases lose their original context mappings](COURIER_MARKER_RESEARCH.md#existing-generated-prefab-aliases-a-static-cross-feature-risk). The fuel/rest checks below do not establish courier preservation. Runtime effect remains unknown; [TASK-0019](../tasks/done/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) tracks the required preservation review. The historical candidate remains untouched; the overnight r4 packages include preservation.
 
 **Observed locally — 2026-10-18:** the combined `fuel` + `rest` workflow generated `local_outputs/generated/2026-10-18_02-18-17/szczerbs-road-trip-map-compatibility-fix-western-canada-1.61-r3-experimental.scs`. Size **7,168,670 bytes**; SHA-256 `49ade9be22ea02d0ba73335352a4495c2a71430aff183249b366dd84d61a64ec`. Manifest title: `szczerb's Road Trip Map Compatibility Fix for Western Canada`; author `szczerb`; selected topics `fuel`, `rest`; no automatic gas-only icon.
 

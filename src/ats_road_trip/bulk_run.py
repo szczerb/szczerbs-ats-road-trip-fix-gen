@@ -180,7 +180,7 @@ def _write_audit(path: Path, audit: dict) -> None:
 
 
 def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
-                     map_name=None, revision=4, run_id=None, extractor=None,
+                     map_name=None, revision=5, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      _legacy_fuel=False, _analysis_only=False) -> dict:
@@ -204,13 +204,9 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
     name = map_name or inferred
     if name is None:
         raise ValueError('Unknown map archive name; pass --map-name')
-    if icon is None and topics == ('fuel',) and not _analysis_only:
-        slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
-        icon_slug = {'reforma-othermaps-patch': 'reforma',
-                     'western-canada-promods-connections': 'western-canada'}.get(slug, slug)
-        preset = REPO_ROOT / 'assets/mod-icons' / f'{icon_slug}-c.jpg'
-        if preset.is_file():
-            icon = preset
+    if icon is None and not _analysis_only:
+        from .mod_artwork import map_icon
+        icon = map_icon(REPO_ROOT, name, topics)
     work, output, stamp = _run_paths(name, revision, run_id, topic=topic,
                                     analysis_only=_analysis_only)
     if (work / 'audit.json').exists() or (output is not None and output.exists()):
@@ -293,25 +289,10 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             _write_audit(work / 'audit.json', audit)
             return audit
         icon_bytes = Path(icon).read_bytes() if isinstance(icon, (str, Path)) else icon
-        if topics == ('fuel',):
-            description = (f'Experimental map-wide passenger-car refueling and petrol-price package for {name}.\n'
-                           'Every supported missing truck fuel point receives a car interaction at the same position.\n'
-                           'Country petrol prices may be restored from lower definitions or estimated from stock ATS ratios.\n'
-                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
-                           'Read road_trip_fix_report.json for coverage, source assumptions and static verification.\n'
-                           'Gameplay and reload behavior outside the tested sample remain unverified.\n')
-        elif topics == ('rest',):
-            description = (f'Experimental map-wide passenger-car rest-stop package for {name}.\n'
-                           f'Rest selection uses a {config.rest_radius:g} coordinate-unit straight-line radius.\n'
-                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
-                           'Read road_trip_fix_report.json for coverage and source assumptions.\n'
-                           'Rest eligibility and reload behavior require in-game validation.\n')
-        else:
-            description = (f'Experimental map-wide passenger-car fuel, petrol-price and rest-stop package for {name}.\n'
-                           f'Rest selection uses a {config.rest_radius:g} coordinate-unit straight-line radius.\n'
-                           'Keep this package above its listed source/dependency maps in a copied test profile.\n'
-                           'Read road_trip_fix_report.json for coverage and source assumptions.\n'
-                           'Pricing, billing, rest eligibility and reload behavior require in-game validation.\n')
+        from .mod_descriptions import map_description
+        description = map_description(name, topics,
+                                      version='.'.join(version.split('.')[:2]) + f'-r{revision}-experimental',
+                                      rest_radius=config.rest_radius)
         # Time/run paths belong to the external audit, keeping generated mod
         # content stable across timestamped runs with identical source inputs.
         provenance = {k:v for k,v in workflow.items() if k not in ('run_id', 'work_dir')}

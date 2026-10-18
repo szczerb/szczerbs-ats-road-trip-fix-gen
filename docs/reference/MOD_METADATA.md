@@ -1,12 +1,14 @@
-# Generated fuel mod metadata
+# Generated mod metadata
 
-Updated: 2026-10-17. Applies to this prototype's ATS 1.61 fuel packages. [ADR-0005](../architecture/decisions/ADR-0005-standardize-fuel-package-metadata.md) records the user-requested policy.
+Updated: 2026-10-18. Applies to this prototype's ATS 1.61 map and Practical Courier Jobs packages. [ADR-0005](../architecture/decisions/ADR-0005-standardize-fuel-package-metadata.md) records the original fuel policy; [ADR-0013](../architecture/decisions/ADR-0013-topic-artwork-and-player-descriptions.md) covers the current topic-specific artwork and player descriptions. The [r5/r1 refresh](MOD_METADATA_REFRESH_1_61_R5.md) records the new handoff and package comparison.
 
-Extension, 2026-10-18: the general [processor command](COMPATIBILITY_PROCESSORS.md) uses `Gas Stations Fix` for fuel-only, `Rest Stops Fix` for rest-only, and `Map Compatibility Fix` for fuel plus rest, retaining `szczerb's Road Trip ... for <short map name>` and author `szczerb`. Its default is `1.61-r4-experimental`; the legacy fuel command remains r2. The report records selected `fix_topics`. Rest-containing packages omit automatic gas-labelled artwork; an explicitly supplied valid icon is accepted. Historical fuel branding and artifacts remain unchanged. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md).
+The general [processor command](COMPATIBILITY_PROCESSORS.md) uses `Gas Stations Fix` for fuel-only, `Rest Stops Fix` for rest-only, and `Map Compatibility Fix` for fuel plus rest, retaining `szczerb's Road Trip ... for <short map name>` and author `szczerb`. Its current default is `1.61-r5-experimental`; the legacy fuel command remains r2. The report records selected `fix_topics`. Combined packages use reviewed map-specific 276x162 JPEG icons from `assets/mod-icons/map-compatibility/<map-slug>.jpg` for the seven supplied map/connector names. Fuel-only packages retain historical artwork selection; rest-only packages have no automatic icon. An explicit valid `--icon` overrides the default. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md).
 
-The standalone [Practical Courier Jobs](PRACTICAL_COURIER_GENERATOR.md) package uses `szczerb's Road Trip Practical Courier Jobs`, author `szczerb`, category `other`, default `1.61-r0-experimental`, and a descriptive `...practical-courier-jobs-muscle-1.61-r0-experimental.scs` filename. It does not reuse the map fuel icon or imply a source map dependency.
+The standalone [Practical Courier Jobs](PRACTICAL_COURIER_GENERATOR.md) package uses `szczerb's Road Trip Practical Courier Jobs`, author `szczerb`, category `other`, default `1.61-r1-experimental`, and a descriptive `...practical-courier-jobs-muscle-1.61-r1-experimental.scs` filename. It uses `assets/mod-icons/practical-courier-jobs.jpg` by default and accepts `--icon`; it does not imply a source map dependency. The courier artwork is provisional pending the user's selection among previews.
 
-## Project contract
+The new UTF-8 descriptions use short player-facing paragraphs and actual line breaks. Map packages explain only their selected fuel/rest behavior, source-relative load order and pending in-game checks. The supplied map combination lists all seven fixes directly above their own sources, including the four ProMods components and Reforma Mega Resources; optional background and job mods are labelled. Exactly one line identifies the current package with `[THIS MOD]`. The OtherMaps fix explicitly says it changes country petrol prices only. Unknown custom maps receive a direct-above-own-source instruction and the known combination as an example. The courier description explains the reviewed stock jobs, unchanged transfers, shared Quick Jobs and muscle-class effects, separate Food/Medical/Rideshare resources, and the remaining runtime checks.
+
+## Historical fuel-package contract
 
 | Field | Value / rule |
 | --- | --- |
@@ -24,7 +26,7 @@ The three historical fuel generation commands require `--map-name`, accept `--re
 
 ## Handoff filenames
 
-User-facing fuel archives must identify the package family, map and version in the filename as well as the manifest. For the current sample use `szczerbs-road-trip-gas-stations-fix-ats-expansion-1.61-r0-experimental.scs`. Follow `szczerbs-road-trip-gas-stations-fix-<map-slug>-<version>.scs` for subsequent handoffs. The CLI accepts an explicit output path; the agent must supply this descriptive name.
+User-facing fuel archives must identify the package family, map and version in the filename as well as the manifest. The historical r0 sample used `szczerbs-road-trip-gas-stations-fix-ats-expansion-1.61-r0-experimental.scs`. Follow `szczerbs-road-trip-gas-stations-fix-<map-slug>-<version>.scs` for subsequent fuel-only handoffs. The CLI accepts an explicit output path; the agent must supply this descriptive name. Combined map packages use `szczerbs-road-trip-map-compatibility-fix-<map-slug>-<version>.scs`.
 
 Keep new regeneration copies and their reports in ignored `local_outputs/work/<timestamp>/verification/package-rechecks/`, with descriptive filenames ending in `-recheck.scs` or `-recheck-report.json`. Do not place an ambiguously named verification archive such as `branded-fuel-recheck.scs` beside the deliverable. The historical r0 verification copy was relocated without changing its bytes to `local_outputs/verification/package-rechecks/`; that historical sample remains in `local_outputs/generated/`. New deliverables use `local_outputs/generated/<timestamp>/` under the newer user-requested run-directory convention.
 
@@ -36,6 +38,6 @@ Names are encoded as quoted strings; empty/nonprintable map names, edge whitespa
 
 **Observed locally — user screenshot, 2026-10-17:** `Zrzut ekranu 2026-10-17 212256.png` shows the old sample-2 name, research author, `0.1.0-experimental` and default ATS artwork. The agent opened the original through its `<LOCAL_SCREENSHOT_PATH>` path. It documents old presentation, not a fuel transaction.
 
-**Documented — user instruction, 2026-10-17:** the name, author, game-based revision convention and temporary experimental suffix are project requirements. The icon should show a simple pump/nozzle and passenger car(s), `GAS STATIONS FIX` at the top and map name below. The title describes the package family; the current handoff still changes only one reviewed station near Helena. Neither the title nor `1.61.*` expands the recipe's coverage.
+**Documented — user instruction, 2026-10-17:** the name, author, game-based revision convention and temporary experimental suffix are project requirements. The original fuel-only icon should show a simple pump/nozzle and passenger car(s), `GAS STATIONS FIX` at the top and map name below. The historical sample changed only one reviewed station near Helena. Neither its title nor `1.61.*` expanded that recipe's coverage. The later combined-map artwork uses the selected M2 navy frame, pump, parking symbol and three cars, with each short map name; the separate courier headline is `JOB TYPES COMPAT`.
 
 Artwork provenance, prompts and proposals are recorded in the [icon asset guide](../../assets/mod-icons/README.md). Same-position payload details and reproduction are in the [sample-2 guide](OVERLAPPING_FUEL_SAMPLE.md).

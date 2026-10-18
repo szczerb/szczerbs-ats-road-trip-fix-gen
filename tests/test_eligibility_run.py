@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import json
+import hashlib
 import unittest
 import zipfile
 from ats_road_trip import eligibility_run as run
@@ -32,14 +33,36 @@ class EligibilityWorkflowTests(unittest.TestCase):
         self.addCleanup(self.patch.stop)
         self.stamp = '2026-10-18_04-01-00'
 
-    def invoke(self, *, generate=False, blockers=(), resources=None, planner=None):
+    def invoke(self, *, generate=False, blockers=(), resources=None, planner=None, icon=None):
         report = {'coverage': {'complete': not blockers, 'blockers': list(blockers)},
                   'selected_job_ids': ['car_job.documents']}
         if planner is None:
             planner = lambda *a, **kw: (report, {'def/car_job_data.sii': b'patched'} if resources is None else resources)
         with patch('ats_road_trip.courier_eligibility.plan_courier_eligibility', side_effect=planner):
             return run.run_courier_eligibility(self.config, generate=generate,
-                                               game_dir=self.game, run_id=self.stamp)
+                                               game_dir=self.game, run_id=self.stamp, icon=icon)
+
+    def test_selected_courier_artwork_is_embedded_without_changing_job_payload(self):
+        # Real decoded project artwork also checks the default preset's format.
+        original = Path(__file__).resolve().parents[1] / 'assets/mod-icons/proposals-v3/j1b.jpg'
+        preset = self.root / 'assets/mod-icons/practical-courier-jobs.jpg'
+        preset.parent.mkdir(parents=True)
+        preset.write_bytes(original.read_bytes())
+        for explicit in (False, True):
+            with self.subTest(explicit=explicit):
+                self.stamp = f'2026-10-18_04-01-0{int(explicit)}'
+                result = self.invoke(generate=True, icon=original if explicit else None)
+                with zipfile.ZipFile(result['output']) as z:
+                    icon = z.read('mod_icon.jpg')
+                    self.assertEqual(icon, original.read_bytes())
+                    self.assertEqual(z.read('def/car_job_data.sii'), b'patched')
+                    report = json.loads(z.read('road_trip_fix_report.json'))
+                    self.assertEqual(report['package_metadata']['icon']['sha256'], hashlib.sha256(icon).hexdigest())
+                    self.assertEqual([r['path'] for r in report['generated_resources']], ['def/car_job_data.sii'])
+                    description = z.read('mod_description.txt').decode()
+                    self.assertIn('Opens 1 additional', description)
+                    self.assertIn('\n\n', description)
+                    self.assertEqual(description.count('(THIS MOD)'), 1)
 
     def test_analysis_never_packages_candidate_bytes(self):
         with patch.object(run, 'write_mod') as writer:
@@ -65,7 +88,7 @@ class EligibilityWorkflowTests(unittest.TestCase):
             manifest = z.read('manifest.sii').decode()
             self.assertIn('category[]: "other"', manifest)
             self.assertIn('Practical Courier Jobs', manifest)
-            self.assertIn('1.61-r0-experimental', manifest)
+            self.assertIn('1.61-r1-experimental', manifest)
             self.assertEqual(z.read('def/car_job_data.sii'), b'patched')
             self.assertNotIn('mod_icon.jpg', z.namelist())
             self.assertFalse(json.loads(z.read('road_trip_fix_report.json'))['in_game_verified'])

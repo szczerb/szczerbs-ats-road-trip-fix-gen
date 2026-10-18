@@ -19,12 +19,15 @@ TITLE = "szczerb's Road Trip Practical Courier Jobs"
 
 
 def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency=(),
-                            revision=0, run_id=None, extractor=None):
+                            revision=1, run_id=None, extractor=None, icon=None):
     """Analyze a declared definition stack; optionally package its reviewed edits."""
     if type(generate) is not bool:
         raise ValueError('generate must be a boolean')
     if type(revision) is not int or revision < 0:
         raise ValueError('Revision must be a nonnegative integer')
+    if generate and icon is None:
+        from .mod_artwork import courier_icon
+        icon = courier_icon(REPO_ROOT)
     config = Path(config).expanduser().resolve()
     if not config.is_file():
         raise ValueError('Courier eligibility configuration file is missing')
@@ -63,6 +66,11 @@ def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency
             raise ValueError('Definition packages must not be repeated')
         version_path = installed / ('version.sii' if (installed / 'version.sii').is_file() else 'version.scs')
         identity_paths = [config, version_path, *order]
+        if generate and isinstance(icon, (str, Path)):
+            icon = Path(icon).expanduser().resolve()
+            if not icon.is_file():
+                raise ValueError('Courier icon file is missing')
+            identity_paths.append(icon)
         if any(p.is_dir() for p in dependencies):
             raise ValueError('Use immutable dependency archives for the courier workflow')
         identities = {p: (p.stat().st_size, p.stat().st_mtime_ns) for p in identity_paths}
@@ -98,17 +106,15 @@ def run_courier_eligibility(config, *, generate=False, game_dir=None, dependency
         else:
             if set(resources) != {'def/car_job_data.sii'}:
                 raise ValueError('Courier eligibility planner emitted unexpected resource paths')
-            description = (
-                'Experimental practical-cargo eligibility for the Mustang and other muscle-tagged cars.\n'
-                'Adds muscle to reviewed cargo job classes; preserves vehicle-transfer definitions.\n'
-                'Shared definitions can affect both Dispatch Market and Quick Jobs.\n'
-                'Does not change ratings, rewards, distances, maps or vehicle tags.\n'
-                'Place above any mod replacing def/car_job_data.sii; incompatible replacements need review.\n'
-                'Runtime offer availability, cargo attachment and completed delivery remain unverified.\n'
-                'Read road_trip_fix_report.json and the supplied test checklist.\n')
+            from .mod_descriptions import courier_description
+            description = courier_description(
+                report.get('coverage', {}).get('selected_job_units', len(report.get('selected_job_ids', []))),
+                report.get('coverage', {}).get('transfer_job_units', len(report.get('transfer_job_ids', []))),
+                version='.'.join(version.split('.')[:2]) + f'-r{revision}-experimental')
+            icon_bytes = icon.read_bytes() if isinstance(icon, Path) else icon
             package = write_mod(output, resources, {'workflow': workflow, 'planner': report},
                                 game_version=version, display_name=TITLE, revision=revision,
-                                category='other', description=description)
+                                category='other', description=description, icon=icon_bytes)
             audit.update({'status': 'generated', 'generated_mod_count': 1,
                           'output': str(output), 'package_metadata': package['package_metadata'],
                           'sha256': hashlib.sha256(output.read_bytes()).hexdigest()})

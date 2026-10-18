@@ -32,4 +32,6 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 - [ADR-0012: Preserve irregular source rest geometry](ADR-0012-preserve-irregular-source-rest-geometry.md): action-only edits with explicit conservative proximity, no geometry repair.
 
+- [ADR-0013: Package topic artwork and readable player descriptions](ADR-0013-topic-artwork-and-player-descriptions.md): restore combined fuel/parking and separate courier art, document source priority and preserve gameplay during metadata refresh.
+
 Runtime fix validation and general map-sector authoring remain open.
