@@ -86,7 +86,7 @@ def parser() -> argparse.ArgumentParser:
         bulk.add_argument('--game-dir', help='ATS installation; otherwise ATS_GAME_DIR or detected Steam location')
         bulk.add_argument('--map-name', help='Short map name; inferred for known map families')
         if name != 'analyze-map':
-            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 5)
+            bulk.add_argument('--revision', type=int, default=2 if name == 'generate-map-fuel' else 6)
         bulk.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,

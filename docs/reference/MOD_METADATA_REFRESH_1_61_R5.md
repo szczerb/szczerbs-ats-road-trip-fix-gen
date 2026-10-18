@@ -1,5 +1,7 @@
 # Metadata refresh: map r5 and courier r1
 
+Historical handoff: the selected four-Ford M2D artwork is now available in [map r6 with unchanged courier r1](MOD_METADATA_REFRESH_1_61_R6.md). This r5 archive and its recorded hashes remain unchanged.
+
 **Observed locally — ATS 1.61.3.18 project, inspected 2026-10-18:** the eight refreshed packages preserve every gameplay resource path and byte from the [r4/r0 delivery](OVERNIGHT_TEST_BATCH_1_61_R4.md). Only icons, paragraph descriptions, manifest revisions and embedded provenance changed. No game-data inspection or fix regeneration was needed for this release.
 
 ## Download and replacement

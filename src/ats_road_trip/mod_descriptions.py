@@ -46,7 +46,7 @@ def map_description(
     map_name: str,
     topics: tuple[str, ...] = ('fuel', 'rest'),
     *,
-    version: str = '1.61-r5-experimental',
+    version: str = '1.61-r6-experimental',
     rest_radius: int = 1000,
 ) -> str:
     """Describe a map package without claiming untested gameplay results."""

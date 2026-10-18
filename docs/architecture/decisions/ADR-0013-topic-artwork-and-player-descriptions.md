@@ -19,8 +19,8 @@ Accepted 2026-10-18. Extend [ADR-0005](ADR-0005-standardize-fuel-package-metadat
 
 ## Consequences
 
-The user selected M2's navy fuel/parking scene; Ford-car variants remain proposals. J1B courier art is provisional pending selection. [Art guide and prompts](../../../assets/mod-icons/README.md). Shared fuel/rest family artwork on OtherMaps does not imply station or rest changes; its description states the narrower scope.
+The user initially selected M2's navy fuel/parking scene, then explicitly selected the corrected four-Ford M2D variant for map r6. Earlier proposals remain as history. J1B courier art is provisional pending selection. [Art guide and prompts](../../../assets/mod-icons/README.md). Shared fuel/rest family artwork on OtherMaps does not imply station or rest changes; its description states the narrower scope.
 
 The priority list describes this supplied combination. Other replacements and unknown combinations still require review; no automatic profile inspection is implied. Human descriptions and artwork must be maintained when supported topics or the known combination change.
 
-The [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) records hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.
+The [current r6/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R6.md) and historical [r5/r1 handoff](../../reference/MOD_METADATA_REFRESH_1_61_R5.md) record hashes and verification. Fuel billing, rest and new job acceptance/delivery still require the existing manual tests. No live mod installation or profile edit is included.
