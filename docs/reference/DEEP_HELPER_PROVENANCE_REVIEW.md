@@ -1,5 +1,7 @@
 # Deep helper provenance review
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 **Observed locally — 2026-10-18; baseline `d2e7d9c59ca8c72ca31f5962ce72e5745792bf93`.** This is a technical comparison of the 29 tracked `src/ats_road_trip/*.py` modules and 25 tracked `tests/test_*.py` files against the retained, ignored TruckLib research copies. It is not a legal conclusion, a clean-room claim, or a proof that no earlier or unretained source was consulted. The authors expressly used third-party C# source for format research. The existing [public repository review](PUBLIC_REPOSITORY_REVIEW.md) covered three parser areas; this review extends the scope to the helper and planner code, tests, and introduction history. It evaluates expression separately from binary-layout facts. A port can be derivative even when it changes language; conversely, matching offsets and constants are weak evidence of expressive copying.
 
 ## Source identity and method

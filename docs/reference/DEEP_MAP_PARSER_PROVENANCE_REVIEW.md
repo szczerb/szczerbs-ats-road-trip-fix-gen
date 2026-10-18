@@ -1,5 +1,7 @@
 # Deep map parser and fuel planner provenance review
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 Reviewed 2026-10-18 (Europe/Warsaw), repository HEAD `d2e7d9c59ca8c72ca31f5962ce72e5745792bf93`, ATS 1.61 map-format-907 implementation. This is a technical comparison of the complete `src/ats_road_trip/map_sector.py` (393 lines) and `src/ats_road_trip/bulk_fuel.py` (412 lines) against the locally retained TruckLib C# sources. It extends the bounded comparison in [PUBLIC_REPOSITORY_REVIEW.md](PUBLIC_REPOSITORY_REVIEW.md); it is not a legal opinion or a clean-room certificate. All line references below are to this HEAD or the named local C# copy. No supplied input, generated mod, Git identity, or history was changed for this review.
 
 ## Provenance and comparison boundary

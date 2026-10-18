@@ -8,6 +8,8 @@ depends_on: [TASK-0029]
 owner: shared
 ---
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](../../reference/HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 # Goal
 
 Provide a materially deeper technical source/provenance audit and a practical author-focused license comparison, correct the intentional Git identity assessment, and recommend license paths from the audit evidence.

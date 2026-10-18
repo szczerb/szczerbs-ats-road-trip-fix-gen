@@ -8,6 +8,8 @@ depends_on: [TASK-0006, TASK-0023, TASK-0028]
 owner: shared
 ---
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](../../reference/HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 # Goal
 
 Provide a sourced publication-readiness review and a recommended open-source license, distinguishing generator source publication from distribution of generated SCS-derived mods. Completion permits specific unresolved rights questions with the evidence needed to resolve them; it does not certify legal compliance or authorize publication.

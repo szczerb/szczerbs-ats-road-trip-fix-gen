@@ -1,10 +1,12 @@
 # Git identity and maintaining a first public repository
 
-Reviewed 2026-10-18. This records the user's deliberate identity choice and general public-repository practice; no account, Git configuration, commit metadata or history was changed.
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
+Reviewed 2026-10-18. The initial advice below recorded the user's deliberate placeholder identity without changing it. **Subsequent user instruction:** repository-local `user.name` is now `szczerb`, `user.email` is `39603356+szczerb@users.noreply.github.com`, and the author/committer emails in all 35 pre-existing commits were rewritten accordingly. Global configuration was not changed. [Cleanup evidence and mapping](HISTORY_CLEANUP.md). No GitHub account was accessed or repository published; remote attribution can be checked after a separately authorized publication.
 
 ## Correction to the earlier privacy finding
 
-**Documented — user clarification:** `szczerb (legacy placeholder email)` is an intentional pseudonym and placeholder address, used consistently on this machine. **Observed locally:** all 33 commits reachable at baseline `d2e7d9c` use this same author/committer identity. The earlier review incorrectly treated a non-`noreply` email as evidence of a private mailbox. That inference is withdrawn. There is no reason to rewrite this history to remove that placeholder.
+**Documented — user clarification:** `szczerb (legacy placeholder email)` was an intentional pseudonym and placeholder address, used consistently at that baseline. **Observed locally:** all 33 commits reachable at baseline `d2e7d9c` use this same author/committer identity. The earlier review incorrectly treated a non-`noreply` email as evidence of a private mailbox. That inference is withdrawn. That placeholder alone was not a privacy reason to rewrite history; the later rewrite was explicitly requested for GitHub attribution and path cleanup.
 
 **Documented:** `.invalid` is reserved for deliberately invalid domain names in [RFC 2606, section 2](https://www.rfc-editor.org/rfc/rfc2606.html#section-2). The separate presence of local account names in documentation paths remains a disclosure/readability choice; it does not turn the commit address into personal contact information.
 
@@ -12,15 +14,15 @@ Reviewed 2026-10-18. This records the user's deliberate identity choice and gene
 
 | Choice | Practical result |
 | --- | --- |
-| Alias plus intentional placeholder, as here | Commits remain normal Git commits and can be published. The address is not a usable contact channel; GitHub profile attribution should not be assumed. |
+| Alias plus intentional placeholder (historical choice) | Commits remain normal Git commits and can be published. The address is not a usable contact channel; GitHub profile attribution should not be assumed. |
 | Alias plus account-specific GitHub `noreply` address | Keeps a private mailbox out of commit headers while supporting GitHub attribution. Copy the exact address shown in account settings. |
 | Public professional name/address | Can connect professional identity and contact details to the work; it is an optional disclosure, not a requirement for this repository. |
 
 **Documented:** the [Git author name](https://docs.github.com/en/get-started/git-basics/setting-your-username-in-git) is distinct from a GitHub login, and GitHub explicitly permits arbitrary name text for privacy. Git uses these author fields as metadata; they are not proof of account authentication or a verified legal identity.
 
-GitHub [uses the configured commit email for attribution](https://docs.github.com/en/account-and-profile/how-tos/email-preferences/setting-your-commit-email-address). Its [contribution troubleshooting guide](https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/troubleshooting-missing-contributions) describes account-linked or provided `noreply` addresses and generic-address limitations. Publishing a repository and having every historical commit linked to an account are separate concerns. Missing profile attribution is not a license violation. Keep the present configuration until the user chooses otherwise.
+GitHub [uses the configured commit email for attribution](https://docs.github.com/en/account-and-profile/how-tos/email-preferences/setting-your-commit-email-address). Its [contribution troubleshooting guide](https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/troubleshooting-missing-contributions) describes account-linked or provided `noreply` addresses and generic-address limitations. Publishing a repository and having every historical commit linked to an account are separate concerns. Missing profile attribution is not a license violation. The user subsequently chose the account-specific `noreply` option above.
 
-For future multi-identity use, repository-local settings can separate personal and employer identities; changing settings affects future commits. It does not sanitize earlier commits. A [`.mailmap`](https://git-scm.com/docs/gitmailmap) can normalize displayed identities in supporting Git views; it does not erase original objects or their metadata. No identity rewrite is recommended for this intentional placeholder.
+For future multi-identity use, repository-local settings can separate personal and employer identities; changing settings affects future commits. It does not sanitize earlier commits. A [`.mailmap`](https://git-scm.com/docs/gitmailmap) can normalize displayed identities in supporting Git views; it does not erase original objects or their metadata. The historical recommendation did not require a rewrite for privacy; the later user instruction independently authorized one.
 
 ## A proportionate first public release
 
@@ -34,7 +36,7 @@ See [the content/history review](PUBLIC_REPOSITORY_REVIEW.md), [deeper map audit
 
 ## Local paths in the publication review
 
-**Observed locally — 2026-10-18, baseline `da76a0f`:** root verified a delegated GPT-6 Luna/medium read-only review using a prefix-pattern scan of tracked text. The checked prefixes represent the concrete Linux project home, Windows/WSL account home and generic game-cache path already recorded in the repository. There are **22 prefix matches on 19 lines in 15 files**: 16 artifact links on 13 lines, four screenshot-location lines, one Windows cache-length test fixture and one generic game-cache line. This is a bounded path inventory, not an exhaustive personal-data scan. Machine-readable evidence remains ignored under `local_outputs/work/2026-10-18_19-56-58/local-path-review.json`. New explanatory documentation is outside those baseline counts.
+**Observed locally — 2026-10-18, baseline `da76a0f`:** root verified a delegated GPT-6 Luna/medium read-only review using a prefix-pattern scan of tracked text. The checked prefixes represent the concrete Linux project home, Windows/WSL account home and generic game-cache path already recorded in the repository. The original inventory recorded **22 prefix matches on 19 lines in 15 files**: 16 artifact links on 13 lines, four screenshot-location lines, one Windows cache-length test fixture and one generic game-cache line. This is a bounded path inventory, not an exhaustive personal-data scan. Machine-readable evidence remains ignored under `local_outputs/work/2026-10-18_19-56-58/local-path-review.json`. New explanatory documentation is outside those baseline counts.
 
 | Location | What is recorded | Publication implication |
 | --- | --- | --- |
@@ -45,8 +47,10 @@ See [the content/history review](PUBLIC_REPOSITORY_REVIEW.md), [deeper map audit
 
 **Observed locally:** the delegate's `src/`, `tests/` and example scan, reviewed by root, found no runtime default hardcoding these user-specific paths. The concrete user-home path in code is the synthetic test fixture. The generator consumes supplied paths; this finding does not promise portability of every tool or command on every operating system.
 
-**Project recommendation:** before a public release, replace machine-specific documentation links with repository-relative artifact identifiers or plain filenames and explicitly state that local artifacts are excluded. Merely converting to a relative link will not make an ignored file available to a public clone. Describe screenshot folders with environment placeholders, and optionally neutralize the test fixture while retaining its length-based purpose. This improves readability and avoids unnecessary disclosure; the observed paths alone are not passwords or access credentials.
+**Historical project recommendation (implemented in TASK-0032):** before a public release, replace machine-specific documentation links with repository-relative artifact identifiers or plain filenames and explicitly state that local artifacts are excluded. Merely converting to a relative link will not make an ignored file available to a public clone. Describe screenshot folders with environment placeholders, and optionally neutralize the test fixture while retaining its length-based purpose. This improves readability and avoids unnecessary disclosure; the observed paths alone are not passwords or access credentials.
 
-No paths or history are sanitized by this explanation. Removing a path from the current checkout would leave it in earlier commits if the full history were published. History rewriting or publishing a fresh export would be separate, explicitly chosen work. `.gitignore` excludes artifact contents; it does not hide path strings written inside tracked documentation.
+The original explanation did not sanitize paths or history; TASK-0032 subsequently did so with explicit user authorization. Removing a path from the current checkout would leave it in earlier commits if the full history were published. History rewriting was subsequently chosen and completed separately; publication remains a separate decision. `.gitignore` excludes artifact contents; it does not hide path strings written inside tracked documentation.
 
 **Subsequent license decision:** [AGPL-3.0-only](../../LICENSING.md) is now applied under [ADR-0016](../architecture/decisions/ADR-0016-license-project-under-agpl-v3.md); local-path disclosure and identity configuration remain separate decisions.
+
+**Observed locally — cleanup outcome:** artifact references now use plain project-relative identifiers explicitly labeled local/excluded from Git; screenshot folders use `<LOCAL_SCREENSHOT_DIR>`, `<LOCAL_ATS_SCREENSHOT_DIR>` or `<LOCAL_SCREENSHOT_PATH>`. The synthetic cache fixture uses the equal-length account `guest`; engine `/home/cache/` evidence is preserved. Historical path counts describe the original pre-cleanup inventory, not remaining disclosures. No ignored artifact contents were changed.

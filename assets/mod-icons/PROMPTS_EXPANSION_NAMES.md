@@ -1,5 +1,7 @@
 # Expansion map-name footer edits
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](../../docs/reference/HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 Created and inspected: 2026-10-18. The user explicitly requests Western Canada Expansion and Alaska Expansion in artwork/metadata, distinguishing these supplied sources from unrelated maps of the same regions. Built-in imagegen, four footer-only edit calls. Prior target paths below were read from commit `93255ed`; exact input JPEG copies are preserved under ignored `local_outputs/work/2026-10-18_17-04-30/artwork/references/`. Large originals and generation records are in that artwork run. Final FFmpeg export changes only size/format (276x162, Lanczos, JPEG quality 2, yuvj444p). Original selected M2D composition and historical green fuel-only composition are retained.
 
 ## alaska-expansion

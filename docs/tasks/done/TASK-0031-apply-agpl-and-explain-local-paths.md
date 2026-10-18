@@ -8,6 +8,8 @@ depends_on: [TASK-0030]
 owner: shared
 ---
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](../../reference/HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 # Goal
 
 Apply the user's AGPL license choice consistently and explain the concrete local paths previously flagged for public repository review.

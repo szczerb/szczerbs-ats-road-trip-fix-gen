@@ -1,5 +1,7 @@
 # Implementation provenance: deeper audit and practical conclusion
 
+**History note:** repository commit IDs in this document are pre-cleanup identifiers; use the [old-to-new mapping](HISTORY_CLEANUP.md#commit-identifiers). Upstream object IDs and artifact checksums are unchanged.
+
 Reviewed 2026-10-18 against repository baseline `d2e7d9c`. This integrates two technical source/history reviews, verified upstream snapshots and the [maintainer license comparison](MAINTAINER_LICENSE_CHOICES.md). It is a documented technical assessment, not a legal independence certificate. No implementation, Git identity, license or generated package was changed by that audit. **Subsequent user decision:** [ADR-0016](../architecture/decisions/ADR-0016-license-project-under-agpl-v3.md) now applies AGPL-3.0-only; it supersedes the policy recommendation below, not the audit findings.
 
 ## What the deeper work establishes
