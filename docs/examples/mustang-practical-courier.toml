@@ -1,0 +1,85 @@
+# Proposed, version-pinned human review configuration; no generator consumes this yet.
+schema_version = 1
+profile_id = "mustang-practical-courier-v1"
+game_version = "1.61.3.18"
+job_definition_path = "def/car_job_data.sii"
+job_definition_sha256 = "4a62420d6bd79086fdf4fa1caa3e37a6bb53636a1c82d65b78ab7eb0049b2d28"
+# Digest: UTF-8 sorted unit IDs, one per line, including the final newline.
+sorted_job_unit_names_sha256 = "8735fcfb27df6c8ec791c1ed840c9b41d6b90ee3c1639d1f95e5bcfd7ff1c971"
+cargo_definition_path = "def/car_cargo.sii"
+cargo_definition_sha256 = "230c1aef59446b944e02f138ca2802c3560d3e9c2663070120e6cbcd854f4ffa"
+add_vehicle_type = "muscle"
+mustang_vehicle_types = ["muscle", "veteran"]
+unclassified_policy = "error"
+empty_cargo_policy = "preserve_listed_transfers_and_error_on_unknown"
+
+# Source-catalog assertions are independent of the enabled toggles.
+# Selected totals are derived from groups, so optional groups can be toggled
+# without manually recalculating totals. All 149 stock unit names remain present.
+[expected]
+sedan_only_job_units = 95
+cargo_job_units = 88
+classified_cargo_ids = 46
+unchanged_standard_transfer_units = 7
+unchanged_premium_transfer_units = 2
+all_stock_job_units = 149
+
+[unchanged]
+vehicle_transfer_job_ids = ["car_job.jockey_0", "car_job.jockey_26", "car_job.jockey_36", "car_job.jockey_46", "car_job.jockey_e26", "car_job.jockey_e36", "car_job.jockey_e46", "car_job.prem_46", "car_job.prem_e46"]
+reason = "User excludes all vehicle-transfer jobs from eligibility expansion. Existing source units remain semantically unchanged."
+
+[groups.paperwork_maps]
+enabled = true
+expected_job_units = 10
+job_family_prefixes = ["car_job.aucdocs_", "car_job.cusdocs_", "car_job.hcert_", "car_job.manif_", "car_job.tmaps_", "car_job.waybill_"]
+cargo_ids = ["car_cargo.auct_docs", "car_cargo.customs_docs", "car_cargo.healthcert", "car_cargo.v_healthcert", "car_cargo.manifests", "car_cargo.rail_waybill", "car_cargo.tourist_maps"]
+review_basis = "Enabled by ordinary practical judgment: paperwork, certificates, maps, and small document bundles are plausible carloads. No package-size measurement is implied."
+
+[groups.keys_seals]
+enabled = true
+expected_job_units = 4
+job_family_prefixes = ["car_job.seals_", "car_job.subkeys_"]
+cargo_ids = ["car_cargo.subst_keys", "car_cargo.v_subst_keys", "car_cargo.xfer_seals", "car_cargo.v_xfer_seals"]
+review_basis = "Enabled: keys and seals are treated as small portable items for this practical eligibility experiment."
+
+[groups.samples]
+enabled = true
+expected_job_units = 18
+job_family_prefixes = ["car_job.chem_", "car_job.drill_", "car_job.ore_", "car_job.soil_"]
+cargo_ids = ["car_cargo.chem_smpl", "car_cargo.f_chem_smpl", "car_cargo.v_chem_smpl", "car_cargo.drillcores", "car_cargo.f_drillcores", "car_cargo.ore_smpl", "car_cargo.f_ore_smpl", "car_cargo.soil_smpl", "car_cargo.f_soil_smpl"]
+review_basis = "Enabled: ordinary samples, including source-defined fragile and valuable variants, are plausible carloads. Quantity and package dimensions are unmeasured."
+
+[groups.small_parts]
+enabled = true
+expected_job_units = 8
+job_family_prefixes = ["car_job.tsparts_"]
+cargo_ids = ["car_cargo.smallparts", "car_cargo.v_smallparts"]
+review_basis = "User-selected small-parts group, including valuable variants."
+
+[groups.compact_equipment]
+enabled = true
+expected_job_units = 15
+job_family_prefixes = ["car_job.ffinder_", "car_job.grid_", "car_job.jtools_", "car_job.tdiag_"]
+cargo_ids = ["car_cargo.gridrelays", "car_cargo.f_gridrelays", "car_cargo.job_tools", "car_cargo.tract_diag", "car_cargo.f_tract_diag", "car_cargo.v_tract_diag", "car_cargo.fish_finder"]
+review_basis = "Enabled by ordinary practical judgment: relays, diagnostic modules, hand tools, and a fish-finder unit are treated as plausible portable equipment. Their actual size/fit is unknown."
+
+[groups.small_supplies]
+enabled = true
+expected_job_units = 3
+job_family_prefixes = ["car_job.crewsup_", "car_job.seedl_"]
+cargo_ids = ["car_cargo.crew_supply", "car_cargo.seedlings", "car_cargo.f_seedlings"]
+review_basis = "Enabled by ordinary practical judgment: snacks/small supplies and young seedlings are treated as plausible carloads; quantity and handling remain unmeasured."
+
+[groups.ambiguous_parts]
+enabled = false
+expected_job_units = 19
+job_family_prefixes = ["car_job.mparts_", "car_job.oparts_", "car_job.propel_"]
+cargo_ids = ["car_cargo.mach_parts", "car_cargo.f_mach_parts", "car_cargo.v_mach_parts", "car_cargo.outb_parts", "car_cargo.f_outb_parts", "car_cargo.repl_prop", "car_cargo.f_repl_prop"]
+review_basis = "Default off: generic machinery, outboard parts, and propellers have unclear size or handling; these optional families are easy to review and enable later."
+
+[groups.unclear_shipments]
+enabled = false
+expected_job_units = 11
+job_family_prefixes = ["car_job.confid_", "car_job.misdel_", "car_job.restock_", "car_job.undisc_", "car_job.unident_"]
+cargo_ids = ["car_cargo.conf_deliv", "car_cargo.v_conf_deliv", "car_cargo.unid_ship", "car_cargo.f_unid_ship", "car_cargo.und_consign", "car_cargo.fill_restock", "car_cargo.mis_delivery"]
+review_basis = "Default off: sealed/unclear contents, restock quantities, and misrouted mixed shipments do not establish small portable cargo."

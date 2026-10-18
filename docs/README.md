@@ -35,6 +35,7 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Courier job quantities, discovery hypotheses and stock vehicle restrictions](reference/COURIER_JOB_AVAILABILITY_RESEARCH.md).
 - [Mustang versus Crown Victoria cargo exclusions](reference/MUSTANG_COURIER_CARGO_REVIEW.md).
 - [Separate vehicle-eligibility mod feasibility and override limits](reference/COURIER_VEHICLE_ELIGIBILITY_MOD.md).
+- [Planned eligibility generator and practical-cargo policy](reference/COURIER_ELIGIBILITY_GENERATOR_PLAN.md).
 - [Courier company selection markers and placed-node evidence](reference/COURIER_MARKER_RESEARCH.md).
 - [Source-relative courier analysis/reporting command and interpretation](reference/COURIER_REPORTING.md).
 - [Refueling research findings](reference/REFUELING_RESEARCH_FINDINGS.md).

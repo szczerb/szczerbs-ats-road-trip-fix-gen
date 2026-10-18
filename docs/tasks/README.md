@@ -4,12 +4,11 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — user reports successful car and truck refueling with overlapping sample 2; reload, other locations and courier validation remain open.
 
-
 ## Backlog
+
+- [TASK-0023: Build configurable courier eligibility tooling](backlog/TASK-0023-build-configurable-courier-eligibility-generator.md) — implement the planned standalone generator and reviewed practical-cargo preset.
 
 - [TASK-0019: Preserve contexts for generated prefab aliases](backlog/TASK-0019-preserve-contexts-for-generated-prefab-aliases.md) — high priority: 14 WCE r3 Company-parent aliases lose static classification; review fuel/rest cloning and preserve exact effective tags. Runtime effect remains unknown.
 
@@ -50,5 +49,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 - [TASK-0020: Research courier quantities and discovery](done/TASK-0020-research-courier-market-job-quantity.md) — sourced online findings, unproven global-budget hypothesis, concrete stock Mustang restrictions and controlled future discovery tests.
 
 - [TASK-0021: Mustang cargo exclusions and eligibility-mod feasibility](done/TASK-0021-research-mustang-cargo-and-eligibility-mod.md) — two sequential Luna passes, 95 sedan-only definitions reviewed, class-level standalone-mod proposal and explicit physical/runtime unknowns.
+
+- [TASK-0022: Plan practical courier eligibility tooling](done/TASK-0022-plan-practical-courier-eligibility-tooling.md) — explicit human cargo groups, source-pinned TOML, 58 proposed additions, transfer preservation and implementation-ready checks.
 
 Courier Jobs and car refueling retain equal research priority. Completed research and static tests do not complete the pending gameplay-validation task.
