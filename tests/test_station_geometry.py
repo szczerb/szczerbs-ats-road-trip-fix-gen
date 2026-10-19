@@ -2,7 +2,8 @@ import math
 import struct
 import unittest
 
-from ats_road_trip.station_geometry import ParkingParameters, inspect_station_map, propose_unmarked_parking, _within
+from ats_road_trip.station_parking.geometry import inspect_station_map, _within
+from ats_road_trip.station_parking.methods.unmarked import ParkingParameters, propose_unmarked_parking
 
 
 def station_descriptor(*, malformed=None):

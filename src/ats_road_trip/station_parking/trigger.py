@@ -8,9 +8,9 @@ from __future__ import annotations
 import math
 import struct
 
-from .local_fuel import token
-from .ppd import inspect_ppd
-from .rest_stops import inspect_rest_triggers
+from ..local_fuel import token
+from ..ppd import inspect_ppd
+from ..rest_stops import inspect_rest_triggers
 
 _CAR = token('parking_car')
 _TRIGGER = struct.Struct('<IQfffI3f2i')

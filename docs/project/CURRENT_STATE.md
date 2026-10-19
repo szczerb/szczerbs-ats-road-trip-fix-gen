@@ -1,5 +1,13 @@
 # Current State
 
+## Station-parking structure milestone
+
+**Observed locally — 2026-10-19:** stage 1 of [TASK-0041](../tasks/active/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md) is verified: the six flat station modules are now a focused `station_parking` package, with proposal methods, shared validation, diagnostics, planner, workflow and trigger writer separated. All 326 tests pass. Three fixture cases and both actual Dawson pinned inputs have byte-identical output snapshots; fixture SCS archives and actual planned gameplay bytes are unchanged. CLI text, setuptools discovery, output-root resolution and all 57 moved definition bodies were independently checked. [ADR-0019](../architecture/decisions/ADR-0019-station-parking-module-boundaries.md) records boundaries. Navigation-icon research is ongoing; no new marker behavior or parking geometry is introduced by this milestone.
+
+## Station parking refactor and navigation-icon investigation
+
+**Documented — active scope, 2026-10-19:** [TASK-0041](../tasks/active/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md) continues the retained `codex/gas-station-car-rest-research` worktree. It requires a separately verified, behavior-preserving station-parking module reorganization before any evidence-supported navigation-marker repair. **Unknown:** whether the full-screen map, phone, and in-vehicle navigation share icon rules, or what causes the reported navigation omission; a native positive control and effective runtime stack still need assessment. Candidate geometry and location policy are explicitly out of scope. [ADR-0019](../architecture/decisions/ADR-0019-station-parking-module-boundaries.md) records the module boundaries and sequencing. Code verification, navigation findings, any repair/package, and manual-test instructions remain pending.
+
 ## Gas-station car rest experiment
 
 **Observed locally — 2026-10-19:** [TASK-0039](../tasks/done/TASK-0039-research-gas-station-car-rest.md) completes the bounded static `station_parking` PoC on `codex/gas-station-car-rest-research`, in its retained worktree, based on master `445ef58`. Separate public CLI commands analyze/generate one source-pinned station with explicit `painted_bays` or `unmarked_geometry`. Dawson has three spaces derived from four real mesh separators, and a separate 3 × 6 m geometry-derived building-side proposal with an approach strip. No 1,000-unit/density policy, existing-rest integration or truck-polygon fallback is used.

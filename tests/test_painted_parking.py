@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from ats_road_trip.painted_parking import (
+from ats_road_trip.station_parking.methods.painted import (
     PaintedParkingError,
     PaintedParkingParameters,
     propose_painted_parking,

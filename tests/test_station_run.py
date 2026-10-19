@@ -2,13 +2,11 @@ import hashlib
 import importlib
 import json
 from pathlib import Path
-import sys
 import tempfile
 import unittest
-from types import ModuleType
 from unittest.mock import patch
 
-from ats_road_trip import station_run
+from ats_road_trip.station_parking import workflow as station_run
 
 
 def _sha(path: Path) -> str:
@@ -86,21 +84,19 @@ class StationRunTests(unittest.TestCase):
         for item in self.patches:
             item.start()
             self.addCleanup(item.stop)
-        planner_module = ModuleType("ats_road_trip.station_parking")
-        planner_module.plan_station_parking = lambda *args, **kwargs: (
-            {"coverage": {"complete": True, "blockers": []}, "selected": []},
-            {"def/station.sii": b"planned station parking", "def/base.sii": b"planned override"},
-        )
-        planner_module.render_station_plan = lambda report: "<svg/>"
-        planner_module.validate_config = lambda config: config
+        planner_module = importlib.import_module("ats_road_trip.station_parking")
         self.planner_module = planner_module
-        self.module_patch = patch.dict(sys.modules, {"ats_road_trip.station_parking": planner_module})
-        self.module_patch.start()
-        self.addCleanup(self.module_patch.stop)
-        package_module = sys.modules["ats_road_trip"]
-        self.package_attr_patch = patch.object(package_module, "station_parking", planner_module, create=True)
-        self.package_attr_patch.start()
-        self.addCleanup(self.package_attr_patch.stop)
+        self.planner_patches = [
+            patch.object(planner_module, "plan_station_parking", lambda *args, **kwargs: (
+                {"coverage": {"complete": True, "blockers": []}, "selected": []},
+                {"def/station.sii": b"planned station parking", "def/base.sii": b"planned override"},
+            )),
+            patch.object(planner_module, "render_station_plan", lambda report: "<svg/>"),
+            patch.object(planner_module, "validate_config", lambda config: config),
+        ]
+        for item in self.planner_patches:
+            item.start()
+            self.addCleanup(item.stop)
 
     def _write_config(self):
         self.config_path.write_text(json.dumps(self.config), encoding="utf-8")

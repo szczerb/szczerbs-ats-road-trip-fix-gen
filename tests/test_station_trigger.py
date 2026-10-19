@@ -5,7 +5,7 @@ import unittest
 from ats_road_trip.local_fuel import token
 from ats_road_trip.ppd import inspect_ppd
 from ats_road_trip.rest_stops import inspect_rest_triggers
-from ats_road_trip.station_trigger import append_car_parking_polygon
+from ats_road_trip.station_parking.trigger import append_car_parking_polygon
 
 
 def descriptor(groups=(), *, version=25, trailer=b'opaque-tail'):

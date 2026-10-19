@@ -10,14 +10,14 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo
 
-from .archive import Archive
-from .bulk_run import _game_directory, _game_packages, _game_version
-from .mod_writer import write_mod
-from .package import Package, ResourceStack, virtual_path
-from .station_geometry import ParkingParameters
+from ..archive import Archive
+from ..bulk_run import _game_directory, _game_packages, _game_version
+from ..mod_writer import write_mod
+from ..package import Package, ResourceStack, virtual_path
+from .methods.unmarked import ParkingParameters
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = Path(__file__).resolve().parents[3]
 _RESERVED = {"manifest.sii", "mod_description.txt", "road_trip_fix_report.json", "mod_icon.jpg"}
 
 _VARIANT_METADATA = {
@@ -123,7 +123,7 @@ def _load_config(path: Path) -> dict:
         raise ValueError("Fingerprints must be lowercase SHA-256 hex strings")
     if not isinstance(data["mesh_materials"], dict) or not isinstance(data["parameters"], dict):
         raise ValueError("mesh_materials and parameters must be JSON objects")
-    from .station_parking import validate_config
+    from . import validate_config
     return validate_config(data)
 
 
@@ -324,7 +324,7 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
                             for path in missing_source_sectors]},
                     }
                 else:
-                    from .prefab_contexts import plan_prefab_contexts
+                    from ..prefab_contexts import plan_prefab_contexts
                     baseline_context_report, context_resources = plan_prefab_contexts(
                         raw_stack, base_resources, transitions,
                         source=expected["source_archive"],
@@ -355,7 +355,7 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
                     mounted.append(context_package)
                     base_resources.update(context_resources)
             stack = ResourceStack(mounted)
-            from .station_parking import plan_station_parking, render_station_plan
+            from . import plan_station_parking, render_station_plan
             planner_report, planned_resources = plan_station_parking(
                 stack, config, mesh_text, map_package=str(map_path), game_version=version)
         if not isinstance(planner_report, dict) or not isinstance(planned_resources, dict):

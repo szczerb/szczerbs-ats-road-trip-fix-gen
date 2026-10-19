@@ -1,6 +1,6 @@
 import unittest
 
-from ats_road_trip.station_mesh import StationMeshError, read_station_mesh, sample_surface_height
+from ats_road_trip.station_parking.mesh import StationMeshError, read_station_mesh, sample_surface_height
 
 
 def pim_text(*, vertices=None, triangles=((0, 1, 2), (0, 2, 3)), y2=0.0,

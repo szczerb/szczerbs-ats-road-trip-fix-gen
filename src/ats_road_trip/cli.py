@@ -197,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
                    'generated_mod_count': result['generated_mod_count']}, None)
             return 0
         if args.command in ('analyze-station-parking', 'generate-station-parking'):
-            from .station_run import run_station_parking
+            from .station_parking.workflow import run_station_parking
             generate = args.command.startswith('generate')
             result = run_station_parking(
                 args.config, args.mesh, args.map_package, packages=args.package,

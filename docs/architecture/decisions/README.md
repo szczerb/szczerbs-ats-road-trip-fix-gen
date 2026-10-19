@@ -45,3 +45,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0014: Shorten generated map package filenames](ADR-0014-shorten-map-package-cache-paths.md): preserve full map identities while reducing the icon-cache path budget after a logged connector failure.
 
 - [ADR-0018: Isolate source-pinned station-parking experiments](ADR-0018-isolate-source-pinned-station-parking-poc.md): separate per-station methods, exact input pins, model-derived geometry, native car-only triggers and fuel/context preservation; no proximity integration.
+
+- [ADR-0019: Separate station-parking workflow, proposal, validation, and output responsibilities](ADR-0019-station-parking-module-boundaries.md): bound the station-parking refactor and keep any navigation-marker change evidence-led and separate from geometry policy.

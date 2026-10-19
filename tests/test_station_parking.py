@@ -11,8 +11,9 @@ from ats_road_trip.local_fuel import token
 from ats_road_trip.map_sector import parse_sector
 from ats_road_trip.package import Package, ResourceStack
 from ats_road_trip.rest_stops import inspect_rest_triggers
-from ats_road_trip.station_parking import plan_station_parking,render_station_plan,_mesh_checks
-from ats_road_trip.station_trigger import append_car_parking_polygon
+from ats_road_trip.station_parking import plan_station_parking,render_station_plan
+from ats_road_trip.station_parking.validation import _mesh_checks
+from ats_road_trip.station_parking.trigger import append_car_parking_polygon
 from tests.test_bulk_fuel import resources as fuel_resources, SECTOR, PPD
 from tests.test_station_geometry import station_descriptor
 from tests.test_rest_stops import ACTIONS
@@ -198,7 +199,7 @@ class StationPlannerTests(unittest.TestCase):
         self.assertTrue(report['candidates'][0]['model_surface_checks']['missing_samples'])
 
     def test_model_clearance_rejects_vertical_obstacle_and_parked_vehicle(self):
-        from ats_road_trip.station_mesh import read_station_mesh
+        from ats_road_trip.station_parking.mesh import read_station_mesh
         mesh=read_station_mesh(self.mesh)
         mesh['materials'].append({'alias':'wall','effect':'eut2.dif.spec'})
         mesh['pieces'].append({'index':2,'material':'wall','positions':[(8.,0.,-8.),(8.,2.,-8.),(8.,2.,-4.)],
