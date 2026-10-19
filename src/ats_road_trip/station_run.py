@@ -14,10 +14,54 @@ from .archive import Archive
 from .bulk_run import _game_directory, _game_packages, _game_version
 from .mod_writer import write_mod
 from .package import Package, ResourceStack, virtual_path
+from .station_geometry import ParkingParameters
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _RESERVED = {"manifest.sii", "mod_description.txt", "road_trip_fix_report.json", "mod_icon.jpg"}
+
+_VARIANT_METADATA = {
+    "painted_bays": {
+        "code": "A LINES",
+        "slug": "a-lines",
+        "method": "paint-derived marked bays, grouped from model separators",
+        "footprint": "grouped area inferred from source-model separators; paint visibility is not runtime-confirmed",
+    },
+    "unmarked_geometry": {
+        "code": "B GEOMETRY",
+        "slug": "b-geometry",
+        "method": "unmarked building-side geometry proposal",
+        "footprint": None,
+    },
+}
+
+
+def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str, str]:
+    """Build concise, player-facing identity for a station experiment variant."""
+    variant = _VARIANT_METADATA[config["method"]]
+    if config["method"] == "unmarked_geometry":
+        parameters = ParkingParameters(**config.get("parameters", {}))
+        footprint = f"one proposed {parameters.width:g} x {parameters.depth:g} m building-side footprint"
+    else:
+        footprint = variant["footprint"]
+    baseline_line = (
+        "Includes the pinned fuel baseline and replaces the selected map compatibility fix only; "
+        "keep other source fixes enabled in their current order."
+        if "base_fix" in config.get("fingerprints", {}) else
+        "No fuel baseline is included; this replaces the selected map compatibility fix only. "
+        "Keep other source fixes enabled in their current order.")
+    description = (
+        f"{variant['code']} — {variant['method']} — station {station_id}.\n"
+        f"Footprint: {footprint}.\n"
+        "Test exactly one A/B station-parking variant at a time.\n"
+        f"{baseline_line}\n"
+        "Experimental for ATS 1.61 / Road Trip Ford; fatigue recovery, clearance and reload remain to be checked.\n"
+        "Original archives, game files, and profiles are not modified by this generator.\n")
+    return {
+        "variant_prefix": variant["slug"],
+        "display_name": f"{variant['code']} | szczerb's Road Trip Station Parking PoC for {map_name} - {station_id} - Experimental",
+        "description": description,
+    }
 _FIX_REPORT = "road_trip_fix_report.json"
 
 
@@ -185,8 +229,9 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}", stamp):
         raise ValueError("run_id must use YYYY-MM-DD_HH-MM-SS")
     work = REPO_ROOT / "local_outputs/work" / stamp / station_id
+    metadata = _station_metadata(config, map_name, station_id)
     output = (REPO_ROOT / "local_outputs/generated" / stamp /
-              f"szczerbs-road-trip-station-parking-{_safe_name(map_name)}-"
+              f"{metadata['variant_prefix']}-szczerbs-road-trip-station-parking-{_safe_name(map_name)}-"
               f"{station_id}-{config['method']}-1.61-r{revision}-experimental.scs") if generate else None
     if work.exists() or (output is not None and output.exists()):
         raise FileExistsError("Run audit or generated package already exists; choose a new run_id")
@@ -377,16 +422,10 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
                 audit["status"] = "no_changes_unproven"
             _write_json(audit_path, audit)
             return audit
-        compact_description = (
-            "Experimental single-station passenger-car parking candidate for ATS 1.61 / Road Trip Ford.\n"
-            "Not validated in game. Read road_trip_fix_report.json before testing.\n"
-            "This replaces the selected map compatibility fix for the experiment; do not enable the prior selected fix or another station-parking variant alongside it.\n"
-            "Keep other source fixes and their declared priority order intact. Use a copied profile.\n"
-            "Original archives, game files, and profiles are not modified by this generator.\n")
         stable_report = {k: v for k, v in planner_report.items() if k not in ("workflow_path", "work_dir")}
         written = write_mod(output, composed, stable_report, game_version=version,
-                            display_name=f"szczerb's Road Trip Station Parking PoC for {map_name} - {station_id} - Experimental",
-                            description=compact_description, revision=revision, category="map")
+                            display_name=metadata["display_name"],
+                            description=metadata["description"], revision=revision, category="map")
         audit.update({"status": "generated", "output": str(output),
                       "generated_mod_count": 1, "written_report": written})
         _write_json(audit_path, audit)

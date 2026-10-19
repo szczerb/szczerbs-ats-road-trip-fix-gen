@@ -1,6 +1,8 @@
 # Gas-station car-rest research
 
-**Status:** Bounded static prototype, not runtime-validated. **Evidence date:** 2026-10-19 (Europe/Warsaw). This report concerns one explicitly selected Dawson City station, inspected in WCE and generated against the winning Alaska source in the supplied combined stack. It does not claim map-wide coverage.
+**Status:** Bounded prototype; the user-reported A interaction is now attributed through the game log, while fatigue/reload and full physical validation remain open. **Evidence date:** 2026-10-19 (Europe/Warsaw). This report concerns one explicitly selected Dawson City station, inspected in WCE and generated against the winning Alaska source in the supplied combined stack. It does not claim map-wide coverage.
+
+**Later user feedback — 2026-10-19 evening:** the exact successful screenshot is linked to `painted_bays` through gameplay mounts and small-vehicle trigger events. An active Workshop visual model replaces the base model and has no corresponding car-bank line cluster. This qualifies the original source-model visual assumptions and the offline-only status recorded below; it does not change historical artifacts. See [dated evidence, corrected A/B metadata and next geometry limits](GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md).
 
 ## User direction and boundary
 

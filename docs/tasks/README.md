@@ -14,6 +14,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0040: Identify Dawson test and label variants](done/TASK-0040-identify-dawson-test-and-label-variants.md) — log identifies successful A/painted session; active Workshop model explains missing paint; labelled metadata-only copies preserve all gameplay bytes; 326 tests.
+
 - [TASK-0039: Research gas-station car rest areas](done/TASK-0039-research-gas-station-car-rest.md) — isolated explicit-station PoC, two Alaska-based Dawson alternatives, 326 tests, independent package/preservation audits and manual handoff; gameplay remains unverified.
 
 - [TASK-0038: Repair missing car parking markers](done/TASK-0038-investigate-missing-car-parking-icons.md) — truck-first marker cause verified, native car-only twins, 281 tests and independent seven-package/effective-stack audits; r9 icons subsequently user-confirmed in two towns in Alaska/Canada; detailed controls remain TASK-0007.

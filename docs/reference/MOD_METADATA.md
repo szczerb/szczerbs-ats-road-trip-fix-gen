@@ -10,6 +10,14 @@ The standalone [Job Types Compat Mustang](PRACTICAL_COURIER_GENERATOR.md) packag
 
 The new UTF-8 descriptions use short player-facing paragraphs and actual line breaks. Map packages explain only their selected fuel/rest behavior, source-relative load order and pending in-game checks. The supplied map combination lists all seven fixes directly above their own sources, including the four ProMods components and Reforma Mega Resources; optional background and job mods are labelled. Exactly one line identifies the current package with `(THIS MOD)`. The OtherMaps fix explicitly says it changes country petrol prices only. Unknown custom maps receive a direct-above-own-source instruction and the known combination as an example. The courier description explains the reviewed stock jobs, unchanged transfers, shared Quick Jobs and muscle-class effects, separate Food/Medical/Rideshare resources, and the remaining runtime checks.
 
+## Experimental variant identity
+
+**Documented — user feedback, 2026-10-19:** the Dawson r0 alternatives had identical descriptions and long titles whose trailing method/filename distinction was hidden by Mod Manager truncation. The user could switch them without restarting ATS but could not identify which experiment produced a result. Installing both files and activating only one is valid for this handoff; folder presence does not mean both are enabled.
+
+Every new set of alternatives must use stable, readable identifiers at the **beginning** of the title, filename and first description line. Include the method or test area and the enable-one-versus-enable-together rule. Do not depend on Mod Manager order or filesystem timestamps; the sorting cause is not established by the screenshots. Keep full source identity and the experimental qualifier elsewhere in the metadata.
+
+The corrected station identities are **A LINES** (`painted_bays`, source-model separator inference) and **B GEOMETRY** (`unmarked_geometry`, building/lot geometry). Their filenames start `a-lines-` and `b-geometry-`. The prefix describes the algorithm, not proof that painted lines are visible in the actual profile. The [Dawson follow-up](GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md) records actual runtime attribution, active model differences and metadata-only archive audits. Original packages remain historical evidence; new labelled copies must preserve every gameplay member byte-for-byte.
+
 ## Historical fuel-package contract
 
 | Field | Value / rule |

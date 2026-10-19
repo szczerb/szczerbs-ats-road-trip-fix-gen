@@ -29,6 +29,8 @@ Treat `local_inputs/` as read-only. Do not extract to it, rename or edit supplie
 
 Track small original project-authored icon exports and prompts under `assets/mod-icons/`; keep large generated originals ignored. Fuel package naming, author and game-based revision requirements follow the [metadata contract](../reference/MOD_METADATA.md).
 
+Alternative experiment packages must identify their variant at the start of the display name, archive filename and description, before branding that may be truncated. Include a readable method/area distinction and an explicit simultaneous-versus-alternative instruction. Do not identify packages by list order, file timestamps, identical descriptions, or method suffixes hidden at the end of long titles. Metadata-only replacements must preserve all gameplay bytes. See the [metadata contract](../reference/MOD_METADATA.md#experimental-variant-identity).
+
 Future in-game experiments must use a disposable or copied profile and record exact build, DLCs, mod versions, load order, observation method, and logs. Do not prescribe a market reset or modify a live save without establishing its effects and the experiment's authorization. Initialization performs no in-game experiments.
 
 ## Commits

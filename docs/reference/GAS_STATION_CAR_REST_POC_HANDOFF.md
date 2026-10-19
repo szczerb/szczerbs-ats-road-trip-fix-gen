@@ -4,6 +4,8 @@ Date: 2026-10-19. ATS **1.61.3.18**, Alaska Expansion **1.2.3** as the winning s
 
 [Research, screenshots and limits](GAS_STATION_CAR_REST_RESEARCH.md) · [Decision](../architecture/decisions/ADR-0018-isolate-source-pinned-station-parking-poc.md) · [Task](../tasks/done/TASK-0039-research-gas-station-car-rest.md)
 
+**Later follow-up — 2026-10-19 evening:** A / `painted_bays` is the successful screenshot's loaded package, established from the game log. Clearly labelled metadata-only copies are available; [feedback, active visual-model difference and new bundle](GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md). The original archive hashes and original generation instructions below remain historical evidence. Neither labelled copy enlarges the footprint.
+
 ## What to compare later
 
 Both alternatives target **one station**: Dawson City's eastern Chemron-model truck stop, sector `map/usa/sec-0029-0045.base`, original prefab UID `0x5ca1fea582800001` (`us_gas_08`). The supplied screenshots are embedded in the research report.

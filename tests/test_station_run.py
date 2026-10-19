@@ -152,6 +152,7 @@ class StationRunTests(unittest.TestCase):
                 run_id="2026-10-19_12-00-01", generate=True, experimental=True)
             output, resources, report, options = calls[0]
             self.assertEqual(result["status"], "generated")
+            self.assertTrue(output.name.startswith("a-lines-"))
             self.assertTrue(output.name.endswith("dawson-east-painted_bays-1.61-r0-experimental.scs"))
             self.assertEqual(resources["def/preserved.sii"], b"legacy fuel data")
             self.assertEqual(resources["def/base.sii"], b"planned override")
@@ -159,7 +160,14 @@ class StationRunTests(unittest.TestCase):
             self.assertEqual(report["base_fix_composition"]["base_fix_resource_count"], 3)
             self.assertEqual(report["base_fix_composition"]["preserved_resource_count"], 2)
             self.assertEqual(report["base_fix_composition"]["planner_overrides_on_base_fix"], ["def/base.sii"])
+            self.assertTrue(options["display_name"].startswith("A LINES |"))
+            self.assertIn("A LINES", options["display_name"][:32])
             self.assertTrue(options["display_name"].endswith("Experimental"))
+            self.assertIn("paint-derived marked bays", options["description"].splitlines()[0])
+            self.assertIn("grouped area inferred from source-model separators", options["description"])
+            self.assertIn("not runtime-confirmed", options["description"])
+            self.assertIn("one A/B station-parking variant at a time", options["description"])
+            self.assertIn("Includes the pinned fuel baseline", options["description"])
             self.assertIn("replaces the selected map compatibility fix", options["description"])
 
             self.config["station_id"] = "town-west"
@@ -169,8 +177,16 @@ class StationRunTests(unittest.TestCase):
                 self.config_path, self.mesh_path, self.source,
                 packages=[self.source, self.dependency], base_fix=self.base_fix,
                 run_id="2026-10-19_12-00-02", generate=True, experimental=True)
+            self.assertTrue(calls[1][0].name.startswith("b-geometry-"))
             self.assertTrue(calls[1][0].name.endswith("town-west-unmarked_geometry-1.61-r0-experimental.scs"))
             self.assertNotEqual(calls[1][0].name, output.name)
+            second_options = calls[1][3]
+            self.assertTrue(second_options["display_name"].startswith("B GEOMETRY |"))
+            self.assertIn("B GEOMETRY", second_options["display_name"][:32])
+            self.assertIn("3 x 6 m building-side footprint", second_options["description"].splitlines()[1])
+            self.assertIn("unmarked building-side geometry proposal", second_options["description"].splitlines()[0])
+            self.assertIn("one A/B station-parking variant at a time", second_options["description"])
+            self.assertEqual(resources, calls[1][1])
 
     def test_incomplete_or_empty_plan_never_packages_fuel_baseline(self):
         self.planner_module.plan_station_parking = lambda *args, **kwargs: (
