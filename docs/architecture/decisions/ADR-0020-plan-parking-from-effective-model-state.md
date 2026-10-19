@@ -2,7 +2,7 @@
 
 ## Context
 
-Date: 2026-10-19. [TASK-0044](../../tasks/active/TASK-0044-improve-effective-station-parking-heuristics.md) follows both user-confirmed Dawson prompts and the discovery that Real Companies replaces the visible model and removes the stock paint bank. Historical schema-1 A/B inputs remain useful controls but cannot establish the current visual layout. See [dated feedback](../../reference/GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md).
+Date: 2026-10-19. [TASK-0044](../../tasks/done/TASK-0044-improve-effective-station-parking-heuristics.md) follows both user-confirmed Dawson prompts and the discovery that Real Companies replaces the visible model and removes the stock paint bank. Historical schema-1 A/B inputs remain useful controls but cannot establish the current visual layout. See [dated feedback](../../reference/GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md).
 
 ## Decision
 

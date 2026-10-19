@@ -1,7 +1,7 @@
 ---
 id: TASK-0044
 title: Improve parking selection from effective station geometry
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0039, TASK-0040, TASK-0041, TASK-0042]
@@ -49,10 +49,12 @@ Delegation: `research_rest_activation_rule` (gpt-6.1-sol/high), read-only activa
 - [Effective-state decision](../../architecture/decisions/ADR-0020-plan-parking-from-effective-model-state.md); [activation/effective research](../../reference/STATION_PARKING_HEURISTICS_1_61.md).
 - Raised-boundary proposals implemented; concave winding and angled proxy orthogonality verified. Parallel approaches were corrected after independent review to use longitudinal entry areas. Clearance ranking includes bounded, centimetre-rounded surplus over exclusions.
 - Marked operational native control validated at `sec-0010+0008`, UID `0x6032dc12c1350001`: three service matches, two painted bays fully inside native car group 1, no output. Schema comparisons retained in `local_outputs/work/2026-10-19_21-53-22/native-control-validation/`.
-- First full-stack C r1 generated at `local_outputs/generated/2026-10-19_21-44-53/`; intermediate, superseded by C r2 ranking refinement. Final C r2 run uses `2026-10-19_21-59-06` and remains under audit.
+- First full-stack C r1 generated at `local_outputs/generated/2026-10-19_21-44-53/`; intermediate, superseded by C r2 ranking refinement. Final C r2 run uses `2026-10-19_21-59-06`; it passes all 50 independent package checks plus 6 clearance/ranking checks.
 - E CONTACT r1 independently verified: 24/25 gameplay members exact; four flag bytes in the last member, unchanged geometry/services/actions. Report in `local_outputs/work/2026-10-19_21-58-02/e-contact-independent-audit/`.
 - User clarification: potentially inactive but visually valid stations are a deferred feature. This increment retains operational GAS/service gates and does not activate the unlinked marked probe.
-- Final suite: 381 tests pass; final actual A/B reports/resources/SVG remain identical to the frozen baseline (`local_outputs/work/2026-10-19_22-00-31/legacy-final-verification/`). Independent C r1 intermediate payload audit passes all 50 checks; final C r2 audit, diagnostic visual review and handoff remain in progress.
+- Final suite: 381 tests pass; final actual A/B reports/resources/SVG remain identical to the frozen baseline (`local_outputs/work/2026-10-19_22-00-31/legacy-final-verification/`). Independent C r1 intermediate payload audit passes all 50 checks; final C r2 audit passes 50 package and 6 independent clearance/ranking checks. Root adds 23 actual-archive/N2-composition/main-checkout checks. Final before/after SVG/PNG plans are rendered and visually inspected; the C2/E1 test bundle and [manual handoff](../../reference/STATION_PARKING_HEURISTICS_HANDOFF_1_61.md) are ready.
+
+- Implementation milestones committed locally as `776f9fc` and `0f6e89d`; final handoff is a subsequent documentation commit. Main master remains clean at `445ef581886538465564a24be0b1199164e43272`. No merge, push, installation or gameplay operation. Runtime validation remains separate.
 
 # Links
 

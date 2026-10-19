@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0044: Improve effective station-parking heuristics](active/TASK-0044-improve-effective-station-parking-heuristics.md) — effective model state, activation research, two real cases and limited PoCs; in progress.
 
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
@@ -16,6 +15,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 
 ## Done
+
+- [TASK-0044: Improve effective station-parking heuristics](done/TASK-0044-improve-effective-station-parking-heuristics.md) — pinned effective models, raised-boundary proposals and clearance ranking; operational native marked control, C2/E1 alternatives, 381 tests and independent archive/composition audits. Runtime usability remains pending.
 
 - [TASK-0042: Test the analogous local-navigation fuel icon mask](done/TASK-0042-test-local-navigation-fuel-icon-mask.md) — N1 parking success and both A/B prompts recorded; engine-backed N2 fuel candidate, preserved N1 and geometry, 336 tests and payload/stack audits. Both fuel and parking icons subsequently user-confirmed in Mustang navigation.
 
