@@ -1,7 +1,7 @@
 ---
 id: TASK-0045
 title: Build one curated multi-location station-parking test mod
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0044]
@@ -48,7 +48,12 @@ Delegation: `batch_station_inventory` (gpt-6-luna/high), owns only ignored inven
 - Independent review added manifest/config parse-before-pin protection and direct directory dependency hashing. External context now evaluates both painted approach ends before selection, including their minimum margins, without changing the legacy no-context rule.
 - Second verified milestone: **413 tests pass** (`local_outputs/work/2026-10-19_23-11-38/context-verification/full-tests.txt`). Actual neighboring aux sectors contain flag-only duplicate node records at identical poses; local context now resolves owner-linked placement-local nodes and reports duplicate metadata, requiring a unique owner-linked pose for remote fallback. Nearby PPD and reviewed model/material inputs are batch-prefetched without weakening hash/read limits.
 - Actual full-stack painted probes found a partially NPC-obstructed bank. Added generic individual free-gap proposals inside an accepted >=3-separator parent bank, retaining all exclusion radii and legacy default/schema-1 behavior. Authored tests cover occupied-bank/free-bay selection, native no-duplicate control and bounded deterministic expansion; **418 full tests pass**.
-- Actual-site curation, final full-stack generation and handoff remain pending. Do not mark complete from a narrower partial sample.
+- Completed authoritative census: 2,954 placements / 1,739 parsed sectors, 2,882 operational and 72 unverified/composite; 104 visual model paths / 402 model-state groups. A separate 342-PPD hash/action audit has zero errors and 366 detailed groups.
+- Final public CLI generates **one F BATCH r1 SCS with nine sites / three distinct layouts / seven sectors** over the retained r9 stack. Four source-derived painted bays, four unmarked truckstop placements and one unmarked corner pass; GP nonmanifold geometry, unmatched parts and unconfirmed decal ground retain explicit exclusions.
+- Independent actual-ZIP audit checks all nine private clones, every selected input/material/neighborhood hash, exact append/native flags 0 / range 3, source definition attributes and unclassified context state. Both same-sector pairs survive and reverse-order edits match. All 66 original services, 4,494 nodes and 3,283 item identities/extents remain preserved; no selected source is positively classified or given guessed tags.
+- One unchanged native control is excluded and retains three original groups; both derived source bays remain covered. N2 exact/disjoint; original C2/E unchanged. Root 59 checks pass; main remains clean at `445ef58`.
+- ZIP 111 members / 110 hashes passes CRC, exact SCS identity, portable config/model pins and README links. Visual review covers all nine sites, with 18 before/after plans; external proxy extents are clipped only in handoff renderings. No gameplay/access/activation/fatigue/reload success is inferred.
+- [Final artifacts, visiting order, site/UID/alias table, limitations and checksums](../../reference/STATION_PARKING_FORECOURT_TOUR_1_61.md). Evidence runs: 2026-10-19_23-19-21 (generation),23-12-19 (independent archive audit),23-16-09 (handoff/bundle audit). Code commits `9bc6c47`, `c52b675`, `056ae96`; final documentation/config commit follows.
 
 # Links
 

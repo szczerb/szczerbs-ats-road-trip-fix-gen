@@ -2,7 +2,7 @@
 
 ## Context
 
-Date: 2026-10-19. [TASK-0045](../../tasks/active/TASK-0045-build-curated-station-parking-test-batch.md) extends the earlier single-station experiment to one mod with a curated list of real test sites. Whole-sector overrides do not merge, and returning to a fuel-only baseline would discard the user's standard r9 rest fixes. A shared visual model does not establish shared PPD actions or identical local surroundings.
+Date: 2026-10-19. [TASK-0045](../../tasks/done/TASK-0045-build-curated-station-parking-test-batch.md) extends the earlier single-station experiment to one mod with a curated list of real test sites. Whole-sector overrides do not merge, and returning to a fuel-only baseline would discard the user's standard r9 rest fixes. A shared visual model does not establish shared PPD actions or identical local surroundings.
 
 ## Decision
 

@@ -1,0 +1,43 @@
+{
+  "fingerprints": {
+    "descriptor": "767798c348152f88983799c2b9e8e24a79515ef342c1136e281b83fd32c083cb",
+    "mesh": "68011614086e4e78505d3ab3849f416b29e7b26cf2eaf93cb84e426226429644",
+    "mesh_state": "98d12127c619f7796b839f544145e580157a678bd217145e6e94e260e6c2401d",
+    "model_definition": "f34965d3613eaac120256cf04fcbefb48aeff3924e0b098c513fb5c4d8f95301",
+    "model_geometry": "c9874060404d200024e158c86399e30ed191ddf8364bab478a88da0f5d6f6526",
+    "sector": "2b58890f1e16168d49a32397116afb452201f18764a0c6207cf2c45becbebb18",
+    "source_archive": "8f980093aa7270ead0897dbb8b6d24e39b5e7bf197358f7abacbc1d517bc03da"
+  },
+  "game_version": "1.61.3.18",
+  "map_name": "Reforma",
+  "material_resources": {
+    "material/decal/kerb_dirt_diff.dds": "b5c566b22cda3c090abc7b9825fee128f3d424556e1f64c8d7de3f785e2ba73e",
+    "material/decal/kerb_dirt_diff.tobj": "dd3f11ad81b49274016b161249ca0fec75c727831c91314a7f5dd0e72e5c384a",
+    "material/road/asphalt_ca_prefab_light.dds": "9560820da1384b4c73ad9056dea275bc4b7336750369fe6010c0ddf24c3a6fef",
+    "material/road/asphalt_ca_prefab_light.mat": "c6f7b651ab9f8e67ff301f5beedf0edca3c8f4580b5c7cdf90b07fb16a68cb1b",
+    "material/road/asphalt_ca_prefab_light.tobj": "2beb5187bc659786e2407e2e8bc1ea15db5cb946ae39fdc2c374316a1a1dbc97",
+    "material/road/lines1.dds": "d8aee10263e57c75be9bf729d194115d634f2d17bac83f1e341722b359b95051",
+    "material/road/lines1.mat": "78d566bea210b627ef1c2b94c81d070e6f98b1f47ee97c59592f3bd5a6405b10",
+    "material/road/lines1.tobj": "32b26f53393753f7419711238ea32d053c3dbfe0db8704faf8008c36b1d52f13",
+    "material/special/doors_00.dds": "7da5289223a462c55ea6ab66c51ab0fb4c3c8b5b6f299577ff19c7932c09763c",
+    "material/special/doors_00.tobj": "3f40181dd2cac7253aba2b0a5b7e1a8c2bb29b1cfc3c57ec45905017e9bd038a",
+    "material/tiled/pavement.dds": "8f5265443c77cb27144af02df54674f2ba162e3fdaff0e6b607e7b9666072967",
+    "material/tiled/pavement.tobj": "46d5476b148b51077e40523a90d5383f6237b6dcb1b5dd8a7107bb12207ea79c"
+  },
+  "mesh_materials": {
+    "ground": [
+      "mat_0004_asphalt_ca_prefab_light"
+    ],
+    "paint": [
+      "mat_0005_lines1"
+    ]
+  },
+  "method": "painted_bays",
+  "model_geometry": "prefab/gas/nm_gas_station1_chemron.pmg",
+  "parameters": {},
+  "prefab_uid": "0x89e8c438a900001",
+  "processor": "station_parking",
+  "schema_version": 2,
+  "sector": "map/usa/sec-0014+0021.base",
+  "station_id": "forecourt-tour-p04"
+}

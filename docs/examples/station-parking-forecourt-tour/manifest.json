@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "processor": "station_parking_batch",
+  "batch_id": "forecourt-tour",
+  "map_name": "Curated Forecourt Tour",
+  "game_version": "1.61.3.18",
+  "stations": [
+    {
+      "site_id": "P01",
+      "source_package": "ATS_Expansion_v23.0_1.61.scs",
+      "config": "P01.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_gas_station1_chemron.pim"
+    },
+    {
+      "site_id": "P02",
+      "source_package": "Reforma_3_0_1_161.scs",
+      "config": "P02.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_gas_station1_chemron.pim"
+    },
+    {
+      "site_id": "P03",
+      "source_package": "Reforma_3_0_1_161.scs",
+      "config": "P03.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_gas_station1_chemron.pim"
+    },
+    {
+      "site_id": "P04",
+      "source_package": "Reforma_3_0_1_161.scs",
+      "config": "P04.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_gas_station1_chemron.pim"
+    },
+    {
+      "site_id": "P05",
+      "source_package": "Alaska_Expansion_v1.2.3.scs",
+      "config": "P05.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_truckstop1_chemron.pim"
+    },
+    {
+      "site_id": "P06",
+      "source_package": "Western_Canada_Expansion_v1.7.3.scs",
+      "config": "P06.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_truckstop1_chemron.pim"
+    },
+    {
+      "site_id": "P07",
+      "source_package": "Western_Canada_Expansion_v1.7.3.scs",
+      "config": "P07.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_truckstop1_chemron.pim"
+    },
+    {
+      "site_id": "P08",
+      "source_package": "Western_Canada_Expansion_v1.7.3.scs",
+      "config": "P08.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_truckstop1_chemron.pim"
+    },
+    {
+      "site_id": "P09",
+      "source_package": "Reforma_3_0_1_161.scs",
+      "config": "P09.json",
+      "mesh": "../../../local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/inputs/models/nm_gas_station2-corner_chemron.pim"
+    }
+  ]
+}

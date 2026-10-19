@@ -4,6 +4,8 @@ Research and preparation: 2026-10-19. [TASK-0044](../tasks/done/TASK-0044-improv
 
 This increment supplies a new, source-pinned Dawson placement and a separate activation diagnostic for later user testing. Static checks do not establish easier parking, completed rest, fatigue recovery, reload behaviour or complete physical access. No game, installation or profile was changed.
 
+The later [F BATCH r1 curated tour](STATION_PARKING_FORECOURT_TOUR_1_61.md) delivers nine locations in one overlay and keeps all standard r9 fixes enabled. The alternative-package setup below remains specific to the historical C2/E experiments.
+
 ## Changes and actual controls
 
 | Case | Before | Current result |
