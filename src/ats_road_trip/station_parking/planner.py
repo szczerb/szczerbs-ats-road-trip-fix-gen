@@ -191,7 +191,8 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if config['method']=='painted_bays':
         from .methods.painted import PaintedParkingParameters,propose_painted_parking
         proposal=propose_painted_parking(mesh,paint_materials=config['mesh_materials']['paint'],
-                                        parameters=PaintedParkingParameters(**config['parameters']))
+                                        parameters=PaintedParkingParameters(**config['parameters']),
+                                        **({'include_subbanks':True} if config['schema_version']==2 else {}))
     else:
         proposal=propose_unmarked_parking(ppd,ParkingParameters(**config['parameters']),
             **({'layouts':('perpendicular','parallel')} if config['schema_version']==2 else {}))

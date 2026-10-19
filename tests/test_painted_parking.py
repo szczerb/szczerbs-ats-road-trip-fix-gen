@@ -1,3 +1,4 @@
+from copy import deepcopy
 import math
 import unittest
 
@@ -64,6 +65,88 @@ class PaintedParkingTests(unittest.TestCase):
         self.assertTrue(any(r['reason'] == 'paint_component_length_outside_vehicle_bay_separator_range'
                             for r in result['rejections']))
         self.assertIn('vehicle clearance', result['generation_readiness'])
+
+    def test_opt_in_single_bays_preserve_whole_bank_and_exact_source_geometry(self):
+        mesh = separator_mesh(angle=math.radians(31), noisy=True)
+        untouched = deepcopy(mesh)
+        original = propose_painted_parking(mesh, paint_materials=['paint_lines'])
+        self.assertEqual(original, propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=False))
+        expanded = propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True)
+        bank = original['selected'][0]
+        parent = next(row for row in expanded['selected'] if row['id'] == bank['id'])
+        self.assertEqual(parent, bank)
+        bays = sorted((row for row in expanded['selected'] if row.get('parent_bank_id') == bank['id']),
+                      key=lambda row: row['source_bay_index'])
+        self.assertEqual(len(bays), bank['bay_count'])
+        self.assertEqual(len({row['id'] for row in expanded['selected']}), len(expanded['selected']))
+        for index, bay in enumerate(bays):
+            self.assertEqual(bay['polygon_xz'], bank['bay_polygons_xz'][index]['polygon_xz'])
+            self.assertEqual(bay['bay_polygons_xz'], [bank['bay_polygons_xz'][index]])
+            self.assertEqual(bay['source_separator_indices'], [index, index + 1])
+            self.assertEqual(bay['source_boundary_separator_count'], 2)
+            self.assertEqual(bay['separator_count'], bank['separator_count'])
+            self.assertEqual(bay['parent_bank_separator_count'], bank['separator_count'])
+            self.assertEqual(bay['center_spacing_m'], bank['center_spacing_m'])
+            self.assertEqual(bay['bay_count'], 1)
+            self.assertEqual(bay['source_separator_refs'], [
+                {'piece_index': strip['piece_index'], 'triangle_indices': strip['triangle_indices']}
+                for strip in bank['strips'][index:index + 2]])
+        self.assertEqual(mesh, untouched)
+        self.assertEqual(expanded, propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True))
+
+    def test_single_bay_requires_an_accepted_parent_bank_without_lowering_thresholds(self):
+        for mesh in (separator_mesh(count=2), separator_mesh(spacing=2.0), separator_mesh(spacing=5.0)):
+            with self.subTest(mesh=mesh['pieces'][0]['positions']):
+                result = propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True)
+                self.assertEqual(result['selected'], [])
+                self.assertTrue(result['blockers'])
+        with self.assertRaisesRegex(PaintedParkingError, 'boolean'):
+            propose_painted_parking(separator_mesh(), paint_materials=['paint_lines'], include_subbanks=1)
+
+    def test_occupied_part_of_mesh_derived_bank_leaves_a_valid_individual_bay(self):
+        from ats_road_trip.station_parking.selection import evaluate_access
+        mesh = separator_mesh(count=3, spacing=3.5)
+        proposal = propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True)
+        bank = next(row for row in proposal['selected'] if 'parent_bank_id' not in row)
+        # Derive the parked locator, accessible plane and GAS control from this
+        # authored paint bank; candidate polygons remain the measured source bays.
+        dx, dz = bank['direction_xz']; nx, nz = -dz, dx
+        first = bank['strips'][0]['center_xz']
+        half_bay = bank['bay_polygons_xz'][0]['width_m'] / 2
+        locator = [first[0] - nx * half_bay, 0.1461, first[1] - nz * half_bay]
+        mesh['locators'] = [{'index': 11, 'hookup': 'car.parked.physics', 'position': locator}]
+        xs = [p[0] for p in bank['polygon_xz']]; zs = [p[1] for p in bank['polygon_xz']]
+        extent = bank['bay_polygons_xz'][0]['length_m'] * 5
+        plane = [[min(xs)-extent, 0.1461, min(zs)-extent], [max(xs)+extent, 0.1461, min(zs)-extent],
+                 [max(xs)+extent, 0.1461, max(zs)+extent], [min(xs)-extent, 0.1461, max(zs)+extent]]
+        mesh['pieces'].append({'index': 1, 'material': 'ground', 'positions': plane,
+                               'triangles': [(0, 1, 2), (0, 2, 3)]})
+        gas = [sum(xs)/len(xs) + dx*extent, 0.1461, sum(zs)/len(zs) + dz*extent]
+        geometry = {'polygons': [{'id': 1, 'color': 1, 'vertices': plane}],
+                    'roads': [], 'gas_spawns': [{'position': gas}]}
+        checked = [(row, evaluate_access(row, geometry, mesh, ground={'ground'}, paint={'paint_lines'}))
+                   for row in proposal['selected']]
+        parent = next(result for row, result in checked if row['id'] == bank['id'])
+        self.assertIn('parked_vehicle_locator_exclusion', parent['rejection_reasons'])
+        surviving = [(row, result) for row, result in checked if not result['rejection_reasons']]
+        self.assertEqual(len(surviving), 1)
+        self.assertEqual(surviving[0][0]['parent_bank_id'], bank['id'])
+        self.assertEqual(surviving[0][0]['polygon_xz'], bank['bay_polygons_xz'][1]['polygon_xz'])
+        self.assertTrue(surviving[0][1]['model_surface_checks']['vertices_xyz'])
+
+    def test_expanded_proposal_budget_fails_closed_instead_of_truncating(self):
+        pieces = []
+        for index in range(33):
+            piece = separator_mesh(origin=(index * 20., 0.))['pieces'][0]
+            piece['index'] = index
+            pieces.append(piece)
+        mesh = {'materials': [{'alias': 'paint_lines'}], 'pieces': pieces[:32]}
+        at_bound = propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True)
+        self.assertEqual(len(at_bound['selected']), 128)
+        self.assertEqual(len({row['id'] for row in at_bound['selected']}), 128)
+        mesh['pieces'] = pieces
+        with self.assertRaisesRegex(PaintedParkingError, '128-candidate bound'):
+            propose_painted_parking(mesh, paint_materials=['paint_lines'], include_subbanks=True)
 
     def test_coordinates_translate_without_prefab_specific_positions(self):
         a = propose_painted_parking(separator_mesh(origin=(0, 0)), paint_materials=['paint_lines'])

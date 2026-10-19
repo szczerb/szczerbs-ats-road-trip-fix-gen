@@ -69,7 +69,15 @@ class EffectivePlanningTests(unittest.TestCase):
     def test_external_world_obstacle_blocks_an_otherwise_valid_station_without_mutating_context(self):
         report,resources=self.plan()
         self.assertTrue(resources)
-        polygon=[[p[0],p[2]] for p in report['selected']['world_vertices_xyz']]
+        # Cover the complete evidenced bank, including every new single-bay
+        # alternative; blocking only the selected bay may leave a valid neighbor.
+        from tests.test_bulk_fuel import PPD, SECTOR
+        from ats_road_trip.map_sector import parse_sector
+        from ats_road_trip.rest_stops import _placed_vertices
+        sector=parse_sector(self.package.read(SECTOR))
+        parent=next(c for c in report['candidates'] if not c.get('parent_bank_id'))
+        polygon=_placed_vertices(self.package.read(PPD),sector.prefabs[0],
+            {n.uid:n for n in sector.nodes},[(x,0.,z) for x,z in parent['polygon_xz']])
         context={'objects':[{'id':'authored-external-building','classification':'obstacle_proxy',
             'extent_status':'declared_conservative_proxy','geometry_xz':polygon}],
             'unassessed_objects':[], 'limits':['Bounded authored external proxy']}
@@ -83,6 +91,26 @@ class EffectivePlanningTests(unittest.TestCase):
                             for c in checked['candidates']))
         self.assertIn('external_context_geometry',checked)
         self.assertIn('external prefab UI obstacle proxies',render_station_plan(checked))
+
+    def test_occupied_painted_bay_keeps_a_clear_source_derived_neighbor(self):
+        # The model locator blocks one end of an otherwise evidenced bank.
+        # Keep its radius, both approach checks and original bank diagnosis.
+        mesh=self.helper.mesh.replace('LocatorCount: 0','LocatorCount: 1').replace('Locators:\n','Locators: 0\n')
+        mesh+='Locator {\n Name: "parked"\n Hookup: "car.parked.physics"\n Index: 0\n Position: ( 15 0 -6 )\n Rotation: ( 1 0 0 0 )\n Scale: ( 1 1 1 )\n}\n'
+        self.helper.mesh=mesh
+        self.config['fingerprints']['mesh']=hashlib.sha256(mesh.encode()).hexdigest()
+        report,resources=self.plan()
+        self.assertTrue(resources,report['coverage'])
+        selected=report['selected']
+        self.assertEqual(selected['bay_count'],1)
+        self.assertEqual(selected['geometry_scope'],'single_bay_from_accepted_separator_bank')
+        self.assertGreaterEqual(selected['parent_bank_separator_count'],3)
+        self.assertEqual(selected['source_boundary_separator_count'],2)
+        self.assertGreaterEqual(selected['clearance_margins_m']['parked_locator'],0.)
+        parent=next(c for c in report['candidates'] if c['id']==selected['parent_bank_id'])
+        self.assertIn('parked_vehicle_locator_exclusion',parent['rejection_reasons'])
+        self.assertEqual(selected['polygon_xz'],parent['bay_polygons_xz'][selected['source_bay_index']]['polygon_xz'])
+        self.assertFalse(selected['rejection_reasons'])
 
     def test_named_role_texture_present_in_stack_must_be_pinned(self):
         self.pit=self.pit.replace(' TextureCount: 0\n}', ' TextureCount: 1\n Texture {\n Tag: "texture[0]:texture_base"\n Value: "/material/paint"\n }\n}')

@@ -7,6 +7,7 @@ and obstacles independently before treating any returned bay as usable.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from copy import deepcopy
 import hashlib
 import json
 import math
@@ -374,17 +375,64 @@ def _bank_candidate(strips, strip_points, parameters):
     }
 
 
-def propose_painted_parking(mesh: dict, *, paint_materials, parameters: PaintedParkingParameters | None = None) -> dict:
+def _include_single_bays(candidates):
+    """Retain accepted whole banks and derive only their already measured bays."""
+    maximum = 128
+    if len(candidates) > maximum:
+        raise PaintedParkingError('Painted bank/subbank proposals exceed the 128-candidate bound')
+    expanded = list(candidates)
+    # Identical geometry already offered by another accepted bank or bay needs
+    # no second downstream evaluation. Parent banks themselves remain intact.
+    geometry_seen = {tuple(sorted(map(tuple, candidate['polygon_xz']))) for candidate in candidates}
+    for bank in candidates:
+        for index, bay in enumerate(bank['bay_polygons_xz']):
+            key = tuple(sorted(map(tuple, bay['polygon_xz'])))
+            if key in geometry_seen:
+                continue
+            if len(expanded) >= maximum:
+                raise PaintedParkingError('Painted bank/subbank proposals exceed the 128-candidate bound')
+            geometry_seen.add(key)
+            candidate = deepcopy(bank)
+            evidence = {'parent_bank_id': bank['id'], 'source_bay_index': index, 'bay': bay}
+            candidate.update({
+                'id': hashlib.sha256(json.dumps(evidence, sort_keys=True, separators=(',', ':')).encode()).hexdigest()[:16],
+                'polygon_xz': deepcopy(bay['polygon_xz']), 'bay_count': 1,
+                'bay_polygons_xz': [deepcopy(bay)],
+                'geometry_scope': 'single_bay_from_accepted_separator_bank',
+                'parent_bank_id': bank['id'], 'parent_bay_count': bank['bay_count'],
+                'parent_bank_separator_count': bank['separator_count'],
+                'source_bay_index': index, 'source_separator_indices': [index, index + 1],
+                'source_boundary_separator_count': 2,
+                # separator_count, strips and center_spacing_m retain the full
+                # accepted parent-bank corroboration. Two isolated strips still
+                # cannot produce a proposal under the >=3-separator rule.
+                'separator_evidence_scope': 'accepted_parent_bank',
+                'source_separator_refs': [
+                    {'piece_index': strip['piece_index'], 'triangle_indices': deepcopy(strip['triangle_indices'])}
+                    for strip in bank['strips'][index:index + 2]],
+            })
+            expanded.append(candidate)
+    return expanded
+
+
+def propose_painted_parking(mesh: dict, *, paint_materials, parameters: PaintedParkingParameters | None = None,
+                            include_subbanks: bool = False) -> dict:
     """Find banks of repeated parallel separator strips in explicit paint materials.
 
     `mesh` is the dictionary returned by :func:`station_mesh.read_station_mesh`.
     Material aliases must be supplied explicitly; names are used only to select
     source triangles, never to infer station identity or bay coordinates.
+    With ``include_subbanks=True``, each already measured single bay inside an
+    accepted bank is offered independently alongside its unchanged parent.
+    The >=3-separator parent requirement remains intact; at most 128 total
+    proposals are permitted, with excess rejected rather than truncated.
 
     The returned candidate polygons are hypotheses based solely on model mesh
     geometry. `selected` contains geometry banks satisfying the repeated-strip
     signature; it is not a gameplay or vehicle-clearance approval.
     """
+    if type(include_subbanks) is not bool:
+        raise PaintedParkingError('include_subbanks must be a boolean')
     parameters = PaintedParkingParameters() if parameters is None else parameters
     if not isinstance(parameters, PaintedParkingParameters):
         raise PaintedParkingError('parameters must be PaintedParkingParameters')
@@ -489,6 +537,8 @@ def propose_painted_parking(mesh: dict, *, paint_materials, parameters: PaintedP
                                'reason': 'separator_bank_does_not_form_enough_positive_width_bays'})
             continue
         candidates.append(candidate)
+    if include_subbanks:
+        candidates = _include_single_bays(candidates)
     candidates.sort(key=lambda c: (-c['bay_count'], -c['separator_count'], c['id']))
     selected = list(candidates)
     return {
@@ -498,4 +548,7 @@ def propose_painted_parking(mesh: dict, *, paint_materials, parameters: PaintedP
         'rejections': rejections,
         'runtime_status': 'unverified; no game operation performed',
         'generation_readiness': 'Geometry proposal only; validate map access, other obstacles, vehicle clearance, and trigger semantics independently',
+        **({'subbank_policy': {'single_bays_from_accepted_banks': True, 'maximum_total_candidates': 128,
+                              'separator_count_scope': 'Accepted parent-bank corroboration; source_boundary_separator_count records each bay boundary'}}
+           if include_subbanks else {}),
     }
