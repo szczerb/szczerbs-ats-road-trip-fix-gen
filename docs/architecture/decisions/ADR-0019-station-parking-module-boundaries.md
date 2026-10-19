@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for the bounded refactor in [TASK-0041](../../tasks/active/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md). The bounded package split and behavior-preservation verification are complete; navigation research remains separate.
+Accepted for the bounded refactor in [TASK-0041](../../tasks/done/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md). The bounded package split and behavior-preservation verification are complete; navigation research remains separate.
 
 ## Context
 

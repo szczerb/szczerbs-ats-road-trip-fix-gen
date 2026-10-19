@@ -99,3 +99,15 @@ The [Practical Courier Jobs generator](PRACTICAL_COURIER_GENERATOR.md) is separa
 ## Separate reasonable tank upgrades
 
 Use `analyze-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml` for a report, or `generate-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental` for a standalone capacity mod. Both run under `PYTHONPATH=src python3 -m ats_road_trip`. [Automotive evidence, exact model policy, priority and manual checks](REASONABLE_GAS_TANK_UPGRADES.md). The default r0 changes only Mustang/F-150 capacities; it does not regenerate map or courier fixes.
+
+## Navigation parking-icon experiment
+
+The source-pinned N1 experiment is separate from station geometry and the map-wide processors:
+
+```bash
+PYTHONPATH=src python3 -m ats_road_trip.navigation_icons \
+  --source-package "/path/to/Workshop/3348711188/universal" \
+  --game-version 1.61.3.18 --acknowledge-experimental
+```
+
+The command verifies North America Background Map 5.3's reviewed map-data and three included-member hashes, then changes only car-parking visibility at four local map tiers. It writes a new timestamped `local_outputs/generated/` SCS and `local_outputs/work/` audit in this worktree. The build argument is caller-declared; the command does not inspect or launch ATS. Updated/missing inputs block generation. Existing runs are not overwritten. [Evidence, exact scope, priority and N0/N1 manual comparison](CAR_PARKING_NAVIGATION_ICONS.md). Phone/dashboard rendering remains unverified.
