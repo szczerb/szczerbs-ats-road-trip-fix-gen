@@ -2,7 +2,7 @@
 
 ## Context
 
-Date: 2026-10-19. [TASK-0039](../../tasks/active/TASK-0039-research-gas-station-car-rest.md) follows the user's request for natural car parking near station buildings, including painted bays and unmarked forecourts. Existing `rest` expands eligibility on original truck geometry under a 1,000-unit rule; that is a different selection policy. The user explicitly requires a separate branch and worktree and individual-station experiments before future distance/density integration.
+Date: 2026-10-19. [TASK-0039](../../tasks/done/TASK-0039-research-gas-station-car-rest.md) follows the user's request for natural car parking near station buildings, including painted bays and unmarked forecourts. Existing `rest` expands eligibility on original truck geometry under a 1,000-unit rule; that is a different selection policy. The user explicitly requires a separate branch and worktree and individual-station experiments before future distance/density integration.
 
 **Observed locally — ATS 1.61.3.18:** the selected Dawson City WCE placement combines a source PPD with no native car rest and a model containing four parallel paint strips around three car-sized bays. The matching native Road Trip descriptor provides a useful comparison, but is not the input geometry for generation. The model also provides surfaces and parked-truck locators; source UI-map polygons are coarser building/lot proxies. See [research evidence and limits](../../reference/GAS_STATION_CAR_REST_RESEARCH.md).
 
@@ -21,6 +21,6 @@ Date: 2026-10-19. [TASK-0039](../../tasks/active/TASK-0039-research-gas-station-
 
 The first handoff contains alternatives to test individually rather than a universal station classifier. Painted-bay thresholds and material roles are explicit reviewed policy; their applicability is limited to inspected models. The unmarked method depends on UI-map geometry that can omit details and checks sampled render surfaces; external objects, traffic behavior and maneuverability remain manual questions.
 
-Whole-sector overrides still do not merge in the game. Replacing the WCE combined fix with a fuel-plus-station PoC temporarily removes that fix's added car permissions on truck backlots across WCE; native source rest and original truck/bus interactions remain. The handoff must name this scope and retain all other source fixes in their original priority positions.
+Whole-sector overrides still do not merge in the game. The supplied combined stack resolves Dawson's sector to Alaska Expansion, overriding its WCE copy. Replacing the Alaska combined fix with an Alaska fuel-plus-station PoC temporarily removes that fix's generated car permissions on truck backlots across its payload; native source rest and original truck/bus interactions remain. WCE r9 stays enabled at its own lower source-relative position. The handoff must name this scope and retain all other source fixes in their original priority positions.
 
 Integrating either method with the map-wide rest policy, introducing distance/density rules, handling composite stations whose lot and GAS locator belong to different prefabs, and automating broad map selection require separate evidence and follow-up work.

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "processor": "station_parking",
+  "station_id": "dawson-city-chemron",
+  "map_name": "Alaska Expansion",
+  "game_version": "1.61.3.18",
+  "method": "painted_bays",
+  "sector": "map/usa/sec-0029-0045.base",
+  "prefab_uid": "0x5ca1fea582800001",
+  "model_geometry": "prefab/gas/nm_truckstop1_chemron.pmg",
+  "fingerprints": {
+    "source_archive": "d879c245c1bc8b88c9a884d88952ccaad88b58ce759f665832fd0b664a6200fb",
+    "base_fix": "7a6360db60912cf77096ee3780501318c38892b375f3723be82bd4377796145f",
+    "sector": "208711d8347456aa687f1c1ac4044bcdcf4e46d1d001730a2ff901c074037a01",
+    "descriptor": "7a61eccd9d614cd7892c68949b0d4ffcc27fd8dc70a0dd4df741273d67bb1855",
+    "model_geometry": "eaf63893a37537bc2acb5e0d961115ea1534c422b6e12c56c94dd7fee89ce491",
+    "mesh": "7a9ea5a438a75ecab933f71ec78574ef9ecac3db3f22124d6808e6b15997af74"
+  },
+  "mesh_materials": {
+    "ground": [
+      "mat_0008_asphalt_ca_prefab_light"
+    ],
+    "paint": [
+      "mat_0005_lines1"
+    ]
+  },
+  "parameters": {}
+}

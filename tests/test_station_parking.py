@@ -41,6 +41,21 @@ def mesh_text():
     return '\n'.join(result)+'\n'
 
 
+def unmarked_mesh_text():
+    """Station model with only asphalt: no paint material or parked locators."""
+    result=['Header {',' FormatVersion: 5',' Source: "authored fixture"',' Type: "Model"',' Name: "station"','}',
+            'Global {',' VertexCount: 4',' TriangleCount: 2',' MaterialCount: 1',' PieceCount: 1',
+            ' PartCount: 1',' BoneCount: 0',' LocatorCount: 0',' Skeleton: "station.pis"','}',
+            'Material {',' Alias: "asphalt"',' Effect: "eut2.dif.spec"','}',
+            'Piece {',' Index: 0',' Material: 0',' VertexCount: 4',' TriangleCount: 2',' StreamCount: 1',
+            ' Stream {','  Format: FLOAT3','  Tag: "_POSITION"',
+            '  0 ( -30.0 0.0 30.0 )','  1 ( 40.0 0.0 30.0 )',
+            '  2 ( 40.0 0.0 -40.0 )','  3 ( -30.0 0.0 -40.0 )',' }',' Triangles {',
+            '  0 ( 0 1 2 )','  1 ( 0 2 3 )',' }','}',
+            'Part {',' Name: "part1"',' PieceCount: 1',' LocatorCount: 0',' Pieces: 0',' Locators:','}']
+    return '\n'.join(result)+'\n'
+
+
 def source_resources():
     contents=fuel_resources([((-4.,.1,0.),0),((-4.,.1,0.),1)])
     ppd=contents[PPD];header=list(struct.unpack_from('<24I',ppd))
@@ -121,6 +136,30 @@ class StationPlannerTests(unittest.TestCase):
         truck=report['original_rest_groups'][0]['vertices']
         self.assertNotEqual({(x,z) for x,z in chosen},{(x,z) for x,y,z in truck})
         self.assertTrue(changes)
+
+    def test_unmarked_method_works_without_any_paint_material_or_piece(self):
+        package,stack,config=self.make_stack();config['method']='unmarked_geometry'
+        self.mesh=unmarked_mesh_text()
+        config['mesh_materials']['paint']=[]
+        config['fingerprints']['mesh']=hashlib.sha256(self.mesh.encode()).hexdigest()
+        report,changes=self.plan(stack,config,package)
+        self.assertTrue(report['coverage']['complete'],report['coverage'])
+        self.assertEqual(report['proposal']['method'],'unmarked_map_geometry')
+        self.assertGreaterEqual(len(report['selected']['polygon_xz']),3)
+        self.assertTrue(changes)
+        self.assertEqual(report['mesh_summary']['counts']['materials'],1)
+        self.assertEqual(report['mesh_summary']['counts']['pieces'],1)
+        self.assertEqual(report['mesh_summary']['locators'],[])
+        original_triggers=inspect_rest_triggers(self.original[PPD])
+        changed_ppd=next(value for path,value in changes.items() if path.endswith('.ppd'))
+        changed_triggers=inspect_rest_triggers(changed_ppd)
+        self.assertEqual(changed_triggers[:len(original_triggers)],original_triggers)
+        self.assertIn(token('parking_car'),{group['action'] for group in changed_triggers})
+
+    def test_painted_method_requires_a_nonempty_paint_alias_list(self):
+        package,stack,config=self.make_stack();config['mesh_materials']['paint']=[]
+        with self.assertRaisesRegex(ValueError,'paint'):
+            self.plan(stack,config,package)
 
     def test_repeated_planning_is_identical_including_alias_contexts_and_svg(self):
         package,stack,config=self.make_stack()
