@@ -27,6 +27,10 @@ def render_station_plan(report):
         reasons=candidate['rejection_reasons'] or ['passes current static checks']
         for reason in reasons:
             decisions.extend(textwrap.wrap(str(reason).replace('_',' '),width=78,initial_indent='  ',subsequent_indent='    '))
+        if candidate.get('ranking_components'):
+            r=candidate['ranking_components']
+            decisions.append(f"  rank: paint={r['separator_geometry_evidence']} pump={r['pump_clearance_capped_20']:.2f}m bays={r['usable_bay_count']}")
+            decisions.append('  layout: '+candidate.get('layout','paint-derived bank'))
         decisions.append('')
     height=max(880,110+18*len(decisions))
     lines=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="{height}" viewBox="0 0 1800 {height}">',
@@ -39,6 +43,20 @@ def render_station_plan(report):
     for road in geometry.get('roads',[]):
         a,b=map(pt,[(p[0],p[2]) for p in road['vertices']])
         lines.append(f'<line x1="{a[0]}" y1="{a[1]}" x2="{b[0]}" y2="{b[1]}" stroke="#aa9c6e" stroke-width="2"/>')
+    if report.get('effective_model_state'):
+        features=report.get('model_features',{})
+        rows=[*features.get('curb_evidence',{}).get('features',[]),
+              *features.get('entrance_clearance',{}).get('proxies',[]),
+              *features.get('obstacles',{}).get('features',[])]
+        for feature in rows:
+            colors={'low_raised_edge_surface_proxy':'#4c6270','entrance_keep_clear_proxy':'#dc7934','model_obstacle_triangle':'#83705b'}
+            lines.append(poly(feature['polygon_xz'],'none',colors.get(feature['kind'],'#777'),
+                              'stroke-dasharray="2 2"'))
+        radius=next((c.get('diagnostic_exclusions',{}).get('pump_operational_radius') for c in candidates
+                     if c.get('diagnostic_exclusions')),6.)
+        for spawn in geometry.get('gas_spawns',[]):
+            x,y=pt((spawn['position'][0],spawn['position'][2]))
+            lines.append(f'<circle cx="{x}" cy="{y}" r="{radius*scale}" fill="none" stroke="#216c43" stroke-dasharray="4 3"/>')
     for bank in report.get('proposal',{}).get('candidates',[]):
         for strip in bank.get('strips',[]):
             lines.append(poly(strip['polygon_xz'],'#fff','#222'))
@@ -49,6 +67,17 @@ def render_station_plan(report):
         if selected.get('approach_xz'):lines.append(poly(selected['approach_xz'],'#c5dcf0','#6688aa','fill-opacity="0.5"'))
         lines.append(poly(selected['polygon_xz'],'#4e97ca','#154775','fill-opacity="0.7"'))
         for bay in selected.get('bay_polygons_xz',[]):lines.append(poly(bay['polygon_xz'],'none','#fff'))
+        if selected.get('activation_polygon_xz'):
+            lines.append(poly(selected['physical_parking_polygon_xz'],'none','#f4b942','stroke-width="2"'))
+            center=[sum(p[i] for p in selected['polygon_xz'])/len(selected['polygon_xz']) for i in (0,1)]
+            heading=selected.get('heading_xz')
+            if heading:
+                a=pt([center[i]-heading[i]*2 for i in (0,1)]);b=pt([center[i]+heading[i]*2 for i in (0,1)])
+                lines.append(f'<line x1="{a[0]}" y1="{a[1]}" x2="{b[0]}" y2="{b[1]}" stroke="#fff" stroke-width="3"/>')
+                # Two wings mark the suggested nose; yaw is not an engine predicate.
+                for sign in (-1,1):
+                    wing=pt([center[0]+heading[0]-sign*heading[1]*.6,center[1]+heading[1]+sign*heading[0]*.6])
+                    lines.append(f'<line x1="{b[0]}" y1="{b[1]}" x2="{wing[0]}" y2="{wing[1]}" stroke="#fff" stroke-width="3"/>')
     for index,candidate in enumerate(candidates,1):
         center=[sum(p[i] for p in candidate['polygon_xz'])/len(candidate['polygon_xz']) for i in (0,1)]
         x,y=pt(center)
@@ -75,6 +104,8 @@ def render_station_plan(report):
         lines.append(f'<rect x="{a[0]}" y="{a[1]}" width="{b[0]-a[0]}" height="{b[1]-a[1]}" fill="#fcfcfa"/>')
         lines.extend(drawing)
         lines.append('</svg>')
+    if report.get('effective_model_state'):
+        lines.append('<text x="30" y="810" font-family="sans-serif" font-size="12">Dashed green: pump clearance proxy; gold: physical proposal; blue: activation polygon; arrow: suggested nose. Engine pose envelope UNKNOWN.</text>')
     lines.extend(['<text x="30" y="835" font-family="sans-serif" font-size="13">Green dots = GAS; purple = original rest / parked locators; thin white strips = detected source paint.</text>',
                   '<text x="30" y="858" font-family="sans-serif" font-size="13">Experimental source/model geometry checks; game collision, fatigue, icons and reload remain unverified.</text>','</svg>'])
     return '\n'.join(lines)+'\n'

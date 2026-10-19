@@ -1,5 +1,7 @@
 # Current State
 
+Active heuristic development: [TASK-0044](../tasks/active/TASK-0044-improve-effective-station-parking-heuristics.md) continues on the isolated station worktree, with effective model-state validation, activation research and real-case diagnostics. TASK-0043 presentation remains deferred.
+
 ## Station-parking refactor and navigation-icon investigation
 
 **Observed locally — 2026-10-19, stage 1 complete:** [TASK-0041](../tasks/done/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md) reorganized the six flat station modules into `station_parking`, separating candidate methods, shared validation, diagnostics, planning, workflow and trigger writing. Commit `7eea2cf` records the independently verified refactor. The full 326-test suite and 45 focused checks passed; three fixture cases and both pinned Dawson inputs have byte-identical output snapshots, fixture SCS archives and actual planned gameplay bytes are unchanged, CLI text and setuptools discovery are preserved, output-root resolution is correct, and all 57 moved definition bodies were checked. [ADR-0019](../architecture/decisions/ADR-0019-station-parking-module-boundaries.md) records the code boundaries. The completed stage introduced no marker behavior or parking geometry changes.

@@ -43,7 +43,7 @@ def _world_vertices(ppd,prefab,nodes,vertices):
     origin=prefab.details['origin'];anchor=nodes[prefab.details['nodes'][0]].position
     return [[x,anchor[1]+p[1]-controls[origin][1],z] for p,(x,z) in zip(vertices,horizontal)]
 
-def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
+def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None):
     """Return a reproducible report and only the new station's resource edits."""
     validate_config(config)
     if config['game_version']!=game_version:
@@ -78,7 +78,7 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
         raise ValueError('Effective selected sector SHA-256 drift')
     sector=parse_sector(data);prefab=next((p for p in sector.prefabs if p.uid==uid),None)
     if prefab is None: raise ValueError('Selected station is missing from effective stack')
-    if prefab.details['parts'] or prefab.details['variant'] not in (0,token('default')):
+    if config['schema_version']==1 and (prefab.details['parts'] or prefab.details['variant'] not in (0,token('default'))):
         return blocked('Non-default or additional prefab parts require a separate variant review')
     definitions=prefab_definitions(stack)
     entry=definitions.get(prefab.details['model'])
@@ -98,6 +98,28 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
     mesh=read_station_mesh(mesh_text)
     if mesh['name']!=model.rsplit('/',1)[-1][:-4]:
         raise ValueError('Converted mesh name differs from selected prefab model')
+    if config['schema_version']==2:
+        from .model_state import resolve_model_state
+        if mesh_state_text is None or _hash(mesh_state_text.encode('utf-8'))!=config['fingerprints']['mesh_state']:
+            raise ValueError('mesh_state SHA-256 drift or missing paired PIT')
+        if _hash(stack.read(model,max_bytes=32*1024*1024))!=config['fingerprints']['model_definition']:
+            raise ValueError('model_definition SHA-256 drift')
+        mesh,state=resolve_model_state(mesh,mesh_state_text,variant=prefab.details['variant'],
+                                       additional_parts=prefab.details['parts'])
+        materials=[]
+        for path,digest in sorted(config['material_resources'].items()):
+            if path not in stack.resources or _hash(stack.read(path,max_bytes=32*1024*1024))!=digest:
+                raise ValueError('Effective material resource SHA-256 drift: '+path)
+            materials.append({'path':path,'sha256':digest,'provider':stack.resources[path][1].package})
+        report['effective_model_state']=state
+        report['effective_material_resources']=materials
+        dependencies=[sector_path,definition,descriptor,model,config['model_geometry']]
+        report['effective_inputs']=[{'path':path,'sha256':_hash(stack.read(path,max_bytes=64*1024*1024)),
+                                    'provider':stack.resources[path][1].package} for path in dependencies]
+        report['activation']={'polygon_range':3.,'range_axis':'vertical','flags':0,
+            'partial_activation':False,'vehicle_test_geometry':'Unknown',
+            'pose_envelope_status':'Unknown; no engine-predicted usable-pose envelope',
+            'physical_vs_activation':'Native polygon retained without assumed vehicle-reference padding'}
     aliases={m['alias'] for m in mesh['materials']}
     if any(set(names)-aliases for names in config['mesh_materials'].values()):
         raise ValueError('Reviewed surface/paint material alias is absent from converted mesh')
@@ -108,6 +130,10 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
     fuel_matches=match_gas_services(ppd,prefab,nodes,services)
     geometry=inspect_station_map(ppd)
     original_rest=inspect_rest_triggers(ppd,actions=set(modes))
+    if config['schema_version']==2:
+        from .features import inspect_model_features
+        report['model_features']=inspect_model_features(mesh,ground=config['mesh_materials']['ground'],
+                                                      paint=config['mesh_materials']['paint'])
     report.update({'source':{'sector':sector_path,'prefab_uid':hex(uid),'prefab':unit.name,
                             'descriptor':descriptor,'definition':definition,'model':model,
                             'fuel_spawn_to_service':{str(k):hex(v) for k,v in fuel_matches.items()}},
@@ -118,7 +144,8 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
         proposal=propose_painted_parking(mesh,paint_materials=config['mesh_materials']['paint'],
                                         parameters=PaintedParkingParameters(**config['parameters']))
     else:
-        proposal=propose_unmarked_parking(ppd,ParkingParameters(**config['parameters']))
+        proposal=propose_unmarked_parking(ppd,ParkingParameters(**config['parameters']),
+            **({'layouts':('perpendicular','parallel')} if config['schema_version']==2 else {}))
     report['proposal']=proposal
     report['geometry']=proposal.get('geometry',geometry)
     evaluated=[]
@@ -134,6 +161,14 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
             candidate['trigger_edge_inset']=.25
             candidate['polygon_xz']=_inset_rectangle(candidate['polygon_xz'])
         reasons=list(candidate.get('rejection_reasons',[]))
+        if config['schema_version']==2:
+            conflicts=[]
+            for feature in report['model_features']['entrance_clearance']['proxies']:
+                if any(polygon_distance(region,feature['polygon_xz'])==0
+                       for region in [candidate['polygon_xz'],*([candidate['approach_xz']] if candidate.get('approach_xz') else [])]):
+                    conflicts.append(feature['id'])
+            candidate['entrance_proxy_conflicts']=conflicts
+            if conflicts:reasons.append('intersects_door_keep_clear_proxy')
         polygon=candidate['polygon_xz'];approach=candidate.get('approach_xz')
         if not any(_within(list(map(tuple,polygon)),[(v[0],v[2]) for v in p['vertices']]) for p in accessible):
             reasons.append('outside_accessible_map_proxy')
@@ -142,8 +177,20 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
         # Painted banks have explicit footprint evidence, but still require
         # space to approach from at least one short-edge side. The model test
         # below checks their footprint; driving access is retained as unknown.
-        checks=_mesh_checks(mesh,polygon,approach,config['mesh_materials']['ground'],config['mesh_materials']['paint'])
-        work_budget+=checks.get('work_units',0)
+        if config['schema_version']==2:
+            from .selection import evaluate_access
+            candidate['rejection_reasons']=list(dict.fromkeys(reasons))
+            access=evaluate_access(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
+                                   paint=config['mesh_materials']['paint'])
+            candidate.update({key:value for key,value in access.items() if key!='rejection_reasons'})
+            reasons.extend(access['rejection_reasons'])
+            approach=candidate.get('approach_xz')
+            checks=access['model_surface_checks'] or {'rejection_reasons':[],'sampling_status':'Skipped after access rejection'}
+            candidate['physical_parking_polygon_xz']=candidate.get('mesh_envelope_xz',polygon)
+            candidate['activation_polygon_xz']=polygon
+        else:
+            checks=_mesh_checks(mesh,polygon,approach,config['mesh_materials']['ground'],config['mesh_materials']['paint'])
+        work_budget+=candidate.get('evaluation_work_units',checks.get('work_units',0))
         if work_budget>20_000_000:
             return blocked('Station evaluation exceeds the bounded total mesh work budget')
         reasons.extend(checks['rejection_reasons'])
@@ -155,6 +202,10 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version):
                 reasons.append('already_has_overlapping_native_car_rest')
         candidate['rejection_reasons']=list(dict.fromkeys(reasons))
         evaluated.append(candidate)
+    if config['schema_version']==2:
+        from .selection import rank_candidates
+        evaluated=rank_candidates(evaluated)
+        report['ranking_policy']='Valid first; evidence, clearance and capacity components with stable-ID tie break (see ranking_components)'
     report['candidates']=evaluated
     selected=next((c for c in evaluated if not c['rejection_reasons']),None)
     report['selected']=selected

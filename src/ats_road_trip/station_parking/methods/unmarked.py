@@ -30,7 +30,7 @@ class ParkingParameters:
         if self.edge_spacing < self.width:
             raise ValueError('Candidate spacing must be at least the bay width')
 
-def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None = None) -> dict:
+def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None = None, *, layouts=('perpendicular',)) -> dict:
     """Propose bays along pump-facing edges of dark non-canopy map polygons.
 
     This is a geometry-only hypothesis. A canopy is identified by containing a
@@ -38,6 +38,9 @@ def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None =
     No native car/truck rest vertices participate in candidate construction.
     """
     parameters = parameters or ParkingParameters()
+    if (not isinstance(layouts,(list,tuple)) or not layouts
+            or set(layouts)-{'perpendicular','parallel'} or len(set(layouts))!=len(layouts)):
+        raise ValueError('Select explicit unique perpendicular or parallel layouts')
     geometry = inspect_station_map(data)
     polygons = geometry['polygons']
     accessible = [p for p in polygons if p['color']==1]
@@ -67,56 +70,64 @@ def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None =
             toward = (centroid[0]-center[0],centroid[1]-center[1])
             if normal[0]*toward[0]+normal[1]*toward[1] <= 0:
                 continue
-            usable = length-1-parameters.width
-            if usable/parameters.edge_spacing > 1000:
-                raise ValueError('Building edge would exceed bounded candidate budget')
-            count = int(usable//parameters.edge_spacing)+1
-            # Center the finite row; no special station coordinates are supplied.
-            first = (length-(count-1)*parameters.edge_spacing)/2
-            for index in range(count):
-                t = first+index*parameters.edge_spacing
-                origin = (a[0]+t*tangent[0],a[1]+t*tangent[1])
-                def rectangle(start,end):
-                    return [(origin[0]+s*tangent[0]+n*normal[0],origin[1]+s*tangent[1]+n*normal[1])
-                            for s,n in [(-parameters.width/2,start),(parameters.width/2,start),
-                                        (parameters.width/2,end),(-parameters.width/2,end)]]
-                points = rectangle(parameters.wall_setback,parameters.wall_setback+parameters.depth)
-                aisle = rectangle(parameters.wall_setback+parameters.depth,
-                                  parameters.wall_setback+parameters.depth+parameters.aisle_depth)
-                reasons = []
-                if not any(_within(points+[],_xz(p['vertices'])) and _within(aisle,_xz(p['vertices'])) for p in accessible):
-                    reasons.append('footprint_or_approach_outside_accessible_map_proxy')
-                obstacle_ids = [p['id'] for p in obstacles
-                                if polygon_distance(points,_xz(p['vertices'])) <= parameters.obstacle_margin
-                                or polygon_distance(aisle,_xz(p['vertices'])) <= parameters.obstacle_margin]
-                if obstacle_ids:
-                    reasons.append('footprint_or_approach_intersects_obstacle_proxy')
-                clearance = min(polygon_distance(points,[p]) for p in gas)
-                if clearance < parameters.pump_clearance:
-                    reasons.append('too_close_to_gas_interaction')
-                bay_center = tuple(sum(p[i] for p in points)/4 for i in range(2))
-                if min(math.dist(bay_center,p) for p in gas)>parameters.max_station_distance:
-                    reasons.append('outside_local_station_search')
-                road_conflicts=[]
-                for road in geometry['roads']:
-                    segment=_xz(road['vertices'])
-                    if (polygon_distance(points,segment)<parameters.road_clearance
-                            or polygon_distance(aisle,segment)<parameters.road_clearance):
-                        road_conflicts.append(road['indices'])
-                if road_conflicts:
-                    reasons.append('intersects_map_navigation_corridor_proxy')
-                key={'building':building['id'],'edge':edge,'index':index,
-                     'parameters':asdict(parameters),'polygon':points}
-                uid=hashlib.sha256(json.dumps(key,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:16]
-                if len(candidates)>=128:
-                    raise ValueError('Station geometry exceeds bounded 128-candidate budget')
-                candidates.append({'id':uid,'building_map_polygon':building['id'],'edge':edge,
-                                   'polygon_xz':[list(p) for p in points],
-                                   'approach_xz':[list(p) for p in aisle],
-                                   'pump_clearance':clearance,'obstacle_ids':obstacle_ids,
-                                   'road_conflicts':road_conflicts,'rejection_reasons':reasons,
-                                   'evidence':'Hypothesis — generated from source UI-map polygons',
-                                   'height_status':'unresolved_without_model_surface_evidence'})
+            for layout in layouts:
+                along_width=parameters.width if layout=='perpendicular' else parameters.depth
+                outward_depth=parameters.depth if layout=='perpendicular' else parameters.width
+                spacing=max(parameters.edge_spacing,along_width)
+                if length<along_width+1:continue
+                usable = length-1-along_width
+                if usable/spacing > 1000:
+                    raise ValueError('Building edge would exceed bounded candidate budget')
+                count = int(usable//spacing)+1
+                # Center the finite row; no special station coordinates are supplied.
+                first = (length-(count-1)*spacing)/2
+                for index in range(count):
+                    t = first+index*spacing
+                    origin = (a[0]+t*tangent[0],a[1]+t*tangent[1])
+                    def rectangle(start,end):
+                        return [(origin[0]+s*tangent[0]+n*normal[0],origin[1]+s*tangent[1]+n*normal[1])
+                                for s,n in [(-along_width/2,start),(along_width/2,start),
+                                            (along_width/2,end),(-along_width/2,end)]]
+                    points = rectangle(parameters.wall_setback,parameters.wall_setback+outward_depth)
+                    aisle = rectangle(parameters.wall_setback+outward_depth,
+                                      parameters.wall_setback+outward_depth+parameters.aisle_depth)
+                    reasons = []
+                    if not any(_within(points+[],_xz(p['vertices'])) and _within(aisle,_xz(p['vertices'])) for p in accessible):
+                        reasons.append('footprint_or_approach_outside_accessible_map_proxy')
+                    obstacle_ids = [p['id'] for p in obstacles
+                                    if polygon_distance(points,_xz(p['vertices'])) <= parameters.obstacle_margin
+                                    or polygon_distance(aisle,_xz(p['vertices'])) <= parameters.obstacle_margin]
+                    if obstacle_ids:
+                        reasons.append('footprint_or_approach_intersects_obstacle_proxy')
+                    clearance = min(polygon_distance(points,[p]) for p in gas)
+                    if clearance < parameters.pump_clearance:
+                        reasons.append('too_close_to_gas_interaction')
+                    bay_center = tuple(sum(p[i] for p in points)/4 for i in range(2))
+                    if min(math.dist(bay_center,p) for p in gas)>parameters.max_station_distance:
+                        reasons.append('outside_local_station_search')
+                    road_conflicts=[]
+                    for road in geometry['roads']:
+                        segment=_xz(road['vertices'])
+                        if (polygon_distance(points,segment)<parameters.road_clearance
+                                or polygon_distance(aisle,segment)<parameters.road_clearance):
+                            road_conflicts.append(road['indices'])
+                    if road_conflicts:
+                        reasons.append('intersects_map_navigation_corridor_proxy')
+                    key={'building':building['id'],'edge':edge,'index':index,
+                         'parameters':asdict(parameters),'polygon':points}
+                    if layout!='perpendicular':key['layout']=layout
+                    uid=hashlib.sha256(json.dumps(key,sort_keys=True,separators=(',',':')).encode()).hexdigest()[:16]
+                    if len(candidates)>=128:
+                        raise ValueError('Station geometry exceeds bounded 128-candidate budget')
+                    candidates.append({'id':uid,'building_map_polygon':building['id'],'edge':edge,
+                                       'polygon_xz':[list(p) for p in points],
+                                       'approach_xz':[list(p) for p in aisle],
+                                       'pump_clearance':clearance,'obstacle_ids':obstacle_ids,
+                                       'road_conflicts':road_conflicts,'rejection_reasons':reasons,
+                                       'evidence':'Hypothesis — generated from source UI-map polygons',
+                                       'height_status':'unresolved_without_model_surface_evidence',
+                                       **({'layout':layout,'parking_heading_xz':list(tangent if layout=='parallel' else (-normal[0],-normal[1]))}
+                                          if len(layouts)>1 or layout!='perpendicular' else {})})
     candidates.sort(key=lambda c:(bool(c['rejection_reasons']),-c['pump_clearance'],c['id']))
     selected=next((c for c in candidates if not c['rejection_reasons']),None)
     return {'method':'unmarked_map_geometry','parameters':asdict(parameters),'geometry':geometry,

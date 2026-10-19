@@ -15,10 +15,12 @@ from .methods.unmarked import ParkingParameters
 def validate_config(config):
     required={'schema_version','processor','station_id','map_name','game_version','method',
               'sector','prefab_uid','fingerprints','model_geometry','mesh_materials','parameters'}
+    if isinstance(config,dict) and config.get('schema_version')==2:
+        required.add('material_resources')
     if not isinstance(config,dict) or set(config)!=required:
         raise ValueError('Station configuration has missing or unknown fields')
-    if type(config['schema_version']) is not int or config['schema_version']!=1 or config['processor']!='station_parking':
-        raise ValueError('Expected station_parking configuration schema 1')
+    if type(config['schema_version']) is not int or config['schema_version'] not in (1,2) or config['processor']!='station_parking':
+        raise ValueError('Expected station_parking configuration schema 1 or 2')
     if not isinstance(config['station_id'],str) or not re.fullmatch(r'[a-z][a-z0-9-]{0,63}',config['station_id']):
         raise ValueError('Station ID must be a short lowercase slug')
     if not isinstance(config['map_name'],str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9 ._-]{0,63}',config['map_name']):
@@ -32,6 +34,16 @@ def validate_config(config):
     if not isinstance(config['prefab_uid'],str) or not re.fullmatch(r'0x[0-9a-f]{1,16}',config['prefab_uid']) or int(config['prefab_uid'],16)==0:
         raise ValueError('Select one nonzero prefab UID as lowercase hexadecimal')
     fingerprint_keys={'source_archive','sector','descriptor','model_geometry','mesh'}
+    if config['schema_version']==2:
+        fingerprint_keys.update({'model_definition','mesh_state'})
+        resources=config['material_resources']
+        if not isinstance(resources,dict) or not resources:
+            raise ValueError('Schema 2 requires reviewed effective material resource fingerprints')
+        for path,digest in resources.items():
+            if (not isinstance(path,str) or virtual_path(path)!=path
+                    or not path.endswith(('.mat','.tobj','.dds'))
+                    or not isinstance(digest,str) or not re.fullmatch('[0-9a-f]{64}',digest)):
+                raise ValueError('Material resources must pin canonical MAT/TOBJ/DDS paths and SHA-256 hashes')
     fp=config['fingerprints']
     if (not isinstance(fp,dict) or not fingerprint_keys<=set(fp) or set(fp)-fingerprint_keys-{'base_fix'}
             or any(not isinstance(v,str) or not re.fullmatch('[0-9a-f]{64}',v) for v in fp.values())):

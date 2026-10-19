@@ -34,11 +34,26 @@ _VARIANT_METADATA = {
         "footprint": None,
     },
 }
+_EFFECTIVE_VARIANT_METADATA = {
+    "painted_bays": {
+        "code": "D MARKED",
+        "slug": "d-marked",
+        "method": "paint-derived marked bays, grouped from visible effective-model separators",
+        "footprint": "grouped area inferred from separators visible in the pinned effective model",
+    },
+    "unmarked_geometry": {
+        "code": "C FORECOURT",
+        "slug": "c-forecourt",
+        "method": "unmarked forecourt geometry from the pinned effective model",
+        "footprint": None,
+    },
+}
 
 
 def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str, str]:
     """Build concise, player-facing identity for a station experiment variant."""
-    variant = _VARIANT_METADATA[config["method"]]
+    schema_two = config["schema_version"] == 2
+    variant = (_EFFECTIVE_VARIANT_METADATA if schema_two else _VARIANT_METADATA)[config["method"]]
     if config["method"] == "unmarked_geometry":
         parameters = ParkingParameters(**config.get("parameters", {}))
         footprint = f"one proposed {parameters.width:g} x {parameters.depth:g} m building-side footprint"
@@ -48,12 +63,16 @@ def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str,
         "Includes the pinned fuel baseline and replaces the selected map compatibility fix only; "
         "keep other source fixes enabled in their current order."
         if "base_fix" in config.get("fingerprints", {}) else
-        "No fuel baseline is included; this replaces the selected map compatibility fix only. "
-        "Keep other source fixes enabled in their current order.")
+        "Single-station sector override without a fuel baseline. Follow the reviewed handoff for "
+        "source priority and sector conflicts; keep unrelated source fixes in their current order.")
+    alternatives = (
+        "C FORECOURT and D MARKED are alternative geometry proposals; enable one at a time.\n"
+        if schema_two else
+        "Test exactly one A/B station-parking variant at a time.\n")
     description = (
         f"{variant['code']} — {variant['method']} — station {station_id}.\n"
         f"Footprint: {footprint}.\n"
-        "Test exactly one A/B station-parking variant at a time.\n"
+        f"{alternatives}"
         f"{baseline_line}\n"
         "Experimental for ATS 1.61 / Road Trip Ford; fatigue recovery, clearance and reload remain to be checked.\n"
         "Original archives, game files, and profiles are not modified by this generator.\n")
@@ -71,6 +90,42 @@ def _sha256_file(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _directory_snapshot(path: Path) -> tuple[tuple[str, int, int, bool], ...]:
+    """Record names and file stats without reading potentially huge package data."""
+    entries = []
+    for item in path.rglob("*"):
+        if not item.is_file() and not item.is_symlink():
+            continue
+        stat = item.stat()
+        entries.append((item.relative_to(path).as_posix(), stat.st_size, stat.st_mtime_ns,
+                        item.is_symlink()))
+    return tuple(sorted(entries))
+
+
+def _directory_snapshot_report(path: Path, snapshot: tuple[tuple[str, int, int, bool], ...]) -> dict:
+    encoded = json.dumps(snapshot, separators=(",", ":")).encode("utf-8")
+    return {"path": str(path), "file_count": len(snapshot), "snapshot_sha256": _sha256_bytes(encoded)}
+
+
+def _verify_directory_snapshots(snapshots: dict[Path, tuple[tuple[str, int, int, bool], ...]]) -> None:
+    for path, before in snapshots.items():
+        if _directory_snapshot(path) != before:
+            raise ValueError(f"Directory package changed during station-parking workflow: {path}")
+
+
+def _verify_selected_resource(path: Path, virtual: str, physical: str, expected_hash: str,
+                              *, extractor: str | Path | None, dlcs: tuple[str, ...]) -> None:
+    with Package(path, extractor=extractor, dlcs=dlcs) as package:
+        if package.files.get(virtual) != physical:
+            raise ValueError(f"Effective model resource selection changed during workflow: {virtual}")
+        if _sha256_bytes(package.read(virtual, max_bytes=128 * 1024 * 1024)) != expected_hash:
+            raise ValueError(f"Effective model resource changed during workflow: {virtual}")
 
 
 def _write_json(path: Path, data: dict) -> None:
@@ -93,9 +148,11 @@ def _load_config(path: Path) -> dict:
         "method", "sector", "prefab_uid", "fingerprints", "model_geometry",
         "mesh_materials", "parameters",
     }
+    if isinstance(data, dict) and data.get("schema_version") == 2:
+        required.add("material_resources")
     if not isinstance(data, dict) or set(data) != required:
-        raise ValueError("Station-parking config must match the schema_version 1 contract")
-    if type(data["schema_version"]) is not int or data["schema_version"] != 1:
+        raise ValueError("Station-parking config must match the schema_version 1 or 2 contract")
+    if type(data["schema_version"]) is not int or data["schema_version"] not in (1, 2):
         raise ValueError("Unsupported station-parking config schema_version")
     if data["processor"] != "station_parking":
         raise ValueError("Config processor must be station_parking")
@@ -116,8 +173,10 @@ def _load_config(path: Path) -> dict:
     if not isinstance(fingerprints, dict):
         raise ValueError("fingerprints must be an object")
     fingerprint_keys = {"source_archive", "sector", "descriptor", "model_geometry", "mesh"}
+    if data["schema_version"] == 2:
+        fingerprint_keys |= {"model_definition", "mesh_state"}
     if set(fingerprints) not in (fingerprint_keys, fingerprint_keys | {"base_fix"}):
-        raise ValueError("fingerprints must pin source_archive, sector, descriptor, model_geometry, and mesh")
+        raise ValueError("fingerprints do not match the station-parking schema contract")
     if any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
            for value in fingerprints.values()):
         raise ValueError("Fingerprints must be lowercase SHA-256 hex strings")
@@ -154,7 +213,9 @@ def _validate_fuel_base_fix(package: Package) -> dict:
 
 
 def _verify_input_identities(identities: dict[Path, tuple[int, int]],
-                             pinned_hashes: dict[Path, str]) -> None:
+                             pinned_hashes: dict[Path, str],
+                             directory_snapshots: dict[Path, tuple[tuple[str, int, int, bool], ...]] | None = None) -> None:
+    _verify_directory_snapshots(directory_snapshots or {})
     for path, before in identities.items():
         if (path.stat().st_size, path.stat().st_mtime_ns) != before:
             raise ValueError(f"Input package changed during station-parking workflow: {path}")
@@ -206,25 +267,33 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
     """
     if generate and not experimental:
         raise ValueError("Generation requires explicit --experimental acknowledgment")
-    if generate and revision != 0:
-        raise ValueError("Station-parking PoC packages use revision 0")
     if type(revision) is not int or revision < 0:
         raise ValueError("revision must be a nonnegative integer")
     config_path = Path(config_path).expanduser().resolve()
     mesh_path = Path(mesh_path).expanduser().resolve()
     map_path = Path(map_package).expanduser().resolve()
-    for label, path in (("config", config_path), ("mesh", mesh_path), ("map package", map_path)):
+    for label, path in (("config", config_path), ("mesh", mesh_path), ("map archive", map_path)):
         if not path.is_file():
             raise ValueError(f"{label} does not exist: {path}")
-    input_stats = {path: (path.stat().st_size, path.stat().st_mtime_ns)
-                   for path in (config_path, mesh_path, map_path)}
     config_hash = _sha256_file(config_path)
     mesh_hash = _sha256_file(mesh_path)
     source_hash = _sha256_file(map_path)
     config = _load_config(config_path)
+    schema_two = config["schema_version"] == 2
+    if schema_two and generate and revision == 0:
+        raise ValueError("Schema-2 behavior experiments require a new revision (at least 1)")
+    pit_path = mesh_path.with_suffix(".pit") if schema_two else None
+    if pit_path is not None and not pit_path.is_file():
+        raise ValueError(f"Schema-version 2 config requires the sibling PIT state file: {pit_path}")
+    pit_hash = _sha256_file(pit_path) if pit_path is not None else None
+    if schema_two and pit_hash != config["fingerprints"]["mesh_state"]:
+        raise ValueError("Converted PIT mesh-state SHA-256 does not match pinned fingerprint")
+    input_paths = [config_path, mesh_path, map_path, *([pit_path] if pit_path else [])]
+    input_stats = {path: (path.stat().st_size, path.stat().st_mtime_ns) for path in input_paths}
     station_id = _slug(config["station_id"], "station_id")
     map_name = config["map_name"]
     mesh_text = mesh_path.read_text(encoding="utf-8-sig")
+    mesh_state_text = pit_path.read_text(encoding="utf-8-sig") if pit_path is not None else None
     stamp = run_id or datetime.now(ZoneInfo("Europe/Warsaw")).strftime("%Y-%m-%d_%H-%M-%S")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}", stamp):
         raise ValueError("run_id must use YYYY-MM-DD_HH-MM-SS")
@@ -246,7 +315,7 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
             raise ValueError("Installed ATS version does not match the pinned config game_version")
         game_paths, dlcs = _game_packages(installed)
         explicit = [Path(item).expanduser().resolve() for item in packages]
-        if not explicit or any(not path.is_file() for path in explicit):
+        if not explicit or any(not path.is_file() and not path.is_dir() for path in explicit):
             raise ValueError("Every explicit --package must be an existing archive or package directory")
         if sum(path == map_path for path in explicit) != 1:
             raise ValueError("--map-package must appear exactly once in the explicit LOW-HIGH --package order")
@@ -267,11 +336,14 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
         else:
             base_hash = None
         package_paths = [*game_paths, *explicit, *([base_path] if base_path else [])]
+        directory_snapshots = {path: _directory_snapshot(path) for path in package_paths if path.is_dir()}
         version_input = installed / "version.sii" if (installed / "version.sii").is_file() else installed / "version.scs"
         identity_paths = list(dict.fromkeys([version_input, *package_paths]))
         identities = {**input_stats,
                       **{path: (path.stat().st_size, path.stat().st_mtime_ns) for path in identity_paths}}
         pinned_hashes = {config_path: config_hash, mesh_path: mesh_hash, map_path: source_hash}
+        if pit_path is not None:
+            pinned_hashes[pit_path] = pit_hash
         if base_path is not None:
             pinned_hashes[base_path] = base_hash
         workflow = {
@@ -280,6 +352,9 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
             "analysis_only": not generate,
             "packages_low_to_high": [str(path) for path in package_paths],
             "source_map_package": str(map_path), "mesh_path": str(mesh_path),
+            "mesh_state_path": str(pit_path) if pit_path else None,
+            "directory_package_snapshots": [_directory_snapshot_report(path, snapshot)
+                                             for path, snapshot in sorted(directory_snapshots.items())],
             "base_fix": str(base_path) if base_path else None,
             "input_identities_stat": [{"path": str(path), "size": size, "mtime_ns": mtime}
                                        for path, (size, mtime) in identities.items()],
@@ -332,7 +407,7 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
                 baseline_coverage = baseline_context_report.get("coverage", {})
                 baseline_blockers = baseline_coverage.get("blockers", baseline_context_report.get("blockers", []))
                 if baseline_coverage.get("complete") is not True or baseline_blockers:
-                    _verify_input_identities(identities, pinned_hashes)
+                    _verify_input_identities(identities, pinned_hashes, directory_snapshots)
                     planner_report = {"coverage": {"complete": False,
                                                     "blockers": baseline_blockers or [{
                                                         "area": "baseline_context_preservation",
@@ -355,12 +430,49 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
                     mounted.append(context_package)
                     base_resources.update(context_resources)
             stack = ResourceStack(mounted)
+            selected_model_definition = None
+            model_definition_hash = None
+            if schema_two:
+                model_definition_path = virtual_path(str(Path(config["model_geometry"]).with_suffix(".pmd")))
+                selected = stack.resources.get(model_definition_path)
+                if selected is None:
+                    raise ValueError(f"Effective model definition is missing from the package stack: {model_definition_path}")
+                selected_package, selected_resource = selected
+                model_definition_bytes = stack.read(model_definition_path, max_bytes=128 * 1024 * 1024)
+                model_definition_hash = _sha256_bytes(model_definition_bytes)
+                if model_definition_hash != config["fingerprints"]["model_definition"]:
+                    raise ValueError("Effective model-definition SHA-256 does not match pinned fingerprint")
+                selected_model_definition = (selected_package.path, model_definition_path,
+                                             selected_resource.physical_path, model_definition_hash)
+                workflow["model_definition_path"] = model_definition_path
+                workflow["model_definition_source"] = str(selected_package.path)
+                workflow["model_definition_sha256"] = model_definition_hash
+            directory_resource_pins=[]
+            if schema_two:
+                for virtual,expected_hash in sorted(config["material_resources"].items()):
+                    selected=stack.resources.get(virtual)
+                    if selected and selected[0].path.is_dir():
+                        directory_resource_pins.append((selected[0].path / selected[1].physical_path,expected_hash))
+                virtual=config["model_geometry"]
+                selected=stack.resources.get(virtual)
+                if selected and selected[0].path.is_dir():
+                    directory_resource_pins.append((selected[0].path / selected[1].physical_path,config["fingerprints"]["model_geometry"]))
             from . import plan_station_parking, render_station_plan
-            planner_report, planned_resources = plan_station_parking(
-                stack, config, mesh_text, map_package=str(map_path), game_version=version)
+            if schema_two:
+                planner_report, planned_resources = plan_station_parking(
+                    stack, config, mesh_text, map_package=str(map_path), game_version=version,
+                    mesh_state_text=mesh_state_text)
+            else:
+                planner_report, planned_resources = plan_station_parking(
+                    stack, config, mesh_text, map_package=str(map_path), game_version=version)
+            _verify_input_identities(identities, pinned_hashes, directory_snapshots)
+            if selected_model_definition is not None:
+                _verify_selected_resource(*selected_model_definition, extractor=extractor, dlcs=dlcs)
         if not isinstance(planner_report, dict) or not isinstance(planned_resources, dict):
             raise ValueError("Station planner returned an invalid report/resources pair")
-        _verify_input_identities(identities, pinned_hashes)
+        _verify_input_identities(identities, pinned_hashes, directory_snapshots)
+        if selected_model_definition is not None:
+            _verify_selected_resource(*selected_model_definition, extractor=extractor, dlcs=dlcs)
         # Stable provenance inside the package excludes machine paths, run IDs,
         # mtimes and the work/output directory. The external audit retains those.
         base_overlaps = sorted(original_base_paths & set(planned_resources))
@@ -423,6 +535,12 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
             _write_json(audit_path, audit)
             return audit
         stable_report = {k: v for k, v in planner_report.items() if k not in ("workflow_path", "work_dir")}
+        _verify_input_identities(identities, pinned_hashes, directory_snapshots)
+        if selected_model_definition is not None:
+            _verify_selected_resource(*selected_model_definition, extractor=extractor, dlcs=dlcs)
+        for resource_path,expected_hash in directory_resource_pins:
+            if _sha256_file(resource_path)!=expected_hash:
+                raise ValueError("Effective directory model/material SHA-256 drift before packaging")
         written = write_mod(output, composed, stable_report, game_version=version,
                             display_name=metadata["display_name"],
                             description=metadata["description"], revision=revision, category="map")

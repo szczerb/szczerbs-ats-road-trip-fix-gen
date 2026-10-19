@@ -184,6 +184,83 @@ class StationRunTests(unittest.TestCase):
             self.assertIn("one A/B station-parking variant at a time", second_options["description"])
             self.assertEqual(resources, calls[1][1])
 
+    def test_schema_two_pins_pit_and_effective_definition_and_allows_revisions(self):
+        pit_path = self.mesh_path.with_suffix(".pit")
+        pit_path.write_text("PIT state", encoding="utf-8")
+        workshop = self.root / "workshop"
+        model_dir = workshop / "prefab" / "gas"
+        model_dir.mkdir(parents=True)
+        definition = model_dir / "station.pmd"
+        definition.write_bytes(b"effective model definition")
+        self.config["schema_version"] = 2
+        self.config["method"] = "painted_bays"
+        self.config["model_geometry"] = "prefab/gas/station.pmg"
+        self.config["material_resources"] = {"material/paint.mat": "e" * 64}
+        self.config["fingerprints"].pop("base_fix")
+        self.config["fingerprints"].update({
+            "model_definition": _sha(definition), "mesh_state": _sha(pit_path)})
+        self._write_config()
+        planner_calls = []
+
+        def planner(*args, **kwargs):
+            planner_calls.append((args, kwargs))
+            return ({"coverage": {"complete": True, "blockers": []}},
+                    {"def/station.sii": b"planned station parking"})
+
+        self.planner_module.plan_station_parking = planner
+        written = []
+        with patch.object(station_run, "write_mod", lambda path, resources, report, **kw:
+                          written.append((Path(path), report, kw)) or {"output": str(path)}):
+            result = station_run.run_station_parking(
+                self.config_path, self.mesh_path, self.source,
+                packages=[workshop, self.source], run_id="2026-10-19_12-00-09",
+                generate=True, experimental=True, revision=3)
+        self.assertEqual(result["status"], "generated")
+        self.assertEqual(planner_calls[0][1]["mesh_state_text"], "PIT state")
+        self.assertEqual(result["workflow"]["model_definition_path"], "prefab/gas/station.pmd")
+        self.assertEqual(result["workflow"]["model_definition_source"], str(workshop.resolve()))
+        self.assertEqual(result["workflow"]["directory_package_snapshots"][0]["file_count"], 1)
+        output, _, options = written[0]
+        self.assertTrue(output.name.startswith("d-marked-"))
+        self.assertTrue(output.name.endswith("-1.61-r3-experimental.scs"))
+        self.assertTrue(options["display_name"].startswith("D MARKED |"))
+        self.assertIn("C FORECOURT and D MARKED are alternative geometry proposals",
+                      options["description"])
+        with self.assertRaisesRegex(ValueError, "revision must be a nonnegative integer"):
+            station_run.run_station_parking(self.config_path, self.mesh_path, self.source,
+                                            packages=[self.source], revision=True)
+
+    def test_schema_one_keeps_planner_call_without_mesh_state_keyword(self):
+        self.config["fingerprints"].pop("base_fix")
+        self._write_config()
+        calls = []
+
+        def planner(*args, **kwargs):
+            calls.append(kwargs)
+            return ({"coverage": {"complete": True, "blockers": []}}, {})
+
+        self.planner_module.plan_station_parking = planner
+        station_run.run_station_parking(
+            self.config_path, self.mesh_path, self.source, packages=[self.source],
+            run_id="2026-10-19_12-00-10")
+        self.assertNotIn("mesh_state_text", calls[0])
+
+    def test_directory_package_changes_during_planning_are_rejected(self):
+        self.config["fingerprints"].pop("base_fix")
+        self._write_config()
+        workshop = self.root / "workshop-change-during-run"
+        workshop.mkdir()
+
+        def planner(*args, **kwargs):
+            (workshop / "new-override.pmd").write_bytes(b"appeared during planning")
+            return ({"coverage": {"complete": True, "blockers": []}}, {})
+
+        self.planner_module.plan_station_parking = planner
+        with self.assertRaisesRegex(ValueError, "Directory package changed"):
+            station_run.run_station_parking(
+                self.config_path, self.mesh_path, self.source, packages=[workshop, self.source],
+                run_id="2026-10-19_12-00-11")
+
     def test_incomplete_or_empty_plan_never_packages_fuel_baseline(self):
         self.planner_module.plan_station_parking = lambda *args, **kwargs: (
             {"coverage": {"complete": False, "blockers": []}}, {})
