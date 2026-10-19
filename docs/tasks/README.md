@@ -9,7 +9,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Backlog
 
-No unstarted tasks.
+- [TASK-0043: Polish navigation-fix metadata and artwork](backlog/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — deferred final player-facing metadata and dedicated 276 × 162 topic artwork for the user-tested N2 overlay; no packaging or artwork work has started.
 
 
 

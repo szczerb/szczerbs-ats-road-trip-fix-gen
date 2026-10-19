@@ -62,6 +62,16 @@ The user describes B's usable position as precise and unintuitive. Of three near
 
 **Observed locally — supplied images and log:** the three unchanged captures `ats_20261019_202859_00.png`, `ats_20261019_202919_00.png` and `ats_20261019_202947_00.png` and their hashes are listed in the [evidence manifest](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/evidence.json). All are 5120 × 1440. The first shows the engine-off prompt and the next two do not. The images show the HUD; navigation-icon visibility is reported by the user and is not directly shown in these captures. The preserved 457,425-byte log (SHA-256 `b18f554ccaca04f71126ce1d60c6dbfee3ab477d1c8ba1d06578e70285c3756f`) mounts B GEOMETRY and N1 before the captures and records nearby parking-action handled/reset events. Thus the images are attributable to the B + N1 session. Pixel positions do not establish metric offsets or geometry dimensions.
 
+The overhead images are already copied unchanged inside the retained research worktree; their identities were rechecked against the supplied originals on 2026-10-19. These links are relative to this document and point to ignored, local-only evidence:
+
+| Project copy | Observed prompt / user-reported position |
+| --- | --- |
+| [202859 overhead screenshot](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/ats_20261019_202859_00.png) | Engine-off prompt visible; usable B position. |
+| [202919 overhead screenshot](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/ats_20261019_202919_00.png) | No prompt visible; the user describes a slightly forward position. |
+| [202947 overhead screenshot](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/ats_20261019_202947_00.png) | No prompt visible; the user describes a slightly rearward position. |
+
+For a goal prompt, use the same `local_outputs/work/2026-10-19_20-36-39/navigation-followup/<filename>` paths relative to the worktree root. The adjacent `evidence.json` and `game.log.txt` retain hashes and session/action attribution. These images help compare visual placement and observed activation; they are not a metric overhead survey or sufficient data to hardcode world coordinates. Other checkouts must be supplied the local evidence or reuse the preserved copies under the [image-evidence rule](../project/WORKING_AGREEMENTS.md#image-evidence).
+
 Fatigue recovery, reload behavior, truck controls, fuel completion, numerical price/billing, and broader coverage remain unreported. This feedback does not establish that every apparent curb area is valid, and it supplies no reason to change generation heuristics now.
 
 ## Corrected experiment identity and delivery
