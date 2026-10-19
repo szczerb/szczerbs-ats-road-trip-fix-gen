@@ -1,5 +1,9 @@
 # Gameplay validation results
 
+## 2026-10-19: N2 fuel and parking icons confirmed in Mustang navigation
+
+**Documented — first-hand user report:** the user now reports that both refueling and parking icons are clearly visible in navigation in the Mustang. This confirms N2 fuel-icon visibility and continued parking-icon visibility at the reported test context, following the earlier N1 parking-only result. No new screenshot or log was supplied, and the exact navigation surface, location, zoom and active-profile details were not itemized. This is icon visibility evidence only; it does not report a completed fuel transaction, numerical price/billing result, rest or fatigue recovery, truck controls, reload behavior, or broader map/vehicle coverage. Do not infer those outcomes.
+
 ## 2026-10-19: N1 navigation icons and Dawson A/B prompt follow-up
 
 **Documented — first-hand user report:** with N1 NAV PARKING active, parking icons now appear in vehicle navigation. The fuel icon remains absent, although the in-world fuel action avatar is visible; this is not evidence of a completed fuel transaction. The user also reports that both Dawson rest alternatives, A LINES and B GEOMETRY, have an available small-vehicle parking action once the navigation icons help locate the position. This confirms prompt availability for both alternatives at the reported test site, but no completed rest or fatigue recovery.
@@ -8,7 +12,7 @@
 
 **Observed locally — supplied screenshots and game log:** three unchanged screenshots are `ats_20261019_202859_00.png`, `ats_20261019_202919_00.png`, and `ats_20261019_202947_00.png`, with hashes, dimensions and source-file limits in the [evidence manifest](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/evidence.json). The first shows an engine-off prompt; the next two do not. The preserved log mounts B GEOMETRY and N1 before all three captures and records nearby small-vehicle parking trigger handled/reset events, corroborating their session attribution. The images show the HUD; vehicle-navigation icon success is the user's report, not a direct image observation. They do not provide metric positions or prove completed rest. See the [dated station feedback](GAS_STATION_CAR_REST_FEEDBACK_2026_10_19.md) and [navigation investigation](CAR_PARKING_NAVIGATION_ICONS.md).
 
-**Updated N1 status:** the earlier Sioux Falls control's statement that N1 remained untested was accurate when written and is superseded by this dated user report for parking-icon visibility in vehicle navigation. Fuel-icon visibility remains absent at the reported test; N2 and completed fuel transactions remain untested. This does not expand the separate r9 two-town map-icon confirmation or establish universal vehicle/map coverage.
+**Updated N1 status:** the earlier Sioux Falls control's statement that N1 remained untested was accurate when written and is superseded by this dated user report for parking-icon visibility in vehicle navigation. At that N1 test, the fuel icon remained absent; the later [N2 report above](#2026-10-19-n2-fuel-and-parking-icons-confirmed-in-mustang-navigation) now confirms fuel-icon visibility with N2. Neither icon report establishes a completed fuel transaction. This does not expand the separate r9 two-town map-icon confirmation or establish universal vehicle/map coverage.
 
 ## 2026-10-19: native navigation control in Sioux Falls
 

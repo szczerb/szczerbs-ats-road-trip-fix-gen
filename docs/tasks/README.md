@@ -15,7 +15,7 @@ No unstarted tasks.
 
 ## Done
 
-- [TASK-0042: Test the analogous local-navigation fuel icon mask](done/TASK-0042-test-local-navigation-fuel-icon-mask.md) — N1 parking success and both A/B prompts recorded; engine-backed N2 fuel candidate, preserved N1 and geometry, 336 tests and payload/stack audits. Fuel rendering awaits user testing.
+- [TASK-0042: Test the analogous local-navigation fuel icon mask](done/TASK-0042-test-local-navigation-fuel-icon-mask.md) — N1 parking success and both A/B prompts recorded; engine-backed N2 fuel candidate, preserved N1 and geometry, 336 tests and payload/stack audits. Both fuel and parking icons subsequently user-confirmed in Mustang navigation.
 
 - [TASK-0041: Refactor station parking and investigate navigation icons](done/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md) — separate behavior-preserving refactor commit, effective background-mask research, source-pinned N1 navigation candidate, 332 tests and independent payload audit; N1 parking-navigation result subsequently user-confirmed at Dawson; N2 fuel follow-up is separate.
 
