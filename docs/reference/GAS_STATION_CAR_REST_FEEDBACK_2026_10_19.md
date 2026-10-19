@@ -30,9 +30,9 @@ Ignored evidence is retained under `local_outputs/work/2026-10-19_18-49-11/dawso
 | 4772 | `00:12:48.257` | Small-vehicle parking action resets while leaving the world |
 | 5229 | `00:13:11.284` | Geometry alternative mounts again after the screenshot |
 
-Earlier manager preview mounts around `00:02`–`00:03` are immediately unmounted and are not gameplay sessions. There is no intervening geometry mount between the painted gameplay stack and this screenshot. Therefore **the supplied successful screenshot belongs to `painted_bays`, now labelled A LINES**. A photo-only assessment had insufficient coordinates and could have suggested the other region; the explicit screenshot event and gameplay mount chronology resolve that ambiguity. The other reported no-position-found trial concerns B GEOMETRY, without proving that no physical activation position exists anywhere in its polygon.
+Earlier manager preview mounts around `00:02`–`00:03` are immediately unmounted and are not gameplay sessions. There is no intervening geometry mount between the painted gameplay stack and this screenshot. Therefore **the supplied successful screenshot belongs to `painted_bays`, now labelled A LINES**. A photo-only assessment had insufficient coordinates and could have suggested the other region; the explicit screenshot event and gameplay mount chronology resolve that ambiguity. The earlier no-position-found report concerns B GEOMETRY at the position tried then. A later follow-up below supersedes it as a general statement about prompt availability: the user now reports finding B's action with navigation icons as guidance.
 
-This establishes the observed/reported car interaction for this station and exact r0 package. Completed rest, fatigue recovery, reload stability, fuel/truck controls and broad map coverage remain individually unreported.
+This establishes the observed/reported car interaction for A at this station and exact r0 package. At the time of the original report, B's prompt availability remained unresolved. Completed rest, fatigue recovery, reload stability, fuel/truck controls and broad map coverage remain individually unreported.
 
 ## What the source-model lines establish
 
@@ -50,7 +50,19 @@ Consequently the original generated descriptor can drive a different visual mode
 
 **Observed locally — original geometry-only diagnostics:** four adjacent 3 × 6 m candidates along one edge pass the current static checks. They span local X approximately 3.166–15.766 m, a 12.6 m run, at Z approximately −19.270…−13.270 m. These are candidates of method B, not an already-validated enlargement of the successful A polygon. Nearby rejected candidates carry pump-interaction, building/canopy/obstacle-proxy or model-clearance conflicts. They must not be included merely to form a large rectangle.
 
-**Hypothesis / next experiment:** evaluate a contiguous usable strip or several adjacent parking footprints on the effective visible model, retaining pump, approach, door/furniture and NPC occupancy clearances. Use the successful A footprint as a control. A wider polygon should be derived from those exclusions, not from a blanket extension to the other end of the building. No geometry, trigger, NPC, source service or live profile is changed in this metadata follow-up.
+**Historical geometry hypothesis:** a contiguous usable strip or several adjacent parking footprints could be evaluated on the effective visible model, retaining pump, approach, door/furniture and NPC occupancy clearances. Any wider polygon would need to follow those exclusions rather than extend indiscriminately to the other end of the building. The newer feedback below reports B prompt availability and defers geometry changes; this earlier proposal is not an active placement instruction. No geometry, trigger, NPC, source service or live profile was changed in this metadata follow-up.
+
+## 2026-10-19: B GEOMETRY and navigation-icon follow-up
+
+**Documented — first-hand user report:** the user now confirms that both A LINES and B GEOMETRY expose a small-vehicle parking action at the Dawson test site once navigation icons help locate the position. This supersedes the earlier B trial's “no position found” as a statement of overall prompt availability; it does not erase the fact that the earlier attempted position had no prompt. No completed rest or fatigue recovery was reported.
+
+The user describes B's usable position as precise and unintuitive. Of three nearby positions, one displays the prompt while positions slightly forward or backward do not, despite apparent curb space. The user reports this as a placement/usability issue and does not establish that polygon size alone causes it. **Geometry changes are deferred**; no placement heuristic change is made here. A possible relationship to the vehicle activation reference point or footprint is a **Hypothesis** for future investigation, not a diagnosed cause.
+
+**Documented — first-hand user report:** N1 NAV PARKING now shows parking icons in vehicle navigation. The fuel icon remains absent even though the in-world fuel action avatar is visible; no fuel transaction result is implied.
+
+**Observed locally — supplied images and log:** the three unchanged captures `ats_20261019_202859_00.png`, `ats_20261019_202919_00.png` and `ats_20261019_202947_00.png` and their hashes are listed in the [evidence manifest](../../local_outputs/work/2026-10-19_20-36-39/navigation-followup/evidence.json). All are 5120 × 1440. The first shows the engine-off prompt and the next two do not. The images show the HUD; navigation-icon visibility is reported by the user and is not directly shown in these captures. The preserved 457,425-byte log (SHA-256 `b18f554ccaca04f71126ce1d60c6dbfee3ab477d1c8ba1d06578e70285c3756f`) mounts B GEOMETRY and N1 before the captures and records nearby parking-action handled/reset events. Thus the images are attributable to the B + N1 session. Pixel positions do not establish metric offsets or geometry dimensions.
+
+Fatigue recovery, reload behavior, truck controls, fuel completion, numerical price/billing, and broader coverage remain unreported. This feedback does not establish that every apparent curb area is valid, and it supplies no reason to change generation heuristics now.
 
 ## Corrected experiment identity and delivery
 

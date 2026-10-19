@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from ats_road_trip import navigation_icons as nav
 from ats_road_trip.sii import parse_units
+from ats_road_trip.package import Package, ResourceStack
 
 
 def _source_files(map_data=None):
@@ -81,6 +82,30 @@ class NavigationIconsTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     nav.enable_local_car_parking(malformed)
 
+    def test_n2_changes_only_candidate_fuel_bit_in_addition_to_n1(self):
+        source = _source_files()[nav.MAP_DATA]
+        n1 = nav.enable_local_car_parking(source)
+        n2 = nav._enable_local_categories(
+            source, mask=nav.CAR_PARKING_BIT | nav.FUEL_CANDIDATE_BIT,
+            label='parking/fuel candidate')
+        expected = source.replace(b'0x00685FFF', b'0x03685FFF', 4)
+        self.assertEqual(n2, expected)
+        self.assertNotEqual(n1, n2)
+        for index in range(8):
+            old = int(source.split(f'map_items_flags[{index}]:'.encode(), 1)[1]
+                      .splitlines()[0].split(b'//')[0].strip(), 16)
+            one = int(n1.split(f'map_items_flags[{index}]:'.encode(), 1)[1]
+                      .splitlines()[0].split(b'//')[0].strip(), 16)
+            two = int(n2.split(f'map_items_flags[{index}]:'.encode(), 1)[1]
+                      .splitlines()[0].split(b'//')[0].strip(), 16)
+            if index < 4:
+                self.assertEqual(two ^ one, nav.FUEL_CANDIDATE_BIT)
+            else:
+                self.assertEqual(two, one)
+        with self.assertRaisesRegex(ValueError, 'already set'):
+            nav._enable_local_categories(n2, mask=nav.CAR_PARKING_BIT | nav.FUEL_CANDIDATE_BIT,
+                                         label='parking/fuel candidate')
+
     def test_planner_pins_declared_version_and_all_source_includes(self):
         files = _source_files()
         with tempfile.TemporaryDirectory() as temporary:
@@ -96,6 +121,28 @@ class NavigationIconsTests(unittest.TestCase):
             self.assertEqual({entry['path'] for entry in report['source_members']}, set(files))
             self.assertTrue(report['world_tiers_4_to_7_unchanged'])
             self.assertTrue(report['fuel_category_bit_24_unchanged'])
+            self.assertFalse(report['in_game_verified'])
+
+    def test_n2_planner_reports_candidate_bit_and_exact_local_delta(self):
+        files = _source_files()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_source(root, files)
+            with patch.object(nav, 'SOURCE_HASHES', _hashes(files)):
+                with nav.Package(root) as package:
+                    report, resources = nav.plan_navigation_icons(
+                        package, game_version=nav.GAME_VERSION, variant='parking-fuel')
+                    with self.assertRaisesRegex(ValueError, 'Unknown navigation variant'):
+                        nav.plan_navigation_icons(package, game_version=nav.GAME_VERSION, variant='both')
+            self.assertEqual(resources[nav.MAP_DATA],
+                             files[nav.MAP_DATA].replace(b'0x00685FFF', b'0x03685FFF', 4))
+            self.assertEqual(report['experiment'], 'N2 NAV PARKING + FUEL')
+            self.assertEqual(report['candidate_fuel_category_bit_24'], True)
+            self.assertEqual(report['fuel_category_bit_24_unchanged'], False)
+            self.assertEqual([row['after'] for row in report['changed_tiers']],
+                             ['0x03685FFF'] * 4)
+            self.assertTrue(report['world_tiers_4_to_7_unchanged'])
+            self.assertTrue(report['all_other_source_bytes_preserved'])
             self.assertFalse(report['in_game_verified'])
 
     def test_planner_refuses_drifted_or_missing_includes_and_post_read_drift(self):
@@ -171,6 +218,65 @@ class NavigationIconsTests(unittest.TestCase):
                                              acknowledge_experimental=True,
                                              run_id='2026-10-19_20-00-01')
 
+    def test_n2_generation_has_distinct_metadata_and_rejects_invalid_variant_before_writes(self):
+        files = _source_files()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'background-map'
+            _write_source(source, files)
+            with patch.object(nav, 'REPO_ROOT', root), patch.object(nav, 'SOURCE_HASHES', _hashes(files)):
+                with self.assertRaisesRegex(ValueError, 'Unknown navigation variant'):
+                    nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
+                                             acknowledge_experimental=True, run_id='2026-10-19_20-00-02',
+                                             variant='parking-and-fuel')
+                self.assertFalse((root / 'local_outputs').exists())
+                result = nav.run_navigation_icons(
+                    source, game_version=nav.GAME_VERSION, acknowledge_experimental=True,
+                    run_id='2026-10-19_20-00-03', variant='parking-fuel')
+            output = Path(result['output'])
+            self.assertEqual(output.name, nav.N2_FILENAME)
+            self.assertTrue(output.name.startswith('n2-nav-parking-fuel-'))
+            self.assertEqual(result['generated_mod_count'], 1)
+            with zipfile.ZipFile(output) as archive:
+                self.assertEqual(archive.read(nav.MAP_DATA),
+                                 files[nav.MAP_DATA].replace(b'0x00685FFF', b'0x03685FFF', 4))
+                manifest = parse_units(archive.read('manifest.sii').decode())[0]
+                self.assertTrue(manifest.one('display_name').startswith('N2 NAV PARKING + FUEL'))
+                self.assertIn('1.61-r2-experimental', manifest.one('package_version'))
+                description = archive.read('mod_description.txt').decode()
+                self.assertTrue(description.startswith('N2 NAV PARKING + FUEL:'))
+                self.assertIn('N2 replaces N1', description)
+                self.assertIn('Put N2 ABOVE North America Background Map and every other map-data provider.', description)
+                self.assertIn('fuel category bit', description)
+                self.assertIn('remain unverified', description)
+                report = json.loads(archive.read('road_trip_fix_report.json'))
+                self.assertTrue(report['candidate_fuel_category_bit_24'])
+                self.assertFalse(report['fuel_category_bit_24_unchanged'])
+                self.assertFalse(report['in_game_verified'])
+
+    def test_variant_archives_are_whole_file_alternatives_with_explicit_priority(self):
+        files = _source_files()
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'background-map'
+            _write_source(source, files)
+            with patch.object(nav, 'REPO_ROOT', root), patch.object(nav, 'SOURCE_HASHES', _hashes(files)):
+                n1 = nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
+                                             acknowledge_experimental=True, run_id='2026-10-19_20-01-00')
+                n2 = nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
+                                             acknowledge_experimental=True, run_id='2026-10-19_20-01-01',
+                                             variant='parking-fuel')
+            with Package(source) as background, Package(n1['output']) as one, Package(n2['output']) as two:
+                high_n1 = ResourceStack([background, two, one])
+                high_n2 = ResourceStack([background, one, two])
+                self.assertEqual(high_n1.read(nav.MAP_DATA), one.read(nav.MAP_DATA))
+                self.assertEqual(high_n2.read(nav.MAP_DATA), two.read(nav.MAP_DATA))
+                self.assertNotEqual(high_n1.read(nav.MAP_DATA), high_n2.read(nav.MAP_DATA))
+                self.assertEqual(high_n2.read('def/map_data/colour_data.sui'),
+                                 files['def/map_data/colour_data.sui'])
+            self.assertIn('N2 replaces N1', nav.N2_DESCRIPTION)
+            self.assertIn('enable only one at a time', nav.N2_DESCRIPTION)
+
     def test_module_cli_exposes_the_narrow_experimental_command(self):
         env = dict(os.environ)
         src = str(Path(nav.__file__).resolve().parents[1])
@@ -181,6 +287,8 @@ class NavigationIconsTests(unittest.TestCase):
         self.assertIn('--source-package', result.stdout)
         self.assertIn('--game-version', result.stdout)
         self.assertIn('--acknowledge-experimental', result.stdout)
+        self.assertIn('--variant', result.stdout)
+        self.assertIn('parking-fuel', result.stdout)
 
 
 if __name__ == '__main__':
