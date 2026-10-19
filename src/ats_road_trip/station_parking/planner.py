@@ -43,7 +43,7 @@ def _world_vertices(ppd,prefab,nodes,vertices):
     origin=prefab.details['origin'];anchor=nodes[prefab.details['nodes'][0]].position
     return [[x,anchor[1]+p[1]-controls[origin][1],z] for p,(x,z) in zip(vertices,horizontal)]
 
-def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None):
+def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None,local_context=None):
     """Return a reproducible report and only the new station's resource edits."""
     validate_config(config)
     if config['game_version']!=game_version:
@@ -139,6 +139,30 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if any(set(names)-aliases for names in config['mesh_materials'].values()):
         raise ValueError('Reviewed surface/paint material alias is absent from converted mesh')
     nodes={n.uid:n for n in sector.nodes}
+    if local_context is not None:
+        from copy import deepcopy
+        report['local_context']=deepcopy(local_context)
+        origin,bx,bz=_placed_vertices(ppd,prefab,nodes,[(0.,0.,0.),(1.,0.,0.),(0.,0.,1.)])
+        ux,uz=bx[0]-origin[0],bx[1]-origin[1]
+        vx,vz=bz[0]-origin[0],bz[1]-origin[1]
+        determinant=ux*vz-uz*vx
+        if abs(determinant)<1e-10:
+            raise ValueError('Degenerate external-context world transform')
+        def model_xz(point):
+            x,z=point[0]-origin[0],point[1]-origin[1]
+            return [(x*vz-z*vx)/determinant,(z*ux-x*uz)/determinant]
+        report['external_context_geometry']=[{'id':row['id'],
+            'polygon_xz':[model_xz(p) for p in row['geometry_xz']],
+            'extent_status':row['extent_status']}
+            for row in local_context.get('objects',[]) if row.get('classification')=='obstacle_proxy']
+    def check_external_regions(candidate):
+        from .local_context import evaluate_local_context
+        def world_polygon(points):
+            return _placed_vertices(ppd,prefab,nodes,[(x,0.,z) for x,z in points])
+        world={'polygon_xz':world_polygon(candidate['polygon_xz'])}
+        if candidate.get('approach_xz'):
+            world['approach_xz']=world_polygon(candidate['approach_xz'])
+        return evaluate_local_context(world,local_context,margin=.5)
     # Verify original service graph and coordinate convention before proposing
     # any new interaction, including preserved fuel twins from a fuel-only base.
     services=[i for i in sector.services if i.details['parent']==uid]
@@ -217,6 +241,8 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                 parameters=ParkingParameters(**config['parameters'])
                 access_parameters={'pump_clearance':parameters.pump_clearance,'aisle_depth':parameters.aisle_depth,
                     'road_clearance':parameters.road_clearance,'obstacle_margin':parameters.obstacle_margin}
+            if local_context is not None:
+                access_parameters['region_validator']=check_external_regions
             access=evaluate_access(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
                                    paint=config['mesh_materials']['paint'],**access_parameters)
             candidate.update({key:value for key,value in access.items() if key!='rejection_reasons'})
@@ -234,6 +260,15 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         candidate['model_surface_checks']=checks
         if checks.get('vertices_xyz') and 'height_status' in candidate:
             candidate['height_status']='source_model_ground_surface_sampled'
+        if local_context is not None:
+            world_checks=candidate.get('local_context_checks') or check_external_regions(candidate)
+            candidate['local_context_checks']=world_checks
+            reasons.extend(world_checks['rejection_reasons'])
+            external_margin=world_checks.get('minimum_clearance_margin_m')
+            if external_margin is not None:
+                candidate.setdefault('clearance_margins_m',{})['external_object']=external_margin
+                values=[v for v in candidate['clearance_margins_m'].values() if v is not None]
+                candidate['minimum_clearance_margin_m']=min(values)
         native_cover=[]
         for group in original_rest:
             if modes.get(group['action'])!={'car'}:continue

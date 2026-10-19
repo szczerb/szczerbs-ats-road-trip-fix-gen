@@ -62,6 +62,20 @@ class StationSelectionTests(unittest.TestCase):
         self.assertEqual(candidate, original[0])
         self.assertEqual(mesh, original[2])
 
+    def test_external_object_at_one_end_preserves_the_clear_opposite_approach(self):
+        from ats_road_trip.station_parking.local_context import evaluate_local_context
+        candidate,geometry,mesh=fixture()
+        context={'objects':[{'id':'separate-building','classification':'obstacle_proxy',
+            'extent_status':'declared_conservative_proxy','geometry_xz':rectangle(-1.,-6.,1.,-5.)}]}
+        result=evaluate_access(candidate,geometry,mesh,ground={'ground'},paint=set(),
+            region_validator=lambda region:evaluate_local_context(region,context))
+        self.assertFalse(result['rejection_reasons'])
+        self.assertGreater(min(p[1] for p in result['approach_xz']),0.)
+        rejected=[a for a in result['approach_alternatives'] if a['rejection_reasons']]
+        self.assertEqual(len(rejected),1)
+        self.assertIn('intersects_external_map_object_proxy',rejected[0]['rejection_reasons'])
+        self.assertIn('external_object',result['clearance_margins_m'])
+
     def test_parked_vehicle_in_approach_rejects_even_when_footprint_clear(self):
         candidate, geometry, mesh = fixture()
         candidate['approach_xz'] = rectangle(-3., 3., 3., 7.)

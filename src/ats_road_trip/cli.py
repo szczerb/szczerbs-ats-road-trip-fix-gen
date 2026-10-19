@@ -86,6 +86,15 @@ def parser() -> argparse.ArgumentParser:
             tanks.add_argument('--revision', type=int, default=0)
             tanks.add_argument('--icon', help='Optional 276x162 JPEG tank icon')
             tanks.add_argument('--experimental', action='store_true')
+    for name in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
+        batch = sub.add_parser(name, help='Analyze or generate one explicit multi-site station parking overlay')
+        batch.add_argument('--manifest', required=True, help='Explicit P01/P02 batch manifest JSON')
+        batch.add_argument('--package', action='append', default=[], help='Resource archives/directories including standard fixes in LOW-HIGH order; omit installed game packages')
+        batch.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        batch.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            batch.add_argument('--revision', type=int, default=1, help='Positive experimental batch revision')
+            batch.add_argument('--experimental', action='store_true')
     for name in ('analyze-station-parking', 'generate-station-parking'):
         station = sub.add_parser(name, help=('Analyze one source-pinned station parking candidate'
                                              if name == 'analyze-station-parking' else
@@ -194,6 +203,18 @@ def main(argv: list[str] | None = None) -> int:
             _emit({'status': result['status'], 'output': result.get('output'),
                    'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
                    'coverage': result['planner'].get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
+            from .station_parking.batch_workflow import run_station_parking_batch
+            generate = args.command.startswith('generate')
+            result = run_station_parking_batch(args.manifest, packages=args.package,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=generate, revision=getattr(args, 'revision', 1),
+                experimental=getattr(args, 'experimental', False))
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result.get('planner', {}).get('coverage'),
                    'generated_mod_count': result['generated_mod_count']}, None)
             return 0
         if args.command in ('analyze-station-parking', 'generate-station-parking'):

@@ -64,6 +64,8 @@ def render_station_plan(report):
         for spawn in geometry.get('gas_spawns',[]):
             x,y=pt((spawn['position'][0],spawn['position'][2]))
             lines.append(f'<circle cx="{x}" cy="{y}" r="{radius*scale}" fill="none" stroke="#216c43" stroke-dasharray="4 3"/>')
+    for external in report.get('external_context_geometry',[]):
+        lines.append(poly(external['polygon_xz'],'none','#c34b19','stroke-dasharray="8 3"'))
     for bank in report.get('proposal',{}).get('candidates',[]):
         for strip in bank.get('strips',[]):
             lines.append(poly(strip['polygon_xz'],'#fff','#222'))
@@ -118,6 +120,8 @@ def render_station_plan(report):
         lines.append(f'<rect x="{a[0]}" y="{a[1]}" width="{b[0]-a[0]}" height="{b[1]-a[1]}" fill="#fcfcfa"/>')
         lines.extend(drawing)
         lines.append('</svg>')
+    if report.get('local_context'):
+        lines.append('<text x="30" y="787" font-family="sans-serif" font-size="12">Orange dashed: external prefab UI obstacle proxies. Props/generic item extents and physics remain unassessed.</text>')
     if report.get('effective_model_state'):
         lines.append('<text x="30" y="810" font-family="sans-serif" font-size="12">Dashed green: pump clearance proxy; gold: physical proposal; blue: activation polygon; arrow: suggested nose. Engine pose envelope UNKNOWN.</text>')
     lines.extend(['<text x="30" y="835" font-family="sans-serif" font-size="13">Green dots = GAS; purple = original rest / parked locators; thin white strips = detected source paint.</text>',

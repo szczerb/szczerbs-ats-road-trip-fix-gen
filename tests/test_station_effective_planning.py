@@ -66,6 +66,24 @@ class EffectivePlanningTests(unittest.TestCase):
         self.assertEqual(resources,{})
         self.assertNotIn('writer',report)
 
+    def test_external_world_obstacle_blocks_an_otherwise_valid_station_without_mutating_context(self):
+        report,resources=self.plan()
+        self.assertTrue(resources)
+        polygon=[[p[0],p[2]] for p in report['selected']['world_vertices_xyz']]
+        context={'objects':[{'id':'authored-external-building','classification':'obstacle_proxy',
+            'extent_status':'declared_conservative_proxy','geometry_xz':polygon}],
+            'unassessed_objects':[], 'limits':['Bounded authored external proxy']}
+        before=deepcopy(context)
+        checked,output=plan_station_parking(self.stack,self.config,self.helper.mesh,
+            map_package=str(self.package.path),game_version='1.61.3.18',mesh_state_text=self.pit,
+            local_context=context)
+        self.assertEqual(context,before)
+        self.assertFalse(output)
+        self.assertTrue(any('intersects_external_map_object_proxy' in c['rejection_reasons']
+                            for c in checked['candidates']))
+        self.assertIn('external_context_geometry',checked)
+        self.assertIn('external prefab UI obstacle proxies',render_station_plan(checked))
+
     def test_named_role_texture_present_in_stack_must_be_pinned(self):
         self.pit=self.pit.replace(' TextureCount: 0\n}', ' TextureCount: 1\n Texture {\n Tag: "texture[0]:texture_base"\n Value: "/material/paint"\n }\n}')
         config=deepcopy(self.config);config['fingerprints']['mesh_state']=hashlib.sha256(self.pit.encode()).hexdigest()

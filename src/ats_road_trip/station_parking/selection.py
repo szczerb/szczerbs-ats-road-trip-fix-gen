@@ -43,7 +43,7 @@ def _approaches(candidate, depth):
 
 
 def evaluate_access(candidate, geometry, mesh, *, ground, paint,
-                    pump_clearance=6., aisle_depth=4., road_clearance=3.5, obstacle_margin=.5):
+                    pump_clearance=6., aisle_depth=4., road_clearance=3.5, obstacle_margin=.5, region_validator=None):
     """Check every approach alternative before choosing a deterministic survivor.
 
     Explicit ground/paint aliases refer to the effective, visible model. Both
@@ -119,6 +119,13 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
                                      for road in geometry['roads'] for region in regions.values()),default=None),
             'model_obstacle':None if not surface or surface.get('minimum_model_distance') is None
                              else surface['minimum_model_distance']-.15}
+        external_checks=None
+        if region_validator is not None:
+            external_checks=region_validator({'polygon_xz':polygon,'approach_xz':approach})
+            reasons.extend(external_checks['rejection_reasons'])
+            external_margin=external_checks.get('minimum_clearance_margin_m')
+            if external_margin is not None:
+                margins['external_object']=external_margin
         minimum_margin=min((v for v in margins.values() if v is not None),default=None)
         a, b = _center(approach), _center(polygon)
         length = math.dist(a, b)
@@ -144,7 +151,16 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
                                                'pump_distances': pump_distances,
                                                'road_conflicts': roads,
                                                'parked_locator_conflicts': parked}})
+        if external_checks is not None:
+            alternatives[-1]['local_context_checks']=external_checks
+    # Preserve the historical approach rule without external context. In batch
+    # mode compare the minimum clearance of complete alternatives before pump
+    # distance, so a locally obstructed end cannot hide a usable opposite end.
+    def end_margin(row):
+        value=row.get('minimum_clearance_margin_m')
+        return round(min(max(value if value is not None else 0.,0.),2.),2)
     alternatives.sort(key=lambda row: (bool(row['rejection_reasons']),
+                       *([-end_margin(row)] if region_validator is not None else []),
                        -min(row['pump_clearance'] if row['pump_clearance'] is not None else -1., 20.),
                        tuple(round(v, 9) for p in sorted(row['approach_xz']) for v in p)))
     chosen = deepcopy(alternatives[0])
