@@ -7,6 +7,7 @@ import tempfile
 import unittest
 import zipfile
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from ats_road_trip.package import Package, ResourceStack
 from ats_road_trip.ppd import inspect_ppd
@@ -82,8 +83,12 @@ class LocalContextTests(unittest.TestCase):
                 stack = ResourceStack([package])
                 sector = contents[SECTOR]
                 original = bytes(sector)
-                context = load_local_context(stack, {SECTOR: sector}, 0x999,
-                                             (100., 200.), search_radius=30.)
+                with patch.object(package, 'prefetch', wraps=package.prefetch) as prefetch:
+                    context = load_local_context(stack, {SECTOR: sector}, 0x999,
+                                                 (100., 200.), search_radius=30.)
+                ppd_batches = [call.args[0] for call in prefetch.call_args_list
+                               if call.args and PPD in call.args[0]]
+                self.assertEqual(ppd_batches, [[PPD]])
                 self.assertTrue(context['objects'])
                 self.assertTrue(context['descriptor_inputs'][PPD]['sha256'])
                 self.assertEqual(context['sector_inputs'][0]['path'], SECTOR)
@@ -122,18 +127,50 @@ class LocalContextTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_local_context(None, {'../bad.base': b''}, 1, (0, 0))
 
-    def test_conflicting_base_and_aux_node_uids_fail_closed(self):
+    def test_duplicate_node_metadata_with_identical_pose_is_reported_not_blocked(self):
         contents = source_resources()
         sector = contents[SECTOR]
         from ats_road_trip.map_sector import parse_sector
         parsed = parse_sector(sector)
         changed = bytearray(sector)
         first_node = parsed.nodes[0]
-        struct.pack_into('<i', changed, first_node.offset + 8,
-                         round(first_node.position[0] * 256) + 1)
-        with self.assertRaisesRegex(ValueError, 'Conflicting duplicate node UID'):
-            load_local_context(SimpleNamespace(resources={}), {SECTOR: sector,
+        struct.pack_into('<I', changed, first_node.offset + 52, first_node.flags ^ 4)
+        with patch('ats_road_trip.station_parking.local_context.prefab_definitions',
+                   return_value={}):
+            context = load_local_context(SimpleNamespace(resources={}), {SECTOR: sector,
                 SECTOR.replace('.base', '.aux'): bytes(changed)}, 0x999, (100, 200))
+        duplicate = next(row for row in context['duplicate_node_metadata']
+                         if row['uid'] == f'{first_node.uid:#x}')
+        self.assertTrue(duplicate['geometry_equal'])
+        self.assertEqual(duplicate['differing_fields'], ['flags'])
+        self.assertEqual({row['flags'] for row in duplicate['copies']},
+                         {first_node.flags, first_node.flags ^ 4})
+
+    def test_pose_ambiguous_remote_node_fallback_is_unassessed(self):
+        item_uid, node_uid = 0x111, 0x222
+        item = SimpleNamespace(kind=4, uid=item_uid, details={'nodes': [node_uid], 'model': 7})
+        def node(x, path_marker):
+            return SimpleNamespace(uid=node_uid, raw=bytes([path_marker]) * 56,
+                position=(float(x), 0., 0.), rotation=(1., 0., 0., 0.),
+                backward=0, forward=item_uid, flags=1)
+        empty = SimpleNamespace(items=(), nodes=())
+        rows = {
+            'map/usa/sec+0000+0000.base': SimpleNamespace(items=(item,), nodes=()),
+            'map/usa/sec+0000+0001.base': SimpleNamespace(items=(), nodes=(node(1, 1),)),
+            'map/usa/sec+0001+0000.base': SimpleNamespace(items=(), nodes=(node(2, 2),)),
+        }
+        payloads = {path: path.encode() for path in rows}
+        stack = SimpleNamespace(resources={path: (None, None) for path in rows})
+        with patch('ats_road_trip.station_parking.local_context.parse_sector',
+                   side_effect=lambda data: rows[data.decode()]), \
+             patch('ats_road_trip.station_parking.local_context.prefab_definitions',
+                   return_value={}):
+            context = load_local_context(stack, payloads, 0x999, (0., 0.), max_sectors=3)
+        self.assertEqual(context['duplicate_node_metadata'][0]['differing_fields'],
+                         ['position_xyz'])
+        self.assertFalse(context['duplicate_node_metadata'][0]['geometry_equal'])
+        self.assertEqual(context['unassessed_objects'][0]['reason'],
+                         f'ambiguous_fallback_node_pose:{node_uid:#x}')
 
 
 if __name__ == '__main__':

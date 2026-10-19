@@ -71,7 +71,7 @@ def run_station_parking_batch(manifest_path, *, packages, game_dir=None, extract
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}', stamp):
         raise ValueError('run_id must use YYYY-MM-DD_HH-MM-SS')
     work = REPO_ROOT / 'local_outputs/work' / stamp / manifest['batch_id']
-    output = REPO_ROOT / 'local_outputs/generated' / stamp / f'f-batch-{manifest["batch_id"]}-ats-1.61-r{revision}-experimental.scs'
+    output = REPO_ROOT / 'local_outputs/generated' / stamp / f'f-batch-r{revision}-{manifest["batch_id"]}-ats-1.61-experimental.scs'
     if work.exists() or (generate and output.exists()):
         raise FileExistsError('Batch audit/output exists; choose a new run_id')
     work.mkdir(parents=True)
@@ -145,10 +145,15 @@ def run_station_parking_batch(manifest_path, *, packages, game_dir=None, extract
             neighbors = {config['sector']: neighboring_sector_paths(stack, config['sector'])
                          for _, config, _, _, _ in loaded}
             selected_paths = sorted({p for group in neighbors.values() for p in group})
+            dependency_paths=set(selected_paths)
+            for _,config,_,_,_ in loaded:
+                dependency_paths.update(config['material_resources'])
+                dependency_paths.add(config['model_geometry'])
+                dependency_paths.add(config['model_geometry'][:-4]+'.pmd')
             for package in mounted:
-                subset = [p for p in selected_paths if stack.resources[p][0] is package]
+                subset = [p for p in sorted(dependency_paths) if p in stack.resources and stack.resources[p][0] is package]
                 if subset:
-                    package.prefetch(subset, disk_cache=work / 'sector-cache' / hashlib.sha256(str(package.path).encode()).hexdigest()[:12])
+                    package.prefetch(subset, disk_cache=work / 'resource-cache' / hashlib.sha256(str(package.path).encode()).hexdigest()[:12],max_bytes=128*1024*1024)
             sector_data = {p: stack.read(p, max_bytes=64*1024*1024) for p in selected_paths}
             checked_resource_pins = {p: _sha256_bytes(data) for p, data in sector_data.items()}
             from .local_context import load_local_context

@@ -46,6 +46,7 @@ Delegation: `batch_station_inventory` (gpt-6-luna/high), owns only ignored inven
 - [Batch composition decision](../../architecture/decisions/ADR-0021-compose-explicit-station-parking-batches.md).
 - Verified first implementation milestone: **412 tests pass**. Complete actual historical A/B reports, resources and SVG hashes remain exact (`local_outputs/work/2026-10-19_22-46-00/legacy-batch-verification/`).
 - Independent review added manifest/config parse-before-pin protection and direct directory dependency hashing. External context now evaluates both painted approach ends before selection, including their minimum margins, without changing the legacy no-context rule.
+- Second verified milestone: **413 tests pass** (`local_outputs/work/2026-10-19_23-11-38/context-verification/full-tests.txt`). Actual neighboring aux sectors contain flag-only duplicate node records at identical poses; local context now resolves owner-linked placement-local nodes and reports duplicate metadata, requiring a unique owner-linked pose for remote fallback. Nearby PPD and reviewed model/material inputs are batch-prefetched without weakening hash/read limits.
 - Actual-site curation, final full-stack generation and handoff remain pending. Do not mark complete from a narrower partial sample.
 
 # Links
