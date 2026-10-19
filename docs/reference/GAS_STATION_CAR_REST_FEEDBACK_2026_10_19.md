@@ -90,3 +90,14 @@ The labels are **A LINES** / `a-lines-…` for `painted_bays` and **B GEOMETRY**
 Both labelled SCS files are in `local_outputs/generated/2026-10-19_18-54-57/`, with their label prefix added before the original descriptive filename. Metadata-only comparisons, per-gameplay-member hashes and the bundle audit are in the ignored feedback evidence directory. Their two titles differ from the first characters, descriptions distinguish the inference methods, and filenames preserve their labels even when truncated.
 
 The local bundle is `local_outputs/generated/2026-10-19_18-54-57/szczerbs-dawson-city-labelled-variants-alaska-1.61-r0-experimental.zip` (369,393 bytes), SHA-256 `9c6392e3b7f35d8c0fb071785be5ce9efd94a21e0a04d42bc074f7e39f71be04`. It contains both alternatives, an English README, exact metadata-only audit and member hashes. ZIP CRC and every bundled member byte were checked. It replaces neither installed files nor the original test bundle automatically.
+
+
+## 2026-10-19: ground-level forecourt clearance view
+
+**Documented — first-hand user clarification:** the user supplied a ground-level oblique view to inform future station-area selection. The goal is not to turn the entire strip along the building front into parking. The apparent paved gap between the storefront and pump islands may be too narrow for safe pump access; future selection must be allowed to reject part or all of that strip.
+
+**Observed locally — supplied image:** the view shows the storefront entrance and curb on the left, pump islands and canopy columns on the right, directional arrows painted on the ground, and an open paved gap between them. The unchanged, local-only project copy is [the ground-level forecourt view](../../local_outputs/work/2026-10-19_21-11-47/ground-view-followup/ats_20261019_210800_00.png); its adjacent [evidence manifest](../../local_outputs/work/2026-10-19_21-11-47/ground-view-followup/evidence.json) records the original-source hash, image dimensions and interpretation.
+
+**Documented — selection constraint:** future candidate areas must preserve clearance for vehicles approaching, using and leaving pumps, circulation through the forecourt, pedestrian access, and the building entrance. A smaller or differently oriented candidate is suitable only when the source data supports it. If all candidate areas fail those constraints, reporting no viable parking area is a valid result. This constraint is not a general shortcut for ending the station analysis.
+
+**Evidence limits:** perspective in this image does not provide calibrated dimensions or prove vehicle turning, refueling or pedestrian clearance. Derive coordinates from effective map/model data, not image pixels. This view records a selection constraint; it authorizes no geometry, algorithm, package or profile change by itself.
