@@ -50,10 +50,11 @@ _EFFECTIVE_VARIANT_METADATA = {
 }
 
 
-def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str, str]:
+def _station_metadata(config: dict, map_name: str, station_id: str, revision: int = 0) -> dict[str, str]:
     """Build concise, player-facing identity for a station experiment variant."""
     schema_two = config["schema_version"] == 2
     variant = (_EFFECTIVE_VARIANT_METADATA if schema_two else _VARIANT_METADATA)[config["method"]]
+    variant_label=variant["code"]+(f" r{revision}" if schema_two else "")
     if config["method"] == "unmarked_geometry":
         parameters = ParkingParameters(**config.get("parameters", {}))
         footprint = f"one proposed {parameters.width:g} x {parameters.depth:g} m building-side footprint"
@@ -70,7 +71,7 @@ def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str,
         if schema_two else
         "Test exactly one A/B station-parking variant at a time.\n")
     description = (
-        f"{variant['code']} — {variant['method']} — station {station_id}.\n"
+        f"{variant_label} — {variant['method']} — station {station_id}.\n"
         f"Footprint: {footprint}.\n"
         f"{alternatives}"
         f"{baseline_line}\n"
@@ -78,7 +79,7 @@ def _station_metadata(config: dict, map_name: str, station_id: str) -> dict[str,
         "Original archives, game files, and profiles are not modified by this generator.\n")
     return {
         "variant_prefix": variant["slug"],
-        "display_name": f"{variant['code']} | szczerb's Road Trip Station Parking PoC for {map_name} - {station_id} - Experimental",
+        "display_name": f"{variant_label} | szczerb's Road Trip Station Parking PoC for {map_name} - {station_id} - Experimental",
         "description": description,
     }
 _FIX_REPORT = "road_trip_fix_report.json"
@@ -298,7 +299,7 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}", stamp):
         raise ValueError("run_id must use YYYY-MM-DD_HH-MM-SS")
     work = REPO_ROOT / "local_outputs/work" / stamp / station_id
-    metadata = _station_metadata(config, map_name, station_id)
+    metadata = _station_metadata(config, map_name, station_id,revision)
     output = (REPO_ROOT / "local_outputs/generated" / stamp /
               f"{metadata['variant_prefix']}-szczerbs-road-trip-station-parking-{_safe_name(map_name)}-"
               f"{station_id}-{config['method']}-1.61-r{revision}-experimental.scs") if generate else None
@@ -315,9 +316,12 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
             raise ValueError("Installed ATS version does not match the pinned config game_version")
         game_paths, dlcs = _game_packages(installed)
         explicit = [Path(item).expanduser().resolve() for item in packages]
-        if not explicit or any(not path.is_file() and not path.is_dir() for path in explicit):
+        game_paths=[Path(path).resolve() for path in game_paths]
+        if any(not path.is_file() and not path.is_dir() for path in explicit):
             raise ValueError("Every explicit --package must be an existing archive or package directory")
-        if sum(path == map_path for path in explicit) != 1:
+        if len(set(explicit))!=len(explicit) or any(path in game_paths for path in explicit):
+            raise ValueError("Do not repeat an installed game package or duplicate an explicit package")
+        if map_path not in game_paths and sum(path == map_path for path in explicit) != 1:
             raise ValueError("--map-package must appear exactly once in the explicit LOW-HIGH --package order")
         base_path = Path(base_fix).expanduser().resolve() if base_fix is not None else None
         if base_path is not None and (not base_path.is_file() or base_path in explicit or base_path == map_path):

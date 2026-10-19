@@ -70,7 +70,7 @@ def validate_config(config):
     parameter_type(**config['parameters'])
     return config
 
-def _mesh_checks(mesh, polygon, approach, ground, paint):
+def _mesh_checks(mesh, polygon, approach, ground, paint, *, report_clearance=False):
     """Check sampled surface coverage plus all model triangle obstacle extents.
 
     Sampling is disclosed, not a claim of collision-complete access. Vertical
@@ -110,6 +110,7 @@ def _mesh_checks(mesh, polygon, approach, ground, paint):
     # volume are considered, including collpart1 exported in the model itself.
     # This is render/model geometry, not a verified ATS physics representation.
     obstacles=[]
+    minimum_model_distance=None
     for piece in mesh['pieces']:
         if piece['material'] in set(ground)|set(paint): continue
         positions=piece['positions']
@@ -121,7 +122,11 @@ def _mesh_checks(mesh, polygon, approach, ground, paint):
             # A degenerate horizontal projection is a wall edge, still a real
             # exclusion. Distance handles polygon/segment/point inputs.
             xz=list(dict.fromkeys(xz))
-            if polygon_distance(polygon,xz)<.15 or (approach and polygon_distance(approach,xz)<.15):
+            distance=polygon_distance(polygon,xz)
+            if approach:distance=min(distance,polygon_distance(approach,xz))
+            if report_clearance:
+                minimum_model_distance=distance if minimum_model_distance is None else min(distance,minimum_model_distance)
+            if distance<.15:
                 obstacles.append({'piece':piece['index'],'triangle':index,'material':piece['material']})
     if obstacles: reasons.append('model_geometry_intersects_car_clearance_volume')
     parked=[]
@@ -140,4 +145,5 @@ def _mesh_checks(mesh, polygon, approach, ground, paint):
             'model_obstacles':obstacles[:30],'model_obstacle_count':len(obstacles),
             'parked_locator_conflicts':parked,'vertices_xyz':vertices,
             'rejection_reasons':reasons,
+            **({'minimum_model_distance':minimum_model_distance,'model_obstacle_margin':.15} if report_clearance else {}),
             'limits':'Sampled render surfaces and model geometry; physics, external furniture and driving access require manual checks.'}

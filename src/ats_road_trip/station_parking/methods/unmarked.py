@@ -92,11 +92,11 @@ def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None =
                     aisle = rectangle(parameters.wall_setback+outward_depth,
                                       parameters.wall_setback+outward_depth+parameters.aisle_depth)
                     reasons = []
-                    if not any(_within(points+[],_xz(p['vertices'])) and _within(aisle,_xz(p['vertices'])) for p in accessible):
+                    if not any(_within(points+[],_xz(p['vertices'])) and (layout=='parallel' or _within(aisle,_xz(p['vertices']))) for p in accessible):
                         reasons.append('footprint_or_approach_outside_accessible_map_proxy')
                     obstacle_ids = [p['id'] for p in obstacles
                                     if polygon_distance(points,_xz(p['vertices'])) <= parameters.obstacle_margin
-                                    or polygon_distance(aisle,_xz(p['vertices'])) <= parameters.obstacle_margin]
+                                    or (layout!='parallel' and polygon_distance(aisle,_xz(p['vertices'])) <= parameters.obstacle_margin)]
                     if obstacle_ids:
                         reasons.append('footprint_or_approach_intersects_obstacle_proxy')
                     clearance = min(polygon_distance(points,[p]) for p in gas)
@@ -109,7 +109,7 @@ def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None =
                     for road in geometry['roads']:
                         segment=_xz(road['vertices'])
                         if (polygon_distance(points,segment)<parameters.road_clearance
-                                or polygon_distance(aisle,segment)<parameters.road_clearance):
+                                or (layout!='parallel' and polygon_distance(aisle,segment)<parameters.road_clearance)):
                             road_conflicts.append(road['indices'])
                     if road_conflicts:
                         reasons.append('intersects_map_navigation_corridor_proxy')
@@ -121,12 +121,12 @@ def propose_unmarked_parking(data: bytes, parameters: ParkingParameters | None =
                         raise ValueError('Station geometry exceeds bounded 128-candidate budget')
                     candidates.append({'id':uid,'building_map_polygon':building['id'],'edge':edge,
                                        'polygon_xz':[list(p) for p in points],
-                                       'approach_xz':[list(p) for p in aisle],
+                                       'approach_xz':[list(p) for p in aisle] if layout!='parallel' else None,
                                        'pump_clearance':clearance,'obstacle_ids':obstacle_ids,
                                        'road_conflicts':road_conflicts,'rejection_reasons':reasons,
                                        'evidence':'Hypothesis — generated from source UI-map polygons',
                                        'height_status':'unresolved_without_model_surface_evidence',
-                                       **({'layout':layout,'parking_heading_xz':list(tangent if layout=='parallel' else (-normal[0],-normal[1]))}
+                                       **({'layout':layout,**({'direction_xz':list(tangent)} if layout=='parallel' else {'parking_heading_xz':[-normal[0],-normal[1]]})}
                                           if len(layouts)>1 or layout!='perpendicular' else {})})
     candidates.sort(key=lambda c:(bool(c['rejection_reasons']),-c['pump_clearance'],c['id']))
     selected=next((c for c in candidates if not c['rejection_reasons']),None)

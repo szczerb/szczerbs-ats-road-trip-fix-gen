@@ -29,7 +29,7 @@ def render_station_plan(report):
             decisions.extend(textwrap.wrap(str(reason).replace('_',' '),width=78,initial_indent='  ',subsequent_indent='    '))
         if candidate.get('ranking_components'):
             r=candidate['ranking_components']
-            decisions.append(f"  rank: paint={r['separator_geometry_evidence']} pump={r['pump_clearance_capped_20']:.2f}m bays={r['usable_bay_count']}")
+            decisions.append(f"  rank: paint={r['separator_geometry_evidence']} curb={r.get('curb_anchor_evidence',False)} margin={r.get('minimum_margin_capped_2m_rounded_cm',0):.2f}m pump={r['pump_clearance_capped_20']:.2f}m bays={r['usable_bay_count']}")
             decisions.append('  layout: '+candidate.get('layout','paint-derived bank'))
         decisions.append('')
     height=max(880,110+18*len(decisions))
@@ -52,6 +52,13 @@ def render_station_plan(report):
             colors={'low_raised_edge_surface_proxy':'#4c6270','entrance_keep_clear_proxy':'#dc7934','model_obstacle_triangle':'#83705b'}
             lines.append(poly(feature['polygon_xz'],'none',colors.get(feature['kind'],'#777'),
                               'stroke-dasharray="2 2"'))
+        seen_edges=set()
+        for candidate in candidates:
+            edge=candidate.get('source_edge_evidence',{}).get('boundary_xyz')
+            if edge and tuple(map(tuple,edge)) not in seen_edges:
+                seen_edges.add(tuple(map(tuple,edge)))
+                a,b=[pt((p[0],p[2])) for p in edge]
+                lines.append(f'<line x1="{a[0]}" y1="{a[1]}" x2="{b[0]}" y2="{b[1]}" stroke="#e49a16" stroke-width="2"/>')
         radius=next((c.get('diagnostic_exclusions',{}).get('pump_operational_radius') for c in candidates
                      if c.get('diagnostic_exclusions')),6.)
         for spawn in geometry.get('gas_spawns',[]):
@@ -62,13 +69,14 @@ def render_station_plan(report):
             lines.append(poly(strip['polygon_xz'],'#fff','#222'))
     for candidate in candidates:
         if selected is not None and candidate['id']==selected['id']:continue
-        lines.append(poly(candidate['polygon_xz'],'none','#bb6666' if candidate['rejection_reasons'] else '#b99d52'))
+        lines.append(poly(candidate['polygon_xz'],'none','#bb6666' if candidate['rejection_reasons'] else '#b99d52',
+                          'data-layer="candidate-alternative"' if report.get('effective_model_state') else ''))
     if selected:
         if selected.get('approach_xz'):lines.append(poly(selected['approach_xz'],'#c5dcf0','#6688aa','fill-opacity="0.5"'))
         lines.append(poly(selected['polygon_xz'],'#4e97ca','#154775','fill-opacity="0.7"'))
         for bay in selected.get('bay_polygons_xz',[]):lines.append(poly(bay['polygon_xz'],'none','#fff'))
         if selected.get('activation_polygon_xz'):
-            lines.append(poly(selected['physical_parking_polygon_xz'],'none','#f4b942','stroke-width="2"'))
+            lines.append(poly(selected['physical_parking_polygon_xz'],'none','#f4b942'))
             center=[sum(p[i] for p in selected['polygon_xz'])/len(selected['polygon_xz']) for i in (0,1)]
             heading=selected.get('heading_xz')
             if heading:
@@ -92,6 +100,9 @@ def render_station_plan(report):
     for locator in report.get('mesh_summary',{}).get('locators',[]):
         if '.parked.' in locator['hookup']:
             x,y=pt((locator['position'][0],locator['position'][2]));lines.append(f'<circle cx="{x}" cy="{y}" r="3" fill="#9c64a0"/>')
+            if report.get('effective_model_state'):
+                radius=10. if locator['hookup'].startswith('truck.') else 3.5
+                lines.append(f'<circle cx="{x}" cy="{y}" r="{radius*scale}" fill="none" stroke="#9c64a0" stroke-dasharray="3 3"/>')
     if selected:
         # The complete truck-stop lot is long; retain a readable station inset.
         footprint=selected['polygon_xz']
@@ -99,6 +110,9 @@ def render_station_plan(report):
         b=pt((max(p[0] for p in footprint)+12,max(p[1] for p in footprint)+15))
         drawing=[line for line in lines if line.startswith(('<polygon ','<line ','<circle '))
                  or (line.startswith('<text ') and 'font-size="11"' in line)]
+        if report.get('effective_model_state'):
+            drawing=[line for line in drawing if 'candidate-alternative' not in line
+                     and not (line.startswith('<text ') and 'font-size="11"' in line)]
         lines.append('<text x="465" y="90" font-family="sans-serif" font-size="16">Selected area detail (same orientation)</text>')
         lines.append(f'<svg x="450" y="110" width="550" height="650" viewBox="{a[0]} {a[1]} {b[0]-a[0]} {b[1]-a[1]}">')
         lines.append(f'<rect x="{a[0]}" y="{a[1]}" width="{b[0]-a[0]}" height="{b[1]-a[1]}" fill="#fcfcfa"/>')

@@ -111,6 +111,21 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
             if path not in stack.resources or _hash(stack.read(path,max_bytes=32*1024*1024))!=digest:
                 raise ValueError('Effective material resource SHA-256 drift: '+path)
             materials.append({'path':path,'sha256':digest,'provider':stack.resources[path][1].package})
+        role_aliases=set(config['mesh_materials']['ground'])|set(config['mesh_materials']['paint'])
+        role_dependencies=[]
+        for material in state['materials']:
+            if material['alias'] not in role_aliases:continue
+            for texture in material['textures']:
+                base=texture.lstrip('/')
+                for suffix in ('.mat','.tobj','.dds'):
+                    path=base if base.endswith(suffix) else base+suffix
+                    if path in stack.resources:
+                        if path not in config['material_resources']:
+                            raise ValueError('Reviewed ground/paint material dependency is not pinned: '+path)
+                        role_dependencies.append(path)
+        report['role_material_dependency_scope']={'aliases':sorted(role_aliases),
+            'direct_named_resources':sorted(set(role_dependencies)),
+            'limits':'Paired PIT texture references and same-name MAT/TOBJ/DDS resources; not all visible materials or an exhaustive texture graph parser.'}
         report['effective_model_state']=state
         report['effective_material_resources']=materials
         dependencies=[sector_path,definition,descriptor,model,config['model_geometry']]
@@ -127,7 +142,17 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     # Verify original service graph and coordinate convention before proposing
     # any new interaction, including preserved fuel twins from a fuel-only base.
     services=[i for i in sector.services if i.details['parent']==uid]
-    fuel_matches=match_gas_services(ppd,prefab,nodes,services)
+    fuel_graph_error=None
+    try:
+        fuel_matches=match_gas_services(ppd,prefab,nodes,services)
+    except ValueError as exc:
+        if config['schema_version']==1:raise
+        fuel_graph_error=str(exc);fuel_matches={}
+    if config['schema_version']==2:
+        report['fuel_graph_validation']={'complete':fuel_graph_error is None,
+            'reason':fuel_graph_error,'linked_service_count':len(services),
+            'limits':'A failed service/locator graph permits local diagnostics only, never generation.'}
+
     geometry=inspect_station_map(ppd)
     original_rest=inspect_rest_triggers(ppd,actions=set(modes))
     if config['schema_version']==2:
@@ -146,6 +171,12 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     else:
         proposal=propose_unmarked_parking(ppd,ParkingParameters(**config['parameters']),
             **({'layouts':('perpendicular','parallel')} if config['schema_version']==2 else {}))
+    if config['schema_version']==2 and config['method']=='unmarked_geometry':
+        from .methods.curbside import propose_curb_anchored_candidates
+        curb_candidates=propose_curb_anchored_candidates(mesh,geometry,ground=config['mesh_materials']['ground'],
+            paint=config['mesh_materials']['paint'],parameters=ParkingParameters(**config['parameters']))
+        proposal['candidates'].extend(curb_candidates)
+        proposal['curb_candidate_count']=len(curb_candidates)
     report['proposal']=proposal
     report['geometry']=proposal.get('geometry',geometry)
     evaluated=[]
@@ -158,8 +189,9 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         candidate=dict(proposed)
         if config['method']=='painted_bays':
             candidate['mesh_envelope_xz']=candidate['polygon_xz']
-            candidate['trigger_edge_inset']=.25
-            candidate['polygon_xz']=_inset_rectangle(candidate['polygon_xz'])
+            candidate['trigger_edge_inset']=.25 if config['schema_version']==1 else 0.
+            if config['schema_version']==1:
+                candidate['polygon_xz']=_inset_rectangle(candidate['polygon_xz'])
         reasons=list(candidate.get('rejection_reasons',[]))
         if config['schema_version']==2:
             conflicts=[]
@@ -180,8 +212,13 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         if config['schema_version']==2:
             from .selection import evaluate_access
             candidate['rejection_reasons']=list(dict.fromkeys(reasons))
+            access_parameters={}
+            if config['method']=='unmarked_geometry':
+                parameters=ParkingParameters(**config['parameters'])
+                access_parameters={'pump_clearance':parameters.pump_clearance,'aisle_depth':parameters.aisle_depth,
+                    'road_clearance':parameters.road_clearance,'obstacle_margin':parameters.obstacle_margin}
             access=evaluate_access(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
-                                   paint=config['mesh_materials']['paint'])
+                                   paint=config['mesh_materials']['paint'],**access_parameters)
             candidate.update({key:value for key,value in access.items() if key!='rejection_reasons'})
             reasons.extend(access['rejection_reasons'])
             approach=candidate.get('approach_xz')
@@ -197,9 +234,15 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         candidate['model_surface_checks']=checks
         if checks.get('vertices_xyz') and 'height_status' in candidate:
             candidate['height_status']='source_model_ground_surface_sampled'
+        native_cover=[]
         for group in original_rest:
-            if modes.get(group['action'])=={'car'} and polygon_distance(polygon,[(p[0],p[2]) for p in group['vertices']])==0:
+            if modes.get(group['action'])!={'car'}:continue
+            native=[(p[0],p[2]) for p in group['vertices']]
+            if polygon_distance(polygon,native)==0:
                 reasons.append('already_has_overlapping_native_car_rest')
+            if _within(polygon,native):native_cover.append(group['id'])
+        if config['schema_version']==2:
+            candidate['fully_covering_native_car_groups']=native_cover
         candidate['rejection_reasons']=list(dict.fromkeys(reasons))
         evaluated.append(candidate)
     if config['schema_version']==2:
@@ -209,6 +252,15 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     report['candidates']=evaluated
     selected=next((c for c in evaluated if not c['rejection_reasons']),None)
     report['selected']=selected
+    if fuel_graph_error:
+        return blocked('Effective GAS/service graph is unverified: '+fuel_graph_error)
+    if (config['schema_version']==2 and config['method']=='painted_bays' and evaluated
+            and all(c['fully_covering_native_car_groups'] for c in evaluated)):
+        report['already_covered']=True
+        report['state']='already_covered'
+        report['selection_outcome']='All detected painted banks are contained by original native car rest; no duplicate generated'
+        report['coverage']['complete']=True
+        return report,{}
     if selected is None:
         return blocked('No geometry-derived candidate passes source/model checks; inspect candidate rejection reasons')
     # A bank is one logical area. Its separator-derived envelope allows the

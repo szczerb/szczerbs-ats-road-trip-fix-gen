@@ -98,6 +98,20 @@ class StationRunTests(unittest.TestCase):
             item.start()
             self.addCleanup(item.stop)
 
+    def test_installed_map_source_is_not_remounted_above_its_dlcs(self):
+        from ats_road_trip.cli import parser
+        args=parser().parse_args(['analyze-station-parking','--config','review.json','--mesh','station.pim','--map-package','base_map.scs'])
+        self.assertEqual(args.package,[])
+        with patch.object(station_run,"_game_packages",lambda _:([self.source],())):
+            result=station_run.run_station_parking(config_path=self.config_path,mesh_path=self.mesh_path,
+                map_package=self.source,packages=[self.dependency],base_fix=self.base_fix,
+                game_dir=self.installed,run_id="2026-10-19_21-40-00")
+            self.assertEqual(result['workflow']['packages_low_to_high'],[str(self.source),str(self.dependency),str(self.base_fix)])
+            with self.assertRaisesRegex(ValueError,'repeat an installed'):
+                station_run.run_station_parking(config_path=self.config_path,mesh_path=self.mesh_path,
+                    map_package=self.source,packages=[self.source,self.dependency],base_fix=self.base_fix,
+                    game_dir=self.installed,run_id="2026-10-19_21-40-01")
+
     def _write_config(self):
         self.config_path.write_text(json.dumps(self.config), encoding="utf-8")
 
@@ -223,7 +237,7 @@ class StationRunTests(unittest.TestCase):
         output, _, options = written[0]
         self.assertTrue(output.name.startswith("d-marked-"))
         self.assertTrue(output.name.endswith("-1.61-r3-experimental.scs"))
-        self.assertTrue(options["display_name"].startswith("D MARKED |"))
+        self.assertTrue(options["display_name"].startswith("D MARKED r3 |"))
         self.assertIn("C FORECOURT and D MARKED are alternative geometry proposals",
                       options["description"])
         with self.assertRaisesRegex(ValueError, "revision must be a nonnegative integer"):

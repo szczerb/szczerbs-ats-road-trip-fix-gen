@@ -173,3 +173,44 @@ def append_car_parking_polygon(data: bytes, vertices: list[tuple[float, float, f
         'selection': 'Caller-supplied explicit station only; no proximity or density inference',
         'runtime_behavior': 'Unknown; no in-game test performed',
     }
+
+
+def partial_activation_diagnostic(data: bytes, group_id: int) -> tuple[bytes, dict]:
+    """Set only PPD partial-contact bit 0x4 on one native car polygon.
+
+    This deliberately named diagnostic isolates a documented parameter. It is
+    not the default parking writer or a claim about the tested vehicle shape.
+    All geometry, action, IDs, range/reset parameters and other groups remain
+    byte-identical. Standalone Trigger flags have different semantics.
+    """
+    if type(group_id) is not int or not 0 <= group_id <= 0xffffffff:
+        raise ValueError('Diagnostic group ID must be a uint32 integer')
+    info=inspect_ppd(data)
+    if info['version']!=25:
+        raise ValueError('Partial activation diagnostic requires PPD v25')
+    header=struct.unpack_from('<24I',data)
+    _validate_existing_layout(data,header)
+    groups=inspect_rest_triggers(data)
+    matching=[g for g in groups if g['id']==group_id]
+    if len(matching)!=1 or matching[0]['action']!=_CAR or matching[0]['flags']!=0:
+        raise ValueError('Diagnostic requires exactly one non-partial native parking_car group')
+    result=bytearray(data);allowed=set();vertices=0
+    for index in range(header[9]):
+        offset=header[21]+index*_TRIGGER.size
+        record=_TRIGGER.unpack_from(data,offset)
+        if record[0]!=group_id:continue
+        if record[1]!=_CAR or record[5]!=0:
+            raise ValueError('Diagnostic group contains conflicting actions or flags')
+        struct.pack_into('<I',result,offset+24,4)
+        allowed.update(range(offset+24,offset+28));vertices+=1
+    result=bytes(result)
+    if not vertices or any(i not in allowed for i,(a,b) in enumerate(zip(data,result)) if a!=b):
+        raise ValueError('Diagnostic changed bytes outside the selected flag fields')
+    after=inspect_rest_triggers(result)
+    expected=[dict(g,flags=4) if g['id']==group_id else g for g in groups]
+    if after!=expected:
+        raise ValueError('Diagnostic altered geometry or unrelated trigger fields')
+    return result,{'diagnostic':'partial_activation_only','group_id':group_id,
+        'action':'parking_car','old_flags':0,'new_flags':4,'vertex_count':vertices,
+        'geometry_and_other_fields_preserved':True,'engine_vehicle_shape':'Unknown',
+        'runtime_behavior':'Unverified; compare stationary edge crossings against the unchanged control'}

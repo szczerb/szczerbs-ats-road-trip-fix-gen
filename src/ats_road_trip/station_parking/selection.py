@@ -43,7 +43,7 @@ def _approaches(candidate, depth):
 
 
 def evaluate_access(candidate, geometry, mesh, *, ground, paint,
-                    pump_clearance=6., aisle_depth=4.):
+                    pump_clearance=6., aisle_depth=4., road_clearance=3.5, obstacle_margin=.5):
     """Check every approach alternative before choosing a deterministic survivor.
 
     Explicit ground/paint aliases refer to the effective, visible model. Both
@@ -54,7 +54,7 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
     # Local import keeps this independent of planner/validation orchestration.
     from .validation import _mesh_checks
 
-    for name, value in [('pump_clearance', pump_clearance), ('aisle_depth', aisle_depth)]:
+    for name, value in [('pump_clearance', pump_clearance), ('aisle_depth', aisle_depth), ('road_clearance',road_clearance), ('obstacle_margin',obstacle_margin)]:
         if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
             raise ValueError(f'{name} must be positive and finite')
     polygon = candidate['polygon_xz']
@@ -70,7 +70,7 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
         if outside:
             reasons.append('footprint_or_approach_outside_accessible_map_proxy')
         obstacle_hits = [{'id': p['id'], 'regions': [name for name, region in regions.items()
-                          if polygon_distance(region, _xz(p['vertices'])) <= .5]}
+                          if polygon_distance(region, _xz(p['vertices'])) <= obstacle_margin]}
                          for p in obstacles]
         obstacle_hits = [p for p in obstacle_hits if p['regions']]
         if obstacle_hits:
@@ -84,17 +84,21 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
         elif clearance < pump_clearance:
             reasons.append('footprint_or_approach_too_close_to_gas_interaction')
         roads = [{'indices': road['indices'], 'regions': [name for name, region in regions.items()
-                  if polygon_distance(region, _xz(road['vertices'])) < 3.5]}
+                  if polygon_distance(region, _xz(road['vertices'])) < road_clearance]}
                  for road in geometry['roads']]
         roads = [r for r in roads if r['regions']]
         if roads:
             reasons.append('intersects_map_navigation_corridor_proxy')
         parked = []
+        parked_distances=[]
         for locator in mesh['locators']:
             if '.parked.' not in locator['hookup']:
                 continue
             radius = 10. if locator['hookup'].startswith('truck.') else 3.5
             position = _xz([locator['position']])[0]
+            parked_distances.extend({'index':locator['index'],'region':name,
+                                     'margin':polygon_distance(region,[position])-radius}
+                                    for name,region in regions.items())
             hits = [name for name, region in regions.items()
                     if polygon_distance(region, [position]) < radius]
             if hits:
@@ -105,8 +109,17 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
         surface = None
         # Cheap proxy failures avoid potentially expensive surface sampling.
         if not reasons:
-            surface = _mesh_checks(mesh, polygon, approach, ground, paint)
+            surface = _mesh_checks(mesh, polygon, approach, ground, paint,report_clearance=True)
             reasons.extend(surface['rejection_reasons'])
+        margins={'pump':None if clearance is None else clearance-pump_clearance,
+            'parked_locator':min((row['margin'] for row in parked_distances),default=None),
+            'obstacle_proxy':min((polygon_distance(region,_xz(p['vertices']))-obstacle_margin
+                                 for p in obstacles for region in regions.values()),default=None),
+            'navigation_corridor':min((polygon_distance(region,_xz(road['vertices']))-road_clearance
+                                     for road in geometry['roads'] for region in regions.values()),default=None),
+            'model_obstacle':None if not surface or surface.get('minimum_model_distance') is None
+                             else surface['minimum_model_distance']-.15}
+        minimum_margin=min((v for v in margins.values() if v is not None),default=None)
         a, b = _center(approach), _center(polygon)
         length = math.dist(a, b)
         heading = [(b[i] - a[i]) / length for i in (0, 1)] if length > 1e-9 else None
@@ -122,7 +135,8 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
             heading=[v/math.hypot(*direction) for v in direction]
         alternatives.append({'approach_xz': approach, 'approach_direction_xz':approach_direction, 'heading_xz': heading,
                              'heading_degrees': math.degrees(math.atan2(heading[1], heading[0])) if heading else None,
-                             'pump_clearance': clearance,
+                             'pump_clearance': clearance,'clearance_margins_m':margins,
+                             'minimum_clearance_margin_m':minimum_margin,
                              'rejection_reasons': sorted(set(reasons)),
                              'model_surface_checks': surface,
                              'access_checks': {'outside_accessible_proxy': outside,
@@ -137,8 +151,8 @@ def evaluate_access(candidate, geometry, mesh, *, ground, paint,
     chosen['evaluation_work_units']=sum((row['model_surface_checks'] or {}).get('work_units',0) for row in alternatives)
     chosen['approach_alternatives'] = alternatives
     chosen['diagnostic_exclusions'] = {
-        'pump_operational_radius': pump_clearance, 'navigation_corridor_radius': 3.5,
-        'obstacle_proxy_margin': .5,
+        'pump_operational_radius': pump_clearance, 'navigation_corridor_radius': road_clearance,
+        'obstacle_proxy_margin': obstacle_margin,
         'limits': 'Conservative map/model proxies and sampled render surfaces; no collision-complete vehicle path or runtime activation proof.'}
     return chosen
 
@@ -150,13 +164,16 @@ def rank_candidates(candidates):
         row = deepcopy(candidate)
         clearance = row.get('pump_clearance')
         clearance = float(clearance) if isinstance(clearance, (int, float)) and math.isfinite(clearance) else 0.
-        components = {'passes_checks': not bool(row.get('rejection_reasons')),
+        margin=row.get('minimum_clearance_margin_m')
+        margin=margin if isinstance(margin,(int,float)) and math.isfinite(margin) else 0.
+        components = {'minimum_margin_capped_2m_rounded_cm':round(min(max(margin,0.),2.),2),
+                      'passes_checks': not bool(row.get('rejection_reasons')),
                       'curb_anchor_evidence': bool(row.get('curb_anchor_evidence')),
                       'separator_geometry_evidence': row.get('separator_count', 0) >= 3 and row.get('bay_count', 0) > 0,
                       'pump_clearance_capped_20': min(max(clearance, 0.), 20.),
                       'usable_bay_count': row.get('bay_count', 1), 'stable_id': row['id']}
         key = (not components['passes_checks'], not components['separator_geometry_evidence'], not components['curb_anchor_evidence'],
-               -components['pump_clearance_capped_20'], -components['usable_bay_count'], row['id'])
+               -components['minimum_margin_capped_2m_rounded_cm'], -components['pump_clearance_capped_20'], -components['usable_bay_count'], row['id'])
         row['ranking_components'] = components
         row['ranking_key'] = list(key)
         ranked.append(row)

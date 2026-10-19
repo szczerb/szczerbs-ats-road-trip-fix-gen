@@ -91,15 +91,15 @@ def parser() -> argparse.ArgumentParser:
                                              if name == 'analyze-station-parking' else
                                              'Generate one experimental station parking candidate'))
         station.add_argument('--config', required=True, help='Source-pinned station JSON config')
-        station.add_argument('--mesh', required=True, help='Converted station PIM mesh used by the planner')
+        station.add_argument('--mesh', required=True, help='Converted station PIM; schema 2 also requires its paired sibling PIT')
         station.add_argument('--map-package', required=True, help='Pinned source map archive')
-        station.add_argument('--package', action='append', required=True,
-                             help='Map/dependency archive, repeat in explicit LOW-HIGH priority order; include source map once')
+        station.add_argument('--package', action='append', default=[],
+                             help='Map/dependency archive or directory in LOW-HIGH order; include custom source once, omit installed game packages')
         station.add_argument('--base-fix', help='Optional pinned fuel-only base fix mounted above explicit map packages')
         station.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
         station.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         if name.startswith('generate'):
-            station.add_argument('--revision', type=int, default=0)
+            station.add_argument('--revision', type=int, default=0, help='Experiment revision; schema-2 generation requires at least 1')
             station.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'

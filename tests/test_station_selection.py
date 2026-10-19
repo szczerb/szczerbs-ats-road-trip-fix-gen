@@ -28,6 +28,25 @@ def evaluate(candidate, geometry, mesh):
 
 
 class StationSelectionTests(unittest.TestCase):
+    def test_explicit_access_parameters_control_both_end_checks(self):
+        candidate,geometry,mesh=fixture()
+        geometry['roads']=[{'indices':[1,2],'vertices':[[-20.,0.,10.],[20.,0.,10.]]}]
+        self.assertFalse(evaluate(candidate,geometry,mesh)['rejection_reasons'])
+        result=evaluate_access(candidate,geometry,mesh,ground={'ground'},paint=set(),road_clearance=14.,obstacle_margin=1.2)
+        self.assertTrue(all('intersects_map_navigation_corridor_proxy' in c['rejection_reasons'] for c in result['approach_alternatives']))
+        self.assertEqual(result['diagnostic_exclusions']['navigation_corridor_radius'],14.)
+        self.assertEqual(result['diagnostic_exclusions']['obstacle_proxy_margin'],1.2)
+
+    def test_margin_to_other_exclusions_wins_before_extra_pump_distance(self):
+        candidates=[{'id':'near-npc','rejection_reasons':[],'pump_clearance':20.,'minimum_clearance_margin_m':.116},
+                    {'id':'robust','rejection_reasons':[],'pump_clearance':12.,'minimum_clearance_margin_m':1.2}]
+        ranked=rank_candidates(candidates)
+        self.assertEqual(ranked[0]['id'],'robust')
+        self.assertEqual(ranked[1]['ranking_components']['minimum_margin_capped_2m_rounded_cm'],.12)
+        candidates[0]['minimum_clearance_margin_m']=1.200001
+        candidates[1]['minimum_clearance_margin_m']=1.200002
+        self.assertEqual(rank_candidates(candidates)[0]['id'],'near-npc')
+
     def test_painted_bank_tries_both_ends_and_does_not_mutate_inputs(self):
         candidate, geometry, mesh = fixture()
         original = deepcopy((candidate, geometry, mesh))
@@ -51,6 +70,7 @@ class StationSelectionTests(unittest.TestCase):
         self.assertIn('parked_vehicle_locator_exclusion', result['rejection_reasons'])
         self.assertEqual(result['access_checks']['parked_locator_conflicts'][0]['regions'], ['approach'])
         self.assertIsNone(result['model_surface_checks'])
+        self.assertLess(result['clearance_margins_m']['parked_locator'],0.)
 
     def test_model_obstacle_on_preferred_end_uses_other_end(self):
         candidate, geometry, mesh = fixture()

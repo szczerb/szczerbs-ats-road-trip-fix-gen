@@ -3,6 +3,8 @@ from copy import deepcopy
 import hashlib
 import math
 import unittest
+import xml.etree.ElementTree as ET
+from unittest.mock import patch
 from tests import test_station_parking as fixtures
 from ats_road_trip.package import ResourceStack
 from ats_road_trip.station_parking import plan_station_parking, render_station_plan
@@ -41,9 +43,47 @@ class EffectivePlanningTests(unittest.TestCase):
         self.assertEqual(report['effective_model_state']['variant'],'default')
         self.assertEqual(report['writer']['parameters']['flags'],0)
         self.assertEqual(report['activation']['vehicle_test_geometry'],'Unknown')
-        self.assertIn('Engine pose envelope UNKNOWN',render_station_plan(report))
+        svg=render_station_plan(report)
+        self.assertIn('Engine pose envelope UNKNOWN',svg)
+        self.assertEqual(ET.fromstring(svg).tag,'{http://www.w3.org/2000/svg}svg')
         self.assertTrue(resources)
         self.assertEqual(self.plan(),(report,resources))
+
+    def test_fully_covering_native_car_bank_is_an_explicit_no_output_control(self):
+        from ats_road_trip.station_parking.trigger import append_car_parking_polygon
+        from tests.test_bulk_fuel import PPD
+        contents={n:self.package.read(n) for n in self.package.files}
+        contents[PPD],_=append_car_parking_polygon(contents[PPD],[(-20.,0.,-20.),(20.,0.,-20.),(20.,0.,20.),(-20.,0.,20.)])
+        package,stack,legacy=self.helper.make_stack(contents)
+        self.package=package
+        config=deepcopy(self.config)
+        for key in ['source_archive','descriptor']:config['fingerprints'][key]=legacy['fingerprints'][key]
+        report,resources=self.plan(config=config,stack=stack)
+        self.assertEqual(report['state'],'already_covered')
+        self.assertTrue(report['coverage']['complete'])
+        self.assertFalse(report['in_game_verified'])
+        self.assertTrue(report['candidates'][0]['fully_covering_native_car_groups'])
+        self.assertEqual(resources,{})
+        self.assertNotIn('writer',report)
+
+    def test_named_role_texture_present_in_stack_must_be_pinned(self):
+        self.pit=self.pit.replace(' TextureCount: 0\n}', ' TextureCount: 1\n Texture {\n Tag: "texture[0]:texture_base"\n Value: "/material/paint"\n }\n}')
+        config=deepcopy(self.config);config['fingerprints']['mesh_state']=hashlib.sha256(self.pit.encode()).hexdigest()
+        contents={n:self.package.read(n) for n in self.package.files};contents['material/paint.dds']=b'authored diffuse texture'
+        package,stack,legacy=self.helper.make_stack(contents);self.package=package
+        config['fingerprints']['source_archive']=legacy['fingerprints']['source_archive']
+        with self.assertRaisesRegex(ValueError,'dependency is not pinned'):
+            self.plan(config=config,stack=stack)
+
+    def test_failed_fuel_graph_retains_local_diagnostics_but_never_resources(self):
+        with patch('ats_road_trip.station_parking.planner.match_gas_services',side_effect=ValueError('missing placed services')):
+            report,resources=self.plan()
+        self.assertFalse(report['coverage']['complete'])
+        self.assertFalse(report['fuel_graph_validation']['complete'])
+        self.assertTrue(report['candidates'])
+        self.assertIn('GAS/service graph',report['coverage']['blockers'][0]['reason'])
+        self.assertEqual(resources,{})
+        self.assertNotIn('writer',report)
 
     def test_paired_pit_and_effective_material_and_pmd_drift_block(self):
         for key in ['mesh_state','model_definition']:
@@ -71,6 +111,10 @@ class EffectivePlanningTests(unittest.TestCase):
             p=candidate['polygon_xz'];edges=sorted([math.dist(p[0],p[1]),math.dist(p[1],p[2])])
             self.assertAlmostEqual(edges[0],3.);self.assertAlmostEqual(edges[1],6.)
             self.assertEqual(candidate['physical_parking_polygon_xz'],candidate['activation_polygon_xz'])
+            if candidate['layout']=='parallel':
+                self.assertEqual(len(candidate['approach_alternatives']),2)
+                h=candidate['heading_xz'];a=candidate['approach_direction_xz']
+                self.assertAlmostEqual(sum(h[i]*a[i] for i in (0,1)),1.)
         self.assertEqual(propose_unmarked_parking(station_descriptor()),propose_unmarked_parking(station_descriptor(),layouts=('perpendicular',)))
 
 if __name__=='__main__':unittest.main()

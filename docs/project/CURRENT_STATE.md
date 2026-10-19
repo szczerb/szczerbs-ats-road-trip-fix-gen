@@ -1,6 +1,6 @@
 # Current State
 
-Active heuristic development: [TASK-0044](../tasks/active/TASK-0044-improve-effective-station-parking-heuristics.md) continues on the isolated station worktree, with effective model-state validation, activation research and real-case diagnostics. TASK-0043 presentation remains deferred.
+Active heuristic development: [TASK-0044](../tasks/active/TASK-0044-improve-effective-station-parking-heuristics.md) continues on the isolated station worktree, with effective model-state validation, activation research and real-case diagnostics. TASK-0043 presentation remains deferred. The marked operational native control now resolves to `already_covered` with three matched fuel services and no output; effective Dawson has source-boundary proposals, and C r2 is under final generation/audit. Detecting and activating visually valid nonfunctional stations is a separate future direction; current generation keeps the operational service-graph gate.
 
 ## Station-parking refactor and navigation-icon investigation
 
