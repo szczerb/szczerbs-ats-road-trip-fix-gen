@@ -2,6 +2,10 @@
 
 Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. **Documented — latest clarification, 2026-10-18:** refueling remains user-confirmed, but the earlier rest-success report is qualified. Car-map parking icons are absent in Canada/Alaska and sparse in Montana; physical rest has not been retested. [Current investigation](CAR_PARKING_ICON_INVESTIGATION.md), [dated clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). No immediate game test is requested.
 
+## Parking strategy requirement — 2026-10-21
+
+**Documented — user decision; implementation pending:** generated parking must select either the existing truck-area car-access strategy or dedicated painted/geometry-derived station bays. They are alternatives, with no automatic truck-space fallback in dedicated-bay mode. Fuel may accompany either. Preserve original/native car parking and truck/bus actions. The current separate station commands and F BATCH over r9 do not yet enforce this output policy; no new selector is available here. [ADR-0022](../architecture/decisions/ADR-0022-select-mutually-exclusive-car-parking-strategies.md) defines scope and the need to exclude inherited generated truck-area additions while retaining fuel/context repairs.
+
 ## Selection and commands
 
 The general command requires explicit processor selection. Repeat `--processor` to combine topics:

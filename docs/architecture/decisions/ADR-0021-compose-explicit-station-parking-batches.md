@@ -1,5 +1,7 @@
 # ADR-0021: Compose explicit station-parking batches over the effective stack
 
+**Partially superseded for future output policy by [ADR-0022](ADR-0022-select-mutually-exclusive-car-parking-strategies.md):** the F BATCH test retains r9 as documented, but future dedicated-bay mods must be an alternative to generated truck-area car access. Batch composition and validation remain applicable.
+
 ## Context
 
 Date: 2026-10-19. [TASK-0045](../../tasks/done/TASK-0045-build-curated-station-parking-test-batch.md) extends the earlier single-station experiment to one mod with a curated list of real test sites. Whole-sector overrides do not merge, and returning to a fuel-only baseline would discard the user's standard r9 rest fixes. A shared visual model does not establish shared PPD actions or identical local surroundings.
