@@ -1,5 +1,11 @@
 # Gameplay validation results
 
+## 2026-10-21: F BATCH r1 eight-site tour feedback
+
+**Documented — first-hand user report; observed locally — evidence inspection:** the filled table, filename comments and all 20 screenshots were reviewed together. Eight sites were visited; P05 Dawson was skipped due travel burden and P08 was tested without another screenshot. P01 is natural; P06–P08 require an awkward gap from the curb and provide limited capacity; P09's current orientation is unintuitive; P04's ordinary target bay did not reliably activate. P02/P03/P04 expose excessive combined-area coverage or external-building conflicts, but F BATCH adds only one small rectangle per site: source/companion ownership must be established before assigning those broad regions to the generator.
+
+[Complete per-site report, setup limits, exact screenshot comments and provenance](STATION_PARKING_FORECOURT_TOUR_FEEDBACK_2026_10_21.md). The user used a downloaded wealthy test profile with only base-map garages unlocked, requiring drives into Canada/Mexico. Some interaction was found at every visited site; this does not establish every generated target, completed rest/fatigue or reload. No agent gameplay or product changes occurred.
+
 ## 2026-10-19: N2 fuel and parking icons confirmed in Mustang navigation
 
 **Documented — first-hand user report:** the user now reports that both refueling and parking icons are clearly visible in navigation in the Mustang. This confirms N2 fuel-icon visibility and continued parking-icon visibility at the reported test context, following the earlier N1 parking-only result. No new screenshot or log was supplied, and the exact navigation surface, location, zoom and active-profile details were not itemized. This is icon visibility evidence only; it does not report a completed fuel transaction, numerical price/billing result, rest or fatigue recovery, truck controls, reload behavior, or broader map/vehicle coverage. Do not infer those outcomes.

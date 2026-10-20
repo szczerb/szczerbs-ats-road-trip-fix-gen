@@ -12,7 +12,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Done
 
-- [TASK-0045: Build one curated station-parking test batch](done/TASK-0045-build-curated-station-parking-test-batch.md) — one nine-site / three-family SCS over retained r9, effective census/action audit, 418 tests, independent nine-site preservation audit and checked test ZIP; gameplay pending.
+- [TASK-0045: Build one curated station-parking test batch](done/TASK-0045-build-curated-station-parking-test-batch.md) — one nine-site / three-family SCS over retained r9, effective census/action audit, 418 tests, independent nine-site preservation audit and checked test ZIP; [eight-site user feedback received](../reference/STATION_PARKING_FORECOURT_TOUR_FEEDBACK_2026_10_21.md), P05 skipped.
 
 - [TASK-0044: Improve effective station-parking heuristics](done/TASK-0044-improve-effective-station-parking-heuristics.md) — pinned effective models, raised-boundary proposals and clearance ranking; operational native marked control, C2/E1 alternatives, 381 tests and independent archive/composition audits. Runtime usability remains pending.
 
