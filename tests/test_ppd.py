@@ -34,6 +34,19 @@ class PpdTest(unittest.TestCase):
         self.assertEqual(spawns[3]['position'], spawns[0]['position'])
         self.assertEqual((spawns[3]['type'], spawns[3]['flags']), (3, 1))
 
+    def test_selected_indices_duplicate_only_approved_original_record(self):
+        source = descriptor(spawns=((3, 0), (13, 0), (3, 0), (3, 1)))
+        patched, report = add_petrol_spawns(source, selected_spawn_indices=frozenset({2}))
+        self.assertEqual(report['source_spawn_indices'], [2])
+        self.assertEqual(patched[96:240], source[96:240])
+        self.assertEqual(patched[276:], source[240:])
+        spawns = inspect_ppd(patched)['spawns']
+        self.assertEqual(spawns[-1]['position'], spawns[2]['position'])
+        self.assertEqual(add_petrol_spawns(source, selected_spawn_indices=frozenset())[0], source)
+        for selected in (frozenset({1}), frozenset({3}), frozenset({100}), frozenset({True}), {0}):
+            with self.subTest(selected=selected), self.assertRaises(PpdError):
+                add_petrol_spawns(source, selected_spawn_indices=selected)
+
     def test_generation_is_idempotent(self):
         once, _ = add_petrol_spawns(descriptor())
         twice, report = add_petrol_spawns(once)

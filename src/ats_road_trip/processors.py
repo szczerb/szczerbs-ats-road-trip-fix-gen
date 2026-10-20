@@ -7,6 +7,7 @@ from enum import Enum
 import math
 from typing import Iterable
 
+from .fuel_selection import FuelSelectionConfig
 from .package import ResourceStack
 from .petrol_policy import DEFAULT_REFERENCE, build_policy
 from .petrol_prices import plan_petrol_prices
@@ -31,6 +32,7 @@ class ProcessorConfig:
     rest_radius: float = 1000
     petrol_reference: str = DEFAULT_REFERENCE
     mode: ProcessorMode = ProcessorMode.GENERATE
+    fuel_selection: FuelSelectionConfig = FuelSelectionConfig()
 
     def __post_init__(self) -> None:
         selected = tuple(Processor(value) for value in self.enabled)
@@ -43,6 +45,10 @@ class ProcessorConfig:
             raise ValueError('Courier Jobs map-wide generation is not implemented')
         if isinstance(self.rest_radius, bool) or not isinstance(self.rest_radius, (int, float)) or not math.isfinite(self.rest_radius) or self.rest_radius < 0:
             raise ValueError('Rest radius must be a nonnegative finite coordinate distance')
+        if not isinstance(self.fuel_selection, FuelSelectionConfig):
+            raise ValueError('fuel_selection must be a FuelSelectionConfig')
+        if Processor.FUEL not in selected and self.fuel_selection != FuelSelectionConfig():
+            raise ValueError('Selective fuel configuration requires the fuel processor')
         object.__setattr__(self, 'enabled', selected)
         object.__setattr__(self, 'mode', mode)
 
@@ -60,13 +66,16 @@ class PipelineResult:
 
 
 def _fuel_plan(effective: ResourceStack, game_only: ResourceStack, *,
-               source: str, map_name: str, petrol_reference: str) -> tuple[dict, dict[str, bytes]]:
+               source: str, map_name: str, petrol_reference: str,
+               fuel_selection: FuelSelectionConfig = FuelSelectionConfig()) -> tuple[dict, dict[str, bytes]]:
     # Imported at call time so the legacy planner remains an independent unit
     # and can be substituted by focused tests or future planner revisions.
     from .bulk_fuel import plan_map_fuel
 
     report, station_resources = plan_map_fuel(effective,
-                                              map_packages={source}, map_name=map_name)
+                                              map_packages={source}, map_name=map_name,
+                                              **({'fuel_selection': fuel_selection}
+                                                 if fuel_selection != FuelSelectionConfig() else {}))
     policy, policy_report = build_policy(effective, game_only,
                                          target_packages={source},
                                          reference_path=petrol_reference)
@@ -111,7 +120,9 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
         if processor is Processor.FUEL:
             report, changes = _fuel_plan(effective, game_only, source=source,
                                          map_name=map_name,
-                                         petrol_reference=config.petrol_reference)
+                                         petrol_reference=config.petrol_reference,
+                                         **({'fuel_selection': config.fuel_selection}
+                                            if config.fuel_selection != FuelSelectionConfig() else {}))
         elif processor is Processor.REST:
             from .rest_stops import plan_rest_stops
             report, changes = plan_rest_stops(effective, map_packages={source},

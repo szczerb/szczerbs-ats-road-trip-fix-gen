@@ -12,6 +12,7 @@ import sys
 from .archive import Archive, ArchiveError
 from .courier_audit import audit_courier
 from .fuel_generator import plan_fuel
+from .fuel_selection import FuelSelectionConfig, load_fuel_selection_config
 from .mod_writer import write_mod
 from .package import Package, PackageError, ResourceStack, virtual_path
 from .petrol_policy import DEFAULT_REFERENCE
@@ -86,6 +87,18 @@ def parser() -> argparse.ArgumentParser:
             tanks.add_argument('--revision', type=int, default=0)
             tanks.add_argument('--icon', help='Optional 276x162 JPEG tank icon')
             tanks.add_argument('--experimental', action='store_true')
+    for name in ('analyze-fuel-selection-batch', 'generate-fuel-selection-batch'):
+        batch = sub.add_parser(name, help='Analyze or generate a pinned, finite pump-selection comparison')
+        batch.add_argument('--manifest', required=True, help='Pinned finite-site fuel comparison JSON')
+        batch.add_argument('--package', action='append', default=[], help='Original map/resource archives in LOW-HIGH order; omit generated fixes and installed game packages')
+        batch.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        batch.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        selection = batch.add_mutually_exclusive_group(required=True)
+        selection.add_argument('--fuel-policy', choices=('broad', 'realistic'))
+        selection.add_argument('--fuel-selection-json', help='Strict reviewed fuel policy JSON')
+        if name.startswith('generate'):
+            batch.add_argument('--revision', type=int, default=1)
+            batch.add_argument('--experimental', action='store_true')
     for name in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
         batch = sub.add_parser(name, help='Analyze or generate one explicit multi-site station parking overlay')
         batch.add_argument('--manifest', required=True, help='Explicit P01/P02 batch manifest JSON')
@@ -125,6 +138,11 @@ def parser() -> argparse.ArgumentParser:
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,
                           help='Game-only mounted country path for the petrol/diesel fallback ratio')
+        selection = bulk.add_mutually_exclusive_group()
+        selection.add_argument('--fuel-policy', choices=('broad', 'realistic'),
+                               help='Added car fueling: legacy broad coverage or conservative reviewed selection')
+        selection.add_argument('--fuel-selection-json',
+                               help='Strict source-pinned fuel policy JSON, including rules and uncertain-case behavior')
         if name != 'analyze-map':
             bulk.add_argument('--icon', help='Optional map-labelled JPEG 276x162')
             bulk.add_argument('--experimental', action='store_true')
@@ -205,6 +223,21 @@ def main(argv: list[str] | None = None) -> int:
                    'coverage': result['planner'].get('coverage'),
                    'generated_mod_count': result['generated_mod_count']}, None)
             return 0
+        if args.command in ('analyze-fuel-selection-batch', 'generate-fuel-selection-batch'):
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(message)s')
+            from .fuel_selection.batch_workflow import run_fuel_selection_batch
+            selection = (load_fuel_selection_config(args.fuel_selection_json) if args.fuel_selection_json
+                         else FuelSelectionConfig(mode=args.fuel_policy))
+            result = run_fuel_selection_batch(args.manifest, packages=args.package,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=args.command.startswith('generate'), revision=getattr(args, 'revision', 1),
+                experimental=getattr(args, 'experimental', False), fuel_selection=selection)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result.get('planner', {}).get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
         if args.command in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
             from .station_parking.batch_workflow import run_station_parking_batch
             generate = args.command.startswith('generate')
@@ -239,6 +272,10 @@ def main(argv: list[str] | None = None) -> int:
                            run_id=args.run_id,
                            extractor=args.extractor, dependency=args.dependency,
                            petrol_reference=args.petrol_reference)
+            if args.fuel_selection_json:
+                options['fuel_selection'] = load_fuel_selection_config(args.fuel_selection_json)
+            elif args.fuel_policy:
+                options['fuel_selection'] = FuelSelectionConfig(mode=args.fuel_policy)
             if args.command == 'analyze-map':
                 result = analyze_map(args.source, processors=args.processor,
                                      rest_radius=args.rest_radius, **options)

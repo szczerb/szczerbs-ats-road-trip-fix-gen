@@ -55,26 +55,35 @@ def inspect_ppd(data: bytes) -> dict:
     }
 
 
-def add_petrol_spawns(data: bytes) -> tuple[bytes, dict]:
+def add_petrol_spawns(data: bytes, *, selected_spawn_indices: frozenset[int] | None = None) -> tuple[bytes, dict]:
     """Duplicate v25 GAS/flags=0 at the same transform using flags=1.
 
     Original records, section contents and existing indices stay intact. This
     produces an experimental candidate, not a confirmed station repair. Unknown
     GAS flags and older versions are rejected; no implicit format upgrade occurs.
-    Exact matching transforms already bearing flags=1 are skipped.
+    Exact matching transforms already bearing flags=1 are skipped. An optional
+    immutable subset selects original truck GAS indices; rejected indices never
+    receive generated locators. All records are validated before applying it.
     """
     before = inspect_ppd(data)
     if before['version'] != 25:
         raise PpdError('Experimental fuel generation requires PPD v25; no format upgrade is implemented')
     if before['fuel']['other_flags']:
         raise PpdError('Unknown GAS spawn flags; refusing to infer their meaning')
+    if selected_spawn_indices is not None:
+        if not isinstance(selected_spawn_indices, frozenset) or any(type(i) is not int for i in selected_spawn_indices):
+            raise PpdError('Selected fuel spawn indices must be a frozenset of integers')
+        trucks = {s['index'] for s in before['spawns'] if s['type'] == 3 and s['flags'] == 0}
+        if selected_spawn_indices - trucks:
+            raise PpdError('Selected fuel spawn index is not an original truck GAS locator')
     def transform(spawn):
         return data[spawn['offset']:spawn['offset'] + 28]
     existing = {transform(s) for s in before['spawns'] if s['type'] == 3 and s['flags'] == 1}
     added = []
     records = []
     for spawn in before['spawns']:
-        if spawn['type'] == 3 and spawn['flags'] == 0 and transform(spawn) not in existing:
+        if (spawn['type'] == 3 and spawn['flags'] == 0 and transform(spawn) not in existing
+                and (selected_spawn_indices is None or spawn['index'] in selected_spawn_indices)):
             records.append(data[spawn['offset']:spawn['offset'] + 32] + struct.pack('<I', 1))
             added.append(spawn['index'])
             existing.add(transform(spawn))

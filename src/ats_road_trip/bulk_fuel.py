@@ -14,6 +14,7 @@ import re
 import struct
 
 from .fuel_matching import match_gas_services
+from .fuel_selection import FuelSelectionConfig, classify_groups
 from .archive import Archive
 from .local_fuel import token
 from .map_sector import SectorFormatError, extend_layer, parse_sector
@@ -84,7 +85,32 @@ def _splice(data: bytes, changes: list[tuple[int, int, bytes]]) -> bytes:
     return b''.join(chunks)
 
 
-def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str) -> tuple[dict, dict[str, bytes]]:
+def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str,
+                  fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
+                  target_prefab_uids: frozenset[int] | None = None,
+                  source_sector_paths: frozenset[str] | None = None) -> tuple[dict, dict[str, bytes]]:
+    """Plan broad or selected additions, optionally within an explicit PoC scope.
+
+    Sector scope selects resources owned by ``map_packages``; the existing
+    neighbor halo resolves references without adding neighboring fuel targets.
+    Explicit prefab targets must resolve to fuel groups from the selected source
+    area. Invalid or empty scopes fail; unresolved targets are coverage blockers.
+    Omitting both scope arguments preserves the historical map-wide behavior.
+    """
+    if not isinstance(fuel_selection, FuelSelectionConfig):
+        raise ValueError('fuel_selection must be a FuelSelectionConfig')
+    if target_prefab_uids is not None:
+        if (not isinstance(target_prefab_uids, frozenset) or not target_prefab_uids
+                or any(type(uid) is not int or not 0 < uid < 2**64 for uid in target_prefab_uids)):
+            raise ValueError('target_prefab_uids must be a nonempty frozenset of positive uint64 prefab UIDs')
+    if source_sector_paths is not None:
+        if (not isinstance(source_sector_paths, frozenset) or not source_sector_paths
+                or any(not isinstance(path, str) or not re.fullmatch(
+                    r'map/[^/]+/sec[+-]\d{4}[+-]\d{4}\.(?:base|aux)', path)
+                       or not path.isprintable() or any(character in path for character in ('\\', ':', '\x00'))
+                       or path.split('/')[1] in ('.', '..') for path in source_sector_paths)):
+            raise ValueError('source_sector_paths must be a nonempty frozenset of normalized map sector paths')
+    selective = fuel_selection.mode == 'realistic'
     log = logging.getLogger(__name__)
     # R8 renamed these sources for display only, retaining the R7 gameplay
     # payload. Keep their established generated UIDs/aliases across that rename.
@@ -101,11 +127,34 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                   'No pump geometry or access roads are changed; physical car access remains a gameplay constraint.',
                   'Full-sector overrides require the declared source stack and conflict with other sector replacements.',
               ]}
+    if selective:
+        report['schema_version'] = 4
+        report['fuel_selection'] = fuel_selection.summary()
+        report['coverage'].update({'policy_selected_truck_points': 0, 'policy_skipped_truck_points': 0,
+                                   'uncertain_included_points': 0, 'uncertain_skipped_points': 0,
+                                   'skipped_points_with_native_car_support': 0,
+                                   'native_car_services_retained': 0, 'native_car_locators_retained': 0})
+        report['limitations'].append('Suitability roles do not prove fuel chemistry or private ownership; native car support is retained even at excluded pumps.')
     coverage = report['coverage']; blockers = coverage['blockers']
     sectors, items, nodes = {}, {}, defaultdict(list)
     inspected = set()
     source_paths = stack.matching(r'map/[^/]+/sec[+-]\d{4}[+-]\d{4}\.(?:base|aux)')
     source_paths = [p for p in source_paths if str(stack.resources[p][0].path) in map_packages]
+    if source_sector_paths is not None:
+        invalid_paths = source_sector_paths - set(source_paths)
+        if invalid_paths:
+            raise ValueError('Scoped sector is missing or not provided by an eligible source package: '
+                             + ', '.join(sorted(invalid_paths)))
+        source_paths = [path for path in source_paths if path in source_sector_paths]
+    if source_sector_paths is not None or target_prefab_uids is not None:
+        report['analysis'] = 'bounded_missing_car_fuel'
+        report['scope'] = {
+            'kind': 'explicit_prefab_targets' if target_prefab_uids is not None else 'source_sector_subset',
+            'source_sector_paths': sorted(source_paths),
+            'target_prefab_uids': ([hex(uid) for uid in sorted(target_prefab_uids)]
+                                   if target_prefab_uids is not None else None),
+            'complete_means': 'All requested fuel groups in the declared bounded source area were inspected; no map-wide coverage claim.'}
+        report['limitations'].append('Bounded inspection and generation: unselected prefab fuel groups stay unchanged; neighboring sectors only resolve references.')
     log.info('%s: inspecting %s source sector files', map_name, len(source_paths))
     for package in stack.packages:
         package.prefetch([p for p in source_paths if stack.resources[p][0] is package],
@@ -181,6 +230,13 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                       if any(uid in items and _is_fuel(items[uid][1]) for uid in i.details['slaves'])}
     for uid in target_prefabs:
         grouped.setdefault(uid, [])
+    if target_prefab_uids is not None:
+        resolved_targets = {uid for uid in target_prefab_uids
+                            if uid in grouped and uid in items and items[uid][1].kind == 4}
+        blockers.extend({'area': 'scope', 'prefab_uid': hex(uid),
+                         'reason': 'Requested fuel prefab was not resolved as a source-area root fuel group'}
+                        for uid in sorted(target_prefab_uids - resolved_targets))
+        grouped = {uid: grouped[uid] for uid in sorted(resolved_targets)}
     # Fetch only descriptors referenced by fuel parents, not every game asset.
     ppds = set()
     for parent in grouped:
@@ -193,6 +249,7 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
     log.info('%s: matching %s fuel parents', map_name, len(grouped))
     resources, edits, new_items, new_nodes = {}, defaultdict(list), defaultdict(list), defaultdict(list)
     clones, aliases, eligible_trucks = {}, {}, set()
+    descriptor_checks = []
     all_uids = set(items) | set(nodes)
 
     def new_uid(seed):
@@ -237,7 +294,7 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             original_ppd = stack.read(descriptor)
             source_info = inspect_ppd(original_ppd)
             if not source_info['fuel']['gas_spawn_count']:
-                if selected_services:
+                if selected_services or target_prefab_uids is not None:
                     raise ValueError('Fuel service parent descriptor has no GAS locators')
                 continue
             if source_info['fuel']['other_flags']:
@@ -249,10 +306,19 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             if len(trucks) != len(gas_trucks):
                 raise ValueError(f'Truck GAS/service count mismatch: {len(gas_trucks)}/{len(trucks)}')
             coverage['truck_points'] += len(trucks)
-            eligible_trucks.update(s.uid for s in trucks)
+            if not selective:
+                eligible_trucks.update(s.uid for s in trucks)
             entry_report.update({'path': parent_path, 'model': unit.name, 'descriptor': descriptor,
                                  'truck_points': len(trucks), 'descriptor_upgrade': upgrade})
             if not trucks:
+                if selective:
+                    native = [service for service in services if service.flags & 0x4000]
+                    coverage['native_car_services_retained'] += len(native)
+                    coverage['native_car_locators_retained'] += info['fuel']['flags_one_count']
+                    entry_report['fuel_selection'] = {'groups': [],
+                        'native_car_service_uids': [hex(service.uid) for service in native],
+                        'native_car_spawn_indices': [spawn['index'] for spawn in info['spawns']
+                                                     if spawn['type'] == 3 and spawn['flags'] == 1]}
                 entry_report['status'] = 'car_only'; report['stations'].append(entry_report); continue
             relevant_nodes = {uid: node_for(uid, parent_path) for uid in prefab.details['nodes']}
             for service in services:
@@ -263,15 +329,74 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             def has_car(spawn):
                 truck_node = relevant_nodes[items[mapping[spawn['index']]][1].details['node']]
                 return any(n.raw[8:36] == truck_node.raw[8:36] for n in car_nodes)
-            missing = [s for s in gas_trucks if not has_car(s)]
-            changed_ppd, ppd_change = add_petrol_spawns(upgraded)
+            selected_indices = None
+            if selective:
+                # Resolve actual parent links. Spatial proximity alone supplies
+                # no company identity or ownership evidence.
+                companies = tuple(sorted(uid for uid, (_, candidate) in items.items()
+                                         if candidate.kind == 6 and candidate.details['prefab'] == parent_uid))
+                garage_indices = {spawn['index'] for spawn in gas_trucks
+                                  if items[mapping[spawn['index']]][1].kind == 0x23}
+                decisions = classify_groups(fuel_selection, descriptor=descriptor,
+                                             descriptor_sha256=_sha(original_ppd),
+                                             model_desc=unit.one('model_desc', ''),
+                                             variant=prefab.details['variant'], parts=prefab.details['parts'],
+                                             additional_parts=unit.values('additional_parts'),
+                                             gas_trucks=gas_trucks, company_uids=companies,
+                                             garage_indices=garage_indices)
+                selected_indices = frozenset(d['spawn_index'] for d in decisions if d['selected_for_addition'])
+                # Reject unsupported ownership structures even at policy-skipped
+                # pumps; suitability cannot hide unsafe source graph data.
+                for spawn in gas_trucks:
+                    old = items[mapping[spawn['index']]][1]
+                    node = relevant_nodes[old.details['node']]
+                    if old.details['nodes'] or node.backward or node.forward != old.uid:
+                        raise ValueError('Fuel service has unsupported extra-node/ownership links')
+                for decision in decisions:
+                    spawn = next(s for s in gas_trucks if s['index'] == decision['spawn_index'])
+                    native_locator = any(other['type'] == 3 and other['flags'] == 1
+                                         and other['position'] == spawn['position']
+                                         and other['rotation'] == spawn['rotation'] for other in info['spawns'])
+                    native_service = has_car(spawn)
+                    decision.update({'service_uid': hex(mapping[spawn['index']]),
+                                     'native_car_service_retained': native_service,
+                                     'native_car_locator_retained': native_locator,
+                                     'native_support_prevents_exclusion': (not decision['selected_for_addition']
+                                                                          and (native_service or native_locator))})
+                entry_report['fuel_selection'] = {'groups': decisions,
+                    'native_car_service_uids': [hex(s.uid) for s in services if s.flags & 0x4000],
+                    'native_car_spawn_indices': [s['index'] for s in info['spawns'] if s['type'] == 3 and s['flags'] == 1]}
+                coverage['native_car_services_retained'] += len(car_nodes)
+                coverage['native_car_locators_retained'] += info['fuel']['flags_one_count']
+                coverage['policy_selected_truck_points'] += len(selected_indices)
+                coverage['policy_skipped_truck_points'] += len(gas_trucks) - len(selected_indices)
+                coverage['skipped_points_with_native_car_support'] += sum(d['native_support_prevents_exclusion'] for d in decisions)
+                for decision in decisions:
+                    if decision['role'] == 'uncertain':
+                        coverage['uncertain_included_points' if decision['selected_for_addition'] else 'uncertain_skipped_points'] += 1
+                eligible_trucks.update(mapping[index] for index in selected_indices)
+            missing = [s for s in gas_trucks if not has_car(s)
+                       and (selected_indices is None or s['index'] in selected_indices)]
+            if selective:
+                changed_ppd, ppd_change = add_petrol_spawns(upgraded, selected_spawn_indices=selected_indices)
+                # An entirely skipped legacy layout needs no new private alias
+                # just to upgrade the unchanged source format.
+                if not selected_indices:
+                    changed_ppd = original_ppd
+            else:
+                changed_ppd, ppd_change = add_petrol_spawns(upgraded)
             needs_descriptor = changed_ppd != original_ppd
-            coverage['already_supported'] += len(trucks) - len(missing)
+            coverage['already_supported'] += sum(has_car(s) for s in gas_trucks)
             if not missing and not needs_descriptor:
-                entry_report['status'] = 'already_supported'; report['stations'].append(entry_report); continue
+                entry_report['status'] = ('policy_skipped' if selective and not selected_indices else 'already_supported'); report['stations'].append(entry_report); continue
             key = (unit.name, _sha(original_ppd))
+            if selective:
+                key += (tuple(sorted(selected_indices)),)
             if needs_descriptor and key not in aliases:
-                alias = 'rtg' + _sha(f'{namespace_name}:{unit.name}:{_sha(original_ppd)}'.encode())[:8]
+                alias_seed = f'{namespace_name}:{unit.name}:{_sha(original_ppd)}'
+                if selective:
+                    alias_seed += ':fuel-realistic:' + ','.join(map(str, sorted(selected_indices)))
+                alias = 'rtg' + _sha(alias_seed.encode())[:8]
                 private_ppd = f'prefab/rtfix/{alias}.ppd'; definition = f'def/world/prefab.{alias}.sii'
                 if (any(p in stack.resources or p in resources for p in (private_ppd, definition))
                         or token(alias) in definitions):
@@ -283,6 +408,8 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                                                    'package': str(stack.resources[descriptor][0].path),
                                                    'definition': definition_path})
             alias = aliases.get(key)
+            if selective:
+                descriptor_checks.append((parent_uid, changed_ppd, ppd_change['added_count']))
             if alias:
                 edits[parent_path].append((prefab.offset+57, prefab.offset+65, struct.pack('<Q', token(alias))))
             added_slave_ids = []
@@ -402,6 +529,21 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             if not any(placed_node(car.details['node'], car_path).raw[8:36] == transform
                        for car_path,car in car_services[truck.details['parent']]):
                 raise ValueError(f'Truck point {uid:#x} lacks a car counterpart in the output graph')
+        if selective:
+            for parent_uid, ppd_data, appended_count in descriptor_checks:
+                parent_path, parent = after_items[parent_uid]
+                linked = [after_items[uid][1] for uid in parent.details['slaves']
+                          if uid in after_items and _is_fuel(after_items[uid][1])]
+                # Preserve known unlisted legacy FuelPump relationships.
+                linked.extend(item for _, item in after_items.values() if _is_fuel(item)
+                              and item.details['parent'] == parent_uid and item.uid not in parent.details['slaves'])
+                resolved = {uid: placed_node(uid, parent_path) for uid in parent.details['nodes']}
+                for service in linked:
+                    resolved[service.details['node']] = placed_node(service.details['node'], after_items[service.uid][0])
+                matched = match_gas_services(ppd_data, parent, resolved, linked, allow_missing_car=True)
+                count = inspect_ppd(ppd_data)['spawn_count']
+                if any(index not in matched for index in range(count - appended_count, count)):
+                    raise ValueError('Appended car GAS locator lacks its placed service')
         for old,new in clones.items():
             path,car = after_items[new]
             _,parent = after_items[car.details['parent']]
