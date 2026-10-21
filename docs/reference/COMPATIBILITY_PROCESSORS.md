@@ -1,5 +1,7 @@
 # Selectable compatibility processors
 
+**Selective fuel increment — 2026-10-21:** broad fuel remains the default. `FuelSelectionConfig` / `--fuel-policy` / `--fuel-selection-json` add opt-in reviewed per-pump suitability with explicit uncertain-case behavior, retaining original car/truck services and independent price/context processing. [Policy, configuration and audited G1/G2 comparison](SELECTIVE_CAR_FUELING.md). General selective packages replace their same-source broad fix; they do not automatically subtract inherited broad additions. Only the separate finite-site batch workflow supplies the explicit source-resource guards documented in its handoff. Parking mode selection remains a separate ADR-0022 direction; this fuel-only increment does not complete those presets.
+
 Updated: 2026-10-18. Target: ATS 1.61 / Road Trip Ford. [ADR-0008](../architecture/decisions/ADR-0008-compose-processors-and-local-rest-polygons.md) records the user-selected processor model and rest-distance rule. **Documented — latest clarification, 2026-10-18:** refueling remains user-confirmed, but the earlier rest-success report is qualified. Car-map parking icons are absent in Canada/Alaska and sparse in Montana; physical rest has not been retested. [Current investigation](CAR_PARKING_ICON_INVESTIGATION.md), [dated clarification](VALIDATION_RESULTS.md#2026-10-18-missing-car-parking-icons-and-qualified-rest-report). No immediate game test is requested.
 
 ## Parking strategy requirement — 2026-10-21

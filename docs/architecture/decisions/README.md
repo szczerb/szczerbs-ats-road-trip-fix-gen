@@ -53,3 +53,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0021: Compose explicit station-parking batches](ADR-0021-compose-explicit-station-parking-batches.md) — guarded disjoint sector edits, private placement aliases and retained effective standard fixes.
 
 - [ADR-0022: Select mutually exclusive car-parking strategies](ADR-0022-select-mutually-exclusive-car-parking-strategies.md) — choose truck-area car access or dedicated station bays per generated mod; fuel stays independent, with no automatic fallback.
+
+- [ADR-0023: Select car-fuel additions by reviewed pump role](ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md) — opt-in source-pinned per-group suitability, explicit uncertainty, native preservation and audited comparison guards.

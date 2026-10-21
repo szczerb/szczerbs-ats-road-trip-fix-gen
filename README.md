@@ -20,6 +20,7 @@ These are experimental builds for community testing. The map/connector fixes des
 | Tool | What it changes |
 | --- | --- |
 | **Map fuel/rest fixes** | Add passenger-car fuel interactions while retaining original truck interactions; enable car rest areas where the local proximity rule calls for them; repair missing petrol-price fields. |
+| **Selective fuel PoC** | Opt-in reviewed pump-group suitability, explicit uncertainty and separate G1/G2 finite-site comparison. Broad behavior remains the default; this is not the completed realistic parking preset. [Policy and local test handoff](docs/reference/SELECTIVE_CAR_FUELING.md). |
 | **Job Types Compat Mustang** | Add the `muscle` vehicle class to 58 reviewed cargo job definitions. Other muscle-tagged cars and Quick Jobs may also be affected; all nine vehicle-transfer definitions stay unchanged. |
 | **Reasonable gas tank upgrades** | Change the Mustang from 61 to 76 L and the non-hybrid 5.0 V8 F-150 from 98 to 136 L. Crown Victoria and Bronco stay unchanged. Disable conflicting tank mods, including the old 3× override. |
 | **Inspection and reports** | Inspect archives and report map-company/context data to investigate courier compatibility. General map courier generation remains unsupported. |
