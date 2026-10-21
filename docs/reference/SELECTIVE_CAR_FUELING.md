@@ -2,6 +2,8 @@
 
 Date: 2026-10-21. [TASK-0046](../tasks/done/TASK-0046-add-selective-passenger-car-fueling.md), [ADR-0023](../architecture/decisions/ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md).
 
+**Subsequent user feedback — 2026-10-21:** G1 works at all six visited sites. Include G01/G02/G06 as whole stations; exclude our additions at G03/G04/G05. This supersedes the old G2 sample suitability choices; that archive and its config remain historical and unchanged. [Report, table snapshot and full-map readiness](SELECTIVE_CAR_FUELING_FEEDBACK_2026_10_21.md).
+
 ## Evidence and policy
 
 **Documented — official authoring scope:** SCS prefab locators define map connections, AI behavior and player interactions; GAS spawn points are distinct from generic trigger polygons. The public authoring documentation does not establish a complete ATS 1.61 petrol/ownership schema. [SCS prefab locators](https://modding.scssoft.com/wiki/Documentation/Tools/SCS_Blender_Tools/Locators/Prefab_Locators), inspected 2026-10-21. The [prior flag/service research](REFUELING_RESEARCH_FINDINGS.md) supplies versioned local observations and limits.

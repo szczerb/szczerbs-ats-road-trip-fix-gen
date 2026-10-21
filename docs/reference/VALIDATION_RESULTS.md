@@ -1,5 +1,9 @@
 # Gameplay validation results
 
+## 2026-10-21: G1 six-site fuel tour and station-level suitability
+
+**Documented — first-hand user report; observed locally — filled table:** the user completed all six G1 BROAD sites and reports functioning interactions. Include whole public stations G01/G02/G06; exclude added car support at G03 logistics hub, G04 cattle-ranch/equipment fuel and G05 player truck garage. No individual-pump suitability distinction is requested for this sample. These are gameplay policy decisions; diesel-only inventory is inferred by the user, not technically established. G2 remains untested and is stricter than this accepted policy; a repeat full tour is not required before implementation. Purchases, prices/billing, truck controls and reload are not itemized. [Complete feedback, unchanged table snapshot and implementation boundary](SELECTIVE_CAR_FUELING_FEEDBACK_2026_10_21.md).
+
 ## 2026-10-21: F BATCH r1 eight-site tour feedback
 
 **Documented — first-hand user report; observed locally — evidence inspection:** the filled table, filename comments and all 20 screenshots were reviewed together. Eight sites were visited; P05 Dawson was skipped due travel burden and P08 was tested without another screenshot. P01 is natural; P06–P08 require an awkward gap from the curb and provide limited capacity; P09's current orientation is unintuitive; P04's ordinary target bay did not reliably activate. P02/P03/P04 expose excessive combined-area coverage or external-building conflicts, but F BATCH adds only one small rectangle per site: source/companion ownership must be established before assigning those broad regions to the generator.

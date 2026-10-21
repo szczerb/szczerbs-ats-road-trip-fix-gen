@@ -29,3 +29,7 @@ Selective coverage is intentionally narrower and depends on reviewed model state
 Broad defaults, resource identities and legacy output remain compatible. Independent fuel-price repair runs under both policies. Selected source/private aliases retain original context classifications. N2 navigation visibility remains independent; no parking-placement improvements or game/profile changes belong to this increment.
 
 Verify mixed-pump selection, subset aliases, native support, uncertainty, drift, source ownership, guarded effective exclusions, price/context preservation and legacy equivalence. Static success does not establish purchases, physical access, prices/billing or gameplay acceptance. Review separate goal requirements before marking TASK-0046 complete.
+
+## Subsequent sample policy clarification — 2026-10-21
+
+**Documented — user decision:** include whole stations G01/G02/G06 and omit added car support at G03/G04/G05. Individual-pump suitability distinctions are unnecessary for this sample; source truck-correlated flags do not by themselves justify withholding car support at the approved public stops. Keep granular selection internally, allowing all groups of an approved facility to be selected together. The historical G2 catalog/payload stays unchanged; revised reusable rules and broader coverage require subsequent implementation. [Evidence and readiness boundary](../../reference/SELECTIVE_CAR_FUELING_FEEDBACK_2026_10_21.md).
