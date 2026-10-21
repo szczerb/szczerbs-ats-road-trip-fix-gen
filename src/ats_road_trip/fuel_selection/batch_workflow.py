@@ -416,6 +416,16 @@ def run_fuel_selection_batch(manifest_path, *, packages, game_dir=None, extracto
                 if not skipped:
                     continue
                 path = site['sector']
+                for group in skipped:
+                    service_path = group.get('service_resource_path')
+                    node_paths = group.get('node_resource_paths')
+                    if (service_path != path or not isinstance(node_paths, list) or not node_paths
+                            or any(not isinstance(node_path, str) or node_path != path
+                                   for node_path in node_paths)):
+                        raise ValueError(
+                            f"Policy-skipped group at site {site['id']} references service/node "
+                            'resources outside its pinned manifest parent sector; cross-resource '
+                            'exclusions are unsupported')
                 source_sha256 = providers[site['id']]['sha256']
                 guard = guarded_sector_details.setdefault(path, {
                     'path': path, 'source_package': site['source_package'],
@@ -430,6 +440,10 @@ def run_fuel_selection_batch(manifest_path, *, packages, game_dir=None, extracto
                     'site_id': site['id'], 'spawn_index': group.get('spawn_index'),
                     'role': group.get('role'), 'reason': group.get('reason'),
                     'rule_id': group.get('rule_id'),
+                    'service_uid': group.get('service_uid'),
+                    'service_resource_path': group.get('service_resource_path'),
+                    'service_node_uid': group.get('service_node_uid'),
+                    'node_resource_paths': group.get('node_resource_paths'),
                 } for group in skipped)
 
             logging.getLogger(__name__).info('Fuel comparison: independent petrol prices and alias contexts')

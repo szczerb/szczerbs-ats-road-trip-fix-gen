@@ -352,13 +352,30 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                     node = relevant_nodes[old.details['node']]
                     if old.details['nodes'] or node.backward or node.forward != old.uid:
                         raise ValueError('Fuel service has unsupported extra-node/ownership links')
+                resolved_node_uids = set(prefab.details['nodes'])
+                resolved_node_uids.update(service.details['node'] for service in services)
+                resolved_nodes = []
+                for node_uid in sorted(resolved_node_uids):
+                    candidates = nodes.get(node_uid, [])
+                    if not candidates:
+                        raise ValueError(f'Unresolved map node {node_uid:#x}')
+                    resolved_nodes.append({'uid': hex(node_uid),
+                        'resource_paths': sorted({path for path, _ in candidates})})
+                all_node_resource_paths = sorted({path for node in resolved_nodes
+                                                  for path in node['resource_paths']})
                 for decision in decisions:
                     spawn = next(s for s in gas_trucks if s['index'] == decision['spawn_index'])
+                    service_uid = mapping[spawn['index']]
+                    service = items[service_uid][1]
                     native_locator = any(other['type'] == 3 and other['flags'] == 1
                                          and other['position'] == spawn['position']
                                          and other['rotation'] == spawn['rotation'] for other in info['spawns'])
                     native_service = has_car(spawn)
-                    decision.update({'service_uid': hex(mapping[spawn['index']]),
+                    decision.update({'service_uid': hex(service_uid),
+                                     'service_resource_path': items[service_uid][0],
+                                     'service_node_uid': hex(service.details['node']),
+                                     'node_resource_paths': all_node_resource_paths,
+                                     'resolved_nodes': resolved_nodes,
                                      'native_car_service_retained': native_service,
                                      'native_car_locator_retained': native_locator,
                                      'native_support_prevents_exclusion': (not decision['selected_for_addition']

@@ -15,6 +15,7 @@ from ats_road_trip.map_sector import parse_sector
 from tests.test_bulk_fuel import PPD, SECTOR, resources
 from tests.test_fuel_selection import config, rule
 from tests.test_bulk_run import archive
+from tests.test_map_sector import sector
 
 
 def _sha(data):
@@ -117,6 +118,34 @@ class FuelSelectionBatchTests(unittest.TestCase):
         self.assertEqual(result['planner']['baseline_sector_guards'], [])
         self.assertFalse((self.root / 'local_outputs/generated').exists())
 
+    def test_policy_skipped_adjacent_service_is_rejected_before_archive(self):
+        source_data = self.fixture.copy()
+        parsed = parse_sector(source_data[SECTOR])
+        service = parsed.services[0]
+        parent = parsed.prefabs[0]
+        service_node_uid = service.details['node']
+        service_node = next(node for node in parsed.nodes if node.uid == service_node_uid)
+        self.assertNotIn(service_node_uid, parent.details['nodes'])
+        source_data[SECTOR] = sector(
+            [source_data[SECTOR][item.offset:item.end]
+             for item in parsed.items if item.uid != service.uid],
+            [node.raw for node in parsed.nodes if node.uid != service_node_uid],
+            parsed.visibility_children)
+        adjacent = 'map/usa/sec+0001+0000.base'
+        source_data[adjacent] = sector(
+            [self.fixture[SECTOR][service.offset:service.end]], [service_node.raw])
+        source = self.inputs / 'adjacent-service.scs'
+        archive(source, source_data)
+        manifest = self.make_manifest(price_packages=[], sector_data=source_data[SECTOR])
+        manifest['sites'][0]['source_package'] = source.name
+        self.manifest_path.write_text(json.dumps(manifest), encoding='utf-8')
+        with patch('ats_road_trip.fuel_selection.batch_workflow.REPO_ROOT', self.root):
+            with self.assertRaisesRegex(ValueError, 'cross-resource exclusions are unsupported'):
+                run_fuel_selection_batch(self.manifest_path, packages=[source],
+                    game_dir=self.game, run_id='2026-10-21_02-00-12', generate=True,
+                    experimental=True, fuel_selection=config())
+        self.assertFalse((self.root / 'local_outputs/generated').exists())
+
     def test_policy_skipped_site_emits_source_sector_guard(self):
         source_data = self.fixture.copy()
         source = self.inputs / 'skipped.scs'
@@ -133,6 +162,8 @@ class FuelSelectionBatchTests(unittest.TestCase):
         self.assertEqual(guards[0]['source_sha256'], _sha(source_data[SECTOR]))
         self.assertEqual(guards[0]['output_sha256'], _sha(source_data[SECTOR]))
         self.assertEqual(guards[0]['resource_role'], 'raw_source_baseline_guard')
+        self.assertEqual(guards[0]['skipped_groups'][0]['service_resource_path'], SECTOR)
+        self.assertEqual(guards[0]['skipped_groups'][0]['node_resource_paths'], [SECTOR])
         with zipfile.ZipFile(result['output']) as generated:
             self.assertEqual(generated.read(SECTOR), source_data[SECTOR])
             report = json.loads(generated.read('road_trip_fix_report.json'))
