@@ -123,6 +123,19 @@ def parser() -> argparse.ArgumentParser:
         if name.startswith('generate'):
             station.add_argument('--revision', type=int, default=0, help='Experiment revision; schema-2 generation requires at least 1')
             station.add_argument('--experimental', action='store_true')
+    for name in ('analyze-map-stack', 'generate-map-stack'):
+        stack = sub.add_parser(name, help=('Analyze the declared original map stack without writing mods'
+                                           if name == 'analyze-map-stack' else
+                                           'Generate the complete supported map replacement set'))
+        stack.add_argument('--package', action='append', required=True,
+                           help='Original map/resource package, repeat LOW-HIGH; omit generated fixes and installed game packages')
+        stack.add_argument('--preset', choices=('broad', 'realistic'), default='realistic',
+                           help='Combined fuel/parking policy (default: realistic)')
+        stack.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        stack.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            stack.add_argument('--revision', type=int, default=10)
+            stack.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
@@ -263,6 +276,22 @@ def main(argv: list[str] | None = None) -> int:
                    'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
                    'coverage': result['planner'].get('coverage'),
                    'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-map-stack', 'generate-map-stack'):
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(message)s')
+            from .map_stack import run_map_stack
+            generate = args.command == 'generate-map-stack'
+            result = run_map_stack(packages=args.package, preset=args.preset,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=generate, experimental=getattr(args, 'experimental', False),
+                revision=getattr(args, 'revision', 10))
+            _emit({'status': result['status'], 'analysis_only': not generate,
+                   'outputs': result.get('outputs', []),
+                   'report_path': result.get('report_path'),
+                   'work_dir': result.get('workflow', {}).get('work_dir'),
+                   'coverage': result.get('planner', {}).get('coverage'),
+                   'generated_mod_count': len(result.get('outputs', []))}, None)
             return 0
         if args.command in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
             import logging

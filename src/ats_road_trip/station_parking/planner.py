@@ -43,9 +43,14 @@ def _world_vertices(ppd,prefab,nodes,vertices):
     origin=prefab.details['origin'];anchor=nodes[prefab.details['nodes'][0]].position
     return [[x,anchor[1]+p[1]-controls[origin][1],z] for p,(x,z) in zip(vertices,horizontal)]
 
-def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None,local_context=None):
+def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None,local_context=None,
+                         planning_cache=None,candidate_policy=None,service_context=None):
     """Return a reproducible report and only the new station's resource edits."""
     validate_config(config)
+    cache={} if planning_cache is None else planning_cache
+    policy={} if candidate_policy is None else dict(candidate_policy)
+    if set(policy)-{'curb_setback','prefer_perpendicular','single_painted_bays','require_curb_evidence'}:
+        raise ValueError('Unknown station candidate policy')
     if config['game_version']!=game_version:
         raise ValueError('Installed game version differs from reviewed station configuration')
     report={'schema_version':1,'processor':'station_parking','station_id':config['station_id'],
@@ -64,13 +69,21 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         raise ValueError('Explicit source map does not contain selected station sector')
     if not source_package.path.is_file():
         raise ValueError('Station source must be a pinned archive, not a directory')
-    digest=hashlib.sha256()
-    with source_package.path.open('rb') as stream:
-        for chunk in iter(lambda:stream.read(1024*1024),b''):
-            digest.update(chunk)
-    if digest.hexdigest()!=config['fingerprints']['source_archive']:
+    identity=(str(source_package.path),source_package.path.stat().st_size,source_package.path.stat().st_mtime_ns)
+    source_hashes=cache.setdefault('archive_hashes',{})
+    if identity not in source_hashes:
+        digest=hashlib.sha256()
+        with source_package.path.open('rb') as stream:
+            for chunk in iter(lambda:stream.read(1024*1024),b''):
+                digest.update(chunk)
+        source_hashes[identity]=digest.hexdigest()
+    if source_hashes[identity]!=config['fingerprints']['source_archive']:
         raise ValueError('Source archive SHA-256 drift')
-    source=parse_sector(source_package.read(sector_path,max_bytes=64*1024*1024))
+    source_sectors=cache.setdefault('source_sectors',{})
+    source_key=(identity,sector_path)
+    if source_key not in source_sectors:
+        source_sectors[source_key]=parse_sector(source_package.read(sector_path,max_bytes=64*1024*1024))
+    source=source_sectors[source_key]
     if not any(p.uid==uid for p in source.prefabs):
         raise ValueError('Selected station UID is absent from original source map')
     data=stack.read(sector_path,max_bytes=64*1024*1024)
@@ -80,7 +93,10 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if prefab is None: raise ValueError('Selected station is missing from effective stack')
     if config['schema_version']==1 and (prefab.details['parts'] or prefab.details['variant'] not in (0,token('default'))):
         return blocked('Non-default or additional prefab parts require a separate variant review')
-    definitions=prefab_definitions(stack)
+    indexes=cache.setdefault('stack_indexes',{})
+    if id(stack) not in indexes:
+        indexes[id(stack)]=(stack,prefab_definitions(stack),_validate_actions(stack))
+    _,definitions,action_state=indexes[id(stack)]
     entry=definitions.get(prefab.details['model'])
     if entry is None: raise ValueError('Selected prefab has no unique effective definition')
     unit,block,definition=entry
@@ -92,7 +108,7 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     for label,raw in [('descriptor',ppd),('model_geometry',stack.read(config['model_geometry'],max_bytes=32*1024*1024)),
                       ('mesh',mesh_text.encode('utf-8'))]:
         if _hash(raw)!=config['fingerprints'][label]: raise ValueError(f'{label} SHA-256 drift')
-    modes,_,_,_=_validate_actions(stack)
+    modes,_,_,_=action_state
     if modes.get(token('parking_car'))!={'car'}:
         raise ValueError('Native parking_car must be car-only')
     mesh=read_station_mesh(mesh_text)
@@ -139,6 +155,11 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if any(set(names)-aliases for names in config['mesh_materials'].values()):
         raise ValueError('Reviewed surface/paint material alias is absent from converted mesh')
     nodes={n.uid:n for n in sector.nodes}
+    if service_context is not None:
+        for node_uid,node in service_context.get('nodes',{}).items():
+            if node_uid in nodes and (nodes[node_uid].position!=node.position or nodes[node_uid].rotation!=node.rotation):
+                raise ValueError('Conflicting cross-sector service node geometry')
+            nodes.setdefault(node_uid,node)
     if local_context is not None:
         from copy import deepcopy
         report['local_context']=deepcopy(local_context)
@@ -165,7 +186,8 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         return evaluate_local_context(world,local_context,margin=.5)
     # Verify original service graph and coordinate convention before proposing
     # any new interaction, including preserved fuel twins from a fuel-only base.
-    services=[i for i in sector.services if i.details['parent']==uid]
+    services=[i for i in (service_context.get('services',[]) if service_context is not None else sector.services)
+              if i.details['parent']==uid]
     fuel_graph_error=None
     try:
         fuel_matches=match_gas_services(ppd,prefab,nodes,services)
@@ -199,9 +221,12 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if config['schema_version']==2 and config['method']=='unmarked_geometry':
         from .methods.curbside import propose_curb_anchored_candidates
         curb_candidates=propose_curb_anchored_candidates(mesh,geometry,ground=config['mesh_materials']['ground'],
-            paint=config['mesh_materials']['paint'],parameters=ParkingParameters(**config['parameters']))
+            paint=config['mesh_materials']['paint'],parameters=ParkingParameters(**config['parameters']),
+            edge_offset=policy.get('curb_setback',.5))
         proposal['candidates'].extend(curb_candidates)
         proposal['curb_candidate_count']=len(curb_candidates)
+    if policy.get('single_painted_bays') and config['method']=='painted_bays':
+        proposal['candidates']=[c for c in proposal['candidates'] if c.get('bay_count')==1]
     report['proposal']=proposal
     report['geometry']=proposal.get('geometry',geometry)
     evaluated=[]
@@ -218,6 +243,9 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
             if config['schema_version']==1:
                 candidate['polygon_xz']=_inset_rectangle(candidate['polygon_xz'])
         reasons=list(candidate.get('rejection_reasons',[]))
+        if (policy.get('require_curb_evidence') and config['method']=='unmarked_geometry'
+                and not candidate.get('curb_anchor_evidence')):
+            reasons.append('unmarked_candidate_has_no_source_model_curb_anchor')
         if config['schema_version']==2:
             conflicts=[]
             for feature in report['model_features']['entrance_clearance']['proxies']:
@@ -284,6 +312,9 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     if config['schema_version']==2:
         from .selection import rank_candidates
         evaluated=rank_candidates(evaluated)
+        if policy.get('prefer_perpendicular') and config['method']=='unmarked_geometry':
+            evaluated.sort(key=lambda c:(bool(c['rejection_reasons']),c.get('layout')!='perpendicular',c['ranking_key']))
+            report['orientation_policy']='Prefer validated perpendicular bays; other orientations retain complete rejection evidence'
         report['ranking_policy']='Valid first; evidence, clearance and capacity components with stable-ID tie break (see ranking_components)'
     report['candidates']=evaluated
     selected=next((c for c in evaluated if not c['rejection_reasons']),None)
@@ -318,7 +349,7 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                defpath:_alias_definition(block,unit.name,alias,private)}
     context_report,contexts=plan_prefab_contexts(stack,resources,
         [('station_parking',sector_path,data,changed)],source=config['fingerprints']['source_archive'],
-        map_name='station-parking-'+config['station_id']+'-'+config['method'])
+        map_name='station-parking-'+config['station_id']+'-'+config['method'],planning_cache=cache)
     report['context_preservation']=context_report
     if not context_report['coverage']['complete']:
         blockers.extend(context_report['coverage']['blockers']);return report,{}

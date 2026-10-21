@@ -96,13 +96,15 @@ def _boundaries(mesh, excluded):
     return edges
 
 
-def propose_curb_anchored_candidates(mesh, geometry, *, ground, paint, parameters):
+def propose_curb_anchored_candidates(mesh, geometry, *, ground, paint, parameters, edge_offset=_BUFFER):
     """Return physical 3x6-style layouts anchored .5 m off qualified edges.
 
     Width/depth/approach and search radius come from the explicit unmarked
     parameters. No native trigger or vehicle reference-point assumption selects
     dimensions. All candidates still require the normal downstream validators.
     """
+    if isinstance(edge_offset,bool) or not isinstance(edge_offset,(float,int)) or not math.isfinite(edge_offset) or not .05<=edge_offset<=1.:
+        raise ValueError('Curb edge offset must be finite and between .05 and 1 metre')
     if isinstance(ground, str) or isinstance(paint, str) or not ground:
         raise ValueError('Curb proposal requires explicit ground and paint alias collections')
     gas = [_xz([s['position']])[0] for s in geometry['gas_spawns']]
@@ -161,7 +163,7 @@ def propose_curb_anchored_candidates(mesh, geometry, *, ground, paint, parameter
         distance, polygon_id, wall_index, normal = min(matches)
         ground_samples = []
         for fraction in (.1, .5, .9):
-            xz = tuple(a[k]+fraction*(b[k]-a[k])+_BUFFER*normal[k] for k in (0, 1))
+            xz = tuple(a[k]+fraction*(b[k]-a[k])+edge_offset*normal[k] for k in (0, 1))
             try:
                 height = sample_surface_height(mesh, xz, ground)
             except ValueError:
@@ -181,15 +183,15 @@ def propose_curb_anchored_candidates(mesh, geometry, *, ground, paint, parameter
                 def rectangle(n0, n1):
                     return [[origin[k]+s*tangent[k]+n*normal[k] for k in (0, 1)]
                             for s, n in [(-width/2, n0), (width/2, n0), (width/2, n1), (-width/2, n1)]]
-                polygon = rectangle(_BUFFER, _BUFFER+depth)
-                approach = rectangle(_BUFFER+depth, _BUFFER+depth+parameters.aisle_depth)
+                polygon = rectangle(edge_offset, edge_offset+depth)
+                approach = rectangle(edge_offset+depth, edge_offset+depth+parameters.aisle_depth)
                 center = tuple(sum(p[k] for p in polygon)/4 for k in (0, 1))
                 if min(math.dist(center, g) for g in gas) > parameters.max_station_distance:
                     continue
                 evidence = {'boundary_xyz': [list(a3), list(b3)], 'source_triangles': edge['sources'],
                             'building_map_polygon': polygon_id, 'building_edge': wall_index,
                             'wall_distance': distance, 'outside_ground_samples': ground_samples,
-                            'edge_offset_m': _BUFFER, 'weld_tolerance_m': _WELD,
+                            'edge_offset_m': edge_offset, 'weld_tolerance_m': _WELD,
                             'limits': 'Raised horizontal source faces corroborated by outside ground and UI wall; winding-independent, functional curb/pedestrian semantics and sufficient pedestrian clearance remain unknown.'}
                 key = {'edge': evidence, 'layout': layout, 'polygon': polygon}
                 uid = hashlib.sha256(json.dumps(key, sort_keys=True, separators=(',', ':')).encode()).hexdigest()[:16]

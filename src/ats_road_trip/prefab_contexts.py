@@ -7,6 +7,7 @@ No classification is inferred from prefab names, assets, or company records.
 from __future__ import annotations
 
 from collections import defaultdict
+from copy import deepcopy
 import hashlib
 import re
 
@@ -76,14 +77,15 @@ def plan_prefab_contexts(
     effective: ResourceStack,
     resources: dict[str, bytes],
     transitions: list[tuple[str, str, bytes, bytes]],
-    *, source: str, map_name: str,
+    *, source: str, map_name: str, planning_cache: dict | None = None,
 ) -> tuple[dict, dict[str, bytes]]:
     """Plan one additive context file for all fuel/rest alias transitions.
 
     Each transition is ``(processor, sector_path, bytes_before, bytes_after)``.
     The first non-generated model in each UID's chain is the classification
     source. Every generated alias is audited, including an intermediate alias
-    later replaced by another processor.
+    later replaced by another processor. ``planning_cache`` may be shared only
+    among immutable input stack objects in one planning run.
     """
     report = {'schema_version': 1, 'analysis': 'generated_prefab_context_preservation',
               'aliases': [], 'blockers': [], 'coverage': {}}
@@ -102,8 +104,19 @@ def plan_prefab_contexts(
         return report, {}
 
     try:
-        original = _effective_prefabs(effective)
-        contexts, occupied_names, excluded = _contexts(effective)
+        cache={} if planning_cache is None else planning_cache
+        indexes=cache.setdefault('context_stack_indexes',{})
+        # Keep the stack itself alive, preventing object-ID reuse. A staged
+        # overlay is immutable for one planning pass; a new overlay requires
+        # a distinct index even when it wraps the same original packages.
+        if id(effective) not in indexes:
+            original=_effective_prefabs(effective)
+            contexts,occupied_names,excluded=_contexts(effective)
+            indexes[id(effective)]=(effective,original,contexts,occupied_names,excluded)
+        _,original,contexts,occupied_names,excluded=indexes[id(effective)]
+        # Returned reports expose context records; isolate those from the
+        # reusable source index so caller annotations cannot corrupt the cache.
+        contexts=deepcopy(contexts)
     except (ValueError, KeyError, UnicodeError) as exc:
         blockers.append({'area': 'effective_definitions', 'reason': str(exc)})
         report['coverage'] = {'complete': False, 'blockers': blockers}

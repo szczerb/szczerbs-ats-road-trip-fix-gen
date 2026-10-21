@@ -344,6 +344,46 @@ class BulkFuelTests(unittest.TestCase):
             plan_map_fuel(ResourceStack([package, override]), **arguments,
                           source_sector_paths=frozenset({SECTOR}))
 
+    def test_full_facility_selection_reuses_broad_aliases_and_graph_bytes(self):
+        package=self.package('map', resources([((2.,0.,3.),0), ((8.,0.,3.),0)]))
+        stack=ResourceStack([package]);options={'map_packages':{str(package.path)},'map_name':'fixture'}
+        broad, expected=plan_map_fuel(stack,**options)
+        report, actual=plan_map_fuel(stack,**options,
+            fuel_selection=FuelSelectionConfig(mode='realistic',unknown='include',classifier='facilities'))
+        self.assert_complete(report)
+        self.assertEqual(actual,expected)
+        self.assertEqual(report['coverage']['uncertain_included_points'],2)
+
+    def test_parent_owner_only_delegates_foreign_root_without_editing(self):
+        contents, stock, _, _, _ = self.orphan_garage_packages()
+        source=self.package('map', contents)
+        report, output=plan_map_fuel(ResourceStack([stock,source]),map_packages={str(source.path)},
+                                     map_name='fixture',parent_owner_only=True)
+        self.assert_complete(report)
+        self.assertEqual(output,{})
+        self.assertEqual(len(report['delegated_parent_groups']),1)
+        self.assertEqual(report['delegated_parent_groups'][0]['source_package'],str(stock.path))
+
+    def test_facility_unsafe_station_emits_no_partial_resources(self):
+        from unittest.mock import patch
+        source=resources([((2.,0.,3.),0),((8.,0.,3.),0)])
+        original_sha=__import__('hashlib').sha256
+        # Force generated service/node UID collision after a private alias was
+        # staged, exercising the transactional failure path rather than an
+        # error caught before any output existed.
+        class Digest:
+            def __init__(self, data):self.data=data
+            def hexdigest(self):return original_sha(self.data).hexdigest()
+            def digest(self):
+                return bytes(32) if b':12d:' in self.data else original_sha(self.data).digest()
+        with patch('ats_road_trip.bulk_fuel.hashlib.sha256',side_effect=lambda data:Digest(data)):
+            report,output=self.selective_plan(source,FuelSelectionConfig(mode='realistic',unknown='include',classifier='facilities'))
+        self.assertFalse(report['coverage']['complete'])
+        self.assertEqual(output,{})
+        self.assertTrue(report['coverage']['blockers'][0]['unsupported_unchanged'])
+        self.assertEqual(report['source_resources'],[])
+        self.assertEqual(report['coverage']['added_car_points'],0)
+
     def test_uppercase_declared_prefab_resolves_lowercase_map_token(self):
         source = resources()
         source[DEF] = source[DEF].replace(b'prefab.02003', b'prefab.Ab12')

@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0047: Complete realistic map replacements](active/TASK-0047-deliver-realistic-map-replacements.md) — map-wide selective fuel and exclusive station bays, complete r9 replacements for normal career play.
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog

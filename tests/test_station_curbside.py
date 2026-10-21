@@ -45,6 +45,20 @@ class StationCurbsideTests(unittest.TestCase):
             self.assertTrue(all(s['rise'] == .1 for s in candidate['source_edge_evidence']['outside_ground_samples']))
         self.assertEqual((mesh, geometry), original)
 
+    def test_explicit_near_curb_offset_addresses_gap_without_changing_footprint_size(self):
+        mesh,geometry=fixture()
+        candidates=propose_curb_anchored_candidates(mesh,geometry,ground={'ground'},paint={'paint'},
+            parameters=ParkingParameters(),edge_offset=.15)
+        self.assertTrue(candidates)
+        for row in candidates:
+            self.assertAlmostEqual(min(p[1] for p in row['polygon_xz']),.15)
+            self.assertEqual(row['source_edge_evidence']['edge_offset_m'],.15)
+            self.assertEqual(sorted([math.dist(row['polygon_xz'][0],row['polygon_xz'][1]),
+                                    math.dist(row['polygon_xz'][1],row['polygon_xz'][2])]),[3.,6.])
+        with self.assertRaisesRegex(ValueError,'Curb edge offset'):
+            propose_curb_anchored_candidates(mesh,geometry,ground={'ground'},paint={'paint'},
+                parameters=ParkingParameters(),edge_offset=0.)
+
     def test_concave_wall_uses_ring_winding_instead_of_vertex_mean(self):
         mesh,geometry=fixture()
         ring=[[-20.,-10.],[20.,-10.],[20.,4.],[6.,4.],[6.,-2.],[-6.,-2.],[-6.,4.],[-20.,4.]]

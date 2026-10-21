@@ -108,17 +108,7 @@ def _sha_file(path: Path) -> str:
 
 
 def _selection_payload(config: FuelSelectionConfig) -> dict:
-    return {'schema_version': 1, 'mode': config.mode, 'unknown': config.unknown,
-        'rules': [{
-            'id': rule.id, 'descriptor': rule.descriptor,
-            'descriptor_sha256': rule.descriptor_sha256, 'model_desc': rule.model_desc,
-            'variant': rule.variant, 'parts': list(rule.parts),
-            'additional_parts': list(rule.additional_parts),
-            'company_linked': rule.company_linked,
-            'groups': [{'spawn_index': group.spawn_index, 'role': group.role,
-                        'confidence': group.confidence, 'reason': group.reason,
-                        'evidence': group.evidence} for group in rule.groups],
-        } for rule in config.rules]}
+    return config.to_dict()
 
 
 def _directory_snapshot(path: Path) -> tuple[tuple[str, int, int, bool], ...]:

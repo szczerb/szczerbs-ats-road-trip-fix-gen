@@ -100,11 +100,16 @@ class FuelSelectionConfig:
     mode: str = 'broad'
     unknown: str = 'skip'
     rules: tuple[FuelLayoutRule, ...] = ()
+    classifier: str = 'reviewed'
 
     def __post_init__(self):
         if (not isinstance(self.mode, str) or not isinstance(self.unknown, str)
                 or self.mode not in ('broad', 'realistic') or self.unknown not in ('skip', 'include')):
             raise ValueError('Fuel selection requires broad/realistic mode and skip/include unknown behavior')
+        if self.classifier not in ('reviewed', 'facilities'):
+            raise ValueError('classifier must be reviewed or facilities')
+        if self.mode == 'broad' and self.classifier != 'reviewed':
+            raise ValueError('Facility classification requires realistic mode')
         if not isinstance(self.rules, tuple) or any(not isinstance(rule, FuelLayoutRule) for rule in self.rules):
             raise ValueError('rules must be an immutable tuple of FuelLayoutRule entries')
         if self.mode == 'broad' and self.rules:
@@ -120,16 +125,35 @@ class FuelSelectionConfig:
     @classmethod
     def from_dict(cls, value):
         fields = {'schema_version', 'mode', 'unknown', 'rules'}
-        _keys(value, fields, fields, 'fuel selection configuration')
+        _keys(value, fields | {'classifier'}, fields, 'fuel selection configuration')
         if type(value['schema_version']) is not int or value['schema_version'] != 1:
             raise ValueError('Unsupported fuel selection schema_version; expected 1')
         if not isinstance(value['rules'], list):
             raise ValueError('rules must be a JSON array')
-        return cls(value['mode'], value['unknown'], tuple(FuelLayoutRule.from_dict(rule) for rule in value['rules']))
+        return cls(value['mode'], value['unknown'], tuple(FuelLayoutRule.from_dict(rule) for rule in value['rules']),
+                   value.get('classifier', 'reviewed'))
 
     def summary(self):
-        return {'schema_version': 1, 'mode': self.mode, 'unknown': self.unknown,
-                'rule_ids': [rule.id for rule in self.rules]}
+        result = {'schema_version': 1, 'mode': self.mode, 'unknown': self.unknown,
+                  'rule_ids': [rule.id for rule in self.rules]}
+        if self.classifier != 'reviewed':
+            result['classifier'] = self.classifier
+        return result
+
+    def to_dict(self):
+        result = {'schema_version': 1, 'mode': self.mode, 'unknown': self.unknown,
+            'rules': [{
+                'id': rule.id, 'descriptor': rule.descriptor,
+                'descriptor_sha256': rule.descriptor_sha256, 'model_desc': rule.model_desc,
+                'variant': rule.variant, 'parts': list(rule.parts),
+                'additional_parts': list(rule.additional_parts), 'company_linked': rule.company_linked,
+                'groups': [{'spawn_index': group.spawn_index, 'role': group.role,
+                            'confidence': group.confidence, 'reason': group.reason,
+                            'evidence': group.evidence} for group in rule.groups],
+            } for rule in self.rules]}
+        if self.classifier != 'reviewed':
+            result['classifier'] = self.classifier
+        return result
 
 
 def load_fuel_selection_config(path: str | Path) -> FuelSelectionConfig:
@@ -144,7 +168,7 @@ def load_fuel_selection_config(path: str | Path) -> FuelSelectionConfig:
 
 
 def classify_groups(config: FuelSelectionConfig, *, descriptor, descriptor_sha256, model_desc,
-                    variant, parts, additional_parts, gas_trucks, company_uids=(), garage_indices=()):
+                    variant, parts, additional_parts, gas_trucks, company_uids=(), garage_indices=(), facility_context=None):
     """Return explainable per-truck decisions after structural graph validation.
 
     A source pin mismatch blocks a previously reviewed layout instead of quietly
@@ -155,6 +179,14 @@ def classify_groups(config: FuelSelectionConfig, *, descriptor, descriptor_sha25
     matching = [rule for rule in candidates if rule.model_desc == model_desc
                 and rule.variant == variant and rule.parts == tuple(parts)
                 and rule.additional_parts == tuple(additional_parts)]
+    drift = bool(candidates and not matching) or any(rule.descriptor_sha256 != descriptor_sha256 for rule in matching)
+    if config.classifier == 'facilities' and (not matching or drift):
+        from .facilities import classify_facility_groups
+        return classify_facility_groups(config, descriptor=descriptor, descriptor_sha256=descriptor_sha256,
+                                        model_desc=model_desc, variant=variant, parts=tuple(parts),
+                                        additional_parts=tuple(additional_parts), gas_trucks=gas_trucks,
+                                        company_uids=company_uids, garage_indices=garage_indices,
+                                        context=facility_context, reviewed_rule_drift=drift)
     if candidates and not matching:
         raise ValueError('Reviewed fuel layout model/variant/parts drift; refusing stale classification')
     if any(rule.descriptor_sha256 != descriptor_sha256 for rule in matching):

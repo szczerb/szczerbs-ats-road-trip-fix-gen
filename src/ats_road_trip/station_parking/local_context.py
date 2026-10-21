@@ -139,7 +139,7 @@ def _node_metadata_report(records):
 
 
 def load_local_context(stack, sector_data_by_path, selected_uid, station_anchor_xz,
-                       *, search_radius=100.0, max_sectors=_MAX_SECTORS):
+                       *, search_radius=100.0, max_sectors=_MAX_SECTORS, definitions=None):
     """Build bounded neighboring prefab proxies from already selected sectors.
 
     ``sector_data_by_path`` is an explicit bounded mapping of virtual sector
@@ -177,7 +177,7 @@ def load_local_context(stack, sector_data_by_path, selected_uid, station_anchor_
         item_rows.extend((path, item) for item in parsed.items)
     if len(item_rows) > _MAX_ITEMS:
         raise ValueError('Context item budget exceeded')
-    definitions = prefab_definitions(stack)
+    definitions = prefab_definitions(stack) if definitions is None else definitions
     objects, unassessed, unknown_kind_counts = [], [], Counter()
     descriptor_inputs = {}
     nearby_rows = []

@@ -88,7 +88,8 @@ def _splice(data: bytes, changes: list[tuple[int, int, bytes]]) -> bytes:
 def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str,
                   fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
                   target_prefab_uids: frozenset[int] | None = None,
-                  source_sector_paths: frozenset[str] | None = None) -> tuple[dict, dict[str, bytes]]:
+                  source_sector_paths: frozenset[str] | None = None,
+                  parent_owner_only: bool = False) -> tuple[dict, dict[str, bytes]]:
     """Plan broad or selected additions, optionally within an explicit PoC scope.
 
     Sector scope selects resources owned by ``map_packages``; the existing
@@ -97,6 +98,8 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
     area. Invalid or empty scopes fail; unresolved targets are coverage blockers.
     Omitting both scope arguments preserves the historical map-wide behavior.
     """
+    if type(parent_owner_only) is not bool:
+        raise ValueError('parent_owner_only must be a boolean')
     if not isinstance(fuel_selection, FuelSelectionConfig):
         raise ValueError('fuel_selection must be a FuelSelectionConfig')
     if target_prefab_uids is not None:
@@ -237,6 +240,15 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                          'reason': 'Requested fuel prefab was not resolved as a source-area root fuel group'}
                         for uid in sorted(target_prefab_uids - resolved_targets))
         grouped = {uid: grouped[uid] for uid in sorted(resolved_targets)}
+    if parent_owner_only:
+        delegated = [uid for uid in grouped if uid in items
+                     and str(stack.resources[items[uid][0]][0].path) not in map_packages]
+        report['delegated_parent_groups'] = [
+            {'prefab_uid': hex(uid), 'path': items[uid][0],
+             'source_package': str(stack.resources[items[uid][0]][0].path),
+             'reason': 'Root prefab is owned by another source; its owner must compose the complete fuel group'}
+            for uid in sorted(delegated)]
+        grouped = {uid: entries for uid, entries in grouped.items() if uid not in delegated}
     # Fetch only descriptors referenced by fuel parents, not every game asset.
     ppds = set()
     for parent in grouped:
@@ -252,11 +264,14 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
     descriptor_checks = []
     all_uids = set(items) | set(nodes)
 
+    allocated_uids = []
+
     def new_uid(seed):
         value = int.from_bytes(hashlib.sha256(seed.encode()).digest()[:8], 'little')
         if not value or value in all_uids:
             raise ValueError('Generated UID collision; refusing ambiguous output')
         all_uids.add(value)
+        allocated_uids.append(value)
         return value
 
     def node_for(uid, preferred=None):
@@ -271,7 +286,22 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             raise ValueError(f'Inconsistent boundary node {uid:#x}')
         return candidates[0][1]
 
+    context_index = None
+    if selective and fuel_selection.classifier == 'facilities':
+        from .fuel_selection.facilities import FacilityContextIndex
+        context_index = FacilityContextIndex(stack, items, definitions, node_for)
     for parent_uid, selected_services in sorted(grouped.items()):
+        allocated_uids = []
+        checkpoint = None
+        if context_index is not None:
+            checkpoint = {
+                'resources': set(resources), 'aliases': dict(aliases), 'clones': dict(clones),
+                'edits': {path:len(entries) for path,entries in edits.items()},
+                'new_items': {path:len(entries) for path,entries in new_items.items()},
+                'new_nodes': {path:len(entries) for path,entries in new_nodes.items()},
+                'eligible': set(eligible_trucks), 'checks': len(descriptor_checks),
+                'source_resources': len(report['source_resources']),
+                'coverage': {key:value for key,value in coverage.items() if key != 'blockers'}}
         entry_report = {'prefab_uid': hex(parent_uid)}
         try:
             parent_path, prefab = items[parent_uid]
@@ -337,13 +367,17 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                                          if candidate.kind == 6 and candidate.details['prefab'] == parent_uid))
                 garage_indices = {spawn['index'] for spawn in gas_trucks
                                   if items[mapping[spawn['index']]][1].kind == 0x23}
+                facility_context = (context_index.for_station(
+                    model_desc=unit.one('model_desc', ''), gas_trucks=gas_trucks, mapping=mapping,
+                    native_car_locator_count=info['fuel']['flags_one_count']) if context_index else None)
                 decisions = classify_groups(fuel_selection, descriptor=descriptor,
                                              descriptor_sha256=_sha(original_ppd),
                                              model_desc=unit.one('model_desc', ''),
                                              variant=prefab.details['variant'], parts=prefab.details['parts'],
                                              additional_parts=unit.values('additional_parts'),
                                              gas_trucks=gas_trucks, company_uids=companies,
-                                             garage_indices=garage_indices)
+                                             garage_indices=garage_indices,
+                                             **({'facility_context': facility_context} if context_index else {}))
                 selected_indices = frozenset(d['spawn_index'] for d in decisions if d['selected_for_addition'])
                 # Reject unsupported ownership structures even at policy-skipped
                 # pumps; suitability cannot hide unsafe source graph data.
@@ -406,12 +440,13 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
             coverage['already_supported'] += sum(has_car(s) for s in gas_trucks)
             if not missing and not needs_descriptor:
                 entry_report['status'] = ('policy_skipped' if selective and not selected_indices else 'already_supported'); report['stations'].append(entry_report); continue
+            full_selection = selective and selected_indices == frozenset(spawn['index'] for spawn in gas_trucks)
             key = (unit.name, _sha(original_ppd))
-            if selective:
+            if selective and not full_selection:
                 key += (tuple(sorted(selected_indices)),)
             if needs_descriptor and key not in aliases:
                 alias_seed = f'{namespace_name}:{unit.name}:{_sha(original_ppd)}'
-                if selective:
+                if selective and not full_selection:
                     alias_seed += ':fuel-realistic:' + ','.join(map(str, sorted(selected_indices)))
                 alias = 'rtg' + _sha(alias_seed.encode())[:8]
                 private_ppd = f'prefab/rtfix/{alias}.ppd'; definition = f'def/world/prefab.{alias}.sii'
@@ -461,6 +496,22 @@ def plan_map_fuel(stack: ResourceStack, *, map_packages: set[str], map_name: str
                                  'source_service_uids': [hex(mapping[s['index']]) for s in missing]})
             report['stations'].append(entry_report)
         except (ValueError, KeyError, IndexError, struct.error) as exc:
+            if checkpoint is not None:
+                for path in set(resources) - checkpoint['resources']:
+                    del resources[path]
+                aliases.clear(); aliases.update(checkpoint['aliases'])
+                clones.clear(); clones.update(checkpoint['clones'])
+                for mapping_name, mapping_value in (('edits', edits), ('new_items', new_items), ('new_nodes', new_nodes)):
+                    for path in list(mapping_value):
+                        del mapping_value[path][checkpoint[mapping_name].get(path, 0):]
+                        if not mapping_value[path]:
+                            del mapping_value[path]
+                eligible_trucks.clear(); eligible_trucks.update(checkpoint['eligible'])
+                all_uids.difference_update(allocated_uids)
+                del descriptor_checks[checkpoint['checks']:]
+                del report['source_resources'][checkpoint['source_resources']:]
+                coverage.update(checkpoint['coverage'])
+                entry_report['unsupported_unchanged'] = True
             blockers.append({**entry_report, 'reason': str(exc)})
     # Follow explicit visibility references and nonzero layer membership for
     # new objects. Existing opaque data/desc/aux payloads stay untouched unless
