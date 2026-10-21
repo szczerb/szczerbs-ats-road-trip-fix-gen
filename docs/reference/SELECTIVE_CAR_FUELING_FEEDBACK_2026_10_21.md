@@ -1,5 +1,6 @@
 # G1 fuel tour feedback and station-level policy — 2026-10-21
 
+**Implemented follow-up — 2026-10-21:** [realistic r10](REALISTIC_MAP_REPLACEMENTS_1_61_R10.md) implements the accepted five additions / four native groups / three omitted facilities in actual archives and delivers the complete map replacements. The readiness section below is the historical intake state. No repeat G2 tour, profile, route or pump matrix is required; later feedback is opportunistic during career play.
 **Documented — first-hand user report, ATS 1.61 comparison:** the user visited all six sites with **G1 BROAD r1**, reports that everything works, and filled the handoff table. **Observed locally — table inspection:** the G1 result cells contain `works`; G2 cells are blank. The user explicitly declines individual-pump suitability distinctions for this sample. Record six-site interaction success; do not infer separately controlled per-pump trials, completed purchases, numerical prices/billing, truck controls or reload results. G2 gameplay is unreported.
 
 ## Accepted site decisions

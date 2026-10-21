@@ -1,5 +1,6 @@
 # Passenger-car parking icons in vehicle navigation
 
+**Effective-stack order correction — 2026-10-21:** the complete r10 audit found that `Reforma_OtherMaps_Patch_40_161.scs` supplies a higher-priority `def/map_data.sii` than the background. Keep the user-confirmed N2 archive unchanged and enable it above every map/resource/replacement in the declared r10 stack; putting it only above North America Background Map 5.3 leaves it shadowed. [Exact delivered order and audit](REALISTIC_MAP_REPLACEMENTS_1_61_R10.md). Metadata/artwork remains deferred.
 **Status — N2 fuel and parking-navigation icons confirmed by user at the reported Mustang test context, 2026-10-19.** The user reports that both icons are now clearly visible in Mustang navigation. The exact interface, location, zoom and profile details were not itemized; no screenshot or log accompanied this report. This confirms icon visibility only, not a completed fuel transaction or rest. Earlier N1 parking-only and A/B prompt results remain scoped to their reported Dawson test. ATS inspection baseline is 1.61.3.18, executable SHA-256 `c60e8ee02cc97b3cc6ef8c6298bb5c3c23c4ffd330b8185b646fb1b608a3c7b4`. Neither variant changes parking geometry or interaction resources.
 
 ## Evidence and surface boundaries

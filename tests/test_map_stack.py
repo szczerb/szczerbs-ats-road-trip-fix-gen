@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
-from ats_road_trip.map_stack import plan_stack, _owner_index, run_map_stack
+from ats_road_trip.map_stack import plan_stack, _owner_index, run_map_stack, _package_description
 from ats_road_trip.map_sector import parse_sector
 from ats_road_trip.package import Package, ResourceStack
 from ats_road_trip.processors import ProcessorConfig
@@ -105,6 +105,21 @@ class MapStackTests(unittest.TestCase):
             with patch('ats_road_trip.map_stack.plan_map_fuel',return_value=({'coverage':{'blockers':[{'reason':'Conflicting UID ownership'}]}},{})):
                 with self.assertRaisesRegex(ValueError,'global fuel structure'):
                     plan_stack(raw,ResourceStack(packages[:1]),parts=parts,config=ProcessorConfig.from_preset('realistic'),game_version='1.61.3.18')
+
+    def test_descriptions_identify_each_source_and_one_current_mod(self):
+        parts=[{'map_name':'Base Game and DLC','source_packages':['/game'],'base_companion':True},
+               {'map_name':'Reforma OtherMaps Patch','source_packages':['/Reforma_OtherMaps_Patch_40_161.scs'],'base_companion':False}]
+        workflow={'game_version':'1.61.3.18','packages_low_to_high':['/game','/Reforma_OtherMaps_Patch_40_161.scs']}
+        for part in parts:
+            text=_package_description(part,parts,workflow,'realistic',10)
+            self.assertEqual(text.count('(THIS MOD)'),1)
+            self.assertTrue(text.startswith('REALISTIC r10 | '+part['map_name']))
+            self.assertIn('LOWEST to HIGHEST',text)
+            self.assertIn('Reforma_OtherMaps_Patch_40_161.scs',text)
+            self.assertIn('N2',text)
+            self.assertGreater(text.rindex('N2 NAV PARKING FUEL'),text.index('Reforma_OtherMaps_Patch_40_161.scs'))
+            self.assertTrue(text.rstrip().endswith('above every listed source/fix)'))
+        self.assertIn('country petrol prices only',_package_description(parts[1],parts,workflow,'realistic',10))
 
     def test_generation_requires_explicit_acknowledgment_before_any_work(self):
         with patch('ats_road_trip.map_stack._game_directory',side_effect=AssertionError('work began')):

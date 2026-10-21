@@ -1,5 +1,6 @@
 # F BATCH r1 — user tour feedback received 2026-10-21
 
+**Engineering follow-up — 2026-10-21:** [complete realistic r10 replacements](REALISTIC_MAP_REPLACEMENTS_1_61_R10.md) add 125 dedicated bays without retained r9 truck-area additions. The reused unmarked family now has a measured 0.15 m curb gap and validated perpendicular preference. P04 remains skipped for unresolved activation; P09 is skipped for conflicting original node geometry. Broad Mexican activation ownership remains unknown and source-native polygons are preserved. The complete original user report below remains unchanged; static improvement is not a new gameplay result.
 **Documented — first-hand user report, received 2026-10-21:** the completed F BATCH table, its Notes, all screenshot filename comments, all 20 images, and the accompanying chat form one report. The screenshot set accompanies the tour completed by this report. This records user gameplay and agent inspection of evidence; the agent did not reproduce gameplay or modify the tool, mods, game or profile.
 
 ## Setup and evidence boundary

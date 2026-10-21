@@ -179,6 +179,36 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
         'in_game_verified':False,'original_baseline_only':True}
     return summary,partitions
 
+def _package_description(part, parts, workflow, preset, revision):
+    """Player-facing policy, exact source identities and one current-package mark."""
+    name=part['map_name'];realistic=CompatibilityPreset(preset) is CompatibilityPreset.REALISTIC
+    source=('Installed original game/map DLC, ATS '+workflow['game_version'] if part['base_companion']
+            else ', '.join(Path(p).name for p in part['source_packages']))
+    behavior=('Selective public car fueling and dedicated station bays. No generated truck-area car parking or fallback.'
+              if realistic else 'Broad added car fueling and qualifying truck-area car access under the existing local proximity rule.')
+    contribution=('This source replacement changes country petrol prices only; it adds no station or parking geometry.\n'
+                  if name=='Reforma OtherMaps Patch' else '')
+    lines=[f'{str(preset.value if hasattr(preset,"value") else preset).upper()} r{revision} | {name} | EXPERIMENTAL',
+           'Source: '+source+'.',behavior,contribution.rstrip(),
+           'Preserves original car/truck/bus facilities. Unknown fuel sites are provisionally included in realistic mode; unsupported bays are skipped.',
+           'Replace all seven old r9 map fixes with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
+           'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments. Keep N2 unchanged above North America Background Map 5.3.',
+           'Keep the separate tank and courier mods unchanged. Prepared for normal career play; existing-save behavior and runtime coverage remain unverified.',
+           '', 'Required order, LOWEST to HIGHEST (game/DLC files load automatically):']
+    def fix_line(target):
+        marker=' (THIS MOD)' if target['map_name']==name else ''
+        return f'{str(preset.value if hasattr(preset,"value") else preset).upper()} r{revision} replacement for '+target['map_name']+marker
+    lines += [fix_line(parts[0]),'North America Background Map 5.3 (original)']
+    game_sources=set(parts[0]['source_packages'])
+    for path in workflow['packages_low_to_high']:
+        if path in game_sources:continue
+        lines.append(Path(path).name+' (original source/resource)')
+        for target in parts[1:]:
+            if path in target['source_packages']:lines.append(fix_line(target))
+    # Map/resource packages may also define map_data; N2 must win those too.
+    lines.append('N2 NAV PARKING FUEL r2 (independent, unchanged; above every listed source/fix)')
+    return '\n'.join(line for line in lines if line is not None)+'\n'
+
 def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None,
                   generate=False, experimental=False, revision=10,run_id=None):
     """Mount an explicit original low-to-high stack and produce all replacements."""
@@ -240,15 +270,7 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                             'reason':'No additional modifications needed in the effective original stack',
                             'preset':preset.value},sort_keys=True).encode()}
                     output=generated/f'{preset.value}-road-trip-map-fix-{slug}-1.61-r{revision}-experimental.scs'
-                    description=(f'{preset.value.upper()} r{revision} — {label}. Complete replacement for its r9 fix.\n'
-                        'Disable old r9 and A/B/C/C2/E/F/G experimental overlays. Enable the complete replacement set.\n'
-                        'Keep the original maps/resources in the declared order and each source replacement directly above its source.\n'
-                        'The Base Game and DLC companion belongs below the map/resource mods. Keep independent N2 above its background.\n'
-                        'Selective public car fueling and dedicated station bays; original native facilities remain.\n'
-                        'No generated truck-area car parking or fallback in realistic mode. Uncertain/skipped sites are reported.\n'
-                        'Prepared for normal career play; existing-save behavior and runtime coverage are not independently validated.\n')
-                    if preset is CompatibilityPreset.BROAD:
-                        description=description.replace('Selective public car fueling and dedicated station bays','Broad added car fueling and qualifying truck-area car access').replace('No generated truck-area car parking or fallback in realistic mode.','Broad mode uses the existing local truck-area proximity strategy.')
+                    description=_package_description(part,parts,workflow,preset,revision)
                     icon=None if part['base_companion'] else map_icon(REPO_ROOT,label,('fuel','rest'))
                     if isinstance(icon,(str,Path)):icon=Path(icon).read_bytes()
                     embedded={'analysis':'complete_map_stack_replacement','processors_enabled':['fuel','rest'],

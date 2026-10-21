@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-10-21
-- Task: [TASK-0047](../../tasks/active/TASK-0047-deliver-realistic-map-replacements.md)
+- Task: [TASK-0047](../../tasks/done/TASK-0047-deliver-realistic-map-replacements.md)
 - Supersedes: the finite G2 policy as the recommended realistic fuel policy; historical artifacts remain evidence
 - Extends: [ADR-0022](ADR-0022-select-mutually-exclusive-car-parking-strategies.md), [ADR-0023](ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md)
 
@@ -29,3 +29,5 @@ Unsafe per-station fuel transactions roll back completely. Unsupported compound 
 Full replacement packaging is separate from universal station coverage. The supported bay subset and reasons for all skips are reported. Unknown public/private cases remain available provisionally, so the small reviewed catalog does not remove most existing fuel coverage. This intentionally leaves some plausible private facilities eligible until better evidence or ordinary career feedback supplies reusable rules.
 
 The set is source-stack-specific. Changing source priority/version/model overrides requires regeneration. Structural preservation and stable IDs reduce unnecessary churn; static checks do not prove existing-save compatibility, fatigue recovery, billing, collision-free driving or every runtime marker. The user installs the result and reports issues during normal play. Agents do not launch the game, install packages or modify profiles. N2, the background dependency, tank and courier packages remain independent.
+
+**Observed locally — final stack audit:** OtherMaps also supplies `def/map_data.sii`. Retained N2 must load above the complete listed map/resource/fix stack, not merely above its background. The final metadata-only package copies, README and independent effective-order audit enforce that priority without changing N2 bytes.

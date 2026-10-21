@@ -4,8 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0047: Complete realistic map replacements](active/TASK-0047-deliver-realistic-map-replacements.md) — map-wide selective fuel and exclusive station bays, complete r9 replacements for normal career play.
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -13,6 +11,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 - [TASK-0043: Polish navigation-fix metadata and artwork](backlog/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — deferred final player-facing metadata and dedicated 276 × 162 topic artwork for the user-tested N2 overlay; no packaging or artwork work has started.
 
 ## Done
+
+- [TASK-0047: Complete realistic map replacements](done/TASK-0047-deliver-realistic-map-replacements.md) — eight complete r10 packages and ZIP, 3,073 fuel additions / 208 policy omissions / 125 dedicated bays, 508 tests and independent actual-stack audits; optional career feedback. [Delivery](../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md).
 
 - [TASK-0046: Selective passenger-car fueling](done/TASK-0046-add-selective-passenger-car-fueling.md) — opt-in pump-level suitability; G1/G2 six-site fuel comparison, five guarded resources, 460 tests and independent actual-output/effective-stack verification. [Test handoff](../reference/SELECTIVE_CAR_FUELING.md).
 - [TASK-0045: Build one curated station-parking test batch](done/TASK-0045-build-curated-station-parking-test-batch.md) — one nine-site / three-family SCS over retained r9, effective census/action audit, 418 tests, independent nine-site preservation audit and checked test ZIP; [eight-site user feedback received](../reference/STATION_PARKING_FORECOURT_TOUR_FEEDBACK_2026_10_21.md), P05 skipped.

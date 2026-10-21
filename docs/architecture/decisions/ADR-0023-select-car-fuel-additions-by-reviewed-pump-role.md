@@ -1,5 +1,6 @@
 # ADR-0023: Select added car fueling by reviewed pump-group suitability
 
+**Implementation follow-up — 2026-10-21:** [ADR-0024](ADR-0024-compose-complete-realistic-map-replacements.md) and [realistic r10](../../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md) implement complete original-stack presets and exclusive station bays. The unimplemented/finite-policy wording below records the decision at its original increment. The complete realistic preset now follows accepted whole-facility decisions with provisional inclusion of unknown fuel facilities; retained G2 artifacts remain historical evidence.
 ## Context
 
 **Documented — user objective, 2026-10-21:** keep broad compatibility and add an opt-in realistic selection policy that avoids indiscriminate car access to truck/fleet infrastructure. Fuel and parking remain independently configurable; [ADR-0022](ADR-0022-select-mutually-exclusive-car-parking-strategies.md) governs alternative generated parking strategies. [TASK-0046](../../tasks/done/TASK-0046-add-selective-passenger-car-fueling.md) implements this fuel-only increment.

@@ -1,5 +1,6 @@
 # ADR-0022: Select mutually exclusive car-parking strategies
 
+**Implementation follow-up — 2026-10-21:** [ADR-0024](ADR-0024-compose-complete-realistic-map-replacements.md) and [realistic r10](../../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md) implement complete original-stack presets and exclusive station bays. The unimplemented/finite-policy wording below records the decision at its original increment. The complete realistic preset now follows accepted whole-facility decisions with provisional inclusion of unknown fuel facilities; retained G2 artifacts remain historical evidence.
 ## Context
 
 **Documented — user direction, 2026-10-21:** derived station car bays are an alternative to enabling truck parking for cars. A generated mod should use either the simple truck-area approach or the dedicated car-bay approach. This clarifies the earlier possibility of later distance/density integration: combining both strategies is outside the currently requested behavior.

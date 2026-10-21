@@ -1,5 +1,6 @@
 # Selective passenger-car fueling — ATS 1.61 research and PoC
 
+**Implemented follow-up — 2026-10-21:** [complete realistic r10 replacements](REALISTIC_MAP_REPLACEMENTS_1_61_R10.md) now deliver whole-facility selection plus exclusive dedicated station bays from the original stack. The historical G1/G2 rules, archives and comparisons below remain unchanged. Stack-command realistic mode includes unknown facilities provisionally; the earlier bare single-source policy still has its documented defaults. Use the r10 handoff for normal career play.
 Date: 2026-10-21. [TASK-0046](../tasks/done/TASK-0046-add-selective-passenger-car-fueling.md), [ADR-0023](../architecture/decisions/ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md).
 
 **Subsequent user feedback — 2026-10-21:** G1 works at all six visited sites. Include G01/G02/G06 as whole stations; exclude our additions at G03/G04/G05. This supersedes the old G2 sample suitability choices; that archive and its config remain historical and unchanged. [Report, table snapshot and full-map readiness](SELECTIVE_CAR_FUELING_FEEDBACK_2026_10_21.md).
