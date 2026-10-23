@@ -1,8 +1,8 @@
 ---
 id: TASK-0043
 title: Polish navigation-fix metadata and artwork
-status: backlog
-priority: low
+status: done
+priority: medium
 repositories:
   - .
 depends_on:
@@ -42,10 +42,22 @@ N1 and N2 already carry experiment-identifying metadata. The remaining work is f
 
 # Verification
 
-- **Pending — task not started (2026-10-19):** metadata/package comparison, image dimensions/decoding review and source-pin checks will be recorded when the task moves to active.
-- No artwork generation, metadata edit, package revision or publication has been performed for this deferred task.
+Completed 2026-10-23. Root integrated the work on the existing `codex/gas-station-car-rest-research` checkout; master is unchanged.
+
+- GPT-6 Luna/medium inventoried the source/accepted N2 archive and implemented only navigation metadata/icon handling and tests. GPT-6 Sol/medium checked primary author/Steam/SCS publication evidence and authored the rights reference. Root reviewed claims and code, generated/inspected artwork, packaged and independently checked the payload.
+- Three built-in image_gen proposals A/B/C were generated and exported as 276 × 162 JPEG. The user chose A and requested a modest zoom-out showing a passenger-car interior plus ROAD TRIP. Built-in imagegen edited A into sibling A2; no historical image was overwritten. A2 is the current candidate, with no separate final approval inferred. Prompts and small exports are tracked; large originals/previews are ignored.
+- N2 r3 preserves the accepted r2 gameplay payload exactly: 3,236 bytes, SHA-256 `8d42f35dbdf92a0e8e2e8d85081376415ea84fdbec9f5b0d6e8411ad0e6a75c6`. Reversing its four local-tier token edits recovers the original background source. Every source/include pin still matches. Historical N1 regeneration is byte-identical, SHA-256 `97e36da9a440299ebe2f9e07b4aba65bd5f92dfda6e9b94a221865dbfd32c362`.
+- The report-free local testing copy is 37,407 bytes, SHA-256 `96dc2e8e350ad960b14b876110f52008a3202e6796f1d891a00784c936450b66`. It has exactly four members: unchanged gameplay definition, manifest, description and A2 icon. Only the internal report is omitted from the generator's copy; the audit is retained externally. Both ZIPs pass CRC checks; retained members match exactly.
+- All 508 tests pass, including ten focused navigation tests. Actual exports decode; package/manifest gates, default and override icons, mask/source identity and include hashes pass independent checks. Documentation QA verifies relative links (ignoring local-artifact availability as explicitly documented), task/status/dependency consistency, exclusions and whitespace. No game/profile or supplied input mutation occurred.
+- Rights review finds no explicit permission to redistribute the complete background-derived definition in the inspected Workshop description/installed package. This does not prove infringement or ownership of every byte. The project AGPL does not clear third-party bytes. Ready-made public distribution remains unestablished; original generator/change-spec sharing and author permission are documented alternatives. No author contact or release occurred.
+
+Evidence: ignored `local_outputs/work/2026-10-23_16-54-37/` and `local_outputs/work/2026-10-23_17-04-49/`. Final artifact identifier and exact load priority are in the new r3 handoff. Historical N1/N2/A drafts and r10 map packages remain unchanged.
 
 # Links
+
+- [R3 handoff](../../reference/NAVIGATION_ICONS_METADATA_1_61_R3.md)
+- [Publication boundary](../../reference/NAVIGATION_ICONS_PUBLICATION.md)
+- [Artwork and prompts](../../../assets/mod-icons/navigation-icons/README.md)
 
 - [N2 navigation-icon handoff](../../reference/CAR_PARKING_NAVIGATION_ICONS.md#n2-analogous-fuel-visibility-candidate)
 - [Metadata contract](../../reference/MOD_METADATA.md)

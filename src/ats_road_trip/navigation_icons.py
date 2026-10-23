@@ -53,26 +53,21 @@ No new location search is required. Existing rest areas and actions are unchange
 
 ATS 1.61-r1-experimental. In-game visibility and rest regression remain untested.
 '''
-N2_TITLE = "N2 NAV PARKING + FUEL - szczerb's Road Trip for North America Background Map 5.3 (experimental)"
-N2_FILENAME = 'n2-nav-parking-fuel-north-america-background-5.3-ats-1.61-r2-experimental.scs'
-N2_DESCRIPTION = '''N2 NAV PARKING + FUEL: experimental local-map parking and fuel category visibility candidate.
+N2_TITLE = "N2 NAV ICONS | szczerb's Road Trip Navigation Icons Fix for North America Background Map 5.3"
+N2_FILENAME = 'n2-szczerbs-road-trip-nav-icons-nabm-5.3-1.61-r3-experimental.scs'
+N2_ICON = REPO_ROOT / 'assets/mod-icons/navigation-icons/n2-nav-icons-a2.jpg'
+N2_DESCRIPTION = '''N2 NAV ICONS restores fuel and car-parking icon visibility in local navigation with North America Background Map 5.3. The user confirmed both icons in a Mustang navigation test. That report does not establish visibility on every navigation surface or across the full map.
 
-Compare with N1 NAV PARKING using the same car, location and zoom. N2 adds the
-candidate fuel category bit to the same four local navigation tiers; the bit's
-in-game meaning and visibility effect remain unverified. This tests map-category
-visibility only and does not change fuel services, prices, stations or geometry.
+This compatibility patch changes map icon category visibility only. It does not add stations or rest places, and it does not change fuel services, prices, or geometry.
 
-Requires North America Background Map 5.3 (Workshop 3348711188), ATS 1.61 and
-Road Trip Ford DLC. Prepared against ATS 1.61.3.18; other inputs are unreviewed.
-Put N2 ABOVE North America Background Map and every other map-data provider.
-Keep the background map enabled. N2 replaces N1; enable only one at a time.
-Keep the same single existing A LINES or B GEOMETRY PoC enabled at its usual
-position above Alaska Expansion. N2 works alongside that PoC and replaces
-neither it nor an Alaska/WCE fix.
+Requires North America Background Map 5.3 by CairamR (Workshop ID 3348711188), ATS 1.61, and the Road Trip Ford DLC. This patch is not a standalone background map.
 
-Check local navigation-map icons and the existing rest prompt separately. This
-is an experimental candidate, not a confirmed fuel visibility or phone fix.
-ATS 1.61-r2-experimental. In-game visibility and rest regression remain untested.
+LOAD ORDER
+Place this mod above North America Background Map 5.3, Reforma OtherMaps Patch, and every other mod that supplies or replaces def/map_data.sii. Keep North America Background Map enabled and leave the other mods in their current order, including source-specific fixes. N2 replaces N1 and older N2 versions; enable only one navigation icon fix at a time.
+
+This package contains one modified background-map definition. It does not include the background map, its textures, or its three included SUI files. Independent compatibility patch; not endorsed by CairamR. Redistribution permission for the background-derived definition has not been established.
+
+ATS 1.61-r3-experimental. The reported Mustang result does not establish universal surface or map coverage.
 '''
 
 
@@ -137,9 +132,9 @@ def plan_navigation_icons(package: Package, *, game_version: str,
         changed_tiers.append({'index': i, 'before': f'0x{int(old_match[1], 16):08X}',
                               'after': f'0x{int(new_match[1], 16):08X}'})
     report = {
-        'experiment': 'N1 NAV PARKING' if variant == 'parking' else 'N2 NAV PARKING + FUEL',
+        'experiment': 'N1 NAV PARKING' if variant == 'parking' else 'N2 NAV ICONS',
         'control': ('N0: N1 disabled, same existing A or B' if variant == 'parking'
-                    else 'N1 NAV PARKING enabled and N2 disabled, same existing A or B'),
+                    else 'Accepted N2 r2 gameplay payload; metadata and artwork updated for r3'),
         'source': SOURCE_NAME, 'source_package': str(package.path),
         'source_members': [{'path': name, 'sha256': sha256(data), 'size': len(data)}
                            for name, data in sorted(sources.items())],
@@ -157,7 +152,7 @@ def plan_navigation_icons(package: Package, *, game_version: str,
         'required_provider': SOURCE_NAME,
         'priority': ('N1 above all map-data providers; keep source background and one A/B enabled.'
                      if variant == 'parking' else
-                     'N2 above North America Background Map and every other map-data provider; it replaces N1. Keep source background and one A/B enabled.'),
+                     'N2 above every map-data provider, including Reforma OtherMaps Patch; retain source-specific fixes. Keep the North America Background Map enabled.'),
         'unresolved': ['Exact phone/dashboard tier consumers',
                        'Reported B world-map visibility despite omitted category in source masks',
                        'Native positive navigation control, A navigation visibility and zoom dependence'],
@@ -165,11 +160,13 @@ def plan_navigation_icons(package: Package, *, game_version: str,
     }
     if variant == 'parking-fuel':
         report['candidate_fuel_category_bit_24'] = True
-        report['parking_control_user_report'] = 'N1 restores parking navigation icons at the reported Dawson test.'
-        report['unresolved'] = ['Candidate bit 24 fuel mapping and navigation visibility effect require testing',
-                                'Exact phone/dashboard tier consumers and zoom dependence',
-                                'Reported B world-map visibility despite omitted category in source masks',
-                                'Coverage beyond the reported parking test']
+        report['user_reported_runtime_validation'] = {
+            'reported': True,
+            'scope': 'Both fuel and car-parking icons visible in Mustang navigation at the user-reported test context, 2026-10-19.',
+            'limits': 'Navigation surface, location, zoom, profile, and broader coverage were not itemized.',
+        }
+        report['unresolved'] = ['Exact phone/dashboard tier consumers and zoom dependence',
+                                'Coverage beyond the reported Mustang test context']
     # Workshop updates may occur during generation; verify every pinned member
     # again rather than reading a different source after computing the patch.
     for name, data in sources.items():
@@ -180,7 +177,7 @@ def plan_navigation_icons(package: Package, *, game_version: str,
 
 def run_navigation_icons(source_package: str | Path, *, game_version: str,
                          acknowledge_experimental: bool = False, run_id: str | None = None,
-                         variant: str = 'parking') -> dict:
+                         variant: str = 'parking', icon_path: str | Path | None = None) -> dict:
     _, label = _variant_settings(variant)
     if acknowledge_experimental is not True:
         raise ValueError(f'{label} generation requires --acknowledge-experimental')
@@ -191,6 +188,15 @@ def run_navigation_icons(source_package: str | Path, *, game_version: str,
     filename = FILENAME if variant == 'parking' else N2_FILENAME
     title = TITLE if variant == 'parking' else N2_TITLE
     description = DESCRIPTION if variant == 'parking' else N2_DESCRIPTION
+    icon = None
+    if variant == 'parking-fuel':
+        from .mod_writer import _validate_icon
+        selected_icon = Path(icon_path) if icon_path is not None else N2_ICON
+        try:
+            icon = selected_icon.read_bytes()
+        except OSError as exc:
+            raise ValueError(f'N2 icon could not be read: {selected_icon}') from exc
+        _validate_icon(icon)
     output = REPO_ROOT / 'local_outputs/generated' / stamp / filename
     audit = work / 'audit.json'
     if audit.exists() or output.exists():
@@ -204,7 +210,7 @@ def run_navigation_icons(source_package: str | Path, *, game_version: str,
         plan, resources = plan_navigation_icons(package, game_version=game_version, variant=variant)
     final = write_mod(output, resources, plan, game_version=game_version,
                       display_name=title, description=description,
-                      revision=1 if variant == 'parking' else 2)
+                      revision=1 if variant == 'parking' else 3, icon=icon)
     result = {'output': str(output), 'sha256': sha256(output.read_bytes()),
               'report_path': str(audit), 'generated_mod_count': 1,
               'in_game_verified': False, 'package': final}
@@ -222,12 +228,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument('--acknowledge-experimental', action='store_true')
     parser.add_argument('--variant', choices=('parking', 'parking-fuel'), default='parking',
                         help='parking preserves N1; parking-fuel generates the separate N2 candidate')
+    parser.add_argument('--icon', help='Optional N2 JPEG icon override (default: revised proposal A2)')
     parser.add_argument('--run-id', help='Optional new YYYY-MM-DD_HH-MM-SS Warsaw run ID')
     args = parser.parse_args(argv)
     try:
         result = run_navigation_icons(args.source_package, game_version=args.game_version,
                                       acknowledge_experimental=args.acknowledge_experimental,
-                                      run_id=args.run_id, variant=args.variant)
+                                      run_id=args.run_id, variant=args.variant, icon_path=args.icon)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
     print(json.dumps(result, indent=2, sort_keys=True))

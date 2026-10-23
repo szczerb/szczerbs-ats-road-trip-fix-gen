@@ -1,5 +1,7 @@
 # Original mod artwork
 
+Current navigation proposals and the user-directed A2 revision are in [navigation-icons](navigation-icons/README.md); N2 r3 uses A2 provisionally without replacing any map/courier/tank artwork.
+
 The separate tank mod uses [reasonable-gas-tank-upgrades.jpg](reasonable-gas-tank-upgrades.jpg), a provisional original navy/cream/teal tank badge with Mustang/F-150, exported at 276x162. [Exact prompt and provenance](reasonable-gas-tank-upgrades-prompt.md). This does not change the approved M2D/J3C artwork.
 
 ## Current fuel/rest and courier proposals

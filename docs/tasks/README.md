@@ -8,9 +8,11 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Backlog
 
-- [TASK-0043: Polish navigation-fix metadata and artwork](backlog/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — deferred final player-facing metadata and dedicated 276 × 162 topic artwork for the user-tested N2 overlay; no packaging or artwork work has started.
+No unstarted tasks.
 
 ## Done
+
+- [TASK-0043: Polish navigation-fix metadata and artwork](done/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — N2 r3 metadata, user-directed A2 art and report-free local testing copy, 508 tests, exact accepted payload/N1 preservation; third-party redistribution permission remains unestablished.
 
 - [TASK-0047: Complete realistic map replacements](done/TASK-0047-deliver-realistic-map-replacements.md) — eight complete r10 packages and ZIP, 3,073 fuel additions / 208 policy omissions / 125 dedicated bays, 508 tests and independent actual-stack audits; optional career feedback. [Delivery](../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md).
 

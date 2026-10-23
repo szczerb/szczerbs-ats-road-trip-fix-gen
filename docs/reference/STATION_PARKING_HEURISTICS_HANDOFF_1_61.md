@@ -70,7 +70,7 @@ Final overview/detail SVG and PNG comparisons: [directory](../../local_outputs/w
 4. At the same Dawson station, use C2's navigation marker and detailed plan to approach the curb from the open forecourt, nose toward the building as indicated by the arrow. The polygon is not a guaranteed vehicle-centre target. Compare natural parking and the forward/backward prompt window with old B; note obstruction/NPC presence, pump access and room to leave. Do not infer a usable full strip from a single successful pose.
 5. Optionally compare **B versus E** separately using the controlled edge/heading procedure above. The useful feedback is prompt/no-prompt at comparable stopped positions, plus heading and a stable visible vehicle reference. Completed rest/fatigue and reload are distinct observations if tested; no claim depends on them having already been supplied.
 
-Final navigation metadata/artwork remains [TASK-0043](../tasks/backlog/TASK-0043-polish-navigation-fix-metadata-and-artwork.md). Inactive but visually valid station detection/activation is a future separate feature; absent linked fuel records do not invalidate the visual geometry, and composite services would need investigation. This increment generates only for verified existing operational GAS/service graphs.
+Final navigation metadata/artwork remains [TASK-0043](../tasks/done/TASK-0043-polish-navigation-fix-metadata-and-artwork.md). Inactive but visually valid station detection/activation is a future separate feature; absent linked fuel records do not invalidate the visual geometry, and composite services would need investigation. This increment generates only for verified existing operational GAS/service graphs.
 
 ## Reproduction and retained branch
 

@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import struct
 import sys
 import tempfile
 import unittest
@@ -38,6 +39,11 @@ def _source_files(map_data=None):
 
 def _hashes(files):
     return {name: hashlib.sha256(data).hexdigest() for name, data in files.items()}
+
+
+def _jpeg_276x162():
+    return (b'\xff\xd8\xff\xc0' + struct.pack('>HBHHB', 17, 8, 162, 276, 3)
+            + b'\x01\x11\0\x02\x11\0\x03\x11\0\xff\xd9')
 
 
 def _write_source(root, files):
@@ -136,7 +142,7 @@ class NavigationIconsTests(unittest.TestCase):
                         nav.plan_navigation_icons(package, game_version=nav.GAME_VERSION, variant='both')
             self.assertEqual(resources[nav.MAP_DATA],
                              files[nav.MAP_DATA].replace(b'0x00685FFF', b'0x03685FFF', 4))
-            self.assertEqual(report['experiment'], 'N2 NAV PARKING + FUEL')
+            self.assertEqual(report['experiment'], 'N2 NAV ICONS')
             self.assertEqual(report['candidate_fuel_category_bit_24'], True)
             self.assertEqual(report['fuel_category_bit_24_unchanged'], False)
             self.assertEqual([row['after'] for row in report['changed_tiers']],
@@ -224,35 +230,70 @@ class NavigationIconsTests(unittest.TestCase):
             root = Path(temporary)
             source = root / 'background-map'
             _write_source(source, files)
+            icon_override = root / 'override.jpg'
+            icon_override.write_bytes(_jpeg_276x162())
             with patch.object(nav, 'REPO_ROOT', root), patch.object(nav, 'SOURCE_HASHES', _hashes(files)):
                 with self.assertRaisesRegex(ValueError, 'Unknown navigation variant'):
                     nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
                                              acknowledge_experimental=True, run_id='2026-10-19_20-00-02',
                                              variant='parking-and-fuel')
                 self.assertFalse((root / 'local_outputs').exists())
+                with patch.object(nav, 'N2_ICON', root / 'missing.jpg'):
+                    with self.assertRaisesRegex(ValueError, 'N2 icon could not be read'):
+                        nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
+                                                 acknowledge_experimental=True,
+                                                 run_id='2026-10-19_20-00-03', variant='parking-fuel')
+                self.assertFalse((root / 'local_outputs').exists())
+                invalid_icon = root / 'invalid.jpg'
+                invalid_icon.write_bytes(b'not a jpeg')
+                with self.assertRaisesRegex(ValueError, 'Icon must be a JPEG'):
+                    nav.run_navigation_icons(source, game_version=nav.GAME_VERSION,
+                                             acknowledge_experimental=True,
+                                             run_id='2026-10-19_20-00-03', variant='parking-fuel',
+                                             icon_path=invalid_icon)
+                self.assertFalse((root / 'local_outputs').exists())
                 result = nav.run_navigation_icons(
                     source, game_version=nav.GAME_VERSION, acknowledge_experimental=True,
                     run_id='2026-10-19_20-00-03', variant='parking-fuel')
+                override_result = nav.run_navigation_icons(
+                    source, game_version=nav.GAME_VERSION, acknowledge_experimental=True,
+                    run_id='2026-10-19_20-00-04', variant='parking-fuel', icon_path=icon_override)
             output = Path(result['output'])
             self.assertEqual(output.name, nav.N2_FILENAME)
-            self.assertTrue(output.name.startswith('n2-nav-parking-fuel-'))
+            self.assertEqual(output.name, 'n2-szczerbs-road-trip-nav-icons-nabm-5.3-1.61-r3-experimental.scs')
             self.assertEqual(result['generated_mod_count'], 1)
             with zipfile.ZipFile(output) as archive:
+                self.assertEqual(set(archive.namelist()), {nav.MAP_DATA, 'manifest.sii',
+                                 'mod_description.txt', 'road_trip_fix_report.json', 'mod_icon.jpg'})
                 self.assertEqual(archive.read(nav.MAP_DATA),
                                  files[nav.MAP_DATA].replace(b'0x00685FFF', b'0x03685FFF', 4))
+                self.assertEqual(archive.read('mod_icon.jpg'), Path(nav.N2_ICON).read_bytes())
                 manifest = parse_units(archive.read('manifest.sii').decode())[0]
-                self.assertTrue(manifest.one('display_name').startswith('N2 NAV PARKING + FUEL'))
-                self.assertIn('1.61-r2-experimental', manifest.one('package_version'))
+                self.assertEqual(manifest.one('display_name'), nav.N2_TITLE)
+                self.assertEqual(manifest.one('author'), 'szczerb')
+                self.assertEqual(manifest.one('icon'), 'mod_icon.jpg')
+                self.assertIn('1.61-r3-experimental', manifest.one('package_version'))
                 description = archive.read('mod_description.txt').decode()
-                self.assertTrue(description.startswith('N2 NAV PARKING + FUEL:'))
-                self.assertIn('N2 replaces N1', description)
-                self.assertIn('Put N2 ABOVE North America Background Map and every other map-data provider.', description)
-                self.assertIn('fuel category bit', description)
-                self.assertIn('remain unverified', description)
+                self.assertTrue(description.startswith('N2 NAV ICONS restores fuel and car-parking icon visibility'))
+                self.assertIn('LOAD ORDER', description)
+                self.assertIn('above North America Background Map 5.3, Reforma OtherMaps Patch, and every other mod', description)
+                self.assertIn('not a standalone background map', description)
+                self.assertIn('This package contains one modified background-map definition', description)
+                self.assertIn('does not include the background map, its textures, or its three included SUI files', description)
+                self.assertIn('Redistribution permission for the background-derived definition has not been established.', description)
+                self.assertNotIn('A LINES', description)
+                self.assertNotIn('remain unverified', description)
                 report = json.loads(archive.read('road_trip_fix_report.json'))
                 self.assertTrue(report['candidate_fuel_category_bit_24'])
                 self.assertFalse(report['fuel_category_bit_24_unchanged'])
                 self.assertFalse(report['in_game_verified'])
+                self.assertTrue(report['user_reported_runtime_validation']['reported'])
+                self.assertIn('Mustang', report['user_reported_runtime_validation']['scope'])
+                self.assertEqual(report['package_metadata']['package_version'], '1.61-r3-experimental')
+                self.assertIn('icon', report['package_metadata'])
+                self.assertEqual([row['path'] for row in report['generated_resources']], [nav.MAP_DATA])
+            with zipfile.ZipFile(override_result['output']) as archive:
+                self.assertEqual(archive.read('mod_icon.jpg'), _jpeg_276x162())
 
     def test_variant_archives_are_whole_file_alternatives_with_explicit_priority(self):
         files = _source_files()
@@ -274,8 +315,10 @@ class NavigationIconsTests(unittest.TestCase):
                 self.assertNotEqual(high_n1.read(nav.MAP_DATA), high_n2.read(nav.MAP_DATA))
                 self.assertEqual(high_n2.read('def/map_data/colour_data.sui'),
                                  files['def/map_data/colour_data.sui'])
-            self.assertIn('N2 replaces N1', nav.N2_DESCRIPTION)
-            self.assertIn('enable only one at a time', nav.N2_DESCRIPTION)
+            self.assertIn('N2 replaces N1 and older N2 versions', nav.N2_DESCRIPTION)
+            self.assertIn('enable only one navigation icon fix at a time', nav.N2_DESCRIPTION)
+            self.assertIn('Reforma OtherMaps Patch', nav.N2_DESCRIPTION)
+            self.assertIn('leave the other mods in their current order', nav.N2_DESCRIPTION)
 
     def test_module_cli_exposes_the_narrow_experimental_command(self):
         env = dict(os.environ)
@@ -289,6 +332,8 @@ class NavigationIconsTests(unittest.TestCase):
         self.assertIn('--acknowledge-experimental', result.stdout)
         self.assertIn('--variant', result.stdout)
         self.assertIn('parking-fuel', result.stdout)
+        self.assertIn('--icon', result.stdout)
+        self.assertIn('proposal A', result.stdout)
 
 
 if __name__ == '__main__':

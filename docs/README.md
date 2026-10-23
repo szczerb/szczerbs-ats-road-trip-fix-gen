@@ -76,3 +76,6 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 - [Public Git identity, placeholder correction and first-release practices](reference/PUBLIC_GIT_IDENTITY_PRACTICES.md).
 
 - [R9 car parking-marker handoff](reference/MOD_REST_MARKERS_1_61_R9.md) — local seven-map replacement batch, static evidence and later manual test.
+
+- [N2 r3 navigation metadata/artwork handoff](reference/NAVIGATION_ICONS_METADATA_1_61_R3.md).
+- [Navigation overlay scope and publication rights](reference/NAVIGATION_ICONS_PUBLICATION.md).
