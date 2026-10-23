@@ -79,3 +79,5 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 
 - [N2 r3 navigation metadata/artwork handoff](reference/NAVIGATION_ICONS_METADATA_1_61_R3.md).
 - [Navigation overlay scope and publication rights](reference/NAVIGATION_ICONS_PUBLICATION.md).
+
+- [Original North America background r0 handoff](reference/NORTH_AMERICA_BACKGROUND_1_61_R0.md), [engine/data/calibration research](reference/NORTH_AMERICA_BACKGROUND_RESEARCH.md) and [reproducible build](examples/north-america-background/README.md).

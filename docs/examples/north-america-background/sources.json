@@ -1,0 +1,32 @@
+{
+  "ne_10m_admin_1_states_provinces": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces.zip",
+    "sha256": "efc59726337323058f9446210adc96673179cd344e053666ee3d28cb58ba2b05",
+    "size": 14909524,
+    "version": "5.1.1"
+  },
+  "ne_10m_populated_places": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_populated_places.zip",
+    "sha256": "cd149186f03d2603e0410da399b980a4357d0ac32d3a2305a49ed3dffcc41d7b",
+    "size": 2811199,
+    "version": "5.1.2"
+  },
+  "ne_50m_admin_0_countries": {
+    "url": "https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_countries.zip",
+    "sha256": "5fed433373581fa648920435f937d95f2d3c0200e067409c6478dcdf1b853139",
+    "size": 799734,
+    "version": "5.1.1"
+  },
+  "ne_50m_lakes": {
+    "url": "https://naciscdn.org/naturalearth/50m/physical/ne_50m_lakes.zip",
+    "sha256": "f28d42c286d96b57a17aac2cbeb432f8c65532c20063495711fbc64e24666df3",
+    "size": 252615,
+    "version": "5.0.0"
+  },
+  "ne_10m_admin_1_states_provinces_lines": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_lines.zip",
+    "sha256": "86acd56ce6c0e47f5fa79725591533b5766f26d6ed1437b086f2b8d4028fe456",
+    "size": 5993148,
+    "version": "5.1.0"
+  }
+}

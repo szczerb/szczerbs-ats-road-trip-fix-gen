@@ -19,6 +19,10 @@ You should have received a copy of the GNU Affero General Public License along w
 - Ford and other third-party names, logos and marks remain subject to their respective rights. The artwork license does not grant trademark rights or establish affiliation or endorsement.
 - The license text itself retains the Free Software Foundation's copyright and verbatim-copy terms.
 
+## Original background output
+
+The original North America background is rendered from public-domain Natural Earth data rather than copied map/game artwork. Its project-authored definitions, cartographic composition and icon use AGPL-3.0-only, with separate geographic/font notices. The [build guide](docs/examples/north-america-background/README.md) identifies preferred modification sources and pinned inputs. This specific original output scope does not relicense other generated game/map patches.
+
 ## Contributions and later licensing
 
 Unless separately agreed, intentionally submitted contributions are accepted under AGPL-3.0-only, without a copyright transfer or additional relicensing permission. Contributors must have the rights needed to submit their work. A maintainer wishing to offer another license for someone else's protected contribution needs the necessary permission or another applicable grant.

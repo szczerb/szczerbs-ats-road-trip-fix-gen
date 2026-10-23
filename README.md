@@ -6,6 +6,10 @@ You can download the ready-to-use mods below or run the Python tools locally to 
 
 **Latest local research delivery:** [REALISTIC r13 truck-rest improvements](docs/reference/TRUCK_REST_COVERAGE_1_61_R13.md), with the r12 car/fuel baseline preserved. These eight replacement packages and their career checklist are local research-worktree artifacts; runtime feedback remains open.
 
+## Original North America background (local experimental build)
+
+An original standalone geographic background for ATS 1.61 is ready for manual testing: [r0 package, previews and load order](docs/reference/NORTH_AMERICA_BACKGROUND_1_61_R0.md). It replaces the former North America Background Map and dependent N2 overlay, with no Ford requirement. Geography is generated deterministically from pinned public-domain Natural Earth vectors. [Reproduce it](docs/examples/north-america-background/README.md). Runtime rendering/alignment remains unverified; this background has not been published.
+
 ## Download ready-to-use experimental mods
 
 The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):

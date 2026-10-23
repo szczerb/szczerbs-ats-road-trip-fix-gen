@@ -33,3 +33,11 @@ The station-map reader extends existing PPD research using the 48-byte MapPoint 
 ## Navigation overlay source dependency
 
 The source-pinned N2 navigation generator transforms North America Background Map 5.3 by CairamR (installed author CAIRAM), Steam Workshop item 3348711188. Local generated N2 archives contain one complete modified background definition; the three SUI includes and background artwork remain supplied by the original mod. This project's AGPL does not relicense that definition. No redistribution grant was found in the inspected author listing/installed package; [scope, sources and publication boundary](docs/reference/NAVIGATION_ICONS_PUBLICATION.md) record the evidence and limits. The source definition itself is not tracked.
+
+## Original geographic background inputs (2026-10-23)
+
+The optional background generator uses Natural Earth vectors, expressly public domain under [Natural Earth's terms](https://www.naturalearthdata.com/about/terms-of-use/). Dataset-specific versions, download URLs and SHA-256 pins are in [sources.json](docs/examples/north-america-background/sources.json); downloaded archives are ignored. The renderer does not use or trace any third-party background image.
+
+DejaVu Sans Book 2.37 from Debian fonts-dejavu-core 2.37-8 is a separately licensed font input. The exact archive/member pins are in [font.json](docs/examples/north-america-background/font.json); the [Bitstream Vera notice](assets/background-map/FONT-LICENSE.txt) accompanies rendered artwork. DejaVu changes are public domain. No font binary is committed or bundled in the mod.
+
+Optional Python build libraries (not bundled in the mod): Pillow (HPND), NumPy and SciPy (BSD-3-Clause), PyShp (MIT), and pyproj (MIT; its PROJ dependency has its own permissive notices). Pinned versions are in the background requirements file; installed distributions retain their license files. The build uses these as libraries, without copying their sources into project code. The SCS shader and stock UI remain supplied by the game; functional format/field observations do not convey rights in its artwork.

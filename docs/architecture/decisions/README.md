@@ -8,6 +8,8 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
+- [ADR-0025: Generate original geographic backgrounds](ADR-0025-generate-original-geographic-backgrounds.md): pinned public-domain geography, configurable measured calibration, original standalone UI resources and offline verification.
+
 - [ADR-0016: License project-authored materials under AGPLv3](ADR-0016-license-project-under-agpl-v3.md): AGPL-3.0-only, explicit scope and third-party exclusions, and matching package notices.
 
 - [ADR-0001: Use a documentation and evidence workflow before generator implementation](ADR-0001-documentation-and-evidence-workflow.md).
