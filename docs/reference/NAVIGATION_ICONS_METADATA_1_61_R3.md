@@ -13,7 +13,7 @@ Artifact: `local_outputs/generated/2026-10-23_17-04-49/testing/n2-szczerbs-road-
 | Version | 1.61-r3-experimental |
 | Category / game gate | map / 1.61.* |
 | Retained DLC gate | dlc_rt_ford |
-| Artwork | A2, revised from the user's preferred A; 276 × 162 JPEG |
+| Artwork | A2, user-approved on 2026-10-23; 276 × 162 JPEG |
 | Gameplay resource | def/map_data.sii only, 3,236 bytes |
 
 R3 supersedes N1 and older N2 copies; enable only one navigation overlay. Put it above **all** map-data providers, including North America Background Map and Reforma OtherMaps Patch. Keep the original background enabled and leave the other source-specific fixes/order unchanged. It works alongside the complete r10 map replacements but does not replace any of them. Whole-file overrides do not automatically merge other mods' map-display settings. This is not a standalone background or a universal background-map patch.

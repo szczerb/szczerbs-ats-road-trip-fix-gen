@@ -7,7 +7,7 @@ Created with built-in image_gen and inspected on 2026-10-23. All exports are ori
 | A | [JPEG](n2-nav-icons-a.jpg) | Close-up dashboard GPS, parking P and fuel pin; user-preferred initial proposal. |
 | B | [JPEG](n2-nav-icons-b.jpg) | Phone navigation and two check marks; alternative. |
 | C | [JPEG](n2-nav-icons-c.jpg) | Magnifying glass over two map symbols; alternative. |
-| A2 | [JPEG](n2-nav-icons-a2.jpg) | User-requested revision of A: moderately wider passenger-car dashboard/steering-wheel view and ROAD TRIP subheading. Current packaged candidate; exact A2 has not received separate final approval. |
+| A2 | [JPEG](n2-nav-icons-a2.jpg) | User-requested revision of A: moderately wider passenger-car dashboard/steering-wheel view and ROAD TRIP subheading. User-approved final selection on 2026-10-23; packaged N2 r3 preset. |
 
 The header reads NAV ICONS FIX, footer NA BACKGROUND 5.3. A2 adds ROAD TRIP. The illustrations convey visibility of existing markers, not construction of new fuel or parking places. The underlying background mod is North America Background Map 5.3 by CairamR/CAIRAM (Workshop 3348711188); the imagery is not its artwork and implies no endorsement.
 
