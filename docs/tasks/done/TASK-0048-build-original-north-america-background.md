@@ -1,7 +1,7 @@
 ---
 id: TASK-0048
 title: Build an original standalone North America background for ATS 1.61
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: []
@@ -44,10 +44,12 @@ Delegation (actual): GPT-6 Luna/medium owns read-only source/priority inventory 
 - GPT-6 Luna/medium inventoried actual source/DLC priorities, identified the ProMods-over-WCE Vancouver override, and supplied/rechecked 52 actual effective CityArea references. Root reviewed geographic joins and corrected same-name ambiguity before integration. A second independent pass verified every source sector hash, item/node UID and XZ, and every Natural Earth ID/coordinate, with zero discrepancies.
 - GPT-6 Luna/high inspected stock MAT/TOBJ/embedded DDS/map-header contracts, source collisions and sector rectangles; root reviewed its raw evidence and corrected an intermediate sign error in the sector-rectangle report. Final installed/supplied bounds pass. Both root and delegate inspected overall and all five regional previews.
 - Luna/high independently audited the final 22-member archive: exact allowlist, CRC, custom dependency closure, stock texture fields, dimensions, masks and manifest ID. Root's final engine-schema pass caught a 13-character internal manifest token missed by the generic parser; changed it to `.szczerb.na_bcg` and added a dedicated rejection test. Earlier 21:38/21:42 builds are explicitly superseded, not for testing. Final archive differs only in that manifest member; pixel previews remain identical.
-- Authoritative run `2026-10-23_21-48-34`, archive SHA-256 `913ff62169b2dd7729fe16a0074d4d099d9cdd795c2b785a83a7adf32e32bac4`. A full repeated build at `21-49-32` matches the complete archive bytes. Both builds use the freshly re-downloaded, verified cache, not just the earlier downloads.
+- Authoritative run `2026-10-23_21-48-34`, archive SHA-256 `913ff62169b2dd7729fe16a0074d4d099d9cdd795c2b785a83a7adf32e32bac4`. A full repeated build at `21-49-32` matches the complete archive bytes. Both builds use the freshly re-downloaded, verified cache, not just the earlier downloads. A third full build from the extracted corresponding-source ZIP also produces that identical SHA-256.
 - The fetch command passes from an empty ignored cache for all five data archives and the pinned font package/member. No system packages, source inputs, game installations or profiles were changed.
 - `PYTHONPATH=src <run-venv>/bin/python -m pytest -q`: **292 tests**, including 11 background cases. Full log retained beneath `local_outputs/work/2026-10-23_21-16-53/`. A semantic current-stock comparison permits only geographic camera/size/zoom groups to change; every unrelated field remains equivalent.
 - Calibration: 34 fit / 18 check, selected affine check RMS 2,412 units, maximum 6,381 Fairbanks. The optional thin-plate alternative generalizes worse; neither model supplies a physical survey or a blind final accuracy test. Sparse uncalibrated regions and runtime UI behavior remain explicit limitations.
+
+The verified implementation/documentation milestone is local commit `53ff7b3`. Its selected corresponding-source ZIP is 173,028 bytes, SHA-256 `ca73047bc6ddf40b897070b1d72d08707060c6e641d51cb6ea4ddf6c1299447b`; it includes the complete project Python sources, background configuration/documentation/licenses and dedicated tests, excluding downloaded inputs and diagnostics. Fresh extraction and full offline generation from this bundle match the authoritative archive. All new-document local links resolve, and final package scans find no local paths/diagnostics.
 
 Large inputs/reports/tools/PNG/artifact staging remain ignored in the timestamped work/generated runs. Runtime testing is an explicit handoff boundary, not an acceptance claim. No game launch/install, live-profile edit, push, publication or history rewrite occurred.
 

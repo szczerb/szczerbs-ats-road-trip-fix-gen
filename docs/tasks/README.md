@@ -6,7 +6,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 
 
-- [TASK-0048: Build original North America background](active/TASK-0048-build-original-north-america-background.md) — original geography, standalone resources and reproducible manual-test delivery.
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
@@ -15,6 +14,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0048: Build original North America background](done/TASK-0048-build-original-north-america-background.md) — original standalone r0, 52 verified calibration references, 292 tests, independent archive audit, exact repeat/source-bundle reproduction and manual handoff; runtime remains unverified.
 
 - [TASK-0056: Clean research history and prepare a public PR](done/TASK-0056-clean-research-history-and-prepare-public-pr.md) — sanitized historical paths, explicit reviewed evidence input, scoped North Platte guards, 644 tests and independent publication audits; [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is open for a later squash merge.
 
