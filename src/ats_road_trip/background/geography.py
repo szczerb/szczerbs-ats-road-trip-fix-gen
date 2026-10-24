@@ -11,6 +11,7 @@ import zipfile
 import numpy as np
 from pyproj import Proj
 from scipy.interpolate import RBFInterpolator
+from scipy.spatial.distance import cdist
 import shapefile
 
 
@@ -65,7 +66,9 @@ class Calibration:
 
     The engine's climate definition motivates LCC, but does not prove its exact
     earth model. A fitted affine transform accounts for scale/origin differences.
-    Optional smooth thin-plate residuals account for compressed map geography.
+    Optional thin-plate or compact residuals account for compressed geography.
+    Compact corrections preserve the affine exactly outside their support disks;
+    selected uncertain place references may be softened to avoid folds.
     Held-out points never influence fitting. No third-party image is traced.
     """
     def __init__(self, config: dict, anchors: list[dict]):
@@ -75,20 +78,67 @@ class Calibration:
         fit = [p for p in anchors if p['role'] == 'fit']
         if len(fit) < 6:
             raise ValueError('At least six fitting anchors are required')
-        self.points = self.baseline(np.array([[p['lon'], p['lat']] for p in fit]))
-        self.targets = np.array([[p['x'], p['z']] for p in fit], dtype=float)
-        design = np.c_[self.points / 100000, np.ones(len(fit))]
+        affine_names = config.get('affine_reference_names')
+        affine_fit = [p for p in fit if affine_names is None or p['name'] in affine_names]
+        if len(affine_fit) < 6 or (affine_names is not None and len(affine_fit)!=len(affine_names)):
+            raise ValueError('Missing or duplicate affine fitting references')
+        if affine_names is not None:
+            by_name = {p['name']:p for p in affine_fit}
+            affine_fit = [by_name[name] for name in affine_names]
+        self.points = self.baseline(np.array([[p['lon'], p['lat']] for p in affine_fit]))
+        self.targets = np.array([[p['x'], p['z']] for p in affine_fit], dtype=float)
+        design = np.c_[self.points / 100000, np.ones(len(affine_fit))]
         if np.linalg.matrix_rank(design) != 3:
             raise ValueError('Degenerate calibration anchors')
         self.affine = np.linalg.lstsq(design, self.targets, rcond=None)[0]
         self.residual = None
+        self.local_points = None
         smoothing = config['correction_smoothing']
         if config['correction'] == 'thin_plate_spline':
             self.residual = RBFInterpolator(self.points / 100000,
                 (self.targets - design @ self.affine) / 100000,
                 smoothing=smoothing, kernel='thin_plate_spline', degree=1)
+        elif config['correction'] == 'compact':
+            names = config['local_reference_names']
+            controls = [p for p in fit if p['name'] in names]
+            if not controls or len(controls)!=len(names):
+                raise ValueError('Missing or duplicate local fitting references')
+            self.local_points = self.baseline([[p['lon'],p['lat']] for p in controls])
+            self.local_radius = float(config['local_correction_radius'])
+            if not np.isfinite(self.local_radius) or not 1000<=self.local_radius<=50000:
+                raise ValueError('Invalid local correction radius')
+            predicted = self._affine(self.local_points)
+            residual = np.array([[p['x'],p['z']] for p in controls])-predicted
+            kernel = self._kernel(cdist(self.local_points,self.local_points)/self.local_radius)
+            overrides = config.get('local_reference_smoothing',{})
+            if not isinstance(overrides,dict) or set(overrides)-set(names):
+                raise ValueError('Unknown local smoothing reference')
+            smoothing = np.array([float(overrides.get(p['name'],config.get('local_correction_smoothing',0)))
+                                  for p in controls])
+            if not np.isfinite(smoothing).all() or (smoothing<0).any() or (smoothing>5).any():
+                raise ValueError('Invalid local correction smoothing')
+            kernel += np.diag(smoothing)
+            self.local_weights = np.linalg.solve(kernel,residual)
         elif config['correction'] != 'affine':
             raise ValueError('Unknown correction')
+
+    @staticmethod
+    def _kernel(distance):
+        """C2 compact radial kernel, exactly zero outside the configured radius."""
+        return np.maximum(0,1-distance)**4*(4*distance+1)
+
+    def _affine(self, points):
+        return np.c_[points/100000,np.ones(len(points))]@self.affine
+
+    def _from_baseline(self, points):
+        result = self._affine(points)
+        for start in range(0,len(points),8192):
+            batch = points[start:start+8192]
+            if self.residual is not None:
+                result[start:start+8192] += self.residual(batch/100000)*100000
+            if self.local_points is not None:
+                result[start:start+8192] += self._kernel(cdist(batch,self.local_points)/self.local_radius)@self.local_weights
+        return result
 
     def baseline(self, lonlat):
         lonlat = np.asarray(lonlat, dtype=float).reshape(-1, 2)
@@ -100,11 +150,7 @@ class Calibration:
 
     def __call__(self, lonlat):
         points = self.baseline(lonlat)
-        result = np.c_[points / 100000, np.ones(len(points))] @ self.affine
-        if self.residual is not None:
-            # Bounded batches avoid a large points-by-anchors temporary array.
-            for start in range(0, len(points), 8192):
-                result[start:start + 8192] += self.residual(points[start:start + 8192] / 100000) * 100000
+        result = self._from_baseline(points)
         if not np.isfinite(result).all():
             raise ValueError('Nonfinite calibrated geometry')
         return result
@@ -124,7 +170,7 @@ class Calibration:
             errors = np.array([p['error_game_units'] for p in group])
             summary[role] = {'count': len(group), 'rms': float(np.sqrt(np.mean(errors**2))),
                              'median': float(np.median(errors)), 'max': float(errors.max())}
-        return {'method': 'LCC -> affine -> optional smooth thin-plate residual',
+        return {'method': 'LCC -> affine -> optional smooth residual',
                 'units': 'game-world XZ units, not real-world meters',
                 'fit_is_not_independent_validation': True,
                 'summary': summary, 'references': records, 'affine': self.affine.tolist()}
@@ -144,8 +190,18 @@ class Calibration:
         bb = (self.baseline(points + [0, step]) - base) / step
         base_det = ba[:, 0] * bb[:, 1] - ba[:, 1] * bb[:, 0]
         ratio = det / base_det
+        if self.local_points is not None:
+            # A continental grid can miss a local fold. Also sample dense squares
+            # around every compact correction, directly in baseline game units.
+            offsets = np.array([(x,z) for x in np.linspace(-self.local_radius,self.local_radius,81)
+                                for z in np.linspace(-self.local_radius,self.local_radius,81)])
+            local = np.concatenate([p+offsets for p in self.local_points])
+            a = (self._from_baseline(local+[1,0])-self._from_baseline(local-[1,0]))/2
+            b = (self._from_baseline(local+[0,1])-self._from_baseline(local-[0,1]))/2
+            ratio = np.r_[ratio,a[:,0]*b[:,1]-a[:,1]*b[:,0]]
         result = {'samples': len(points), 'min_area_ratio_to_baseline': float(ratio.min()),
                   'max_area_ratio_to_baseline': float(ratio.max()), 'flipped_samples': int((ratio <= 0).sum())}
+        result['samples'] = len(ratio)
         if (ratio <= 0).any() or ratio.min() < 0.15 or ratio.max() > 5:
             raise ValueError(f'Unsafe geographic deformation: {json.dumps(result)}')
         return result

@@ -17,6 +17,23 @@ from .geography import digest
 
 TITLE = "szczerb's Road Trip North America Background Map"
 ARCHIVE_NAME = 'szczerbs-road-trip-north-america-background-map-ats-1.61-r0-experimental.scs'
+_PACKAGE_VERSION = re.compile(r'1\.61-r(?P<revision>\d+)-experimental\Z')
+
+
+def package_version(config):
+    version = config.get('version')
+    match = _PACKAGE_VERSION.fullmatch(version) if isinstance(version, str) else None
+    if match is None:
+        raise ValueError('Unsupported background package version')
+    return version, int(match.group('revision'))
+
+
+def archive_name(config):
+    """Return the versioned archive name; retain the historical r0 constant."""
+    version, revision = package_version(config)
+    if revision == 0:
+        return ARCHIVE_NAME
+    return f'szczerbs-road-trip-north-america-background-map-ats-{version}.scs'
 
 # Numeric interoperability settings observed in ATS 1.61.3.18 stock definitions.
 # Authored serialization below does not copy source comments or definition text.
@@ -118,6 +135,7 @@ def decode_texture(data):
 
 
 def build_resources(image, mod_icon, config, root):
+    version, revision = package_version(config)
     resources = {'def/map_data.sii': map_data(config)}
     # map is the low-resolution whole backdrop; map0..3 are high-resolution tiles.
     # Quadrant contract is independently inspected against installed UI resources.
@@ -138,7 +156,7 @@ def build_resources(image, mod_icon, config, root):
 {{
 mod_package : .szczerb.na_bcg
 {{
- package_version: "1.61-r0-experimental"
+ package_version: {json.dumps(version)}
  display_name: {json.dumps(TITLE)}
  author: "szczerb"
  category[]: "map"
@@ -148,7 +166,7 @@ mod_package : .szczerb.na_bcg
 }}
 }}
 ''').encode()
-    resources['mod_description.txt'] = b'''Original geographic background for ATS 1.61: contiguous USA, Alaska, Canada and Mexico.
+    description = b'''Original geographic background for ATS 1.61: contiguous USA, Alaska, Canada and Mexico.
 Country/province borders, restrained labels, extended bounds and car fuel/rest navigation icons.
 Experimental: runtime rendering and geographic fit await manual testing. No playable roads or map sectors.
 Requires ATS 1.61; no Ford DLC dependency. Map expansions keep their own requirements.
@@ -161,7 +179,7 @@ Licenses and data attribution are included. No diagnostics or game/map assets in
 '''
     resources['LICENSE.txt'] = (root/'LICENSE').read_bytes()
     resources['FONT-LICENSE.txt'] = (root/'assets/background-map/FONT-LICENSE.txt').read_bytes()
-    resources['DATA-NOTICE.txt'] = b'''Made with Natural Earth. Geographic source datasets are public domain:
+    notice = b'''Made with Natural Earth. Geographic source datasets are public domain:
 https://www.naturalearthdata.com/about/terms-of-use/
 50m countries 5.1.1; 10m states/provinces 5.1.1; 10m internal boundaries 5.1.0;
 50m lakes 5.0.0; 10m populated places 5.1.2.
@@ -172,6 +190,37 @@ DejaVu Sans text is rendered into images; no font file is bundled. Its notice is
 No CairamR/CAIRAM, SCS or third-party map artwork or definition files are copied into this package.
 Names of games and maps identify compatibility and do not imply endorsement.
 '''
+    if revision > 0:
+        text = notice.decode()
+        country_layer = config.get('country_layer')
+        lake_layer = config.get('lake_layer')
+        if isinstance(country_layer, str) and country_layer.startswith('ne_10m_'):
+            text = text.replace('50m countries 5.1.1', '10m countries 5.1.1')
+        if isinstance(lake_layer, str) and lake_layer.startswith('ne_10m_'):
+            text = text.replace('50m lakes 5.0.0', '10m lakes 5.0.0')
+        if 'NRCan-CGNDB' in config.get('geographic_reference_sources',[]):
+            text += ('\nSeven geographic calibration references: Natural Resources Canada, Canadian Geographical Names Database.\n'
+                     'Contains information licensed under the Open Government Licence – Canada.\n'
+                     'https://open.canada.ca/en/open-government-licence-canada\n')
+        if 'USGS-GNIS' in config.get('geographic_reference_sources',[]):
+            text += ('Two geographic calibration references: U.S. Geological Survey, Geographic Names Information System,\n'
+                     'public-domain data retrieved from the official Alaska Department of Fish and Game GNIS mirror.\n'
+                     'No official status or endorsement is implied. Reference IDs and retrieval provenance accompany the generator source.\n')
+        notice = text.encode()
+    resources['DATA-NOTICE.txt'] = notice
+    if revision > 0:
+        description = b'''Original geographic background for ATS 1.61: contiguous USA, Alaska, Canada and Mexico.
+Finer geographic detail, regional corrections and a closer shared far-zoom setting.
+Experimental: runtime rendering, geographic fit and zoom behavior await manual testing. No playable roads or map sectors.
+Requires ATS 1.61; no Ford DLC dependency. Map expansions keep their own requirements.
+HIGH priority: place above ALL map/background/map-data overrides, including Reforma OtherMaps Patch,
+ProMods definitions and Reforma ProMods Background Fix. Keep map sources/fixes in their existing order below.
+Disable the former North America Background Map 5.3, every N1/N2 overlay and other background maps.
+Replaces the geographic background and N2 presentation fix; retain your separate fuel/rest/courier/tank mods.
+Made with Natural Earth public-domain data. Original artwork/definitions: AGPL-3.0-only, szczerb, 2026.
+Licenses and data attribution are included. No diagnostics or game/map assets included.
+'''
+    resources['mod_description.txt'] = description
     return resources
 
 
@@ -190,6 +239,7 @@ def write_package(path, resources):
 
 
 def validate_package(path, config):
+    version, _revision = package_version(config)
     expected = {'def/map_data.sii','manifest.sii','mod_description.txt','mod_icon.jpg',
                 'LICENSE.txt','FONT-LICENSE.txt','DATA-NOTICE.txt'}
     expected |= {f'material/ui/map/{name}.{ext}' for name in ('map','map0','map1','map2','map3')
@@ -222,7 +272,7 @@ def validate_package(path, config):
         if (manifest.attribute_errors or manifest.values('dlc_dependencies')
                 or manifest.one('display_name') != TITLE
                 or manifest.one('author') != 'szczerb'
-                or manifest.one('package_version') != '1.61-r0-experimental'
+                or manifest.one('package_version') != version
                 or manifest.values('compatible_versions') != ('1.61.*',)):
             raise ValueError('Metadata/dependency mismatch')
         if data['def/map_data.sii'] != map_data(config):

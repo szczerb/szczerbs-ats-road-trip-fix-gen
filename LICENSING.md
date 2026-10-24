@@ -21,7 +21,7 @@ You should have received a copy of the GNU Affero General Public License along w
 
 ## Original background output
 
-The original North America background is rendered from public-domain Natural Earth data rather than copied map/game artwork. Its project-authored definitions, cartographic composition and icon use AGPL-3.0-only, with separate geographic/font notices. The [build guide](docs/examples/north-america-background/README.md) identifies preferred modification sources and pinned inputs. This specific original output scope does not relicense other generated game/map patches.
+The original North America background is rendered from public-domain Natural Earth data rather than copied map/game artwork. Its project-authored definitions, cartographic composition and icon use AGPL-3.0-only, with separate geographic/font notices. R1 also uses seven NRCan/CGNDB coordinate facts under Open Government Licence–Canada and two public-domain USGS/GNIS facts; their attribution accompanies the package and versioned source. The [build guide](docs/examples/north-america-background/README.md) identifies preferred modification sources and pinned inputs. This specific original output scope does not relicense other generated game/map patches.
 
 ## Contributions and later licensing
 

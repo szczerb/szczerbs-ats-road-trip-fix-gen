@@ -19,3 +19,5 @@ Use the inspected DX10 BGRA8 sRGB layout and column-major tile order (northwest,
 The background must win both definitions and materials above OtherMaps, Reforma and ProMods resources. It replaces older backgrounds/N1/N2, while source-relative gameplay fixes keep their existing order. The background supplies geography, not playable roads or eligibility changes.
 
 The authored code/art/configuration uses AGPL-3.0-only; public-domain data and DejaVu font terms remain separately recorded. No third-party background or game image is redistributed. The generated raster has a finite resolution; local map distortion, city-region centroids and unmeasured eastern/northern locations limit fit claims. Static checks cannot establish UI camera mapping, GPU rendering, filter behavior or runtime acceptance. The user performs the in-game test. [TASK-0048](../../tasks/done/TASK-0048-build-original-north-america-background.md).
+
+**Subsequent refinement — 2026-10-24:** [ADR-0026](ADR-0026-bound-regional-background-corrections.md) retains the original affine and adds bounded regional corrections/finer shorelines for reported defects.

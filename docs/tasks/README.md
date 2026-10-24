@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0049: Correct background alignment and job-market zoom](active/TASK-0049-correct-background-alignment-and-job-market-zoom.md) — r0 runtime feedback accepted; investigate fixed market zoom and coast/lake placement while preserving confirmed navigation icons.
+
 
 
 

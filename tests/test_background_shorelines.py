@@ -1,0 +1,75 @@
+"""Regressions for finer shoreline data and lake-island preservation."""
+from types import SimpleNamespace
+from pathlib import Path
+
+import pytest
+pytest.importorskip('numpy')
+pytest.importorskip('PIL')
+pytest.importorskip('pyproj')
+pytest.importorskip('scipy')
+pytest.importorskip('shapefile')
+import numpy as np
+from PIL import ImageFont
+from ats_road_trip.background import render as module
+
+
+def test_selected_layers_preserve_land_inside_a_lake(monkeypatch):
+    # Outer rings clockwise, inner rings counterclockwise, as in source shapefiles.
+    country=SimpleNamespace(parts=[0],points=[(0,0),(0,100),(100,100),(100,0),(0,0)],bbox=[0,0,100,100])
+    lake=SimpleNamespace(parts=[0,5],points=[(20,20),(20,80),(80,80),(80,20),(20,20),
+        (40,40),(60,40),(60,60),(40,60),(40,40)],bbox=[20,20,80,80])
+    country.points=[(x-100,y) for x,y in country.points]
+    country.bbox=[-100,0,0,100]
+    lake.points=[(x-100,y) for x,y in lake.points]
+    lake.bbox=[-80,20,-20,80]
+    seen=[]
+    def features(path):
+        seen.append(path)
+        if path=='countries10':return iter([(country,{'ADM0_A3':'USA'})])
+        if path=='lakes10':return iter([(lake,{})])
+        return iter([])
+    monkeypatch.setattr(module,'features',features)
+    font=ImageFont.load_default()
+    monkeypatch.setattr(module.ImageFont,'truetype',lambda *a,**k:font)
+    config=dict(texture_size=100,world_bounds=[-100,0,0,100],geographic_extent=[-100,0,0,100],
+        country_layer='ne_10m_admin_0_countries',lake_layer='ne_10m_lakes',preserve_lake_islands=True,
+        palette=dict(water='#0000ff',land='#00ff00',USA='#00ff00',coast='#ffffff',province_border='#ffffff'),
+        label_size=10,country_label_size=10,country_labels=[],suppress_labels=[],label_overrides={})
+    image,_=module.render(config,{'ne_10m_admin_0_countries':'countries10','ne_10m_lakes':'lakes10',
+        'ne_10m_admin_1_states_provinces':'states','ne_10m_admin_1_states_provinces_lines':'lines'},
+        lambda p:np.asarray(p),Path('unused.ttf'))
+    assert image.getpixel((10,50))==(0,255,0)
+    assert image.getpixel((30,50))==(0,0,255)
+    assert image.getpixel((50,50))==(0,255,0)
+    assert 'countries10' in seen and 'lakes10' in seen
+
+
+def test_local_corrections_retain_baseline_and_do_not_fit_check_points():
+    import json
+    from copy import deepcopy
+    from ats_road_trip.background.geography import Calibration
+    root=Path(__file__).resolve().parents[1]/'docs/examples/north-america-background'
+    old_config=json.loads((root/'config.json').read_text())
+    old_anchors=json.loads((root/'anchors.json').read_text())
+    config=json.loads((root/'r1/config.json').read_text())
+    anchors=json.loads((root/'r1/anchors.json').read_text())
+    original=Calibration(old_config,old_anchors)
+    current=Calibration(config,anchors)
+    assert np.array_equal(current.affine,original.affine)
+    far=[[-170,70],[-65,30],[-100,25]]
+    assert np.array_equal(current(far),original(far))
+    controls=[p for p in anchors if p['name'] in config['local_reference_names']]
+    expected=[[p['x'],p['z']] for p in controls]
+    current_errors=np.linalg.norm(current([[p['lon'],p['lat']] for p in controls])-expected,axis=1)
+    original_errors=np.linalg.norm(original([[p['lon'],p['lat']] for p in controls])-expected,axis=1)
+    assert np.sqrt(np.mean(current_errors**2)) < np.sqrt(np.mean(original_errors**2))*0.4
+    assert current_errors.max()<2000
+    changed=deepcopy(anchors)
+    next(p for p in changed if p['role']=='check')['x']+=10000
+    assert np.array_equal(current(far),Calibration(config,changed)(far))
+    jacobian=current.jacobian_report(config['geographic_extent'])
+    assert jacobian['samples']>30000 and jacobian['flipped_samples']==0
+    assert config['zoom_uplift'][:7]==old_config['zoom_uplift'][:7]
+    assert config['zoom_uplift'][7]*1.2==old_config['zoom_uplift'][7]
+    for key in ('palette','map_items_flags','icon_size','city_icon_size','company_icon_size','world_bounds'):
+        assert config[key]==old_config[key]

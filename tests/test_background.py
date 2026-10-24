@@ -18,7 +18,8 @@ from PIL import Image, ImageDraw
 
 from ats_road_trip.background.geography import Calibration, source_files
 from ats_road_trip.background.resources import (
-    build_resources, decode_texture, map_data, validate_package, write_package,
+    ARCHIVE_NAME, archive_name, build_resources, decode_texture, map_data,
+    validate_package, write_package,
 )
 from ats_road_trip.background.__main__ import validate_inputs
 from ats_road_trip.sii import parse_units
@@ -99,6 +100,39 @@ def test_package_is_standalone_reproducible_and_quadrants_are_column_major(tmp_p
         assert b'dlc_dependencies' not in manifest
         assert b'@include' not in z.read('def/map_data.sii')
         assert not any('report' in n or 'local_outputs' in n for n in z.namelist())
+
+
+def test_package_revision_controls_filename_metadata_and_data_notice(tmp_path,config):
+    assert archive_name(config)==ARCHIVE_NAME
+    assert ARCHIVE_NAME.endswith('ats-1.61-r0-experimental.scs')
+    r1=deepcopy(config)
+    r1['version']='1.61-r1-experimental'
+    r1['country_layer']='ne_10m_admin_0_countries'
+    r1['lake_layer']='ne_10m_lakes'
+    assert archive_name(r1)=='szczerbs-road-trip-north-america-background-map-ats-1.61-r1-experimental.scs'
+    resources=build_resources(Image.new('RGB',(64,64),'teal'),Image.new('RGB',(276,162),'navy'),r1,ROOT)
+    manifest=parse_units(resources['manifest.sii'].decode())[0]
+    assert manifest.one('package_version')=='1.61-r1-experimental'
+    notice=resources['DATA-NOTICE.txt'].decode()
+    assert '10m countries 5.1.1' in notice and '10m lakes 5.0.0' in notice
+    description=resources['mod_description.txt'].decode()
+    assert all(term in description for term in ('Finer geographic detail','regional corrections',
+                                                'closer shared far-zoom','await manual testing'))
+    package=tmp_path/archive_name(r1)
+    write_package(package,resources)
+    validate_package(package,r1)
+    with pytest.raises(ValueError,match='Metadata/dependency mismatch'):
+        validate_package(package,config)
+    invalid=deepcopy(r1)
+    invalid['version']='1.62-r1-experimental'
+    with pytest.raises(ValueError,match='Unsupported background package version'):
+        archive_name(invalid)
+    r2=deepcopy(r1)
+    r2['version']='1.61-r2-experimental'
+    r2_resources=build_resources(Image.new('RGB',(64,64),'teal'),Image.new('RGB',(276,162),'navy'),r2,ROOT)
+    r2_description=r2_resources['mod_description.txt'].decode()
+    assert 'Finer geographic detail, regional corrections and a closer shared far-zoom setting.' in r2_description
+    assert 'than r0' not in r2_description
 
 
 def test_missing_texture_and_changed_unrelated_mask_rejected(tmp_path,config):

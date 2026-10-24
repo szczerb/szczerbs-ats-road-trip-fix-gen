@@ -54,8 +54,8 @@ def render(config, sources, calibration, font_path: Path):
     draw = ImageDraw.Draw(image)
     counts = {'countries': 0, 'admin1': 0, 'lakes': 0, 'labels': 0}
     borders = []
-    # Coarse coastlines, fine internal boundaries: reduce background clutter.
-    for shape, attr in features(sources['ne_50m_admin_0_countries']):
+    # R0 defaults remain reproducible; later revisions pin finer shoreline data.
+    for shape, attr in features(sources[config.get('country_layer','ne_50m_admin_0_countries')]):
         if not _in_scope(shape, config['geographic_extent']):
             continue
         country = attr['ADM0_A3']
@@ -85,13 +85,37 @@ def render(config, sources, calibration, font_path: Path):
         if name:
             labels.append((name, attr['longitude'], attr['latitude'], attr['adm0_a3']))
         counts['admin1'] += 1
-    for shape, attr in features(sources['ne_50m_lakes']):
+    for shape, attr in features(sources[config.get('lake_layer','ne_50m_lakes')]):
         if not _in_scope(shape, config['geographic_extent']):
             continue
+        # Preserve lake islands using a mask over the existing country fill.
+        # This is opt-in so the historical r0 remains byte reproducible.
+        preserve_islands = config.get('preserve_lake_islands',False)
+        lake_rings = []
         for points in rings(shape):
             for polygon in _ring_pixels(points, calibration, canvas):
-                draw.polygon([tuple(p) for p in polygon], fill=palette['water'])
-                draw.line([tuple(p) for p in polygon], fill=palette['coast'], width=2, joint='curve')
+                coords = [tuple(p) for p in polygon]
+                if preserve_islands:
+                    signed = np.sum(points[:-1,0]*points[1:,1]-points[1:,0]*points[:-1,1])
+                    lake_rings.append((coords,signed<0))
+                else:
+                    draw.polygon(coords, fill=palette['water'])
+                    draw.line(coords, fill=palette['coast'], width=2, joint='curve')
+        if lake_rings:
+            # Bound each mask to its feature, rather than clearing/pasting a full
+            # 8192-square image hundreds of times. Holes reveal existing land;
+            # separate water features already painted underneath stay intact.
+            all_points = np.array([p for coords,_ in lake_rings for p in coords])
+            left,top = np.maximum(0,np.floor(all_points.min(axis=0))).astype(int)
+            right,bottom = np.minimum(size,np.ceil(all_points.max(axis=0))+1).astype(int)
+            if right>left and bottom>top:
+                mask = Image.new('L',(right-left,bottom-top))
+                mask_draw = ImageDraw.Draw(mask)
+                for coords,outer in lake_rings:
+                    mask_draw.polygon([(x-left,y-top) for x,y in coords],fill=255 if outer else 0)
+                image.paste(palette['water'],(left,top,right,bottom),mask)
+            for coords,_ in lake_rings:
+                draw.line(coords,fill=palette['coast'],width=2,joint='curve')
         counts['lakes'] += 1
     for polygon in borders:
         draw.line([tuple(p) for p in polygon], fill=palette['coast'], width=3, joint='curve')

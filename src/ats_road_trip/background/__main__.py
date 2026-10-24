@@ -15,7 +15,7 @@ import numpy as np
 
 from .geography import Calibration, digest, source_files
 from .render import render, icon, previews
-from .resources import TITLE, ARCHIVE_NAME, build_resources, validate_package, write_package, decode_texture
+from .resources import TITLE, archive_name, build_resources, validate_package, write_package, decode_texture
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_CONFIG = ROOT/'docs/examples/north-america-background/config.json'
@@ -32,12 +32,18 @@ def _finite_tree(value):
 def validate_inputs(config, anchors):
     _finite_tree(config)
     _finite_tree(anchors)
-    if config['schema_version'] != 1 or config['title'] != TITLE or config['version'] != '1.61-r0-experimental':
+    if config['schema_version'] != 1 or config['title'] != TITLE or not isinstance(config['version'],str) or not re.fullmatch(r'1\.61-r\d+-experimental',config['version']):
         raise ValueError('Unsupported background identity/schema')
     if config['author'] != 'szczerb' or not re.fullmatch(r'1\.61(?:\.\d+)*', config['target_game']):
         raise ValueError('Unsupported author/game')
     if config['game_scale'] != 20:
         raise ValueError('This UI mapping requires the inspected ATS map scale 20')
+    for key, allowed in (('country_layer',('ne_50m_admin_0_countries','ne_10m_admin_0_countries')),
+                         ('lake_layer',('ne_50m_lakes','ne_10m_lakes'))):
+        if key in config and config[key] not in allowed:
+            raise ValueError('Unsupported geographic layer')
+    if 'preserve_lake_islands' in config and not isinstance(config['preserve_lake_islands'],bool):
+        raise ValueError('Lake-island policy must be boolean')
     for key in ('texture_size','overview_size'):
         v = config[key]
         if not isinstance(v,int) or isinstance(v,bool) or v < 32 or v > 16384 or v & (v-1):
@@ -122,7 +128,7 @@ def main(argv=None):
     mod_icon = icon(image,args.font)
     mod_icon.save(work/'icon.png')
     resources = build_resources(image,mod_icon,config,ROOT)
-    package = generated/ARCHIVE_NAME
+    package = generated/archive_name(config)
     sha = write_package(package,resources)
     audit = validate_package(package,config)
     # Exercise actual encoded DDS tiles, including their geographic quadrant order.
