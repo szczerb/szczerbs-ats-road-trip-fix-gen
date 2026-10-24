@@ -1,5 +1,7 @@
 # Realistic map replacements — ATS 1.61 r10
 
+**Dawson follow-up — 2026-10-24:** the user rejected the single tiny r10 Dawson bay. [A localized Alaska-only r11 replacement](DAWSON_TWO_REVIEWED_PARKING_AREAS_1_61_R11.md) now supplies two user-reviewed broad areas; replace only Alaska r10 and retain the other seven packages. Static checks pass; runtime/user acceptance is pending before wider heuristic changes. Historical r10 artifacts and counts below remain unchanged.
+
 **Observed locally — delivered and statically verified, 2026-10-21:** complete original-stack generation on `codex/gas-station-car-rest-research` produces seven source-relative r9 replacements and a required Base Game and DLC companion. Main remains unchanged. [TASK-0047](../tasks/done/TASK-0047-deliver-realistic-map-replacements.md), [ADR-0024](../architecture/decisions/ADR-0024-compose-complete-realistic-map-replacements.md).
 
 ## Local delivery

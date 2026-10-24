@@ -4,6 +4,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -11,6 +12,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0051: Two reviewed Dawson parking areas](done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) — full Alaska r11 replacement with two broad contact-enabled areas; 516 tests and 29 independent archive checks. Runtime/user acceptance pending.
 
 - [TASK-0043: Polish navigation-fix metadata and artwork](done/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — N2 r3 metadata, user-directed A2 art and report-free local testing copy, 508 tests, exact accepted payload/N1 preservation; third-party redistribution permission remains unestablished.
 

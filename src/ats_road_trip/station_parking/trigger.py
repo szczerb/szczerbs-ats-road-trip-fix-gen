@@ -110,15 +110,24 @@ def _validate_existing_layout(data: bytes, header: tuple[int, ...]) -> None:
     inspect_rest_triggers(data)
 
 
-def append_car_parking_polygon(data: bytes, vertices: list[tuple[float, float, float]]) -> tuple[bytes, dict]:
+def append_car_parking_polygon(
+    data: bytes, vertices: list[tuple[float, float, float]], *,
+    partial_activation: bool = False,
+) -> tuple[bytes, dict]:
     """Append one native v25 car-only rest polygon to a station descriptor.
 
     ``vertices`` must be the explicitly reviewed station-local polygon in PPD
     coordinates and ordered around its perimeter. The original bytes outside
     the header and insertion point are preserved. Native parameters are pinned
     to the inspected ATS 1.61 ``base.scs`` Chemron ``hud_parking`` PPD template:
-    range 3, reset delay 0, reset distance 0, flags 0.
+    range 3, reset delay 0, reset distance 0, flags 0. An explicit
+    ``partial_activation=True`` sets only the new polygon's flag bit 0x4,
+    enabling contact activation according to the engine parameter. It does not
+    establish the runtime vehicle shape, fatigue behavior or marker count.
     """
+    if type(partial_activation) is not bool:
+        raise ValueError('partial_activation must be a boolean')
+    flags = 4 if partial_activation else 0
     try:
         info = inspect_ppd(data)
     except (struct.error, TypeError) as exc:
@@ -141,7 +150,7 @@ def append_car_parking_polygon(data: bytes, vertices: list[tuple[float, float, f
     records = []
     for i, (x, y, z) in enumerate(points):
         records.append(_TRIGGER.pack(
-            group_id, _CAR, 3.0, 0.0, 0.0, 0, x, y, z,
+            group_id, _CAR, 3.0, 0.0, 0.0, flags, x, y, z,
             first_index + (i - 1) % len(points),
             first_index + (i + 1) % len(points),
         ))
@@ -167,7 +176,7 @@ def append_car_parking_polygon(data: bytes, vertices: list[tuple[float, float, f
         'action': 'parking_car',
         'group_id': group_id,
         'vertex_count': len(points),
-        'parameters': {'range': 3.0, 'reset_delay': 0.0, 'reset_distance': 0.0, 'flags': 0},
+        'parameters': {'range': 3.0, 'reset_delay': 0.0, 'reset_distance': 0.0, 'flags': flags},
         'source_trigger_records_preserved': True,
         'other_descriptor_sections_preserved': True,
         'selection': 'Caller-supplied explicit station only; no proximity or density inference',
