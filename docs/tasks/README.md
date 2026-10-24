@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0051: Recalibrate background to roads/shores and deliver r2](active/TASK-0051-recalibrate-background-to-roads-and-shores.md) — active autonomous implementation goal, independent native/geographic landmarks, stronger job-market scale and verified reproducible package.
 
 
 
@@ -16,6 +15,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0051: Recalibrate background to roads/shores and deliver r2](done/TASK-0051-recalibrate-background-to-roads-and-shores.md) — road/ground field, stronger shared market zoom, actual native comparisons with explicit regressions, 305 tests, independent audits and exact corresponding-source rebuild; runtime acceptance pending.
 
 - [TASK-0050: Diagnose common background geometry mismatch](done/TASK-0050-diagnose-common-background-geometry-mismatch.md) — actual texture/road registration verifies sampled mapping; center-based calibration is insufficient, tested global corrections trade regions off; no verified replacement transform or practical repair yet.
 

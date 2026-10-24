@@ -1,7 +1,7 @@
 ---
 id: TASK-0051
 title: Recalibrate North America background to roads and shores and deliver r2
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0050]
@@ -51,7 +51,9 @@ In progress. Goal file read at start; branch `codex/north-america-background`, c
 
 **Delegation and verification:** Luna/high `route_landmarks` supplied effective named-road/native geometry and expanded regional regression endpoints; Luna/high `water_landmarks` supplied typed physical-ground observations and independent final inverse/Jacobian/holdout-bias audit; Luna/medium `zoom_and_review` measured fixed-symbol spacing, audited r2 config, authored its reproduction README and independently audited the final archive. GPT-6 Sol/high `shore_geometry` resolved road graph/bridge correspondences and independently audited physical bridge depictions. Each worked in assigned ignored scratch; main owns coefficients, implementation acceptance and tracked integration. Two delegated interpretation errors (native flag offsets and an alleged coordinate-slot defect) were independently corrected/retracted rather than adopted.
 
-**Observed locally:** 576 route-fit/135 local route-check observations; all 962 ground facts fit, never held out. Road-check RMS 699.1→565.6, with 49/135 worsening and interpolation/normal-only limitations; withheld Chicago junctions and Coronado diagnostic improve. Remaining Gulf/Canadian/north-Baja route/bridge regressions are explicit in the handoff. Final SCS built under `local_outputs/generated/2026-10-24_18-30-20/`, SHA `58cbfe4047113308bb82a0e5ed4d15e298515f22916bab8eb8b1fc403c521604`. Independent archive check passes; map-data bytes differ only at zoom tier 7 (100000→60000), all resource/mask/texture contracts pass. Full suite: **305 passed**. R0/r1 re-rendered with current code to their original exact package hashes. Source-bundle/repeat verification and final delivery remain to complete this task.
+**Observed locally:** 576 route-fit/135 local route-check observations; all 962 ground facts fit, never held out. Road-check RMS 699.1→565.6, with 49/135 worsening and interpolation/normal-only limitations; withheld Chicago junctions and Coronado diagnostic improve. Remaining Gulf/Canadian/north-Baja route/bridge regressions are explicit in the handoff. Final SCS built under `local_outputs/generated/2026-10-24_18-30-20/`, SHA `58cbfe4047113308bb82a0e5ed4d15e298515f22916bab8eb8b1fc403c521604`. Independent archive check passes; map-data bytes differ only at zoom tier 7 (100000→60000), all resource/mask/texture contracts pass. Full suite: **305 passed**. R0/r1 re-rendered with current code to their original exact package hashes. This was the implementation milestone; final verification follows.
+
+**Observed locally — final delivery verification:** source commit `18e5f13c07d976fff4a7d6f2a91275a249a5b825` archived into the corresponding r2 source ZIP (SHA `caae49d67707abee84f62c650e9fb0359f90d0f1fdf9709327ef9d8e593c9dd2`). The 304-member archive excludes native assets and rebuilt in a separate source root to the exact authoritative SCS SHA above; code/config/source pins match production. No installed game input is needed for rendering. Final native comparison gallery includes all reported primary regions plus exact-window Mobridge, northern Pacific, Vancouver and Alaska regressions. Main caught a delegate's preliminary inverted water mask and required recomputation before using the final report; endpoint clipping and the production atlas are confirmed. Mild Mobridge/northern-Pacific shallow regressions, Vancouver mixed checks, unchanged sampled Alaska thresholds and support identity limits are recorded rather than hidden. New-document links and diff whitespace checks pass. Delivery scope is a verified experimental testing version, not universal geographic repair or runtime acceptance. No external blocker or game/profile/live-install/push action occurred.
 
 ## Links
 

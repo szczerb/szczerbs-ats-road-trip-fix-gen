@@ -8,10 +8,11 @@
 - SHA-256: `58cbfe4047113308bb82a0e5ed4d15e298515f22916bab8eb8b1fc403c521604`.
 - [Native-road before/after gallery](../../local_outputs/generated/2026-10-24_18-30-20/previews/native-comparisons/index.html), [overall and regional previews](../../local_outputs/generated/2026-10-24_18-30-20/previews/index.html), [quantitative geometry report](../../local_outputs/generated/2026-10-24_18-30-20/geometry-validation.json).
 - [Reproduction commands and editable source](../examples/north-america-background/r2/README.md); versioned [calibration provenance](../examples/north-america-background/r2/calibration-provenance.json).
+- [Corresponding source ZIP](../../local_outputs/generated/2026-10-24_18-30-20/szczerbs-road-trip-north-america-background-1.61-r2-source.zip), implementation commit `18e5f13c07d976fff4a7d6f2a91275a249a5b825`, SHA-256 `caae49d67707abee84f62c650e9fb0359f90d0f1fdf9709327ef9d8e593c9dd2`.
 
 Title/author remain **szczerb's Road Trip North America Background Map**, **szczerb**; version **1.61-r2-experimental**, ATS **1.61**, no Ford dependency. Enable **one** background: replace r0/r1 with r2. Put it above **all** background/map-data overrides, including Reforma OtherMaps Patch, ProMods definitions and Reforma ProMods Background Fix. Keep each separate fuel/rest/source patch in its existing source-relative order below it. Disable the former North America Background 5.3, all N1/N2 overlays and other background maps. Separate fuel/rest/courier/tank mods retain their roles. [Original detailed order](NORTH_AMERICA_BACKGROUND_1_61_R0.md#installation-and-priority).
 
-The original r0/r1 archives remain unchanged fallbacks. Other r2 build directories are repeat/source-reproduction evidence, not additional mods to enable. The corresponding source ZIP is source, not a second mod; its implementation commit/hash and independent rebuild are recorded in the final delivery receipt below.
+The original r0/r1 archives remain unchanged fallbacks. Other r2 build directories are repeat/source-reproduction evidence, not additional mods to enable. The corresponding source ZIP is source, not a second mod. It contains the committed generator/configuration, excludes native assets, and rebuilds independently to the exact SCS hash above.
 
 ## Cause and implemented correction
 
@@ -51,6 +52,18 @@ All distances below are **game-world units**, not real-world meters. Native endp
 
 The Galveston causeway and an LA port bridge candidate remain rendered over land in both versions. Their legitimate channels were not fit as universal road-on-land targets; less aggregate water overlap does **not** establish correct harbor/bridge geography. The LA bridge identity is plausible from route/location, not proven by its generic model name. Keep these as known unresolved defects. Generalized coast/lake data, urban expansion, limited landmarks and normal-only fitting constrain further accuracy.
 
+Additional exact-window native endpoint regression checks ([data](../../local_outputs/generated/2026-10-24_18-30-20/regional-regression.json), panels in the gallery):
+
+| Region | Samples | Water >50 units, r1 → r2 | Water >500 units, r1 → r2 |
+| --- | --- | --- | --- |
+| mobridge-oahe | 374 | 0.00% → 1.34% | 0.00% → 0.00% |
+| vancouver-island | 2064 | 9.74% → 8.96% | 2.76% → 1.60% |
+| alaska-panhandle | 102 | 0.00% → 0.00% | 0.00% → 0.00% |
+| alaska-yukon | 752 | 0.40% → 0.40% | 0.00% → 0.00% |
+| pacific-sf-or-wa | 9885 | 1.31% → 1.61% | 0.08% → 0.09% |
+
+Mobridge's shallow increase is five endpoints; it is not a proven lake/road repair. Northern Pacific capped mean water depth rises only 3.00→3.29 units, but its shallow fraction regression is explicit. Vancouver improves in this aggregate despite its two route-check regression above. The sampled Alaska thresholds do not regress; 10 of 12 historical Alaska reference mappings remain exactly identical, Ketchikan shifts 115.90 units and Petersburg 1.46 ([reference mapping audit](../../local_outputs/generated/2026-10-24_18-30-20/alaska-reference-regression.json)). Point checks do not establish every shoreline or rendered polygon.
+
 ## Offline verification
 
 - **305 tests passed**, including corrected native header-vs-road flags, compact support identity, field composition/schema, sampled fold rejection and revision metadata.
@@ -58,9 +71,9 @@ The Galveston causeway and an LA port bridge candidate remain rendered over land
 - Historic CityArea references remain a secondary regression check: 229 excluded-reference RMS **1604.6 → 1531.7**, max unchanged **6381.0**. These approximate place references do not prove road fitting.
 - Independent archive audit: **22 members**, closed MAT→TOBJ→DDS graph, no includes/sectors/diagnostics/protected source assets/local paths, no Ford dependency. Overview 2048², four 4096² opaque BGRA8 sRGB one-mip tiles; all quadrant/overview pixels match the production raster.
 - Exact `def/map_data.sii` difference from r1 is only `zoom_uplift[7]`. MAT/TOBJ pairs, license files, bounds, masks, marker sizes, route colors/costs and navigation inputs are unchanged. User-confirmed car fuel/parking icon presentation is preserved by settings; no new in-game check is claimed.
-- Current code reproduces r0 and r1 to their original exact SHA-256 values. Production r2 pixels equal the selected/audited candidate atlas. Corresponding-source repeat-build verification is recorded in the final receipt.
+- Current code reproduces r0 and r1 to their original exact SHA-256 values. Production r2 pixels equal the selected/audited candidate atlas. The extracted 304-member source ZIP rebuilt in a separate source root to the exact r2 SCS hash, using only pinned public data/font inputs; no installed game resources were needed. [Source-bundle reproduction receipt](../../local_outputs/generated/2026-10-24_18-30-20/source-bundle-reproduction.json).
 
-[Build receipt](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/receipt.json), [package audit](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/audit.json), [independent calibration audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-calibration-audit.md), [independent bridge audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-bridge-audit.md). The native-road gallery is local diagnostic evidence; neither it nor extracted native resources enters the mod/source ZIP.
+[Build receipt](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/receipt.json), [package audit](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/audit.json), [independent calibration audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-calibration-audit.md), [independent bridge audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-bridge-audit.md), [independent package audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-package-audit.md). The native-road gallery is local diagnostic evidence; neither it nor extracted native resources enters the mod/source ZIP.
 
 ## Manual trial
 
