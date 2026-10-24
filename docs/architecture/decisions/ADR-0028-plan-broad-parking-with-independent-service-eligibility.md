@@ -1,4 +1,4 @@
-# ADR-0025: Plan broad parking regions with independent service eligibility
+# ADR-0028: Plan broad parking regions with independent service eligibility
 
 - Status: accepted
 - Date: 2026-10-24
@@ -28,6 +28,6 @@ Retain Dawson's exact accepted two rectangles as a source-pinned reviewed overri
 
 ## Consequences
 
-The next complete set is source-stack-specific and consists of eight full replacements, with native improvements OFF. Existing native facilities, truck/bus triggers, fuel IDs/private lineage, country price provenance and winning-provider composition remain protected. N2 r3 remains independent and above every listed map/resource/replacement.
+The next complete set is source-stack-specific and consists of eight full replacements, with native improvements OFF. Existing native facilities, truck/bus triggers, fuel IDs/private lineage, country price provenance and winning-provider composition remain protected. Background/navigation packages are outside this goal under the user’s subsequent explicit scope clarification. The parking/fueling outputs introduce no presentation resources.
 
 Coverage must distinguish original support states, generated station counts and logical area counts, separately from fuel interactions and policy exclusions. Unsupported families and ambiguous layouts remain explicit skips. Full replacement packaging is not universal geometry support. Static checks establish emitted bytes and structural preservation, not runtime vehicle shape, fatigue, billing or save behavior. Dawson retains its actual user-accepted scope; other new regions await ordinary-play feedback.
