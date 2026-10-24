@@ -28,3 +28,12 @@ class RealisticPresetTests(unittest.TestCase):
                        {'enabled':(Processor.REST,),'parking_strategy':('truck_areas','station_bays')}):
             with self.assertRaises(ValueError):ProcessorConfig(**kwargs)
         with self.assertRaises(ValueError):ProcessorConfig.from_preset('imaginary')
+
+    def test_native_improvement_is_default_off_and_requires_station_rest(self):
+        self.assertFalse(ProcessorConfig.from_preset('realistic').improve_existing_car_parking)
+        c=ProcessorConfig.from_preset('realistic',improve_existing_car_parking=True)
+        self.assertTrue(c.improve_existing_car_parking)
+        for kwargs in ({'enabled':['fuel'],'improve_existing_car_parking':True},
+                       {'enabled':['rest'],'parking_strategy':'truck_areas','improve_existing_car_parking':True},
+                       {'enabled':['rest'],'parking_strategy':'station_bays','improve_existing_car_parking':1}):
+            with self.subTest(kwargs=kwargs),self.assertRaises(ValueError):ProcessorConfig(**kwargs)

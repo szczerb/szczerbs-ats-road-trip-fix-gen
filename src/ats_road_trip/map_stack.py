@@ -121,6 +121,7 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
             effective=OverlayResourceStack(raw,staged)
             parking,changes=plan_map_station_parking(effective,map_packages=owners,map_name=name,
                 game_version=game_version,ownership_stack=raw,
+                improve_existing_car_parking=config.improve_existing_car_parking,
                 work_dir=Path(work_dir)/_slug(name)/'parking' if work_dir else None)
             if parking.get('coverage',{}).get('blockers'):
                 raise ValueError(f'{name}: dedicated parking returned unsafe output')
@@ -169,7 +170,8 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
         index=_owner_index(raw,path,parts,ranks,creators)
         partitions[index][path]=data
     summary={'preset':config.fuel_selection.mode,'fuel_selection':config.fuel_selection.to_dict(),
-        'parking_strategy':config.parking_strategy.value,'source_reports':reports,
+        'parking_strategy':config.parking_strategy.value,
+        'improve_existing_car_parking':config.improve_existing_car_parking,'source_reports':reports,
         'price_policy':policy_report,'prices':prices,'contexts':contexts,
         'resource_count':len(staged),'partition_resources':{
             part['map_name']:sorted(values) for part,values in zip(parts,partitions)},
@@ -184,15 +186,16 @@ def _package_description(part, parts, workflow, preset, revision):
     name=part['map_name'];realistic=CompatibilityPreset(preset) is CompatibilityPreset.REALISTIC
     source=('Installed original game/map DLC, ATS '+workflow['game_version'] if part['base_companion']
             else ', '.join(Path(p).name for p in part['source_packages']))
-    behavior=('Selective public car fueling and dedicated station bays. No generated truck-area car parking or fallback.'
+    behavior=('Selective public car fueling and broad station parking areas. No generated truck-area car parking or fallback.'
               if realistic else 'Broad added car fueling and qualifying truck-area car access under the existing local proximity rule.')
     contribution=('This source replacement changes country petrol prices only; it adds no station or parking geometry.\n'
                   if name=='Reforma OtherMaps Patch' else '')
     lines=[f'{str(preset.value if hasattr(preset,"value") else preset).upper()} r{revision} | {name} | EXPERIMENTAL',
            'Source: '+source+'.',behavior,contribution.rstrip(),
-           'Preserves original car/truck/bus facilities. Unknown fuel sites are provisionally included in realistic mode; unsupported bays are skipped.',
-           'Replace all seven old r9 map fixes with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
-           'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments. Keep N2 unchanged above North America Background Map 5.3.',
+           'Preserves original car/truck/bus facilities. Unknown fuel sites are provisionally included in realistic mode; unsupported parking areas are skipped.',
+           'Native car parking improvements: '+('ON' if workflow.get('improve_existing_car_parking',False) else 'OFF')+'. Parking eligibility never suppresses eligible fueling.',
+           'Replace old r9/r10 map fixes and the Alaska-only Dawson r11 with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
+           'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments. Keep N2 r3 unchanged above EVERY listed map, resource and fix, including OtherMaps.',
            'Keep the separate tank and courier mods unchanged. Prepared for normal career play; existing-save behavior and runtime coverage remain unverified.',
            '', 'Required order, LOWEST to HIGHEST (game/DLC files load automatically):']
     def fix_line(target):
@@ -206,17 +209,19 @@ def _package_description(part, parts, workflow, preset, revision):
         for target in parts[1:]:
             if path in target['source_packages']:lines.append(fix_line(target))
     # Map/resource packages may also define map_data; N2 must win those too.
-    lines.append('N2 NAV PARKING FUEL r2 (independent, unchanged; above every listed source/fix)')
+    lines.append('N2 NAV PARKING FUEL r3 (independent; approved artwork, unchanged gameplay; above every listed source/fix)')
     return '\n'.join(line for line in lines if line is not None)+'\n'
 
 def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None,
-                  generate=False, experimental=False, revision=10,run_id=None):
+                  generate=False, experimental=False, revision=12,run_id=None,
+                  improve_existing_car_parking=False):
     """Mount an explicit original low-to-high stack and produce all replacements."""
     if generate and not experimental:raise ValueError('Generation requires --experimental')
     if type(revision)is not int or revision<10:raise ValueError('Replacement revision must be at least10')
     stamp=run_id or datetime.now(ZoneInfo('Europe/Warsaw')).strftime('%Y-%m-%d_%H-%M-%S')
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}',stamp):raise ValueError('Invalid run timestamp')
-    preset=CompatibilityPreset(preset);config=ProcessorConfig.from_preset(preset)
+    preset=CompatibilityPreset(preset);config=ProcessorConfig.from_preset(preset,
+        improve_existing_car_parking=improve_existing_car_parking)
     work=REPO_ROOT/'local_outputs/work'/stamp/f'{preset.value}-map-stack'
     generated=REPO_ROOT/'local_outputs/generated'/stamp
     if work.exists():raise FileExistsError('Use a new run timestamp')
@@ -260,7 +265,8 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                 'packages_low_to_high':[str(p) for p in paths],
                 'archive_identities':[{'path':str(p),'size':v[0],'mtime_ns':v[1]} for p,v in identities.items()],
                 'directory_snapshots':[{'path':str(p),'sha256':_sha(json.dumps(s).encode()),'files':len(s)} for p,s in snapshots.items()],
-                'parts':parts,'profile_modified':False,'work_dir':str(work)}
+                'parts':parts,'improve_existing_car_parking':config.improve_existing_car_parking,
+                'profile_modified':False,'work_dir':str(work)}
             result={'status':'analyzed','report_path':str(work/'audit.json'),'workflow':workflow,'planner':report,'outputs':[]}
             if generate:
                 for index,(part,resources) in enumerate(zip(parts,values)):
@@ -275,6 +281,7 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                     if isinstance(icon,(str,Path)):icon=Path(icon).read_bytes()
                     embedded={'analysis':'complete_map_stack_replacement','processors_enabled':['fuel','rest'],
                         'preset':preset.value,'parking_strategy':config.parking_strategy.value,
+                        'improve_existing_car_parking':config.improve_existing_car_parking,
                         'map_name':label,'source_packages':part['source_packages'],
                         'source_report':report['source_reports'][index],
                         'prices':report['prices'],'contexts':report['contexts'],

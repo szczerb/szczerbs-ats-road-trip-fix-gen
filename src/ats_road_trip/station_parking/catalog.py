@@ -58,4 +58,18 @@ def load_reviewed_catalog(repo_root=None):
             'policy':{'curb_setback':.15,'prefer_perpendicular':True,
                       'single_painted_bays':True,'require_curb_evidence':True},
         }
+    # Keep the exact accepted Dawson geometry, but bind it to the original
+    # placement/source rather than mounting the historical generated r10/r11.
+    reviewed_path=root/'docs/examples/station-parking-dawson-two-reviewed-areas.json'
+    if reviewed_path.is_file():
+        reviewed=json.loads(reviewed_path.read_text(encoding='utf-8'))
+        pin=json.loads((root/'docs/examples/station-parking-forecourt-tour/P05.json').read_text(encoding='utf-8'))
+        override={'prefab_uid':reviewed['prefab_uid'],'sector':reviewed['sector'],
+                  'source_archive':pin['fingerprints']['source_archive'],
+                  'source_sector':pin['fingerprints']['sector'],
+                  'original_descriptor':pin['fingerprints']['descriptor'],
+                  'descriptor':'prefab/gas/nm_truckstop1_chemron.ppd',
+                  'mesh':reviewed['mesh_sha256'],'areas':deepcopy(reviewed['areas']),
+                  'provenance':'docs/examples/station-parking-dawson-two-reviewed-areas.json; user accepted 2026-10-24; original P05 source pins'}
+        catalog['prefab/gas/nm_truckstop1_chemron.pmd']['policy']['reviewed_areas']=[override]
     return catalog

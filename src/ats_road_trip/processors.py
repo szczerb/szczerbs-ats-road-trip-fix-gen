@@ -46,6 +46,7 @@ class ProcessorConfig:
     mode: ProcessorMode = ProcessorMode.GENERATE
     fuel_selection: FuelSelectionConfig = FuelSelectionConfig()
     parking_strategy: ParkingStrategy | None = None
+    improve_existing_car_parking: bool = False
 
     def __post_init__(self) -> None:
         selected = tuple(Processor(value) for value in self.enabled)
@@ -66,6 +67,10 @@ class ProcessorConfig:
                    ) if self.parking_strategy is None else ParkingStrategy(self.parking_strategy)
         if (Processor.REST in selected) != (parking is not ParkingStrategy.NONE):
             raise ValueError('Select exactly one parking strategy with the rest processor, or none without it')
+        if type(self.improve_existing_car_parking) is not bool:
+            raise ValueError('improve_existing_car_parking must be a boolean')
+        if self.improve_existing_car_parking and parking is not ParkingStrategy.STATION_BAYS:
+            raise ValueError('Improving existing car parking requires rest with station_bays')
         object.__setattr__(self, 'parking_strategy', parking)
         object.__setattr__(self, 'enabled', selected)
         object.__setattr__(self, 'mode', mode)
@@ -161,7 +166,8 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
                 from .station_parking.mapwide import plan_map_station_parking
                 staged = OverlayResourceStack(effective, resources)
                 report, changes = plan_map_station_parking(staged, map_packages={source},
-                    map_name=map_name, ownership_stack=effective)
+                    map_name=map_name, ownership_stack=effective,
+                    improve_existing_car_parking=config.improve_existing_car_parking)
                 # This pipeline emits the authoritative context lineage once,
                 # after fuel and parking transitions have both been recorded.
                 changes={path:data for path,data in changes.items()

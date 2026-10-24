@@ -49,8 +49,15 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     validate_config(config)
     cache={} if planning_cache is None else planning_cache
     policy={} if candidate_policy is None else dict(candidate_policy)
-    if set(policy)-{'curb_setback','prefer_perpendicular','single_painted_bays','require_curb_evidence'}:
+    if set(policy)-{'curb_setback','prefer_perpendicular','single_painted_bays','require_curb_evidence','broad_areas','allow_native_improvement','reviewed_areas','include_unmarked_areas'}:
         raise ValueError('Unknown station candidate policy')
+    broad=policy.get('broad_areas',False)
+    if any(type(policy.get(key,False)) is not bool for key in ('broad_areas','allow_native_improvement','include_unmarked_areas')):
+        raise ValueError('Broad-area and native-improvement policies must be booleans')
+    if broad and config['schema_version']!=2:
+        raise ValueError('Broad parking areas require effective schema-2 model state')
+    if (policy.get('allow_native_improvement') or policy.get('include_unmarked_areas')) and not broad:
+        raise ValueError('Native parking improvement requires broad-area planning')
     if config['game_version']!=game_version:
         raise ValueError('Installed game version differs from reviewed station configuration')
     report={'schema_version':1,'processor':'station_parking','station_id':config['station_id'],
@@ -95,7 +102,12 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
         return blocked('Non-default or additional prefab parts require a separate variant review')
     indexes=cache.setdefault('stack_indexes',{})
     if id(stack) not in indexes:
-        indexes[id(stack)]=(stack,prefab_definitions(stack),_validate_actions(stack))
+        if broad:
+            from .native_support import station_action_state
+            actions=station_action_state(stack)
+        else:
+            actions=_validate_actions(stack)
+        indexes[id(stack)]=(stack,prefab_definitions(stack),actions)
     _,definitions,action_state=indexes[id(stack)]
     entry=definitions.get(prefab.details['model'])
     if entry is None: raise ValueError('Selected prefab has no unique effective definition')
@@ -210,22 +222,71 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                             'fuel_spawn_to_service':{str(k):hex(v) for k,v in fuel_matches.items()}},
                    'geometry':geometry,'original_rest_groups':original_rest,
                    'mesh_summary':{'counts':mesh['counts'],'parts':mesh['parts'],'locators':mesh['locators']}})
-    if config['method']=='painted_bays':
+    reviewed=None
+    if broad:
+        from .methods.areas import evaluate_area,occupancy_mesh,propose_broad_unmarked,select_logical_areas
+        report['selection_policy']='All disjoint validated broad logical parking regions; no isolated-bay or truck fallback'
+        report['activation'].update(flags=4,partial_activation=True)
+        report['candidate_policy']={key:value for key,value in policy.items() if key!='reviewed_areas'}
+        native_groups=[g['id'] for g in original_rest if 'car' in (modes.get(g['action']) or set())]
+        report['original_car_rest_groups_in_prefab']=native_groups
+        if native_groups and not policy.get('allow_native_improvement'):
+            report.update(already_covered=True,state='already_covered',selected=None,selected_areas=[],candidates=[],
+                selection_outcome='Original prefab car parking preserved; native-improvement policy is OFF')
+            report['coverage']['complete']=True
+            return report,{}
+        for override in policy.get('reviewed_areas',[]):
+            if override['prefab_uid']==config['prefab_uid'] and override['sector']==sector_path:
+                if (override['source_archive']!=config['fingerprints']['source_archive']
+                        or override['source_sector']!=_hash(source_package.read(sector_path,max_bytes=64*1024*1024))
+                        or override['mesh']!=config['fingerprints']['mesh']
+                        or override['original_descriptor']!=_hash(source_package.read(override['descriptor']))):
+                    raise ValueError('Reviewed parking-area override source drift')
+                reviewed=override
+                break
+    if reviewed is not None:
+        proposal={'method':'source_pinned_user_reviewed_areas','candidates':[
+            {'id':a['id'],'polygon_xz':[[p[0],p[2]] for p in a['vertices']],
+             'reviewed_vertices_xyz':a['vertices'],'reviewed_override':True,
+             'partial_activation':a['partial_activation'],'geometry_scope':'user_accepted_dawson_broad_area',
+             'direction_xz':[1.,0.], 'rejection_reasons':[]} for a in reviewed['areas']],
+             'provenance':reviewed['provenance']}
+    elif broad and config['method']=='unmarked_geometry':
+        proposal=None # Shared unmarked-family planning below also serves painted banks.
+
+    elif config['method']=='painted_bays':
         from .methods.painted import PaintedParkingParameters,propose_painted_parking
         proposal=propose_painted_parking(mesh,paint_materials=config['mesh_materials']['paint'],
                                         parameters=PaintedParkingParameters(**config['parameters']),
-                                        **({'include_subbanks':True} if config['schema_version']==2 else {}))
+                                        **({'include_subbanks':not broad} if config['schema_version']==2 else {}))
     else:
         proposal=propose_unmarked_parking(ppd,ParkingParameters(**config['parameters']),
             **({'layouts':('perpendicular','parallel')} if config['schema_version']==2 else {}))
-    if config['schema_version']==2 and config['method']=='unmarked_geometry':
+    if broad and reviewed is None and (config['method']=='unmarked_geometry' or policy.get('include_unmarked_areas')):
+        from copy import deepcopy
+        unmarked_parameters=config['parameters'] if config['method']=='unmarked_geometry' else {}
+        proposal_key=(_hash(ppd),config['fingerprints']['mesh'],config['fingerprints']['mesh_state'],
+                      prefab.details['variant'],tuple(prefab.details['parts']),
+                      repr(sorted(unmarked_parameters.items())),policy.get('curb_setback',.15))
+        proposals=cache.setdefault('broad_area_proposals',{})
+        if proposal_key not in proposals:
+            proposals[proposal_key]=propose_broad_unmarked(mesh,geometry,ground=config['mesh_materials']['ground'],
+                paint=config['mesh_materials']['paint'],parameters=ParkingParameters(**unmarked_parameters),
+                edge_offset=policy.get('curb_setback',.15),
+                keep_clear=report['model_features']['entrance_clearance']['proxies'])
+        unmarked=deepcopy(proposals[proposal_key])
+        if proposal is None:proposal=unmarked
+        else:
+            proposal['candidates'].extend(unmarked['candidates'])
+            proposal['unmarked_area_inspection']={k:v for k,v in unmarked.items() if k!='candidates'}
+    if not broad and config['schema_version']==2 and config['method']=='unmarked_geometry':
         from .methods.curbside import propose_curb_anchored_candidates
         curb_candidates=propose_curb_anchored_candidates(mesh,geometry,ground=config['mesh_materials']['ground'],
             paint=config['mesh_materials']['paint'],parameters=ParkingParameters(**config['parameters']),
             edge_offset=policy.get('curb_setback',.5))
         proposal['candidates'].extend(curb_candidates)
         proposal['curb_candidate_count']=len(curb_candidates)
-    if policy.get('single_painted_bays') and config['method']=='painted_bays':
+    if not broad and policy.get('single_painted_bays') and config['method']=='painted_bays':
         proposal['candidates']=[c for c in proposal['candidates'] if c.get('bay_count')==1]
     report['proposal']=proposal
     report['geometry']=proposal.get('geometry',geometry)
@@ -237,16 +298,16 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     obstacles=[p for p in geometry['polygons'] if p['color']!=1]
     for proposed in proposal['candidates']:
         candidate=dict(proposed)
-        if config['method']=='painted_bays':
+        if config['method']=='painted_bays' and not candidate.get('reviewed_override'):
             candidate['mesh_envelope_xz']=candidate['polygon_xz']
             candidate['trigger_edge_inset']=.25 if config['schema_version']==1 else 0.
             if config['schema_version']==1:
                 candidate['polygon_xz']=_inset_rectangle(candidate['polygon_xz'])
         reasons=list(candidate.get('rejection_reasons',[]))
-        if (policy.get('require_curb_evidence') and config['method']=='unmarked_geometry'
+        if (not broad and policy.get('require_curb_evidence') and config['method']=='unmarked_geometry'
                 and not candidate.get('curb_anchor_evidence')):
             reasons.append('unmarked_candidate_has_no_source_model_curb_anchor')
-        if config['schema_version']==2:
+        if config['schema_version']==2 and not candidate.get('reviewed_override'):
             conflicts=[]
             for feature in report['model_features']['entrance_clearance']['proxies']:
                 if any(polygon_distance(region,feature['polygon_xz'])==0
@@ -255,14 +316,21 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
             candidate['entrance_proxy_conflicts']=conflicts
             if conflicts:reasons.append('intersects_door_keep_clear_proxy')
         polygon=candidate['polygon_xz'];approach=candidate.get('approach_xz')
-        if not any(_within(list(map(tuple,polygon)),[(v[0],v[2]) for v in p['vertices']]) for p in accessible):
+        if not candidate.get('reviewed_override') and not any(_within(list(map(tuple,polygon)),[(v[0],v[2]) for v in p['vertices']]) for p in accessible):
             reasons.append('outside_accessible_map_proxy')
-        if any(polygon_distance(polygon,[(v[0],v[2]) for v in p['vertices']])<.1 for p in obstacles):
+        if not candidate.get('reviewed_override') and any(polygon_distance(polygon,[(v[0],v[2]) for v in p['vertices']])<.1 for p in obstacles):
             reasons.append('intersects_building_canopy_or_green_proxy')
         # Painted banks have explicit footprint evidence, but still require
         # space to approach from at least one short-edge side. The model test
         # below checks their footprint; driving access is retained as unknown.
-        if config['schema_version']==2:
+        if broad and candidate.get('reviewed_override'):
+            checks=_mesh_checks(occupancy_mesh(mesh),polygon,None,config['mesh_materials']['ground'],config['mesh_materials']['paint'])
+            vertices=candidate['reviewed_vertices_xyz']
+            if checks.get('vertices_xyz') and any(abs(a[1]-b[1])>.02 for a,b in zip(vertices,checks['vertices_xyz'])):
+                reasons.append('reviewed_area_surface_height_drift')
+            checks['vertices_xyz']=vertices
+            candidate['reviewed_boundary_policy']='Exact accepted footprint; native UI/model setback proxies superseded by user-reviewed source-pinned boundaries'
+        elif config['schema_version']==2:
             from .selection import evaluate_access
             candidate['rejection_reasons']=list(dict.fromkeys(reasons))
             access_parameters={}
@@ -272,8 +340,11 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                     'road_clearance':parameters.road_clearance,'obstacle_margin':parameters.obstacle_margin}
             if local_context is not None:
                 access_parameters['region_validator']=check_external_regions
-            access=evaluate_access(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
-                                   paint=config['mesh_materials']['paint'],**access_parameters)
+            access=(evaluate_area(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
+                       paint=config['mesh_materials']['paint'],
+                       **({'region_validator':check_external_regions} if local_context is not None else {}))
+                    if broad else evaluate_access(candidate,geometry,mesh,ground=config['mesh_materials']['ground'],
+                                   paint=config['mesh_materials']['paint'],**access_parameters))
             candidate.update({key:value for key,value in access.items() if key!='rejection_reasons'})
             reasons.extend(access['rejection_reasons'])
             approach=candidate.get('approach_xz')
@@ -300,7 +371,7 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                 candidate['minimum_clearance_margin_m']=min(values)
         native_cover=[]
         for group in original_rest:
-            if modes.get(group['action'])!={'car'}:continue
+            if (not modes.get(group['action']) or 'car' not in modes[group['action']]):continue
             native=[(p[0],p[2]) for p in group['vertices']]
             if polygon_distance(polygon,native)==0:
                 reasons.append('already_has_overlapping_native_car_rest')
@@ -317,11 +388,13 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
             report['orientation_policy']='Prefer validated perpendicular bays; other orientations retain complete rejection evidence'
         report['ranking_policy']='Valid first; evidence, clearance and capacity components with stable-ID tie break (see ranking_components)'
     report['candidates']=evaluated
-    selected=next((c for c in evaluated if not c['rejection_reasons']),None)
+    selected_areas=select_logical_areas(evaluated) if broad else []
+    selected=selected_areas[0] if selected_areas else next((c for c in evaluated if not c['rejection_reasons']),None)
+    if broad:report['selected_areas']=selected_areas
     report['selected']=selected
     if fuel_graph_error:
         return blocked('Effective GAS/service graph is unverified: '+fuel_graph_error)
-    if (config['schema_version']==2 and config['method']=='painted_bays' and evaluated
+    if (not broad and config['schema_version']==2 and config['method']=='painted_bays' and evaluated
             and all(c['fully_covering_native_car_groups'] for c in evaluated)):
         report['already_covered']=True
         report['state']='already_covered'
@@ -333,8 +406,15 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
     # A bank is one logical area. Its separator-derived envelope allows the
     # user to choose any free bay; it does not add decorative cars or markings.
     vertices=selected['model_surface_checks']['vertices_xyz']
-    selected['world_vertices_xyz']=_world_vertices(ppd,prefab,nodes,vertices)
-    modified,write_report=append_car_parking_polygon(ppd,vertices)
+    modified=ppd;area_writers=[]
+    for area in (selected_areas if broad else [selected]):
+        area_vertices=area['model_surface_checks']['vertices_xyz']
+        area['world_vertices_xyz']=_world_vertices(ppd,prefab,nodes,area_vertices)
+        modified,area_writer=append_car_parking_polygon(modified,area_vertices,
+                                                       **({'partial_activation':True} if broad else {}))
+        area_writers.append({'id':area['id'],'vertices':area_vertices,**area_writer})
+    write_report=({**area_writers[0],'area_count':len(area_writers),'areas':area_writers}
+                  if broad else area_writer)
     alias='rsp'+_hash((config['station_id']+'\0'+_hash(modified)).encode())[:8]
     private='prefab/rtfix/'+alias+'.ppd';defpath='def/world/prefab.'+alias+'.sii'
     if token(alias) in definitions or private in stack.resources or defpath in stack.resources:

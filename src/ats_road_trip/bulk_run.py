@@ -185,6 +185,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
+                     parking_strategy=None, improve_existing_car_parking=False,
                      _legacy_fuel=False, _analysis_only=False) -> dict:
     """Audit one supplied map and emit a complete selected compatibility package.
 
@@ -195,6 +196,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
     config = ProcessorConfig.from_names(processors, rest_radius=rest_radius,
                                         petrol_reference=petrol_reference,
                                         fuel_selection=fuel_selection,
+                                        parking_strategy=parking_strategy,
+                                        improve_existing_car_parking=improve_existing_car_parking,
                                         mode=ProcessorMode.ANALYZE if _analysis_only else ProcessorMode.GENERATE)
     topics = tuple(p.value for p in (Processor.FUEL, Processor.REST, Processor.COURIER)
                    if p in config.enabled)
@@ -235,6 +238,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             'run_id': stamp, 'map_name': name, 'source': str(source),
             'processors_enabled': list(topics),
             'rest_radius_coordinate_units': config.rest_radius if Processor.REST in config.enabled else None,
+            'parking_strategy':config.parking_strategy.value,
+            'improve_existing_car_parking':config.improve_existing_car_parking,
             'game_dir': str(installed), 'game_version': version,
             'packages_low_to_high': [str(path) for path in order],
             'target_map_package': str(source),
@@ -300,6 +305,15 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
         description = map_description(name, topics,
                                       version='.'.join(version.split('.')[:2]) + f'-r{revision}-experimental',
                                       rest_radius=config.rest_radius)
+        if config.parking_strategy.value == 'station_bays':
+            description = description.replace(
+                'Adds passenger-car rest access where the inspected nearby area has no '
+                f'existing car rest within {config.rest_radius:,g} game-world units. ',
+                'Adds broad station parking areas where original car rest is absent; '
+                'unknown layouts are skipped without truck-area fallback. ')
+            description = ('STATION AREAS | Native parking improvements: '
+                + ('ON' if config.improve_existing_car_parking else 'OFF')
+                + '. Fueling remains independent.\n' + description)
         if fuel_selection.mode == 'realistic':
             description = ('SELECT FUEL — reviewed car fueling, uncertain cases ' + fuel_selection.unknown + '\n'
                            'Alternative to broad fuel coverage for the same source; enable only one.\n'
@@ -342,7 +356,8 @@ def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
 def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
                 map_name=None, run_id=None, extractor=None, dependency=(),
                 petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
-                fuel_selection: FuelSelectionConfig = FuelSelectionConfig()) -> dict:
+                fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
+                parking_strategy=None, improve_existing_car_parking=False) -> dict:
     """Write source-relative reports without packaging or installing a mod.
 
     Incomplete inspection is a reported partial result, not a statement about
@@ -351,4 +366,6 @@ def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
     return generate_map_fix(source, processors=processors, game_dir=game_dir,
                             map_name=map_name, run_id=run_id, extractor=extractor,
                             dependency=dependency, petrol_reference=petrol_reference,
-                            rest_radius=rest_radius, fuel_selection=fuel_selection, _analysis_only=True)
+                            rest_radius=rest_radius, fuel_selection=fuel_selection,
+                            parking_strategy=parking_strategy,
+                            improve_existing_car_parking=improve_existing_car_parking, _analysis_only=True)

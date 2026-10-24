@@ -22,7 +22,7 @@ class MapStackCliTests(unittest.TestCase):
         code,output,run=self.invoke(['analyze-map-stack','--package','first.scs','--package','second.scs'])
         self.assertEqual(code,0)
         run.assert_called_once_with(packages=['first.scs','second.scs'],preset='realistic',
-            game_dir=None,extractor=None,run_id=None,generate=False,experimental=False,revision=10)
+            game_dir=None,extractor=None,run_id=None,generate=False,experimental=False,revision=12,improve_existing_car_parking=False)
         self.assertTrue(output['analysis_only'])
         self.assertEqual(output['generated_mod_count'],0)
         self.assertEqual(output['report_path'],'/authored/audit.json')
@@ -34,7 +34,7 @@ class MapStackCliTests(unittest.TestCase):
             '--game-dir','/games/ATS','--run-id','2026-10-21_20-57-43'])
         run.assert_called_once_with(packages=['low.scs','high.scs'],preset='broad',
             game_dir='/games/ATS',extractor='/tools/extractor',run_id='2026-10-21_20-57-43',
-            generate=False,experimental=False,revision=10)
+            generate=False,experimental=False,revision=12,improve_existing_car_parking=False)
 
     def test_generation_requires_experimental_before_workflow_dispatch(self):
         stderr=io.StringIO()
@@ -54,15 +54,22 @@ class MapStackCliTests(unittest.TestCase):
         self.assertEqual(code,0)
         run.assert_called_once_with(packages=['low.scs','high.scs'],preset='realistic',
             game_dir='/games/ATS',extractor='/tools/extractor',run_id='2026-10-21_20-57-43',
-            generate=True,experimental=True,revision=12)
+            generate=True,experimental=True,revision=12,improve_existing_car_parking=False)
         self.assertFalse(output['analysis_only'])
         self.assertEqual(output['generated_mod_count'],2)
         self.assertEqual(output['outputs'],result['outputs'])
 
-    def test_generation_revision_defaults_to_ten(self):
+    def test_generation_revision_defaults_to_twelve(self):
         _,_,run=self.invoke(['generate-map-stack','--package','original.scs','--experimental'])
-        self.assertEqual(run.call_args.kwargs['revision'],10)
+        self.assertEqual(run.call_args.kwargs['revision'],12)
         self.assertTrue(run.call_args.kwargs['generate'])
+
+    def test_native_improvement_flag_forwards_for_analysis_and_generation(self):
+        for command in ('analyze-map-stack','generate-map-stack'):
+            args=[command,'--package','source.scs','--improve-existing-car-parking']
+            if command.startswith('generate'):args.append('--experimental')
+            _,_,run=self.invoke(args)
+            self.assertTrue(run.call_args.kwargs['improve_existing_car_parking'])
 
     def test_packages_required_and_preset_choices_are_strict(self):
         for args in (['analyze-map-stack'],['generate-map-stack','--experimental'],

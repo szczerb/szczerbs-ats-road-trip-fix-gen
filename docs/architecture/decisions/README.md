@@ -57,3 +57,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0023: Select car-fuel additions by reviewed pump role](ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md) — opt-in source-pinned per-group suitability, explicit uncertainty, native preservation and audited comparison guards.
 
 - [ADR-0024: Compose complete realistic map replacements](ADR-0024-compose-complete-realistic-map-replacements.md) — original-owner staged composition, realistic presets, provisional facility policy and complete source-relative packaging.
+
+- [ADR-0025: Broad parking regions and independent service eligibility](ADR-0025-plan-broad-parking-with-independent-service-eligibility.md).

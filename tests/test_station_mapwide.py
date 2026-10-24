@@ -43,7 +43,9 @@ class MapStationParkingTests(unittest.TestCase):
         self.assertEqual(report['coverage']['generated_truck_area_access'],0)
         row=report['locations'][0]
         self.assertEqual(row['state'],'generated')
-        self.assertEqual(row['selected']['bay_count'],1)
+        self.assertEqual(row['selected']['bay_count'],3)
+        self.assertEqual(row['area_count'],1)
+        self.assertEqual(row['native_car_parking']['state'],'absent')
         self.assertEqual(row['source_pins']['descriptor'],hashlib.sha256(self.package.read(PPD)).hexdigest())
         before=parse_sector(self.package.read(SECTOR));after=parse_sector(resources[SECTOR])
         self.assertEqual(before.nodes,after.nodes)
@@ -137,7 +139,7 @@ class MapStationParkingTests(unittest.TestCase):
         changed=next(data for path,data in resources.items() if path.endswith('.ppd'))
         from ats_road_trip.station_parking.trigger import append_car_parking_polygon
         selected=report['locations'][0]['selected']['model_surface_checks']['vertices_xyz']
-        expected,_=append_car_parking_polygon(overlay.read(old_descriptor),selected)
+        expected,_=append_car_parking_polygon(overlay.read(old_descriptor),selected,partial_activation=True)
         self.assertEqual(changed,expected)
 
     def test_repeated_family_at_new_uid_is_discovered(self):
@@ -220,6 +222,102 @@ class MapStationParkingTests(unittest.TestCase):
         report,resources=self.plan();planner=report['locations'][0]['planner']
         with self.assertRaisesRegex(ValueError,'Conflicting station placement'):
             _compose(self.stack,[(planner,resources),(planner,resources)])
+
+    def test_unrelated_malformed_custom_action_does_not_abort_parking(self):
+        contents={p:self.package.read(p) for p in self.package.files}
+        contents['def/world/trigger_action.custom.sii']=b'SiiNunit { trigger_action : trig_action.bad_custom { command: hud_activate num_params[]: broken str_params[]: car } }'
+        self.package,self.stack,_=self.fixture.helper.make_stack(contents)
+        report,resources=self.plan()
+        self.assertTrue(resources,report['locations'])
+        self.assertEqual(report['locations'][0]['native_car_parking']['state'],'absent')
+
+    def remove_native_fueling(self):
+        from tests.test_map_sector import item,refs,sector
+        contents={p:self.package.read(p) for p in self.package.files}
+        ppd=contents[PPD];h=list(struct.unpack_from('<24I',ppd))
+        start=h[16]+36;end=start+36
+        h[5]-=1
+        for i in range(17,24):h[i]-=36
+        contents[PPD]=struct.pack('<24I',*h)+ppd[96:start]+ppd[end:]
+        parsed=parse_sector(contents[SECTOR]);pf=parsed.prefabs[0]
+        services=[x for x in parsed.services if not x.flags & 0x4000]
+        slave_ids=[x.uid for x in services]
+        new_pf=item(4,pf.uid,struct.pack('<QQ',pf.details['model'],pf.details['variant'])+refs()
+            +refs(*pf.details['nodes'])+refs(*slave_ids)+struct.pack('<QH',0,pf.details['origin'])
+            +bytes(len(pf.details['nodes'])*12+8))
+        wanted=set(pf.details['nodes'])|{x.details['node'] for x in services}
+        original=contents[SECTOR]
+        contents[SECTOR]=sector([new_pf]+[original[x.offset:x.end] for x in services],
+            [n.raw for n in parsed.nodes if n.uid in wanted])
+        self.package,self.stack,_=self.fixture.helper.make_stack(contents)
+
+    def add_native_small_area(self):
+        from ats_road_trip.station_parking.trigger import append_car_parking_polygon
+        contents={p:self.package.read(p) for p in self.package.files}
+        contents[PPD],_=append_car_parking_polygon(contents[PPD],
+            [(-18.,0.,-18.),(-14.,0.,-18.),(-14.,0.,-14.),(-18.,0.,-14.)])
+        self.package,self.stack,_=self.fixture.helper.make_stack(contents)
+
+    def test_native_support_exempts_entire_station_until_improvement_opt_in(self):
+        from ats_road_trip.rest_stops import inspect_rest_triggers
+        self.add_native_small_area()
+        off,resources=self.plan()
+        self.assertFalse(resources)
+        self.assertEqual(off['locations'][0]['native_car_parking']['state'],'present')
+        self.assertEqual(off['coverage']['already_supported'],1)
+        on,resources=self.plan(improve_existing_car_parking=True)
+        self.assertTrue(resources,on['locations'])
+        row=on['locations'][0]
+        self.assertEqual(row['state'],'generated')
+        self.assertTrue(on['improve_existing_car_parking'])
+        old=inspect_rest_triggers(self.stack.read(PPD))
+        after=inspect_rest_triggers(next(data for name,data in resources.items() if name.endswith('.ppd')))
+        self.assertEqual(after[:len(old)],old)
+        self.assertTrue(all(g['flags']==4 for g in after[len(old):]))
+
+    def test_existing_car_parking_never_suppresses_missing_fueling(self):
+        from ats_road_trip.processors import ProcessorConfig,run_processors
+        self.remove_native_fueling()
+        self.add_native_small_area()
+        def fuel(stack,game,*,source,map_name,**kwargs):
+            return plan_map_fuel(stack,map_packages={source},map_name=map_name)
+        with patch('ats_road_trip.processors._fuel_plan',side_effect=fuel), \
+             patch('ats_road_trip.station_parking.catalog.load_reviewed_catalog',return_value=self.catalog):
+            # mapwide imports its loader directly, so patch that reference too.
+            with patch('ats_road_trip.station_parking.mapwide.load_reviewed_catalog',return_value=self.catalog):
+                result=run_processors(self.stack,self.stack,source=str(self.package.path),
+                    map_name='Authored Map',config=ProcessorConfig.from_preset('realistic'))
+        self.assertTrue(result.coverage['complete'],result.blockers)
+        self.assertEqual(result.reports['fuel']['coverage']['added_car_points'],1)
+        self.assertEqual(result.reports['rest']['coverage']['already_supported'],1)
+        self.assertEqual(result.reports['rest']['coverage']['generated'],0)
+        after=parse_sector(result.resources[SECTOR])
+        before=parse_sector(self.stack.read(SECTOR))
+        self.assertEqual(len(after.services),len(before.services)+1)
+
+    def test_existing_car_fueling_does_not_suppress_missing_parking(self):
+        fuel,fuel_resources=plan_map_fuel(self.stack,map_packages={str(self.package.path)},map_name='Authored Map')
+        self.assertEqual(fuel['coverage']['added_car_points'],0)
+        report,resources=self.plan()
+        self.assertEqual(report['coverage']['generated'],1,report['locations'])
+        self.assertEqual(report['locations'][0]['native_car_parking']['state'],'absent')
+        self.assertEqual(parse_sector(resources[SECTOR]).services,parse_sector(self.stack.read(SECTOR)).services)
+
+    def test_unknown_parking_does_not_cancel_independently_added_fuel(self):
+        self.remove_native_fueling()
+        from ats_road_trip.processors import ProcessorConfig,run_processors
+        def fuel(stack,game,*,source,map_name,**kwargs):
+            return plan_map_fuel(stack,map_packages={source},map_name=map_name)
+        with patch('ats_road_trip.processors._fuel_plan',side_effect=fuel), \
+             patch('ats_road_trip.station_parking.mapwide.load_reviewed_catalog',return_value=self.catalog), \
+             patch('ats_road_trip.station_parking.native_support.classify_native_car_parking',
+                   return_value={'state':'unknown','reasons':['authored unresolved boundary'],'scope':{}}):
+            result=run_processors(self.stack,self.stack,source=str(self.package.path),
+                map_name='Authored Map',config=ProcessorConfig.from_preset('realistic'))
+        self.assertTrue(result.coverage['complete'],result.blockers)
+        self.assertEqual(result.reports['fuel']['coverage']['added_car_points'],1)
+        self.assertEqual(result.reports['rest']['skip_reasons'],{'original_native_car_parking_unknown':1})
+        self.assertIn(SECTOR,result.resources)
 
 
 if __name__=='__main__':unittest.main()

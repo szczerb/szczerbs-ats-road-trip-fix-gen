@@ -94,7 +94,7 @@ def _service_context(parsed):
 
 def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                              game_version='1.61.3.18',catalog=None,ownership_stack=None,
-                             work_dir=None,method='automatic'):
+                             work_dir=None,method='automatic',improve_existing_car_parking=False):
     """Return ``(report, resources)`` for all original source-owned placements.
 
     ``stack`` is the effective staged fuel overlay. ``ownership_stack`` is the
@@ -105,6 +105,8 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
     ``method`` selects automatic marked-first, painted_bays or unmarked_geometry.
     Skips are coverage outcomes, never silent truck-space fallbacks.
     """
+    if type(improve_existing_car_parking) is not bool:
+        raise ValueError('improve_existing_car_parking must be a boolean')
     if method not in ('automatic','painted_bays','unmarked_geometry'):
         raise ValueError('Select automatic, painted_bays or unmarked_geometry station method')
     if not isinstance(map_packages,set) or not map_packages:raise ValueError('Declare original map_packages')
@@ -118,7 +120,8 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
     source_paths={str(p.path) for p in sources}
     catalog=load_reviewed_catalog() if catalog is None else catalog
     definitions=prefab_definitions(stack);original_defs=prefab_definitions(original)
-    action_state=_validate_actions(stack)
+    from .native_support import station_action_state
+    action_state=station_action_state(stack)
     cache={'stack_indexes':{id(stack):(stack,definitions,action_state)},'archive_hashes':{}}
     paths=[p for p in original.matching(r'map/usa/sec[+-]\d{4}[+-]\d{4}\.base')
            if str(original.resources[p][0].path) in source_paths]
@@ -130,17 +133,18 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                    for p in sources if str(p.path) in used_sources}
     report={'schema_version':1,'processor':'station_parking','map_name':map_name,'game_version':game_version,
             'strategy':'station_bays','method':method,'in_game_verified':False,
+            'improve_existing_car_parking':improve_existing_car_parking,
             'coverage':{'complete':True,'blockers':[]},'locations':[],'changed_sectors':[],
             'composed_resource_paths':[],'source_archive_sha256':source_hashes,
             'declared_source_archives':sorted(source_paths),
-            'selection_policy':'All original source-owned GAS placements; reviewed family/model state; marked-first, otherwise validated curb-anchored bays; no truck fallback',
+            'selection_policy':'All original source-owned GAS placements; original native support classified independently; confirmed missing support by default; broad coherent reviewed parking regions; no truck fallback',
             'native_facility_policy':'Preserve original car/truck/bus services/actions and unrelated bytes',
             'wheelchair_marked_bays':'Eligible under the same geometry/occupancy/access checks as ordinary marked bays; hatched aisles remain excluded',
             'scope':{'original_source_sectors':len(paths),'family_count':len(catalog),'context_halo':'3x3 base/aux sectors, 100m prefab-anchor search',
                      'unsupported_model_policy':'Unchanged; report each GAS placement and family count'},
             'limitations':['Render/model geometry and UI obstacle proxies are bounded, not a full collision simulation.',
-                           'Existing native car activation may extend beyond the generated small bay and is preserved.',
-                           'Natural curb pose and perpendicular preference address feedback geometrically; runtime vehicle activation reference remains unknown.',
+                           'Native car parking exempts its whole facility by default, independently of fueling.',
+                           'Broad regions use explicit partial-contact flags; runtime vehicle shape remains unknown.',
                            'The isolated P04 unreliable painted interaction is skipped until its runtime cause is resolved.']}
     parsed={};raws={};plans=[];ground_cache={}
     def sector_bytes(path):
@@ -189,6 +193,14 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
             if error:skip('original_descriptor_invalid: '+error);continue
             if model!=(raw_unit.one('model_desc','') or '').lstrip('/'):
                 skip('effective_model_does_not_match_original_source');continue
+            from .native_support import classify_native_car_parking
+            native=classify_native_car_parking(original,path,raw_prefab.uid,
+                definitions=original_defs,cache=cache)
+            row['native_car_parking']=native
+            if native['state']=='unknown':
+                skip('original_native_car_parking_unknown');continue
+            if native['state']=='present' and not improve_existing_car_parking:
+                skip('original_native_car_parking_present',state='already_supported');continue
             family=catalog.get(model)
             if family is None:skip('unsupported_model_family');continue
             row['family']=family['family']
@@ -229,14 +241,17 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                             'parameters':deepcopy(family.get('parameters',{}))}
                     planned,resources=plan_station_parking(stack,config,family['mesh_text'],map_package=str(source.path),
                         game_version=game_version,mesh_state_text=family['mesh_state_text'],local_context=context,
-                        planning_cache=cache,candidate_policy=family.get('policy'),service_context=services)
+                        planning_cache=cache,candidate_policy=dict(family.get('policy',{}),
+                            broad_areas=True,allow_native_improvement=improve_existing_car_parking,
+                            include_unmarked_areas='unmarked_geometry' in methods),service_context=services)
                     attempts.append(planned)
                     if planned.get('already_covered'):
                         row.update(state='already_supported',reason='native_car_parking_covers_candidates',method=selected_method);break
                     if resources:
                         plans.append((planned,resources))
                         row.update(state='generated',method=selected_method,private_alias=planned['private_alias'],
-                                   selected=planned['selected'],planner=planned)
+                                   selected=planned['selected'],selected_areas=planned.get('selected_areas',[planned['selected']]),
+                                   area_count=planned.get('writer',{}).get('area_count',1),planner=planned)
                         break
                 else:skip('no_safe_dedicated_candidate')
                 if row['state']!='generated':row['attempts']=attempts
@@ -259,9 +274,13 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
     counts=Counter(row['state'] for row in report['locations'])
     report['coverage'].update(locations=len(report['locations']),generated=counts['generated'],
         already_supported=counts['already_supported'],skipped=counts['skipped'],
-        added_car_polygons=counts['generated'],placements_changed=counts['generated'],generated_truck_area_access=0)
+        added_car_polygons=sum(row.get('area_count',0) for row in report['locations']),
+        placements_changed=counts['generated'],generated_truck_area_access=0,
+        native_support=dict(Counter(row.get('native_car_parking',{}).get('state','unknown') for row in report['locations'])))
     report['skip_reasons']=dict(sorted(Counter(row.get('reason','') for row in report['locations'] if row['state']=='skipped').items()))
-    report['family_coverage']=[{'model':model,'total':len(rows),'states':dict(Counter(r['state'] for r in rows))}
+    report['family_coverage']=[{'model':model,'total':len(rows),'states':dict(Counter(r['state'] for r in rows)),
+        'native_support':dict(Counter(r.get('native_car_parking',{}).get('state','unknown') for r in rows)),
+        'generated_areas':sum(r.get('area_count',0) for r in rows)}
         for model in sorted({r['model'] for r in report['locations']})
         if (rows:=[r for r in report['locations'] if r['model']==model])]
     report['coverage']['complete']=not report['coverage']['blockers']
