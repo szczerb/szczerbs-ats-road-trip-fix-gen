@@ -185,7 +185,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                      fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
-                     parking_strategy=None, improve_existing_car_parking=False,
+                     parking_strategy=None, improve_existing_car_parking=False, improve_truck_parking=False,
                      _legacy_fuel=False, _analysis_only=False) -> dict:
     """Audit one supplied map and emit a complete selected compatibility package.
 
@@ -198,6 +198,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
                                         fuel_selection=fuel_selection,
                                         parking_strategy=parking_strategy,
                                         improve_existing_car_parking=improve_existing_car_parking,
+                                        improve_truck_parking=improve_truck_parking,
                                         mode=ProcessorMode.ANALYZE if _analysis_only else ProcessorMode.GENERATE)
     topics = tuple(p.value for p in (Processor.FUEL, Processor.REST, Processor.COURIER)
                    if p in config.enabled)
@@ -240,6 +241,7 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             'rest_radius_coordinate_units': config.rest_radius if Processor.REST in config.enabled else None,
             'parking_strategy':config.parking_strategy.value,
             'improve_existing_car_parking':config.improve_existing_car_parking,
+            'improve_truck_parking':config.improve_truck_parking,
             'game_dir': str(installed), 'game_version': version,
             'packages_low_to_high': [str(path) for path in order],
             'target_map_package': str(source),
@@ -324,6 +326,13 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
         # content stable across timestamped runs with identical source inputs.
         provenance = {k:v for k,v in workflow.items() if k not in ('run_id', 'work_dir')}
         full_report = {**report, 'workflow': provenance}
+        if config.parking_strategy.value == 'none' and config.improve_truck_parking:
+            description = description.replace(
+                'Adds passenger-car rest access where the inspected nearby area has no '
+                f'existing car rest within {config.rest_radius:,g} game-world units. ',
+                'Adds independent truck-rest regions within supported incomplete parking facilities. ')
+        if config.improve_truck_parking:
+            description += '\nTruck-rest coverage improvements: ON; independent of car parking and fueling.\n'
         written = write_mod(output, resources, full_report, game_version=version,
                             map_name=name, revision=revision, icon=icon_bytes,
                             description=description,
@@ -357,7 +366,7 @@ def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
                 map_name=None, run_id=None, extractor=None, dependency=(),
                 petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
                 fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
-                parking_strategy=None, improve_existing_car_parking=False) -> dict:
+                parking_strategy=None, improve_existing_car_parking=False, improve_truck_parking=False) -> dict:
     """Write source-relative reports without packaging or installing a mod.
 
     Incomplete inspection is a reported partial result, not a statement about
@@ -368,4 +377,4 @@ def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
                             dependency=dependency, petrol_reference=petrol_reference,
                             rest_radius=rest_radius, fuel_selection=fuel_selection,
                             parking_strategy=parking_strategy,
-                            improve_existing_car_parking=improve_existing_car_parking, _analysis_only=True)
+                            improve_existing_car_parking=improve_existing_car_parking, improve_truck_parking=improve_truck_parking, _analysis_only=True)

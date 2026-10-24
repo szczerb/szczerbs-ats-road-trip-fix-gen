@@ -143,7 +143,26 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
             if before is None and path in raw.resources:before=raw.read(path,max_bytes=128*1024*1024)
             if path.startswith('map/') and before is not None:transitions.append(('rest',path,before,data))
             staged[path]=data;creators.setdefault(path,index)
-        reports.append({'map_name':name,'source_packages':sorted(owners),'fuel':report,'parking':parking})
+        truck={'disabled':True,'coverage':{'complete':True,'blockers':[]}}
+        if config.improve_truck_parking:
+            from .truck_parking.mapwide import plan_map_truck_parking
+            logging.getLogger(__name__).info('%s: truck-rest coverage',name)
+            effective=OverlayResourceStack(raw,staged)
+            truck,changes=plan_map_truck_parking(effective,map_packages=owners,map_name=name,
+                ownership_stack=raw,game_version=game_version,
+                work_dir=Path(work_dir)/_slug(name)/'truck-parking' if work_dir else None)
+            if not truck.get('coverage',{}).get('complete',False) or truck.get('coverage',{}).get('blockers'):
+                raise ValueError(f'{name}: truck-rest coverage returned unsafe output')
+            composed=set(truck.get('composed_resource_paths',[]))
+            for path,data in changes.items():
+                if re.fullmatch(r'def/data_context(?:\.[^/]+)?\.sii',path):continue
+                if path in staged and path not in composed:
+                    raise ValueError('Truck parking did not declare composed resource '+path)
+                before=staged.get(path)
+                if before is None and path in raw.resources:before=raw.read(path,max_bytes=128*1024*1024)
+                if path.startswith('map/') and before is not None:transitions.append(('truck_parking',path,before,data))
+                staged[path]=data;creators.setdefault(path,index)
+        reports.append({'map_name':name,'source_packages':sorted(owners),'fuel':report,'parking':parking,'truck_parking':truck})
         if work_dir:_json(Path(work_dir)/_slug(name)/'planning.json',reports[-1])
     # Price repair is independent of facility selection and covers all actual
     # winning original providers, including resource/definition-only packages.
@@ -171,7 +190,8 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
         partitions[index][path]=data
     summary={'preset':config.fuel_selection.mode,'fuel_selection':config.fuel_selection.to_dict(),
         'parking_strategy':config.parking_strategy.value,
-        'improve_existing_car_parking':config.improve_existing_car_parking,'source_reports':reports,
+        'improve_existing_car_parking':config.improve_existing_car_parking,
+        'improve_truck_parking':config.improve_truck_parking,'source_reports':reports,
         'price_policy':policy_report,'prices':prices,'contexts':contexts,
         'resource_count':len(staged),'partition_resources':{
             part['map_name']:sorted(values) for part,values in zip(parts,partitions)},
@@ -194,7 +214,8 @@ def _package_description(part, parts, workflow, preset, revision):
            'Source: '+source+'.',behavior,contribution.rstrip(),
            'Preserves original car/truck/bus facilities. Unknown fuel sites are provisionally included in realistic mode; unsupported parking areas are skipped.',
            'Native car parking improvements: '+('ON' if workflow.get('improve_existing_car_parking',False) else 'OFF')+'. Parking eligibility never suppresses eligible fueling.',
-           'Replace old r9/r10 map fixes and the Alaska-only Dawson r11 with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
+           'Truck-rest coverage improvements: '+('ON' if workflow.get('improve_truck_parking',False) else 'OFF')+'. Original working regions are retained.',
+           'Replace old r9/r10/r12 map fixes and the Alaska-only Dawson r11 with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
            'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments.',
            'Keep the separate tank and courier mods unchanged. Prepared for normal career play; existing-save behavior and runtime coverage remain unverified.',
            '', 'Required order, LOWEST to HIGHEST (game/DLC files load automatically):']
@@ -211,15 +232,16 @@ def _package_description(part, parts, workflow, preset, revision):
     return '\n'.join(line for line in lines if line is not None)+'\n'
 
 def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None,
-                  generate=False, experimental=False, revision=12,run_id=None,
-                  improve_existing_car_parking=False):
+                  generate=False, experimental=False, revision=13,run_id=None,
+                  improve_existing_car_parking=False, improve_truck_parking=False):
     """Mount an explicit original low-to-high stack and produce all replacements."""
     if generate and not experimental:raise ValueError('Generation requires --experimental')
     if type(revision)is not int or revision<10:raise ValueError('Replacement revision must be at least10')
     stamp=run_id or datetime.now(ZoneInfo('Europe/Warsaw')).strftime('%Y-%m-%d_%H-%M-%S')
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}',stamp):raise ValueError('Invalid run timestamp')
     preset=CompatibilityPreset(preset);config=ProcessorConfig.from_preset(preset,
-        improve_existing_car_parking=improve_existing_car_parking)
+        improve_existing_car_parking=improve_existing_car_parking,
+        improve_truck_parking=improve_truck_parking)
     work=REPO_ROOT/'local_outputs/work'/stamp/f'{preset.value}-map-stack'
     generated=REPO_ROOT/'local_outputs/generated'/stamp
     if work.exists():raise FileExistsError('Use a new run timestamp')
@@ -259,11 +281,12 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                 if (st.st_size,st.st_mtime_ns)!=identity:raise ValueError('Original input changed: '+str(path))
             for path,snapshot in snapshots.items():
                 if _snapshot(path)!=snapshot:raise ValueError('Original directory package changed')
-            workflow={'game_version':version,'run_id':stamp,'preset':preset.value,
+            workflow={'game_version':version,'run_id':stamp,'preset':preset.value,'revision':revision,
                 'packages_low_to_high':[str(p) for p in paths],
                 'archive_identities':[{'path':str(p),'size':v[0],'mtime_ns':v[1]} for p,v in identities.items()],
                 'directory_snapshots':[{'path':str(p),'sha256':_sha(json.dumps(s).encode()),'files':len(s)} for p,s in snapshots.items()],
                 'parts':parts,'improve_existing_car_parking':config.improve_existing_car_parking,
+                'improve_truck_parking':config.improve_truck_parking,
                 'profile_modified':False,'work_dir':str(work)}
             result={'status':'analyzed','report_path':str(work/'audit.json'),'workflow':workflow,'planner':report,'outputs':[]}
             if generate:
@@ -280,6 +303,7 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                     embedded={'analysis':'complete_map_stack_replacement','processors_enabled':['fuel','rest'],
                         'preset':preset.value,'parking_strategy':config.parking_strategy.value,
                         'improve_existing_car_parking':config.improve_existing_car_parking,
+                        'improve_truck_parking':config.improve_truck_parking,
                         'map_name':label,'source_packages':part['source_packages'],
                         'source_report':report['source_reports'][index],
                         'prices':report['prices'],'contexts':report['contexts'],

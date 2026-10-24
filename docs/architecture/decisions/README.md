@@ -59,3 +59,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0024: Compose complete realistic map replacements](ADR-0024-compose-complete-realistic-map-replacements.md) — original-owner staged composition, realistic presets, provisional facility policy and complete source-relative packaging.
 
 - [ADR-0028: Broad parking regions and independent service eligibility](ADR-0028-plan-broad-parking-with-independent-service-eligibility.md).
+
+- [ADR-0029: Independent truck-rest coverage](ADR-0029-add-independent-truck-rest-coverage.md).

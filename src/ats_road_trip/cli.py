@@ -133,10 +133,12 @@ def parser() -> argparse.ArgumentParser:
                            help='Combined fuel/parking policy (default: realistic)')
         stack.add_argument('--improve-existing-car-parking', action='store_true',
                            help='Opt in to safe improvements at native car-supported stations (realistic only; default OFF)')
+        stack.add_argument('--improve-truck-parking', action='store_true',
+                           help='Complete missing truck-rest regions at supported native-rest facilities; default OFF')
         stack.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
         stack.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         if name.startswith('generate'):
-            stack.add_argument('--revision', type=int, default=12)
+            stack.add_argument('--revision', type=int, default=13)
             stack.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
@@ -165,10 +167,12 @@ def parser() -> argparse.ArgumentParser:
             bulk.add_argument('--processor', action='append', required=True,
                               choices=[p.value for p in Processor],
                               help='Select fuel, rest, or analysis-only courier; repeat as needed')
-            bulk.add_argument('--parking-strategy', choices=('truck_areas', 'station_bays'),
+            bulk.add_argument('--parking-strategy', choices=('none', 'truck_areas', 'station_bays'),
                               help='Select one rest strategy; default is legacy truck_areas')
             bulk.add_argument('--improve-existing-car-parking', action='store_true',
                               help='Improve native car parking with rest and station_bays; default OFF')
+            bulk.add_argument('--improve-truck-parking', action='store_true',
+                              help='Complete native truck-rest coverage independently of car parking; default OFF')
             bulk.add_argument('--rest-radius', type=float, default=1000,
                               help='Straight-line rest search distance in map coordinate units (default: 1000)')
     for name in ('fuel-audit', 'generate-fuel'):
@@ -291,8 +295,9 @@ def main(argv: list[str] | None = None) -> int:
             result = run_map_stack(packages=args.package, preset=args.preset,
                 game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
                 generate=generate, experimental=getattr(args, 'experimental', False),
-                revision=getattr(args, 'revision', 12),
-                improve_existing_car_parking=args.improve_existing_car_parking)
+                revision=getattr(args, 'revision', 13),
+                improve_existing_car_parking=args.improve_existing_car_parking,
+                improve_truck_parking=args.improve_truck_parking)
             _emit({'status': result['status'], 'analysis_only': not generate,
                    'outputs': result.get('outputs', []),
                    'report_path': result.get('report_path'),
@@ -317,6 +322,8 @@ def main(argv: list[str] | None = None) -> int:
                     options['parking_strategy'] = args.parking_strategy
                 if args.improve_existing_car_parking:
                     options['improve_existing_car_parking'] = True
+                if args.improve_truck_parking:
+                    options['improve_truck_parking'] = True
             if args.command == 'analyze-map':
                 result = analyze_map(args.source, processors=args.processor,
                                      rest_radius=args.rest_radius, **options)

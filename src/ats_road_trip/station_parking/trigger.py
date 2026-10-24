@@ -110,6 +110,63 @@ def _validate_existing_layout(data: bytes, header: tuple[int, ...]) -> None:
     inspect_rest_triggers(data)
 
 
+def _append_native_parking_polygon(
+    data: bytes, points: list[tuple[float, float, float]], *, action: int,
+    parameters: tuple[float, float, float, int], actions=None,
+    label: str = 'Station car-rest',
+) -> tuple[bytes, int]:
+    """Shared binary splice after caller-specific eligibility/geometry checks.
+
+    The header and new records are the only authored bytes. Every existing
+    trigger, group ID, link, opaque preceding section and suffix is retained.
+    """
+    try:
+        info = inspect_ppd(data)
+    except (struct.error, TypeError) as exc:
+        raise ValueError(f'Invalid PPD descriptor: {exc}') from exc
+    if info['version'] != 25:
+        raise ValueError(f'{label} generation requires PPD v25')
+    header = list(struct.unpack_from('<24I', data))
+    _validate_existing_layout(data, tuple(header))
+    if actions is not None:
+        inspect_rest_triggers(data, actions=actions)
+    count, insertion = header[9], header[22]
+    if count >= 0xFFFFFFFF or count + len(points) > 0x7FFFFFFF:
+        raise ValueError('PPD trigger count or neighbor index capacity would overflow')
+    used_ids = {struct.unpack_from('<I', data, header[21] + _TRIGGER.size * i)[0]
+                for i in range(count)}
+    group_id = next((candidate for candidate in range(count + 1) if candidate not in used_ids), None)
+    if group_id is None or group_id > 0xFFFFFFFF:
+        raise ValueError('No independent PPD trigger group ID is available')
+
+    first_index = count
+    records = []
+    for i, (x, y, z) in enumerate(points):
+        records.append(_TRIGGER.pack(
+            group_id, action, *parameters, x, y, z,
+            first_index + (i - 1) % len(points),
+            first_index + (i + 1) % len(points),
+        ))
+    extra = b''.join(records)
+    if insertion + len(extra) > 0xFFFFFFFF:
+        raise ValueError('PPD descriptor offsets would overflow')
+    header[9] += len(records)
+    header[22] += len(extra)
+    header[23] += len(extra)
+    result = struct.pack('<24I', *header) + data[96:insertion] + extra + data[insertion:]
+
+    after = inspect_ppd(result)
+    groups = inspect_rest_triggers(result, actions=actions)
+    created = [group for group in groups if group['id'] == group_id and group['action'] == action]
+    packed_points = {tuple(struct.unpack('<3f', struct.pack('<3f', *point))) for point in points}
+    if (after['trigger_count'] != count + len(points) or len(created) != 1
+            or set(created[0]['vertices']) != packed_points
+            or result[96:insertion] != data[96:insertion]
+            or result[insertion + len(extra):] != data[insertion:]):
+        raise ValueError(f'Appended {label.lower()} polygon failed structural preservation checks')
+    return result, group_id
+
+
 def append_car_parking_polygon(
     data: bytes, vertices: list[tuple[float, float, float]], *,
     partial_activation: bool = False,
@@ -135,42 +192,8 @@ def append_car_parking_polygon(
     if info['version'] != 25:
         raise ValueError('Station car-rest generation requires PPD v25')
     points = _validate_vertices(vertices)
-    header = list(struct.unpack_from('<24I', data))
-    _validate_existing_layout(data, tuple(header))
-    count, insertion = header[9], header[22]
-    if count >= 0xFFFFFFFF or count + len(points) > 0x7FFFFFFF:
-        raise ValueError('PPD trigger count or neighbor index capacity would overflow')
-    used_ids = {struct.unpack_from('<I', data, header[21] + _TRIGGER.size * i)[0]
-                for i in range(count)}
-    group_id = next((candidate for candidate in range(count + 1) if candidate not in used_ids), None)
-    if group_id is None or group_id > 0xFFFFFFFF:
-        raise ValueError('No independent PPD trigger group ID is available')
-
-    first_index = count
-    records = []
-    for i, (x, y, z) in enumerate(points):
-        records.append(_TRIGGER.pack(
-            group_id, _CAR, 3.0, 0.0, 0.0, flags, x, y, z,
-            first_index + (i - 1) % len(points),
-            first_index + (i + 1) % len(points),
-        ))
-    extra = b''.join(records)
-    if insertion + len(extra) > 0xFFFFFFFF:
-        raise ValueError('PPD descriptor offsets would overflow')
-    header[9] += len(records)
-    header[22] += len(extra)
-    header[23] += len(extra)
-    result = struct.pack('<24I', *header) + data[96:insertion] + extra + data[insertion:]
-
-    after = inspect_ppd(result)
-    groups = inspect_rest_triggers(result)
-    created = [group for group in groups if group['id'] == group_id and group['action'] == _CAR]
-    packed_points = {tuple(struct.unpack('<3f', struct.pack('<3f', *point))) for point in points}
-    if (after['trigger_count'] != count + len(points) or len(created) != 1
-            or set(created[0]['vertices']) != packed_points
-            or result[96:insertion] != data[96:insertion]
-            or result[insertion + len(extra):] != data[insertion:]):
-        raise ValueError('Appended car polygon failed structural preservation checks')
+    result, group_id = _append_native_parking_polygon(
+        data, points, action=_CAR, parameters=(3.0, 0.0, 0.0, flags))
     return result, {
         'experimental': True,
         'action': 'parking_car',

@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0054: Complete incomplete truck-rest lots](active/TASK-0054-complete-incomplete-truck-rest-lots.md) — North Platte source identification, independent truck coverage and complete r13 delivery in progress.
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
