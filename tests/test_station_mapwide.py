@@ -231,6 +231,20 @@ class MapStationParkingTests(unittest.TestCase):
         self.assertTrue(resources,report['locations'])
         self.assertEqual(report['locations'][0]['native_car_parking']['state'],'absent')
 
+    def test_native_external_or_ambiguous_improvement_does_not_duplicate_rest(self):
+        cases=[({'state':'present','reasons':[],
+                 'evidence':[{'kind':'standalone','uid':'0x123'}]},
+                'external_native_parking_improvement_not_supported'),
+               ({'state':'present','reasons':[{'reason':'related_action_unknown'}],
+                 'evidence':[{'kind':'prefab','uid':'0x64'}]},
+                'native_improvement_has_unresolved_related_evidence')]
+        for native,reason in cases:
+            with self.subTest(reason=reason),patch(
+                'ats_road_trip.station_parking.native_support.classify_native_car_parking',return_value=native):
+                report,resources=self.plan(improve_existing_car_parking=True)
+            self.assertFalse(resources)
+            self.assertEqual(report['skip_reasons'],{reason:1})
+
     def remove_native_fueling(self):
         from tests.test_map_sector import item,refs,sector
         contents={p:self.package.read(p) for p in self.package.files}

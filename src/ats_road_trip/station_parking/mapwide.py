@@ -201,6 +201,14 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                 skip('original_native_car_parking_unknown');continue
             if native['state']=='present' and not improve_existing_car_parking:
                 skip('original_native_car_parking_present',state='already_supported');continue
+            if native['state']=='present' and improve_existing_car_parking:
+                # The shared planner can enhance disjoint own-PPD areas. It
+                # does not yet clip against externally associated rest shapes.
+                if native.get('reasons'):
+                    skip('native_improvement_has_unresolved_related_evidence');continue
+                if any(e.get('kind')!='prefab' or e.get('uid')!=hex(raw_prefab.uid)
+                       for e in native.get('evidence',[])):
+                    skip('external_native_parking_improvement_not_supported');continue
             family=catalog.get(model)
             if family is None:skip('unsupported_model_family');continue
             row['family']=family['family']

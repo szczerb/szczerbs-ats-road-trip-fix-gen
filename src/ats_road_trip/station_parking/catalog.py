@@ -12,6 +12,17 @@ import json
 from pathlib import Path
 
 
+# Observed locally, ATS 1.61.3.18 / Alaska Expansion 1.2.3, 2026-10-24.
+# These are original inputs, independently inspected during the r12 rebuild.
+# P05's historical effective sector AND descriptor contain generated overlays;
+# neither historical hash may stand in for the original resource below.
+_DAWSON_ORIGINAL_SOURCE = {
+    'source_archive': 'd879c245c1bc8b88c9a884d88952ccaad88b58ce759f665832fd0b664a6200fb',
+    'source_sector': 'ddc5fcee53d1ac3e0b15ba48bb4c47da0492f6abefaea47c4209fa3fa019e532',
+    'original_descriptor': '92be3a4ee1a2788d32ca80bde50256c0e73032ee3caad2739df3d001b3715f91',
+    'original_descriptor_provider': 'base.scs',
+}
+
 def _sha(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -63,13 +74,10 @@ def load_reviewed_catalog(repo_root=None):
     reviewed_path=root/'docs/examples/station-parking-dawson-two-reviewed-areas.json'
     if reviewed_path.is_file():
         reviewed=json.loads(reviewed_path.read_text(encoding='utf-8'))
-        pin=json.loads((root/'docs/examples/station-parking-forecourt-tour/P05.json').read_text(encoding='utf-8'))
         override={'prefab_uid':reviewed['prefab_uid'],'sector':reviewed['sector'],
-                  'source_archive':pin['fingerprints']['source_archive'],
-                  'source_sector':pin['fingerprints']['sector'],
-                  'original_descriptor':pin['fingerprints']['descriptor'],
+                  **_DAWSON_ORIGINAL_SOURCE,
                   'descriptor':'prefab/gas/nm_truckstop1_chemron.ppd',
                   'mesh':reviewed['mesh_sha256'],'areas':deepcopy(reviewed['areas']),
-                  'provenance':'docs/examples/station-parking-dawson-two-reviewed-areas.json; user accepted 2026-10-24; original P05 source pins'}
+                  'provenance':'Exact areas: docs/examples/station-parking-dawson-two-reviewed-areas.json, user accepted 2026-10-24. Original guards: Alaska Expansion 1.2.3 archive and direct ZIP sector; effective ATS 1.61.3.18 descriptor from base.scs, inspected 2026-10-24. P05 historical effective sector/descriptor overlay hashes are deliberately excluded.'}
         catalog['prefab/gas/nm_truckstop1_chemron.pmd']['policy']['reviewed_areas']=[override]
     return catalog

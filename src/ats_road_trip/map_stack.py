@@ -195,21 +195,19 @@ def _package_description(part, parts, workflow, preset, revision):
            'Preserves original car/truck/bus facilities. Unknown fuel sites are provisionally included in realistic mode; unsupported parking areas are skipped.',
            'Native car parking improvements: '+('ON' if workflow.get('improve_existing_car_parking',False) else 'OFF')+'. Parking eligibility never suppresses eligible fueling.',
            'Replace old r9/r10 map fixes and the Alaska-only Dawson r11 with this complete set and its Base Game and DLC companion. Use one policy set at a time.',
-           'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments. Keep N2 r3 unchanged above EVERY listed map, resource and fix, including OtherMaps.',
+           'Disable earlier source fuel/rest fixes and A/B/C/C2/E/F/G parking/fuel experiments.',
            'Keep the separate tank and courier mods unchanged. Prepared for normal career play; existing-save behavior and runtime coverage remain unverified.',
            '', 'Required order, LOWEST to HIGHEST (game/DLC files load automatically):']
     def fix_line(target):
         marker=' (THIS MOD)' if target['map_name']==name else ''
         return f'{str(preset.value if hasattr(preset,"value") else preset).upper()} r{revision} replacement for '+target['map_name']+marker
-    lines += [fix_line(parts[0]),'North America Background Map 5.3 (original)']
+    lines += [fix_line(parts[0])]
     game_sources=set(parts[0]['source_packages'])
     for path in workflow['packages_low_to_high']:
         if path in game_sources:continue
         lines.append(Path(path).name+' (original source/resource)')
         for target in parts[1:]:
             if path in target['source_packages']:lines.append(fix_line(target))
-    # Map/resource packages may also define map_data; N2 must win those too.
-    lines.append('N2 NAV PARKING FUEL r3 (independent; approved artwork, unchanged gameplay; above every listed source/fix)')
     return '\n'.join(line for line in lines if line is not None)+'\n'
 
 def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None,

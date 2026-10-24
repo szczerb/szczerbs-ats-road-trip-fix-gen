@@ -116,9 +116,8 @@ class MapStackTests(unittest.TestCase):
             self.assertTrue(text.startswith('REALISTIC r10 | '+part['map_name']))
             self.assertIn('LOWEST to HIGHEST',text)
             self.assertIn('Reforma_OtherMaps_Patch_40_161.scs',text)
-            self.assertIn('N2',text)
-            self.assertGreater(text.rindex('N2 NAV PARKING FUEL'),text.index('Reforma_OtherMaps_Patch_40_161.scs'))
-            self.assertTrue(text.rstrip().endswith('above every listed source/fix)'))
+            self.assertNotIn('N2',text)
+            self.assertNotIn('Background',text)
         self.assertIn('country petrol prices only',_package_description(parts[1],parts,workflow,'realistic',10))
 
     def test_generation_requires_explicit_acknowledgment_before_any_work(self):
