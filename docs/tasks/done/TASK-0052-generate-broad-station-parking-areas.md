@@ -1,7 +1,7 @@
 ---
 id: TASK-0052
 title: Generate realistic broad station parking areas with independent fueling
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0047, TASK-0051]
@@ -63,3 +63,13 @@ ADR-0028 uses a free identifier across both active checkouts; ADR-0025 through A
 ## User scope clarification — 2026-10-24
 
 **Documented — direct user instruction:** leave the map background topic completely out of parking/fueling work; it now has its own thread. This supersedes the objective's historical presentation-package installation/verification clauses. No background or navigation packages, source includes, installation choices or copies belong in this handoff. Verify only that the parking/fueling outputs introduce no unrelated presentation resources. Context and namespace audits remain required. Remove obsolete presentation references from the new package descriptions through a metadata-only finalization, retaining every gameplay byte.
+
+## Final delivery verification — 2026-10-24
+
+**Observed locally:** 557 tests pass. Independent finished-archive and effective context/namespace audits pass for all eight completed original-stack packages. Final output contains 231 logical regions at 117 stations; original support is 133 present / 357 absent / 2847 unknown within the disclosed search. Fuel remains 3073 additions / 208 policy omissions; 28 price resources are preserved. Exact Dawson vertices, two groups/flags4 and absence of the tiny polygon pass raw archive verification. Full-set runtime results are unknown.
+
+Both Dawson historical overlay guards were corrected to original Alaska sector and shared base.scs descriptor pins, with three regressions. The final complete regeneration uses only declared original sources and verified selected-member caches; no old generated gameplay package is mounted. Native enhancement ON is verified with actual disjoint output and skips unresolved/external native shapes safely.
+
+Delivery includes individual packages, complete ZIP, exact source-relative README, per-source/family/service coverage, six optional career locators, reproduction/source fingerprints and independent audit receipts. No new image interpretation was required; retained local locator images are copied unchanged with provenance. Work remains isolated; no install, game/profile/economy modification, merge, push or publication occurred.
+
+[Final canonical handoff](../../reference/REALISTIC_PARKING_AREAS_1_61_R12.md).

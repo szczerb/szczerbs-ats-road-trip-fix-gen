@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-10-24
-- Task: [TASK-0052](../../tasks/active/TASK-0052-generate-broad-station-parking-areas.md)
+- Task: [TASK-0052](../../tasks/done/TASK-0052-generate-broad-station-parking-areas.md)
 - Extends: [ADR-0022](ADR-0022-select-mutually-exclusive-car-parking-strategies.md), [ADR-0024](ADR-0024-compose-complete-realistic-map-replacements.md)
 - Supersedes: ADR-0024's preference for individual generated bays in realistic mode; its fuel/source-composition policy remains.
 

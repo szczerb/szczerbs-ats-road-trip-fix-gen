@@ -4,9 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0052: Broad station parking areas](active/TASK-0052-generate-broad-station-parking-areas.md) — original native classification, default-off native improvements, independent fueling and complete r12 delivery in progress.
-
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -14,6 +11,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0052: Broad station parking areas](done/TASK-0052-generate-broad-station-parking-areas.md) — complete eight-package r12 set, 231 areas at 117 stations, native improvements default-OFF, independent fueling, 557 tests and final archive/context/namespace audits. [Delivery](../reference/REALISTIC_PARKING_AREAS_1_61_R12.md).
 
 - [TASK-0051: Two reviewed Dawson parking areas](done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) — full Alaska r11 replacement with two broad contact-enabled areas; 516 tests and 29 independent archive checks. User accepted the Dawson result on 2026-10-24; broader generation is a separate next goal.
 
