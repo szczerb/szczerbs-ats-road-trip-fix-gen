@@ -16,6 +16,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0052: Record r2 feedback and prepare shoreline goal](done/TASK-0052-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.
+
 - [TASK-0051: Recalibrate background to roads/shores and deliver r2](done/TASK-0051-recalibrate-background-to-roads-and-shores.md) — road/ground field, stronger shared market zoom, actual native comparisons with explicit regressions, 305 tests, independent audits and exact corresponding-source rebuild; runtime acceptance pending.
 
 - [TASK-0050: Diagnose common background geometry mismatch](done/TASK-0050-diagnose-common-background-geometry-mismatch.md) — actual texture/road registration verifies sampled mapping; center-based calibration is insufficient, tested global corrections trade regions off; no verified replacement transform or practical repair yet.

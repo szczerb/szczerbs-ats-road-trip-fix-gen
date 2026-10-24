@@ -1,5 +1,7 @@
 # North America background — ATS 1.61 r2 testing handoff
 
+**Subsequent user gameplay — 2026-10-25:** job-market zoom is confirmed fixed and usable. Coastline alignment remains unsatisfactory; some places may improve slightly but the same problem areas remain. [New feedback, 25 screenshots and next-goal preparation](NORTH_AMERICA_BACKGROUND_FEEDBACK_2026_10_25.md). The offline evidence and original delivery-time unknowns below remain historical; do not request the initial market-zoom confirmation again.
+
 **Observed locally — 2026-10-24, ATS 1.61.3.18:** r2 is a materially changed experimental calibration and a stronger job-market zoom adjustment. It improves selected actual road/background relationships, with independent checks and explicit regressions below. **Unknown:** its in-game result. No installation, game launch, profile/save/economy operation or push occurred.
 
 ## Authoritative testing package
@@ -75,7 +77,7 @@ Mobridge's shallow increase is five endpoints; it is not a proven lake/road repa
 
 [Build receipt](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/receipt.json), [package audit](../../local_outputs/work/2026-10-24_18-30-20/north-america-background/audit.json), [independent calibration audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-calibration-audit.md), [independent bridge audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-bridge-audit.md), [independent package audit](../../local_outputs/generated/2026-10-24_18-30-20/independent-package-audit.md). The native-road gallery is local diagnostic evidence; neither it nor extracted native resources enters the mod/source ZIP.
 
-## Manual trial
+## Manual trial at delivery (market zoom subsequently confirmed)
 
 Compare Quick Jobs, Freight Market and External Contracts in truck and car modes where available: nearby cities should be easier to distinguish/select, panning should still reach useful edge locations, and the farthest world-map view should remain workable. Revisit reported coastal/lake spots during normal play, especially LA/San Diego, both Baja regions, Gulf ports and Chicago/Canadian lakes; assess actual shore/road relationships, including true bridges. Existing icon confirmation need not be repeated; report changes if noticed. Runtime acceptance remains the user's.
 
