@@ -51,6 +51,13 @@ All 516 tests pass. Final SCS SHA-256 `458f1fb3d250e42c3ee811911ef8258e6c16cccac
 
 [Delivery/reference](../../reference/DAWSON_TWO_REVIEWED_PARKING_AREAS_1_61_R11.md), [README](../../../local_outputs/generated/2026-10-24_16-43-15/README.md), [independent audit](../../../local_outputs/generated/2026-10-24_16-43-15/independent-audit.json). Research remains isolated; no main checkout edits, merge, push, installation, game launch, profile edit or reset.
 
+
+## User acceptance — 2026-10-24
+
+**Documented — user report:** after testing the delivered r11, the user reports that the result is great and exactly what was originally wanted. The initial Dawson verification gate is satisfied at this reported scope. Completed fatigue recovery, other vehicles, original truck controls and save/reload were not individually enumerated.
+
+The user now requests a prompt for the next goal: generalize broad areas to other stations, handling stations without existing car rest first and gating improvements to already-supported stations behind a disabled-by-default generator/processor flag. This turn records feedback and prepares that prompt only; no broader code or package changes are made. Historical static handoff statements above remain evidence of the delivery stage.
+
 # Links
 
 - [r10 delivery](../../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md)

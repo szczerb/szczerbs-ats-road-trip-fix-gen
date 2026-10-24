@@ -13,7 +13,7 @@ No unstarted tasks.
 
 ## Done
 
-- [TASK-0051: Two reviewed Dawson parking areas](done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) — full Alaska r11 replacement with two broad contact-enabled areas; 516 tests and 29 independent archive checks. Runtime/user acceptance pending.
+- [TASK-0051: Two reviewed Dawson parking areas](done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) — full Alaska r11 replacement with two broad contact-enabled areas; 516 tests and 29 independent archive checks. User accepted the Dawson result on 2026-10-24; broader generation is a separate next goal.
 
 - [TASK-0043: Polish navigation-fix metadata and artwork](done/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — N2 r3 metadata, user-directed A2 art and report-free local testing copy, 508 tests, exact accepted payload/N1 preservation; third-party redistribution permission remains unestablished.
 

@@ -1,5 +1,9 @@
 # Dawson: two user-reviewed car-rest areas — ATS 1.61 r11
 
+**Documented — user acceptance, 2026-10-24:** after testing r11 at Dawson, the user reports that the result is great and exactly matches the original request. This accepts the two broad-area result at this station; no separate confirmation of completed fatigue recovery, other vehicles, truck controls or reload was supplied. Do not request another initial Dawson tour. The earlier pending wording below records the static handoff before this report.
+
+**Documented — requested next goal:** generalize this area-oriented approach to other gas stations, initially handling sites without original car-rest support. Put improvements at already-supported stations behind a disabled-by-default processor/generator feature flag. No broader implementation is authorized in this prompt-preparation turn. The proposed classification uses original effective map data, excluding our generated r9/r10/r11 additions; native-car associations and unknown cases need explicit treatment in the next goal.
+
 **Documented — user feedback, 2026-10-24:** r10's single tiny Dawson bay is unsatisfactory. The user did not attempt more precise maneuvers in the latest visit. Three top-down sketches request two broad areas: storefront and roadside/grass edge, the latter shown in two overlapping views. Regularize the hand-drawn shapes into straight rectangles. Verify this one station before wider heuristic work.
 
 **Observed locally — delivered candidate:** [TASK-0051](../tasks/done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) builds a full Alaska-only replacement on the research branch. It replaces exactly the previous generated 3 × 6 m group with two native car-only rest groups, IDs 1 and 2. Independent marker positions are distinct; runtime two-icon visibility and easy activation are pending the user's check. This is a manually reviewed, source-pinned station correction, not a claim that automatic inference has generalized.
@@ -37,6 +41,6 @@ All 516 tests pass, including two independent cycles, contact flags, baseline/na
 
 ## User check and evidence
 
-For this station only: confirm two icons and stop in ordinary positions across each marked region to check for the rest/engine-off prompt. No need for another town tour or per-pump checks. Further station/family changes wait for this verification.
+The user has now accepted this station’s result. Preserve it as the positive reference for the next goal. Broader station changes and the default-off native-improvement flag remain future implementation; no repeat Dawson or full-profile tour is required.
 
 The unchanged three screenshots, original names and hashes are retained in the [task's relative evidence links](../tasks/done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md). Large evidence and generated mods are ignored/local-only in the retained research worktree; another checkout needs verified copies. Originals remain untouched.
