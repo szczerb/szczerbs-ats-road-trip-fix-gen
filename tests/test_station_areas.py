@@ -161,6 +161,32 @@ class BroadAreaWriterTests(unittest.TestCase):
         override['source_sector']='0'*64
         with self.assertRaisesRegex(ValueError,'override source drift'):self.plan(reviewed_areas=[override])
 
+    def test_reviewed_override_reads_descriptor_from_its_effective_asset_provider(self):
+        import zipfile
+        from ats_road_trip.package import Package,ResourceStack
+        h=self.helper
+        reviewed=json.loads((Path(__file__).parents[1]/'docs/examples/station-parking-dawson-two-reviewed-areas.json').read_text())
+        h.helper.mesh=h.helper.mesh.replace('0.0','0.13931791')
+        h.config['fingerprints']['mesh']=hashlib.sha256(h.helper.mesh.encode()).hexdigest()
+        assets=h.package
+        path=h.helper.root/'placement-only.scs'
+        with zipfile.ZipFile(path,'w') as z:
+            for name in assets.files:
+                if name!=PPD:z.writestr(name,assets.read(name))
+        h.package=Package(path);self.addCleanup(h.package.close)
+        h.stack=ResourceStack([assets,h.package])
+        h.config['fingerprints']['source_archive']=hashlib.sha256(path.read_bytes()).hexdigest()
+        override={'prefab_uid':h.config['prefab_uid'],'sector':h.config['sector'],
+            'source_archive':h.config['fingerprints']['source_archive'],
+            'source_sector':h.config['fingerprints']['sector'],
+            'original_descriptor':h.config['fingerprints']['descriptor'],'descriptor':PPD,
+            'mesh':h.config['fingerprints']['mesh'],'areas':reviewed['areas'],
+            'provenance':'Authored source placement with shared lower asset descriptor'}
+        report,resources=self.plan(reviewed_areas=[override])
+        self.assertNotIn(PPD,h.package.files)
+        self.assertTrue(resources,report['coverage'])
+        self.assertEqual(report['writer']['area_count'],2)
+
     def test_unknown_or_non_operational_gas_graph_never_generates(self):
         with patch('ats_road_trip.station_parking.planner.match_gas_services',side_effect=ValueError('unresolved')):
             report,resources=self.plan()

@@ -44,7 +44,7 @@ def _world_vertices(ppd,prefab,nodes,vertices):
     return [[x,anchor[1]+p[1]-controls[origin][1],z] for p,(x,z) in zip(vertices,horizontal)]
 
 def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_state_text=None,local_context=None,
-                         planning_cache=None,candidate_policy=None,service_context=None):
+                         planning_cache=None,candidate_policy=None,service_context=None,original_stack=None):
     """Return a reproducible report and only the new station's resource edits."""
     validate_config(config)
     cache={} if planning_cache is None else planning_cache
@@ -240,7 +240,7 @@ def plan_station_parking(stack,config,mesh_text,*,map_package,game_version,mesh_
                 if (override['source_archive']!=config['fingerprints']['source_archive']
                         or override['source_sector']!=_hash(source_package.read(sector_path,max_bytes=64*1024*1024))
                         or override['mesh']!=config['fingerprints']['mesh']
-                        or override['original_descriptor']!=_hash(source_package.read(override['descriptor']))):
+                        or override['original_descriptor']!=_hash((original_stack or stack).read(override['descriptor'],max_bytes=32*1024*1024))):
                     raise ValueError('Reviewed parking-area override source drift')
                 reviewed=override
                 break

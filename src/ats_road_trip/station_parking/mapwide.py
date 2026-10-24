@@ -243,7 +243,7 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                         game_version=game_version,mesh_state_text=family['mesh_state_text'],local_context=context,
                         planning_cache=cache,candidate_policy=dict(family.get('policy',{}),
                             broad_areas=True,allow_native_improvement=improve_existing_car_parking,
-                            include_unmarked_areas='unmarked_geometry' in methods),service_context=services)
+                            include_unmarked_areas='unmarked_geometry' in methods),service_context=services,original_stack=original)
                     attempts.append(planned)
                     if planned.get('already_covered'):
                         row.update(state='already_supported',reason='native_car_parking_covers_candidates',method=selected_method);break
