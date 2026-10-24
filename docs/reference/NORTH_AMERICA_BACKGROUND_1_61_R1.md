@@ -1,5 +1,7 @@
 # North America background — ATS 1.61 r1 manual handoff
 
+**Subsequent user gameplay, 2026-10-24 afternoon:** all original coast/lake issues remain, perhaps shifted; job markets remain too far out in both truck/car mode. R1 is not accepted as a practical repair. The [common-geometry investigation](NORTH_AMERICA_BACKGROUND_GEOMETRY_DIAGNOSIS_2026_10_24.md) finds the representative-city calibration/acceptance test insufficient for road fitting and tests runtime scale/projection alternatives. The offline delivery evidence below remains historical.
+
 **Observed locally — 2026-10-24:** r1 is ready for another manual trial. It refines shorelines and selected regional placement, and tries the requested approximately 20% closer job-market view. It preserves the accepted palette, geographic extent, texture sizes and navigation masks. **Unknown:** the revised package's actual in-game result. No game launch, installation, profile modification or push occurred.
 
 ## Authoritative package

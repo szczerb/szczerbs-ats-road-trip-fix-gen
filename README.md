@@ -8,7 +8,7 @@ You can download the ready-to-use mods below or run the Python tools locally to 
 
 ## Original North America background (local experimental build)
 
-An original standalone geographic background for ATS 1.61 is ready for manual testing: [r1 package, previews and load order](docs/reference/NORTH_AMERICA_BACKGROUND_1_61_R1.md). It replaces the former North America Background Map and dependent N2 overlay, with no Ford requirement. Geography is generated deterministically from pinned public-domain Natural Earth vectors. [Reproduce r1](docs/examples/north-america-background/r1/README.md). The user confirms r0 rendering and car-navigation fuel/parking icons; r1 geography and shared market/world zoom changes await testing. This background has not been published.
+An original standalone geographic background for ATS 1.61 is ready for manual testing: [r1 package, previews and load order](docs/reference/NORTH_AMERICA_BACKGROUND_1_61_R1.md). It replaces the former North America Background Map and dependent N2 overlay, with no Ford requirement. Geography is generated deterministically from pinned public-domain Natural Earth vectors. [Reproduce r1](docs/examples/north-america-background/r1/README.md). The user confirms r0 rendering and car-navigation fuel/parking icons, but r1 retains the reported alignment and market usability problems. [Geometry diagnosis](docs/reference/NORTH_AMERICA_BACKGROUND_GEOMETRY_DIAGNOSIS_2026_10_24.md) records the shared calibration weakness and measured limits of global resizing. This background has not been published.
 
 ## Download ready-to-use experimental mods
 

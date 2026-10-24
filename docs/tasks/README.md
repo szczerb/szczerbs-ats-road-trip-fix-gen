@@ -7,7 +7,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 
 
-
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -15,6 +14,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0050: Diagnose common background geometry mismatch](done/TASK-0050-diagnose-common-background-geometry-mismatch.md) — actual texture/road registration verifies sampled mapping; center-based calibration is insufficient, tested global corrections trade regions off; no verified replacement transform or practical repair yet.
 
 - [TASK-0049: Correct background alignment and job-market zoom](done/TASK-0049-correct-background-alignment-and-job-market-zoom.md) — r1 finer shorelines, bounded corrections/shared zoom experiment, 295 tests, independent review and exact source-ZIP reproduction; explicit local/source limits and runtime trial remain.
 
