@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0053: Repair background shoreline feature alignment](active/TASK-0053-repair-background-shoreline-feature-alignment.md) — executing full r3 goal, per-view practical acceptance, clean shore/two-axis geometry checks and confirmed zoom preservation.
+
 
 
 

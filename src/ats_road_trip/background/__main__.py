@@ -121,7 +121,7 @@ def main(argv=None):
     for role in ('fit','check'):
         if report['summary'][role]['max'] > config['validation']['max_'+role+'_error']:
             raise ValueError(f'{role} calibration error exceeds configured limit: {report["summary"][role]}')
-    image,counts = render(config,sources,calibration,args.font)
+    image,counts = render(config,sources,calibration,args.font,land_mask_path=work/'clean-land-mask.png')
     # Texture source image is retained for review/modification, never placed in the .scs.
     image.save(work/'original-background.png')
     previews(image,config,calibration,anchors,args.font,generated/'previews')

@@ -227,6 +227,26 @@ Licenses and data attribution are included. No diagnostics or game/map assets in
             b'Official SICT Datos Viales Baja California (2014) and Baja California Sur (2015) station facts\n'
             b'identify federal route corridors; no source tables, native road geometry or bridge assets are bundled.\n'
             b'Calibration parameters and provenance: docs/examples/north-america-background/r2.\n')
+    if config.get('detailed_shores'):
+        description = description.replace(
+            b'Experimental: runtime rendering, geographic fit and zoom behavior await manual testing.',
+            b'Experimental shoreline revision; geographic fit and higher texture memory await manual testing.')
+        description = description.replace(
+            b'Made with Natural Earth public-domain data.',
+            b'Geography: Natural Earth, GSHHG and USGS NHD; separate data licenses apply.')
+        description += (b'R3: feature and physical-ground correction, detailed coast and Lake Michigan geometry.\n'
+                        b'Keeps the r2 map definition, zoom and navigation masks unchanged.\n')
+        resources['DATA-NOTICE.txt'] += (b'\nDetailed coast source: GSHHG 2.3.7, high-resolution L1, LGPL-3.0-or-later.\n'
+            b'Upstream project/source: https://www.soest.hawaii.edu/wessel/gshhg/\n'
+            b'Pinned original ZIP and source download are documented in the corresponding r3 source bundle.\n'
+            b'GSHHG notices and full GPL/LGPL texts accompany this package.\n'
+            b'Lake Michigan: USGS TNM National Hydrography Dataset, waterbody OBJECTID 8439286,\n'
+            b'GNIS 01623080; public domain. NHD is archived/retired, not current surveyed hydrography.\n'
+            b'Chicago feature-location factual points: Wikidata structured data, CC0; source revisions\n'
+            b'and uncertainty are documented in the corresponding source. No survey accuracy asserted.\n'
+            b'R2 road/ground baseline remains incorporated; see r2 and r3 source provenance.\n')
+        for name in ('GSHHG-LICENSE.txt','GSHHG-LGPL-3.0.txt','GSHHG-GPL-3.0.txt'):
+            resources[name] = (root/'assets/background-map'/name).read_bytes()
     resources['mod_description.txt'] = description
     return resources
 
@@ -251,6 +271,8 @@ def validate_package(path, config):
                 'LICENSE.txt','FONT-LICENSE.txt','DATA-NOTICE.txt'}
     expected |= {f'material/ui/map/{name}.{ext}' for name in ('map','map0','map1','map2','map3')
                  for ext in ('mat','tobj','dds')}
+    if config.get('detailed_shores'):
+        expected |= {'GSHHG-LICENSE.txt','GSHHG-LGPL-3.0.txt','GSHHG-GPL-3.0.txt'}
     checks = {}
     with zipfile.ZipFile(path) as archive:
         names = archive.namelist()

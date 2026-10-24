@@ -46,7 +46,10 @@ def _ring_pixels(points, calibration, canvas, minimum=3):
     return result
 
 
-def render(config, sources, calibration, font_path: Path):
+def render(config, sources, calibration, font_path: Path, *, land_mask_path: Path | None = None):
+    if config.get('detailed_shores'):
+        from .shores import render_detailed
+        return render_detailed(config, sources, calibration, font_path, land_mask_path=land_mask_path)
     size = config['texture_size']
     canvas = Canvas(config['world_bounds'], size)
     palette = config['palette']

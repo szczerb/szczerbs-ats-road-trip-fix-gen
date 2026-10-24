@@ -29,24 +29,39 @@ def source_files(manifest: dict, cache: Path, *, download: bool = False) -> dict
     for name, spec in manifest.items():
         if not name.replace('_', '').isalnum():
             raise ValueError('Unsafe dataset name')
-        target = cache / (name + '.zip')
+        kind = spec.get('format', 'natural-earth-zip')
+        if kind not in ('natural-earth-zip', 'gshhg-zip', 'geojson'):
+            raise ValueError('Unsupported source format')
+        target = cache / (name + ('.geojson' if kind == 'geojson' else '.zip'))
+        limit = 160 * 1024 * 1024 if kind == 'gshhg-zip' else 64 * 1024 * 1024
         if not target.exists() and download:
             if not spec['url'].startswith('https://'):
                 raise ValueError('Source URL must use HTTPS')
             with urllib.request.urlopen(spec['url'], timeout=120) as response:
-                data = response.read(64 * 1024 * 1024 + 1)
-            if len(data) > 64 * 1024 * 1024 or digest(data) != spec['sha256']:
+                data = response.read(limit + 1)
+            if len(data) > limit or digest(data) != spec['sha256']:
                 raise ValueError(f'Unexpected downloaded dataset: {name}')
             with target.open('xb') as out:
                 out.write(data)
         if not target.is_file() or digest(target.read_bytes()) != spec['sha256']:
             raise ValueError(f'Missing or changed dataset: {target}')
+        if kind == 'geojson':
+            document = json.loads(target.read_bytes())
+            if (document.get('type') != 'FeatureCollection' or not document.get('features') or
+                    document.get('exceededTransferLimit')):
+                raise ValueError(f'Incomplete GeoJSON source: {name}')
+            result[name] = target
+            continue
         with zipfile.ZipFile(target) as archive:
             if archive.testzip() is not None:
                 raise ValueError(f'Corrupt dataset: {name}')
-            version = archive.read(name + '.VERSION.txt').decode().strip()
-            if version != spec['version']:
-                raise ValueError(f'Dataset version mismatch: {name}')
+            if kind == 'natural-earth-zip':
+                version = archive.read(name + '.VERSION.txt').decode().strip()
+                if version != spec['version']:
+                    raise ValueError(f'Dataset version mismatch: {name}')
+            elif not all(v in archive.namelist() for v in
+                         ('GSHHS_shp/h/GSHHS_h_L1.shp', 'LICENSE.TXT', 'COPYING.LESSERv3')):
+                raise ValueError('Incomplete GSHHG source archive')
         result[name] = target
     return result
 
@@ -124,6 +139,10 @@ class Calibration:
         self.road_adjustment = None
         if 'road_adjustment' in config:
             self.road_adjustment = CompactDisplacement(config['road_adjustment'])
+        self.feature_adjustment = None
+        if 'feature_adjustment' in config:
+            from .deformation import FeatureAdjustment
+            self.feature_adjustment = FeatureAdjustment(config['feature_adjustment'])
 
     @staticmethod
     def _kernel(distance):
@@ -133,7 +152,7 @@ class Calibration:
     def _affine(self, points):
         return np.c_[points/100000,np.ones(len(points))]@self.affine
 
-    def _from_baseline(self, points):
+    def _before_features(self, points):
         result = self._affine(points)
         for start in range(0,len(points),8192):
             batch = points[start:start+8192]
@@ -143,6 +162,12 @@ class Calibration:
                 result[start:start+8192] += self._kernel(cdist(batch,self.local_points)/self.local_radius)@self.local_weights
         if self.road_adjustment is not None:
             result = self.road_adjustment(result)
+        return result
+
+    def _from_baseline(self, points):
+        result = self._before_features(points)
+        if self.feature_adjustment is not None:
+            result = self.feature_adjustment(result)
         return result
 
     def baseline(self, lonlat):
@@ -186,9 +211,9 @@ class Calibration:
         lon, lat = np.meshgrid(np.linspace(west, east, 70), np.linspace(south, north, 55))
         points = np.c_[lon.ravel(), lat.ravel()]
         step = 0.001
-        p = self(points)
-        a = (self(points + [step, 0]) - p) / step
-        b = (self(points + [0, step]) - p) / step
+        p = self._before_features(self.baseline(points))
+        a = (self._before_features(self.baseline(points + [step, 0])) - p) / step
+        b = (self._before_features(self.baseline(points + [0, step])) - p) / step
         det = a[:, 0] * b[:, 1] - a[:, 1] * b[:, 0]
         base = self.baseline(points)
         ba = (self.baseline(points + [step, 0]) - base) / step
@@ -201,8 +226,8 @@ class Calibration:
             offsets = np.array([(x,z) for x in np.linspace(-self.local_radius,self.local_radius,81)
                                 for z in np.linspace(-self.local_radius,self.local_radius,81)])
             local = np.concatenate([p+offsets for p in self.local_points])
-            a = (self._from_baseline(local+[1,0])-self._from_baseline(local-[1,0]))/2
-            b = (self._from_baseline(local+[0,1])-self._from_baseline(local-[0,1]))/2
+            a = (self._before_features(local+[1,0])-self._before_features(local-[1,0]))/2
+            b = (self._before_features(local+[0,1])-self._before_features(local-[0,1]))/2
             ratio = np.r_[ratio,a[:,0]*b[:,1]-a[:,1]*b[:,0]]
         if self.road_adjustment is not None:
             # Check the combined mapping on a separate uniform baseline grid.
@@ -210,14 +235,17 @@ class Calibration:
             a0,b0,a1,b1 = self.road_adjustment.check_bounds
             gx,gz = np.meshgrid(np.arange(a0,a1+1000,1000),np.arange(b0,b1+1000,1000))
             local = np.c_[gx.ravel(),gz.ravel()]
-            a = (self._from_baseline(local+[1,0])-self._from_baseline(local-[1,0]))/2
-            b = (self._from_baseline(local+[0,1])-self._from_baseline(local-[0,1]))/2
+            a = (self._before_features(local+[1,0])-self._before_features(local-[1,0]))/2
+            b = (self._before_features(local+[0,1])-self._before_features(local-[0,1]))/2
             ratio = np.r_[ratio,a[:,0]*b[:,1]-a[:,1]*b[:,0]]
         result = {'samples': len(points), 'min_area_ratio_to_baseline': float(ratio.min()),
                   'max_area_ratio_to_baseline': float(ratio.max()), 'flipped_samples': int((ratio <= 0).sum())}
         result['samples'] = len(ratio)
         if (ratio <= 0).any() or ratio.min() < 0.15 or ratio.max() > 5:
             raise ValueError(f'Unsafe geographic deformation: {json.dumps(result)}')
+        if self.feature_adjustment is not None:
+            result['pre_feature_mapping'] = True
+            result['feature_adjustment'] = self.feature_adjustment.report()
         return result
 
 
