@@ -67,10 +67,11 @@ def test_calibration_predicts_heldout_and_preserves_orientation(config,anchors):
     assert Calibration(config,moved).report(moved)['summary']['check']['max']>9999
 
 
-def test_route_field_has_compact_support_and_composes_after_calibration(config,anchors):
+@pytest.mark.parametrize('method',['route-normal-compact-v1','route-ground-compact-v1'])
+def test_route_field_has_compact_support_and_composes_after_calibration(config,anchors,method):
     original=Calibration(config,anchors)
     center=original([[-112,33]])[0]
-    field={'method':'route-normal-compact-v1','radius':10000,
+    field={'method':method,'radius':10000,
            'centers_xz':[center.tolist()],'weights_xz':[[400,-200]]}
     config['road_adjustment']=field
     revised=Calibration(config,anchors)
@@ -169,6 +170,9 @@ def test_package_revision_controls_filename_metadata_and_data_notice(tmp_path,co
     r2_description=r2_resources['mod_description.txt'].decode()
     assert 'Finer geographic detail, regional corrections and a closer shared far-zoom setting.' in r2_description
     assert 'than r0' not in r2_description
+    assert 'Residual coastal/lake mismatches remain' in r2_description
+    assert b'North America roads 4.1.0' in r2_resources['DATA-NOTICE.txt']
+    assert b'North America roads 4.1.0' not in resources['DATA-NOTICE.txt']
 
 
 def test_missing_texture_and_changed_unrelated_mask_rejected(tmp_path,config):

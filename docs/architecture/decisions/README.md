@@ -8,6 +8,8 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
+- [ADR-0028: Calibrate backgrounds with roads and physical-ground constraints](ADR-0028-calibrate-background-with-roads-and-ground-constraints.md): bounded all-layer field, local route checks and independent geometry diagnostics, explicit shoreline/bridge limits and stronger shared market zoom.
+
 - [ADR-0027: Check backgrounds against roads and shores](ADR-0027-check-backgrounds-against-road-and-shore-geometry.md): separate runtime texture mapping from geographic calibration; city-center fit/pixels cannot establish a repaired road/water relationship.
 
 - [ADR-0026: Bound regional background corrections](ADR-0026-bound-regional-background-corrections.md): preserve r0 affine, local corrections with explicit uncertainty, finer shorelines and shared market/world zoom tradeoff.

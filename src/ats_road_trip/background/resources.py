@@ -220,6 +220,13 @@ Replaces the geographic background and N2 presentation fix; retain your separate
 Made with Natural Earth public-domain data. Original artwork/definitions: AGPL-3.0-only, szczerb, 2026.
 Licenses and data attribution are included. No diagnostics or game/map assets included.
 '''
+    if revision == 2:
+        description += (b'R2: shared far zoom is closer; all-layer road/ground calibration. Residual coastal/lake mismatches remain.\n'
+                        b'Use the accompanying r2 handoff and comparison previews; in-game acceptance is pending.\n')
+        resources['DATA-NOTICE.txt'] += (b'\nR2 calibration also uses Natural Earth North America roads 4.1.0 (public domain).\n'
+            b'Official SICT Datos Viales Baja California (2014) and Baja California Sur (2015) station facts\n'
+            b'identify federal route corridors; no source tables, native road geometry or bridge assets are bundled.\n'
+            b'Calibration parameters and provenance: docs/examples/north-america-background/r2.\n')
     resources['mod_description.txt'] = description
     return resources
 

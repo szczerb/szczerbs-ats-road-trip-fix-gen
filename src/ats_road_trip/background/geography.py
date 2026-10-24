@@ -222,7 +222,7 @@ class Calibration:
 
 
 class CompactDisplacement:
-    """A regularized route-derived vector field in the calibrated game plane.
+    """A regularized road/physical-ground vector field in the calibrated game plane.
 
     Coefficients are authored calibration parameters, not native road artwork.
     The field acts on every geographic layer equally and is exactly zero beyond
@@ -231,7 +231,8 @@ class CompactDisplacement:
     """
     def __init__(self, spec):
         required = {'radius','centers_xz','weights_xz','method'}
-        if not isinstance(spec,dict) or set(spec)!=required or spec['method']!='route-normal-compact-v1':
+        if (not isinstance(spec,dict) or set(spec)!=required or
+            spec['method'] not in ('route-normal-compact-v1','route-ground-compact-v1')):
             raise ValueError('Unsupported road adjustment')
         self.radius = float(spec['radius'])
         self.centers = np.asarray(spec['centers_xz'],dtype=float)
