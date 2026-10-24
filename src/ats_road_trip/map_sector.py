@@ -187,7 +187,15 @@ def _item(r: _Reader, depth: int = 0) -> MapItem:
         r.skip(44)
         r.array(4)
     elif kind == 3:  # road flags, profiles, railings, nodes, length
-        r.skip(4 + 9 * 8 + 2 * 12 + 3 * 8 + 6 * 10 + 8 + 16 + 4)
+        # KDOP flags belong to the common header, not the four road flags
+        # which follow it. Confusing these yields plausible but wrong UI filters.
+        d['is_city_road'] = bool(flags & (8 << 16))
+        d['show_in_ui_map'] = not bool(flags & (2 << 24))
+        d['road_flags'] = r.read('I')
+        d['road_type'] = r.read('Q')
+        r.skip(8 * 8 + 2 * 12 + 3 * 8 + 6 * 10 + 8)
+        d['node'], d['forward_node'] = r.read('QQ')
+        d['length'] = r.read('f')
     elif kind == 5:
         r.skip(24)
         r.array(8)

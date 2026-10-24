@@ -16,7 +16,7 @@ pytest.importorskip('shapefile')
 import numpy as np
 from PIL import Image, ImageDraw
 
-from ats_road_trip.background.geography import Calibration, source_files
+from ats_road_trip.background.geography import Calibration, CompactDisplacement, source_files
 from ats_road_trip.background.resources import (
     ARCHIVE_NAME, archive_name, build_resources, decode_texture, map_data,
     validate_package, write_package,
@@ -65,6 +65,42 @@ def test_calibration_predicts_heldout_and_preserves_orientation(config,anchors):
     # Check points must not influence the fitted geographic transform.
     assert np.array_equal(c([[-90,36]]),Calibration(config,moved)([[-90,36]]))
     assert Calibration(config,moved).report(moved)['summary']['check']['max']>9999
+
+
+def test_route_field_has_compact_support_and_composes_after_calibration(config,anchors):
+    original=Calibration(config,anchors)
+    center=original([[-112,33]])[0]
+    field={'method':'route-normal-compact-v1','radius':10000,
+           'centers_xz':[center.tolist()],'weights_xz':[[400,-200]]}
+    config['road_adjustment']=field
+    revised=Calibration(config,anchors)
+    # A known displacement at the support center, and exact identity outside.
+    assert np.allclose(revised([[-112,33]])-original([[-112,33]]),[[400,-200]])
+    far=[[-155,64],[-80,30]]
+    assert np.array_equal(revised(far),original(far))
+    assert revised.jacobian_report(config['geographic_extent'])['flipped_samples']==0
+    # Changing held-out survey targets still cannot change the reviewed field.
+    moved=deepcopy(anchors);moved[-1]['z']+=2000
+    assert np.array_equal(revised(far),Calibration(config,moved)(far))
+
+
+@pytest.mark.parametrize('change',[
+    {'radius':0}, {'centers_xz':[[1]]}, {'weights_xz':[[1,2],[3,4]]},
+    {'weights_xz':[[float('inf'),0]]}, {'method':'unreviewed'}, {'extra':0},
+])
+def test_invalid_route_field_blocks(change):
+    spec={'method':'route-normal-compact-v1','radius':10000,
+          'centers_xz':[[0,0]],'weights_xz':[[100,200]]}
+    spec.update(change)
+    with pytest.raises(ValueError):CompactDisplacement(spec)
+
+
+def test_route_field_fold_is_rejected_by_combined_jacobian(config,anchors):
+    center=Calibration(config,anchors)([[-112,33]])[0]
+    config['road_adjustment']={'method':'route-normal-compact-v1','radius':5000,
+        'centers_xz':[center.tolist()],'weights_xz':[[15000,0]]}
+    with pytest.raises(ValueError,match='Unsafe geographic deformation'):
+        Calibration(config,anchors).jacobian_report(config['geographic_extent'])
 
 
 @pytest.mark.parametrize('mutation',[

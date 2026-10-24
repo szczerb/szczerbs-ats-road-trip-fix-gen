@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0051: Recalibrate background to roads/shores and deliver r2](active/TASK-0051-recalibrate-background-to-roads-and-shores.md) — active autonomous implementation goal, independent native/geographic landmarks, stronger job-market scale and verified reproducible package.
+
 
 
 

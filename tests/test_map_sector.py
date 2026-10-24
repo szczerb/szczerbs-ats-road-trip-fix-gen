@@ -34,6 +34,24 @@ def sector(items, nodes=(), children=()):
 
 
 class SectorReaderTests(unittest.TestCase):
+    def test_road_ui_flags_are_header_flags_and_preserve_road_payload(self):
+        # Road payload flags deliberately disagree with KDOP/UI flags. Reading
+        # +59/+60 instead of +54/+55 must not silently produce an inverse result.
+        road_flags=0x02080000
+        payload=(struct.pack('<IQ',road_flags,token('test_road'))
+                 + bytes(8*8+2*12+3*8+6*10+8)
+                 + struct.pack('<QQf',11,12,150.5))
+        for flags,city,shown in [(0,False,True),(8<<16,True,True),
+                                 (2<<24,False,False),((8<<16)|(2<<24),True,False)]:
+            data=sector([item(3,88,payload,flags=flags),prefab()])
+            parsed=parse_sector(data)
+            road=parsed.items[0]
+            self.assertEqual(road.details,dict(road_flags=road_flags,
+                road_type=token('test_road'),node=11,forward_node=12,length=150.5,
+                is_city_road=city,show_in_ui_map=shown))
+            self.assertEqual(data[road.offset:road.end],item(3,88,payload,flags=flags))
+            self.assertEqual(parsed.items[1].uid,100)
+
     def test_company_identity_prefab_marker_and_raw_spawn_flags(self):
         payload = (struct.pack('<4Q', token('helena'), 100, token('shop'), 300)
                    + refs(301, 302) + struct.pack('<2I', 0, 0xf1234567))

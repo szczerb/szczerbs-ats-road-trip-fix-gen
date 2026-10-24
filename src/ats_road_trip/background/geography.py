@@ -121,6 +121,9 @@ class Calibration:
             self.local_weights = np.linalg.solve(kernel,residual)
         elif config['correction'] != 'affine':
             raise ValueError('Unknown correction')
+        self.road_adjustment = None
+        if 'road_adjustment' in config:
+            self.road_adjustment = CompactDisplacement(config['road_adjustment'])
 
     @staticmethod
     def _kernel(distance):
@@ -138,6 +141,8 @@ class Calibration:
                 result[start:start+8192] += self.residual(batch/100000)*100000
             if self.local_points is not None:
                 result[start:start+8192] += self._kernel(cdist(batch,self.local_points)/self.local_radius)@self.local_weights
+        if self.road_adjustment is not None:
+            result = self.road_adjustment(result)
         return result
 
     def baseline(self, lonlat):
@@ -199,9 +204,54 @@ class Calibration:
             a = (self._from_baseline(local+[1,0])-self._from_baseline(local-[1,0]))/2
             b = (self._from_baseline(local+[0,1])-self._from_baseline(local-[0,1]))/2
             ratio = np.r_[ratio,a[:,0]*b[:,1]-a[:,1]*b[:,0]]
+        if self.road_adjustment is not None:
+            # Check the combined mapping on a separate uniform baseline grid.
+            # This also covers the new field between old settlement supports.
+            a0,b0,a1,b1 = self.road_adjustment.check_bounds
+            gx,gz = np.meshgrid(np.arange(a0,a1+1000,1000),np.arange(b0,b1+1000,1000))
+            local = np.c_[gx.ravel(),gz.ravel()]
+            a = (self._from_baseline(local+[1,0])-self._from_baseline(local-[1,0]))/2
+            b = (self._from_baseline(local+[0,1])-self._from_baseline(local-[0,1]))/2
+            ratio = np.r_[ratio,a[:,0]*b[:,1]-a[:,1]*b[:,0]]
         result = {'samples': len(points), 'min_area_ratio_to_baseline': float(ratio.min()),
                   'max_area_ratio_to_baseline': float(ratio.max()), 'flipped_samples': int((ratio <= 0).sum())}
         result['samples'] = len(ratio)
         if (ratio <= 0).any() or ratio.min() < 0.15 or ratio.max() > 5:
             raise ValueError(f'Unsafe geographic deformation: {json.dumps(result)}')
+        return result
+
+
+class CompactDisplacement:
+    """A regularized route-derived vector field in the calibrated game plane.
+
+    Coefficients are authored calibration parameters, not native road artwork.
+    The field acts on every geographic layer equally and is exactly zero beyond
+    its supports. Package reproduction uses the reviewed, versioned coefficients;
+    landmark selection and independent road checks remain a separate audit.
+    """
+    def __init__(self, spec):
+        required = {'radius','centers_xz','weights_xz','method'}
+        if not isinstance(spec,dict) or set(spec)!=required or spec['method']!='route-normal-compact-v1':
+            raise ValueError('Unsupported road adjustment')
+        self.radius = float(spec['radius'])
+        self.centers = np.asarray(spec['centers_xz'],dtype=float)
+        self.weights = np.asarray(spec['weights_xz'],dtype=float)
+        if (self.centers.ndim!=2 or self.centers.shape[1]!=2 or
+            not 1<=len(self.centers)<=1000 or self.weights.shape!=self.centers.shape or
+            not np.isfinite(self.centers).all() or not np.isfinite(self.weights).all() or
+            not np.isfinite(self.radius) or not 5000<=self.radius<=50000 or
+            np.max(np.abs(self.centers))>400000 or np.max(np.abs(self.weights))>50000):
+            raise ValueError('Invalid road adjustment coefficients')
+        # Baseline and output coordinates differ slightly; include a generous
+        # 15k halo when checking the composed mapping in baseline coordinates.
+        a,b = self.centers.min(axis=0)-self.radius-15000
+        c,d = self.centers.max(axis=0)+self.radius+15000
+        self.check_bounds = (a,b,c,d)
+
+    def __call__(self, points):
+        points = np.asarray(points,dtype=float).reshape(-1,2)
+        result = points.copy()
+        for start in range(0,len(points),4096):
+            batch = points[start:start+4096]
+            result[start:start+4096] += Calibration._kernel(cdist(batch,self.centers)/self.radius)@self.weights
         return result
