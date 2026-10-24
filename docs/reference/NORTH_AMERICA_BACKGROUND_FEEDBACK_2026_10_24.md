@@ -1,6 +1,6 @@
 # North America background r0: user gameplay feedback, 2026-10-24
 
-Applies to the r0 background delivered in [TASK-0048](../tasks/done/TASK-0048-build-original-north-america-background.md). The user supplied feedback during ordinary play, requested collection without investigation until finished, then authorized investigation and continued work in [TASK-0049](../tasks/active/TASK-0049-correct-background-alignment-and-job-market-zoom.md). No agent launched ATS, installed a mod or edited a profile.
+Applies to the r0 background delivered in [TASK-0048](../tasks/done/TASK-0048-build-original-north-america-background.md). The user supplied feedback during ordinary play, requested collection without investigation until finished, then authorized investigation and continued work in [TASK-0049](../tasks/done/TASK-0049-correct-background-alignment-and-job-market-zoom.md). No agent launched ATS, installed a mod or edited a profile.
 
 ## Reported positives and scope
 

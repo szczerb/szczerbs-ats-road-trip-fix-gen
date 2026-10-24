@@ -7,7 +7,7 @@
 - [Use this r1 SCS](../../local_outputs/generated/2026-10-24_03-10-27/szczerbs-road-trip-north-america-background-map-ats-1.61-r1-experimental.scs).
 - SHA-256: `a10d9abcf32d9f469a819292c56e012919759775d48492dbf51ca6fd31e88033`.
 - [Preview gallery](../../local_outputs/generated/2026-10-24_03-10-27/previews/index.html), [overall](../../local_outputs/generated/2026-10-24_03-10-27/previews/overall.png), [Mobridge/Lake Oahe](../../local_outputs/generated/2026-10-24_03-10-27/previews/mobridge-oahe.png), [Vancouver Island/lower mainland](../../local_outputs/generated/2026-10-24_03-10-27/previews/vancouver-island.png), [Alaska panhandle](../../local_outputs/generated/2026-10-24_03-10-27/previews/alaska-panhandle.png), [Manitoba lakes](../../local_outputs/generated/2026-10-24_03-10-27/previews/manitoba-lakes.png).
-- [Reproduction commands and input policy](../examples/north-america-background/r1/README.md). Corresponding source ZIP is beside the package; it is source, not another mod to enable.
+- [Reproduction commands and input policy](../examples/north-america-background/r1/README.md). [Corresponding source ZIP](../../local_outputs/generated/2026-10-24_03-10-27/szczerbs-road-trip-north-america-background-1.61-r1-source.zip), implementation commit `f02c313`, SHA-256 `fb8a4d1eb7ed627c965413bb1d79cd44e87dfc4d808ae7811f177695a111a084`. It rebuilds to the exact SCS hash above; it is source, not another mod to enable.
 
 Title/author stay **szczerb's Road Trip North America Background Map**, **szczerb**; version **1.61-r1-experimental**, ATS **1.61**, no Ford dependency. Replace r0 with this package; enable one background. Use the [same exact source-relative load order as r0](NORTH_AMERICA_BACKGROUND_1_61_R0.md#installation-and-priority): this background above all map-data/background/material overrides, including OtherMaps, Reforma and ProMods; keep existing source fixes/connector relationships beneath it. Disable vanished North America Background 5.3, N1/N2 and other backgrounds. Separate fuel/rest/courier/tank packages retain their roles.
 
@@ -41,7 +41,7 @@ A single affine cannot follow all local shifts. Fitting a continental smooth cor
 | Definition changes from r0 | Only `zoom_uplift[7]`; bounds, masks, sizes, route colors/costs and truck/navigation inputs unchanged. |
 | Archive/resources | 22 allowlisted members; closed MAT→TOBJ→DDS graph, no includes/sectors/diagnostics/local paths, no Ford dependency; correct opaque BGRA8 sRGB tiles and quadrant pixels. |
 | Regression suite | **295 tests passed** with the recorded environment. |
-| Reproducibility | Final r1 repeated byte-identically, and updated code reproduces original r0 SHA `913ff62169b2dd7729fe16a0074d4d099d9cdd795c2b785a83a7adf32e32bac4`. |
+| Reproducibility | Final r1 repeated byte-identically, including a build from the extracted source ZIP; updated code reproduces original r0 SHA `913ff62169b2dd7729fe16a0074d4d099d9cdd795c2b785a83a7adf32e32bac4`. |
 
 [Build receipt](../../local_outputs/work/2026-10-24_03-10-27/north-america-background/receipt.json), [calibration](../../local_outputs/work/2026-10-24_03-10-27/north-america-background/calibration.json), [archive audit](../../local_outputs/work/2026-10-24_03-10-27/north-america-background/audit.json), [before/after measurement](../../local_outputs/work/2026-10-24_02-39-28/revision-comparison.json). Reference-check results informed selection; they are excluded from fitting, not a blind benchmark.
 

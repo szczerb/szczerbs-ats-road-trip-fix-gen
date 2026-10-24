@@ -1,6 +1,6 @@
 # North America Background Map — ATS 1.61 r0 manual handoff
 
-**Subsequent user feedback — 2026-10-24:** the background renders and its appearance/extra world zoom are liked; truck navigation seems fine and car fuel/parking navigation icons are confirmed at the reported check. Job-market crowding and coast/lake placement defects are under investigation. [Exact feedback and evidence scope](NORTH_AMERICA_BACKGROUND_FEEDBACK_2026_10_24.md), [TASK-0049](../tasks/active/TASK-0049-correct-background-alignment-and-job-market-zoom.md). The offline delivery record below remains historical; unreported runtime details stay open.
+**Subsequent user feedback — 2026-10-24:** the background renders and its appearance/extra world zoom are liked; truck navigation seems fine and car fuel/parking navigation icons are confirmed at the reported check. Job-market crowding and coast/lake placement defects are under investigation. [Exact feedback and evidence scope](NORTH_AMERICA_BACKGROUND_FEEDBACK_2026_10_24.md), [TASK-0049](../tasks/done/TASK-0049-correct-background-alignment-and-job-market-zoom.md). The offline delivery record below remains historical; unreported runtime details stay open.
 
 **Observed locally — 2026-10-23:** the standalone experimental package passes the automated resource, texture, calibration, reproducibility and regression checks described below. **Unknown:** its runtime appearance and behavior. No game was launched, mod installed, profile/save edited or economy reset.
 

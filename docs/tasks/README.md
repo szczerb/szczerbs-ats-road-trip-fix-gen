@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0049: Correct background alignment and job-market zoom](active/TASK-0049-correct-background-alignment-and-job-market-zoom.md) — r0 runtime feedback accepted; investigate fixed market zoom and coast/lake placement while preserving confirmed navigation icons.
 
 
 
@@ -16,6 +15,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0049: Correct background alignment and job-market zoom](done/TASK-0049-correct-background-alignment-and-job-market-zoom.md) — r1 finer shorelines, bounded corrections/shared zoom experiment, 295 tests, independent review and exact source-ZIP reproduction; explicit local/source limits and runtime trial remain.
 
 - [TASK-0048: Build original North America background](done/TASK-0048-build-original-north-america-background.md) — original standalone r0, 52 verified calibration references, 292 tests, independent archive audit, exact repeat/source-bundle reproduction and manual handoff; runtime remains unverified.
 

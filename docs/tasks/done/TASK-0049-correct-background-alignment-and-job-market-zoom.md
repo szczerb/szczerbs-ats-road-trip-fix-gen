@@ -1,7 +1,7 @@
 ---
 id: TASK-0049
 title: Correct background alignment and job-market zoom from r0 gameplay feedback
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0048]
@@ -39,7 +39,7 @@ Review all supplied screenshots, compare actual effective game geometry with the
 
 ## Verification
 
-Implementation and offline checks pass; corresponding-source bundle reproduction is pending. Clean starting branch `codex/north-america-background`, HEAD `099510f`. Work run: `local_outputs/work/2026-10-24_02-39-28/`, Europe/Warsaw. Original Windows screenshot paths resolve read-only as `local_outputs/work/2026-10-24_02-39-28/user-evidence/`; attachment errors did not mean the underlying files were absent.
+Implementation, offline checks and corresponding-source bundle reproduction pass. R1 is ready for the user’s next manual trial; explicit residual/source-data limitations remain in the handoff. Clean starting branch `codex/north-america-background`, HEAD `099510f`. Work run: `local_outputs/work/2026-10-24_02-39-28/`, Europe/Warsaw. Original Windows screenshot paths resolve read-only as `local_outputs/work/2026-10-24_02-39-28/user-evidence/`; attachment errors did not mean the underlying files were absent.
 
 ### Execution and results
 
@@ -59,3 +59,5 @@ Implementation and offline checks pass; corresponding-source bundle reproduction
 
 - [R1 handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R1.md)
 - [Regional-correction ADR](../../architecture/decisions/ADR-0026-bound-regional-background-corrections.md)
+
+**Final source verification:** source commit `f02c313`, source ZIP SHA `fb8a4d1eb7ed627c965413bb1d79cd44e87dfc4d808ae7811f177695a111a084`. Rebuild from its extracted tree produced SCS SHA `a10d9abcf32d9f469a819292c56e012919759775d48492dbf51ca6fd31e88033`. This completes the experimental revision handoff, without claiming all reported runtime issues fixed.
