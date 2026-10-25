@@ -215,7 +215,10 @@ class FeatureAdjustment:
         if (not fields <= set(spec) or set(spec)-fields-{'translation_flows'} or
                 spec['method'] != 'landmark-flow-ground-steps-v1' or
                 not 1 <= len(spec['landmark_flows']) <= 8 or
-                not 1 <= len(spec['compact_steps']) <= 32 or
+                # A frozen global chain may be followed by a small regional
+                # chain. Keep a finite offline-work bound; geometry thresholds
+                # below still apply to every step and the full composition.
+                not 1 <= len(spec['compact_steps']) <= 64 or
                 len(spec.get('translation_flows', [])) > 8):
             raise ValueError('Invalid feature adjustment')
         self.flows = [LandmarkFlow(v) for v in spec['landmark_flows']]

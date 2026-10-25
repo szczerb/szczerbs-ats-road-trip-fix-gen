@@ -244,6 +244,10 @@ Licenses and data attribution are included. No diagnostics or game/map assets in
             b'GNIS 01623080; public domain. NHD is archived/retired, not current surveyed hydrography.\n'
             b'Chicago feature-location factual points: Wikidata structured data, CC0; source revisions\n'
             b'and uncertainty are documented in the corresponding source. No survey accuracy asserted.\n'
+            b'Additional San Francisco, Seattle and British Columbia feature-location facts use Wikidata CC0.\n'
+            b'Other factual references: ASCE Lacey V. Murrow bridge location; WSDOT SeaTac rest-area site;\n'
+            b'Texas Historical Commission, Texas Tech University and USGS GNIS Galveston feature locations.\n'
+            b'Coordinates have feature/site uncertainty; reconciled fitting targets are not surveyed observations.\n'
             b'R2 road/ground baseline remains incorporated; see r2 and r3 source provenance.\n')
         for name in ('GSHHG-LICENSE.txt','GSHHG-LGPL-3.0.txt','GSHHG-GPL-3.0.txt'):
             resources[name] = (root/'assets/background-map'/name).read_bytes()

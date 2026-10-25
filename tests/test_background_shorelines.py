@@ -99,6 +99,25 @@ def test_feature_report_checks_safe_composed_step_chain():
     assert report['sample_counts_by_region']['control']>0
 
 
+def test_regional_chain_preserves_frozen_distant_mapping_and_inverse():
+    global_step={'radius':1000,'centers_xz':[[0,0]],'weights_xz':[[1,0]]}
+    regional_step={'radius':1000,'centers_xz':[[5000,0]],'weights_xz':[[1,1]]}
+    frozen=_feature_adjustment([global_step.copy() for _ in range(32)])
+    combined=_feature_adjustment([global_step.copy() for _ in range(32)]+
+                                 [regional_step.copy() for _ in range(16)])
+    points=np.array([[0.,0.],[5000.,0.],[20000.,20000.]])
+    mapped=combined(points)
+    assert np.array_equal(mapped[0],frozen(points)[0])
+    assert np.array_equal(mapped[2],points[2])
+    assert np.linalg.norm(mapped[1]-points[1])>10
+    assert np.max(np.abs(combined.inverse(mapped)-points))<1e-5
+    report=combined.report()
+    assert report['composed_step_count']==48
+    assert report['min_determinant']>.05
+    with pytest.raises(ValueError,match='Invalid feature adjustment'):
+        _feature_adjustment([global_step.copy() for _ in range(65)])
+
+
 def test_dense_control_groups_sample_each_declared_source_bbox():
     step={'radius':1000,'centers_xz':[[0,0]],'weights_xz':[[100,0]]}
     controls=[[50000,50000],[50010,50000],[50020,50000],[60000,60000]]
