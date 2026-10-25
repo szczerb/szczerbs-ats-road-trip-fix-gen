@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0053: Repair background shoreline feature alignment](active/TASK-0053-repair-background-shoreline-feature-alignment.md) — executing full r3 goal, per-view practical acceptance, clean shore/two-axis geometry checks and confirmed zoom preservation.
 
 
 
@@ -17,6 +16,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0053: Repair background shores and deliver r3](done/TASK-0053-repair-background-shoreline-feature-alignment.md) — 8-of11 practical geometry gate, all25 comparisons, preserved accepted zoom,326tests and exact production/repeat/source-ZIP reproduction; runtime and named residuals remain explicit.
 
 - [TASK-0052: Record r2 feedback and prepare shoreline goal](done/TASK-0052-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.
 

@@ -2,7 +2,7 @@
 
 ## Context
 
-**Documented — user feedback, 2026-10-25:** r2 market zoom is usable, but the same conspicuous shoreline defects remain. [TASK-0053](../../tasks/active/TASK-0053-repair-background-shoreline-feature-alignment.md) requires stronger screenshot-level acceptance. **Observed locally:** settlement representatives and route-normal matching underconstrain expanded city footprints. Better source detail and safe individual field increments alone do not establish correct final geography. Successive increments can accumulate substantial compression outside landmark regions.
+**Documented — user feedback, 2026-10-25:** r2 market zoom is usable, but the same conspicuous shoreline defects remain. [TASK-0053](../../tasks/done/TASK-0053-repair-background-shoreline-feature-alignment.md) requires stronger screenshot-level acceptance. **Observed locally:** settlement representatives and route-normal matching underconstrain expanded city footprints. Better source detail and safe individual field increments alone do not establish correct final geography. Successive increments can accumulate substantial compression outside landmark regions.
 
 ## Decision
 
