@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0054: Complete incomplete truck-rest lots](active/TASK-0054-complete-incomplete-truck-rest-lots.md) — North Platte source identification, independent truck coverage and complete r13 delivery in progress.
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
@@ -13,6 +12,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0054: Complete incomplete truck-rest lots](done/TASK-0054-complete-incomplete-truck-rest-lots.md) — eight r13 replacements, 4 new regions/icons, 156 banks completed across 143 native regions, preserved car/fuel baseline, 633 tests and independent final audits. [Delivery](../reference/TRUCK_REST_COVERAGE_1_61_R13.md).
 
 - [TASK-0052: Broad station parking areas](done/TASK-0052-generate-broad-station-parking-areas.md) — complete eight-package r12 set, 231 areas at 117 stations, native improvements default-OFF, independent fueling, 557 tests and final archive/context/namespace audits. [Delivery](../reference/REALISTIC_PARKING_AREAS_1_61_R12.md).
 

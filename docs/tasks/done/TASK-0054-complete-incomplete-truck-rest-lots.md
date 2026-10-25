@@ -1,7 +1,7 @@
 ---
 id: TASK-0054
 title: Complete missing truck-rest regions and deliver realistic r13 replacements
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0052]
@@ -59,3 +59,17 @@ Progress: the independent original census parsed all 3,480 winning map-sector re
 Implementation freeze verification: **613 tests pass** in the complete authored suite; **62 focused truck/configuration/car-preservation tests pass** independently. Actual original-source North Platte serialization adds the three intended regions with flags 13 and 1/256-unit nodes while retaining the green item and nodes. Required reviewed targets block delivery if they cannot be emitted. Unknown action/activation/geometry contracts retain conservative coverage uncertainty. Full original-stack smoke and final archives remain pending, so this is an implementation milestone rather than goal completion.
 
 Further verified implementation: exact concave native-bank unions preserve a single marker, original covered geometry/vertical bounds, action bytes, eligibility and original node IDs. Static-model clearance excludes genuine interior props while retaining accessible ground markings and variable NPC occupancy. The actual-source Mason City/Boise/San Diego extension smoke passes; the Pecos/Fort Stockton trash-box gap is excluded. The complete authored suite passes **632 tests**. A retained-census preview reports four additions and 156 bank-extension operations, pending fresh generation and independent final-archive proof. Original source fingerprints match all 36 archives (25,371,215,151 bytes) and the 6,689-file resource directory snapshot. Related diagonal placement inventory is complete but its part-layout generation remains explicitly unsupported.
+
+
+Final source freeze: commit `5c284ce3b8072f50b0ac2a8c5b12804c7e7cafc9` passes **633 authored tests**. The first complete build was interrupted before archives were emitted; retained exact original-member caches are read-only inputs to a fresh build, not a generated gameplay baseline. The resumed run adds content-addressed per-processor checkpoints bound to original-source fingerprints, semantic source/configuration hashes and staged resource bytes. Final artifacts and read-back remain required.
+
+Additional bounded delegation: `delivery_audit_repair` (GPT-6 Luna/high) reviews delivery/checklist/read-back and independently reconstructed source-bank evidence; `audit_actual_native_deltas` (GPT-6.1 Sol/high) reviews final-archive native deltas, sectors newly emitted relative to r12 and collision accounting. Both own ignored audit helpers only; product source remains frozen during generation. Root reviews and executes final audits. Optional career checks are capped at eight prioritized sites; the full machine inventory remains available without requiring a driving tour.
+
+
+## Final verification — 2026-10-25
+
+**Observed locally:** eight complete r13 replacements and ZIP pass all independent final audits and readback. Actual output adds 4 truck regions/icons and completes 156 banks across 143 native regions, grouped into 143 authored sites / 145 native source groups. North Platte retains its exact green region and adds all three required regions (four total). All 231/117 car areas/placements, exact Dawson pair, 3073 fuel additions, 208 omissions and 28 prices remain preserved. Truck improvement is ON; existing-car improvement is OFF. The source-only UID scan covers 3480 sectors / 18,823,372 distinct IDs. The all-source root-node index covers 13,934 referenced IDs / 13,938 occurrences; final moved-node/copy consistency passes.
+
+All 633 authored tests pass. Independently reconstructed source geometry, actual SCS preservation/eligibility/ownership/UIDs, source-relative context/namespace, raw-versus-final metadata-only payloads, ZIP checksums and actual-coordinate diagrams pass. [Canonical handoff, receipts and optional career checklist](../../reference/TRUCK_REST_COVERAGE_1_61_R13.md). Full-set runtime behavior remains unverified and is explicitly left for normal career feedback, not a mandatory tour.
+
+Additional actual delegation: `audit_cross_sector_nodes` (GPT-6 Luna/high) owns source-only occurrence indexing and independent final cross-sector consistency, including executable stale-copy/owner/namespace/source-tamper failures. Root reviews all receipts, corrects final inventory/source-label integration and verifies the complete delivery. No primary-checkout edit, merge, push, installation or game/profile/reset operation occurred.

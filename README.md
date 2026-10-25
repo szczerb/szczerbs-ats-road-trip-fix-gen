@@ -4,6 +4,8 @@ A small personal project for making experimental **American Truck Simulator: Roa
 
 You can download the ready-to-use mods below or run the Python tools locally to generate your own `.scs` files. Game files, third-party map archives, generated packages and local research artifacts are excluded from the Git source history; downloadable builds are attached separately to GitHub Releases. Development is driven by the maintainer’s own setup and community feedback; compatibility is limited to the evidence below.
 
+**Latest local research delivery:** [REALISTIC r13 truck-rest improvements](docs/reference/TRUCK_REST_COVERAGE_1_61_R13.md), with the r12 car/fuel baseline preserved. These eight replacement packages and their career checklist are local research-worktree artifacts; runtime feedback remains open.
+
 ## Download ready-to-use experimental mods
 
 The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):
@@ -47,7 +49,7 @@ Reforma generation also uses **Mega Resources 3.0.1.161** (`Reforma_MegaResource
 
 These Expansion names identify the specific sources above. They do not imply support for every map covering Alaska or western Canada. OtherMaps naming other maps in its description does not establish testing of those maps. Exact input metadata, dependencies and historical observations are in the [input inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [research baseline](docs/reference/RESEARCH_BASELINE.md).
 
-The latest local generated candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; the maintainer confirms parking icons in Alaska and Canada after checking two towns, with denser map coverage. Individual fatigue/truck/reload checks were not enumerated. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
+The historical r9 baseline and separate local candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; the maintainer confirms parking icons in Alaska and Canada after checking two towns, with denser map coverage. Individual fatigue/truck/reload checks were not enumerated. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
 
 ## What has been tried in game?
 

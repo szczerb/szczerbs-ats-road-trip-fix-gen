@@ -1,6 +1,6 @@
 # Truck-rest coverage research
 
-**Documented — user report, 2026-10-25:** three marked truck-parking clusters at the annotated North Platte, Nebraska facility provide only one functional rest region. Green annotations identify working coverage; red marks identify two missing clusters and an unmarked NPC-truck side parking position. Source identities and cause remain under investigation; do not infer a vanilla defect or active profile/load order from the images.
+**Documented — user report, 2026-10-25:** three marked truck-parking clusters at the annotated North Platte, Nebraska facility provide only one functional rest region. Green annotations identify working coverage; red marks identify two missing clusters and an unmarked NPC-truck side parking position. The source investigation below resolves the winning map and native geometry; screenshots alone do not establish a vanilla defect or active profile/load order.
 
 ## Preserved local evidence
 
@@ -14,7 +14,7 @@ Paths below are relative to this document and refer to ignored unchanged copies 
 
 These files are local-only, excluded from Git, and must be supplied as verified copies in other checkouts. The originals remain unchanged. The overlapping camera views do not establish separate additional banks. NPC occupancy corroborates intended parking rather than proving a functional rest action.
 
-[TASK-0054](../tasks/active/TASK-0054-complete-incomplete-truck-rest-lots.md), [ADR-0029](../architecture/decisions/ADR-0029-add-independent-truck-rest-coverage.md).
+[TASK-0054](../tasks/done/TASK-0054-complete-incomplete-truck-rest-lots.md), [ADR-0029](../architecture/decisions/ADR-0029-add-independent-truck-rest-coverage.md).
 
 ## Source identification and annotation interpretation
 
@@ -43,3 +43,15 @@ The original seven-candidate review exposed a real permanent obstruction in the 
 **Observed locally — original-source serialization checks, 2026-10-25:** the reviewed Mason City, Boise and San Diego native-bank extensions serialize without adding markers; the trash-box case remains excluded by model clearance. [Actual-source receipts](../../local_outputs/work/2026-10-25_01-01-52/truck-rest-r13/writer/reviewed-extensions-smoke.json). A retained-census preview found four new regions and 156 bank-extension operations; those are pre-build planning results, not final package coverage or runtime outcomes.
 
 The related diagonal-family inventory resolves all 370 original placements: 349 five-place diagonal truck curves and 21 two-line diagonal truck curves. Their mirrored/endcap part layouts remain a separately diagnosed geometry boundary; model asset bounds alone do not authorize filling their maneuvering space. [All placement layouts](../../local_outputs/work/2026-10-25_01-01-52/truck-rest-r13/inventory/diagonal-review/placement-source-layouts.json). Final coverage must distinguish inspected families from safely emitted geometry.
+
+**Observed locally — native-shape precedent, 2026-10-25:** the original census contains **364 valid active nonconvex standalone truck-rest polygons**, with 4–26 vertices. These are original authored native shapes, not newly tested runtime outcomes. This evidence supports preserving concave exclusion boundaries instead of filling them with a convex hull. [Source examples and hashes](../../local_outputs/work/2026-10-25_01-01-52/truck-rest-r13/writer/original-concave-native-evidence.json).
+
+**Observed locally — related diagonal coverage diagnosis, 2026-10-25:** all **370** diagonal truck-curve placements resolve to original models and source items. A conservative rendered-envelope check finds **9** already wholly covered by original standalone truck rest, **57** without a functional standalone reference in the inspected local visual scope, and **304** requiring a part/mirror-aware footprint before missing coverage can be established. The last group is uncertainty, not 304 confirmed defects; the check does not substitute a model bounding box for parking geometry and does not claim a whole-world absence proof. [Complete diagnosis and model-part evidence](../../local_outputs/work/2026-10-25_01-01-52/truck-rest-r13/inventory/diagonal-review/coverage-diagnosis.json).
+
+
+**Observed locally — first actual r13 truck checkpoint, 2026-10-25:** 68 original Base Game/DLC native sources pass exact original-boundary containment. All 72 planned banks pass exact containment after independent nearest-grid rounding to 1/256 unit; the largest observed endpoint snap is 2.664 mm, below the 2.762 mm theoretical XZ bound. Continuous paint-bank rounding remains within the separately audited 0.01 m perimeter-area budget. Meaningful negative fixtures still reject native crops, 2 cm bank crops and aisle bridges. This is first-partition serialization evidence, not a complete-stack or gameplay result. [Quantitative receipt](../../local_outputs/work/2026-10-25_01-01-52/truck-rest-r13/delivery/base-truck-grid-quantization-analysis.json).
+
+
+## Completed static handoff
+
+The complete original-source r13 delivery, actual coverage/counts, independently audited final archives and optional career feedback are recorded in [the canonical r13 handoff](TRUCK_REST_COVERAGE_1_61_R13.md). Earlier first-partition/preview receipts above retain their original scope; they do not replace the final archive evidence.

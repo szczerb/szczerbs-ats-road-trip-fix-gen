@@ -2,7 +2,7 @@
 
 - Status: accepted
 - Date: 2026-10-25
-- Task: [TASK-0054](../../tasks/active/TASK-0054-complete-incomplete-truck-rest-lots.md)
+- Task: [TASK-0054](../../tasks/done/TASK-0054-complete-incomplete-truck-rest-lots.md)
 - Extends: [ADR-0024](ADR-0024-compose-complete-realistic-map-replacements.md), [ADR-0028](ADR-0028-plan-broad-parking-with-independent-service-eligibility.md)
 
 ## Context
@@ -36,3 +36,12 @@ Keep a source bank already covered to at least 99.5% by native geometry unchange
 Inspect source static-model KDOP envelopes in the original 3x3 base/aux neighborhood. Parked traffic and ground/accessibility markings are not physical blockers. Interior permanent or unidentified model overlap blocks newly activated space. A small curbside prop may narrow an additive bank by at most 1.5m while retaining at least 20m of truck depth; report the original paint and exact refinement. These envelopes are conservative proxies, not a complete physics-mesh proof. Shared root node copies in other sectors block native mutation until a cross-sector extension contract is proven; original graph consistency takes precedence over silently changing one copy.
 
 Cache immutable source classification/model records across owner partitions, without allowing staged car/fuel/new-truck additions to become original coverage. Source Company semantic cities provide approximate human locators; label them as nearest references, not road-access or city-boundary facts.
+
+This explicitly user-directed native truck completion is a scoped exception to keeping original geometry exact for legacy car-access additions: [ADR-0012](ADR-0012-preserve-irregular-source-rest-geometry.md) continues to govern the legacy car-twin/proximity workflow. Enabling truck completion permits only the separately audited native geometry deltas described here; disabling it preserves that earlier gameplay behavior.
+
+
+## Native-coordinate audit precision
+
+Independently reconstruct each paint bank from original curve endpoints, then compare its nearest-grid XZ footprint on the native 1/256-unit map grid. Require exact containment of the original native polygon and of that quantized bank. Retain the separate continuous-source 0.01 m boundary/area budget; quantization never permits a material bank crop or an aisle bridge. The theoretical nearest-grid XZ vertex displacement is `sqrt(2) / 512`, approximately 2.762 mm. This distinguishes unavoidable map-coordinate rounding from a geometry-planning defect.
+
+The reviewed family uses near-edge offset 0.20 m and absolute far-edge offset 24.36 m, yielding 24.16 m of usable painted depth before any separately reported curbside refinement. The current catalog's `depth` field stores that absolute far offset; it must not be added to the near offset again.
