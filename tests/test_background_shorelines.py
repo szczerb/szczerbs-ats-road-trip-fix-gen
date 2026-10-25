@@ -75,11 +75,14 @@ def test_local_corrections_retain_baseline_and_do_not_fit_check_points():
         assert config[key]==old_config[key]
 
 
-def _feature_adjustment(compact_steps):
+def _feature_adjustment(compact_steps, dense_control_groups=None, source_xz=None):
     from ats_road_trip.background.deformation import FeatureAdjustment
-    flow={'source_xz':[[50000,50000],[50010,50000]],
-          'target_xz':[[50000,50000],[50010,50000]],
+    if source_xz is None:
+        source_xz=[[50000,50000],[50010,50000]]
+    flow={'source_xz':source_xz,'target_xz':source_xz,
           'radius':1000,'integration_steps':64}
+    if dense_control_groups is not None:
+        flow['dense_control_groups']=dense_control_groups
     return FeatureAdjustment({'method':'landmark-flow-ground-steps-v1',
         'landmark_flows':[flow],'compact_steps':compact_steps})
 
@@ -94,6 +97,53 @@ def test_feature_report_checks_safe_composed_step_chain():
     assert report['composed_step_grid_samples']>0
     assert report['sample_counts_by_region']['flow']>0
     assert report['sample_counts_by_region']['control']>0
+
+
+def test_dense_control_groups_sample_each_declared_source_bbox():
+    step={'radius':1000,'centers_xz':[[0,0]],'weights_xz':[[100,0]]}
+    controls=[[50000,50000],[50010,50000],[50020,50000],[60000,60000]]
+    groups=[[0,1,2],[3]]
+    report=_feature_adjustment([step],groups,controls).report()
+    rows=report['sample_grids']['control_neighborhoods']['groups']
+    assert [row['source_indices'] for row in rows]==groups
+    assert rows[0]['bounds_xz']==[49800.0,49800.0,50220.0,50200.0]
+    assert rows[1]['bounds_xz']==[59800.0,59800.0,60200.0,60200.0]
+    assert all(row['samples']>0 for row in rows)
+    assert sum(row['samples'] for row in rows)==report['sample_counts_by_region']['control']
+    assert report['sample_grids']['control_neighborhoods']['spacing_units']==5
+    assert report['sample_grids']['flow_support']['spacing_units']==100
+    assert report['sample_grids']['composed_compact_step_support']['spacing_units']==500
+
+
+@pytest.mark.parametrize('groups',[
+    [],                         # no groups
+    [[]],                       # empty group
+    [[0]],                      # missing source index
+    [[0,1,2]],                  # out-of-range and missing index
+    [[0,0],[1]],                # duplicate within a group
+    [[0],[1],[1]],              # duplicate across groups and missing index
+    [[True],[1]],               # bool is not an integer index here
+    [[0],[1.0]],                # non-integer index
+])
+def test_dense_control_groups_reject_invalid_membership(groups):
+    from ats_road_trip.background.deformation import LandmarkFlow
+    with pytest.raises(ValueError,match='dense control groups'):
+        LandmarkFlow({'source_xz':[[0,0],[10,0]],'target_xz':[[0,0],[10,0]],
+                      'radius':1000,'integration_steps':64,
+                      'dense_control_groups':groups})
+
+
+def test_default_dense_control_group_preserves_combined_bbox_sampling():
+    step={'radius':1000,'centers_xz':[[0,0]],'weights_xz':[[100,0]]}
+    report=_feature_adjustment([step]).report()
+    control=report['sample_grids']['control_neighborhoods']
+    # Previously all controls in this flow shared this exact source bbox and grid.
+    assert control['groups']==[{
+        'flow_index':0,'group_index':0,'source_indices':[0,1],
+        'bounds_xz':[49800.0,49800.0,50210.0,50200.0],
+        'samples':6723}]
+    assert control['samples']==6723
+    assert report['sample_counts_by_region']['control']==6723
 
 
 def test_feature_report_rejects_cumulative_compression_between_flows():

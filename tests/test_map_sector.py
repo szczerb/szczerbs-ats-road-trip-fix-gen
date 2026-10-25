@@ -93,6 +93,42 @@ class SectorReaderTests(unittest.TestCase):
         self.assertEqual(result.nodes[0].rotation, (1., 0., 0., 0.))
         self.assertEqual(result.items[2].details['children'], (100, 200))
 
+    def test_ferry_payload_links_port_prefab_node_and_offset(self):
+        # Pinned FerrySerializer order: Port token, Prefab UID, Node UID,
+        # then Vector3 UnloadOffset. Keep high-bit UIDs unsigned and exact.
+        port = token('horseshoebay')
+        prefab_uid = 0xf8aff2c8aa800001
+        ferry_uid = 0xfbe44a3da1000001
+        node_uid = 0xfbe44a3e02800000
+        prefab_item = item(4, prefab_uid,
+                           struct.pack('<QQ', token('02003'), 0)
+                           + refs() + refs(node_uid) + refs()
+                           + struct.pack('<QH', ferry_uid, 0)
+                           + bytes(12 + 8))
+        ferry_item = item(0x13, ferry_uid,
+                          struct.pack('<QQQ3f', port, prefab_uid, node_uid,
+                                      -26.3, 0.0, 10.0))
+        service = item(7, 0xf23456789abcdef0,
+                       struct.pack('<QQ', node_uid, prefab_uid) + refs())
+        data = sector([prefab_item, ferry_item, service], [node(node_uid)],
+                      (ferry_uid, node_uid))
+
+        result = parse_sector(data)
+        prefab_parsed, ferry_parsed, service_parsed = result.items
+        self.assertEqual(prefab_parsed.details['ferry'], ferry_uid)
+        self.assertEqual({key: ferry_parsed.details[key] for key in ('port', 'prefab', 'node')},
+                         {'port': port, 'prefab': prefab_uid, 'node': node_uid})
+        for actual, expected in zip(ferry_parsed.details['unload_offset'], (-26.3, 0.0, 10.0)):
+            self.assertAlmostEqual(actual, expected, places=5)
+        self.assertEqual(ferry_parsed.offset, prefab_parsed.end)
+        self.assertEqual(ferry_parsed.end, ferry_parsed.offset + 57 + 36)
+        self.assertEqual(data[ferry_parsed.offset:ferry_parsed.end], ferry_item)
+        self.assertEqual(service_parsed.uid, 0xf23456789abcdef0)
+        self.assertEqual(service_parsed.details['node'], node_uid)
+        self.assertEqual(result.nodes[0].uid, node_uid)
+        self.assertEqual(result.visibility_children, (ferry_uid, node_uid))
+        self.assertEqual(result.suffix, refs(ferry_uid, node_uid))
+
     def test_compound_is_scoped_not_discovered_as_root_fuel(self):
         nested = item(0x23, 99, struct.pack('<QQ', 15, 100) + refs())
         compound = item(0x28, 400, struct.pack('<Q', 12) + struct.pack('<I', 1)

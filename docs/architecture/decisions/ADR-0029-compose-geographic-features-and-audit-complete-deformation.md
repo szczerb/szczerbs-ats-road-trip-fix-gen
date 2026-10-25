@@ -18,6 +18,8 @@ Regularization must address accumulated deformation, rather than allowing repeat
 
 Retain the baseline country-scale deformation guard. Feature checks cover 100-unit flow supports, 5-unit control neighborhoods and **500-unit coverage across all active compact-step support bounds after full composition**. Preserve minimum determinant >0.05, maximum determinant <500, maximum linear stretch <30 and reverse-cycle error ≤0.05, plus existing per-step checks. Stream sample grids to bound memory. These are sampled diagnostics, not a proof of continuous invertibility.
 
+Adjacent regional controls may share one flow so that later city flows do not move earlier targets. Optional semantic dense-control groups partition all source indices exactly once: each group retains its full source bbox plus the same 200-unit halo at 5-unit spacing. The full regional support still receives 100-unit coverage. Existing configurations without groups retain their previous combined dense bbox and sample counts. Declare groups from city/site identity before evaluating a candidate; do not select them to hide a failed sample.
+
 Require original-scale and regional comparisons with identical native geometry for every supplied view, correct pixel/world frames, direct final-mask distances, regional/worst-case checks and explicit regressions. A substantial majority of frozen independent problem-area groups must materially improve without an unexplained new severe regression. Fitting residuals, source-shape conservation, city markers, safe steps or a cleaner texture cannot independently satisfy that gate.
 
 ## Consequences

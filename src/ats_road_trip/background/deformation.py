@@ -79,7 +79,8 @@ class CompactStep:
 
 class LandmarkFlow:
     def __init__(self, spec):
-        if set(spec) != {'radius', 'integration_steps', 'source_xz', 'target_xz'}:
+        required = {'radius', 'integration_steps', 'source_xz', 'target_xz'}
+        if not required <= set(spec) or set(spec)-required-{'dense_control_groups'}:
             raise ValueError('Invalid landmark flow fields')
         self.p = np.asarray(spec['source_xz'], dtype=float)
         self.q = np.asarray(spec['target_xz'], dtype=float)
@@ -92,6 +93,27 @@ class LandmarkFlow:
                 np.max(np.abs(self.p)) > 400000 or np.max(np.abs(self.q)) > 400000 or
                 np.max(np.linalg.norm(self.q-self.p, axis=1)) > 10000):
             raise ValueError('Unsafe landmark flow')
+        if 'dense_control_groups' not in spec:
+            # Preserve the former one-bounding-box sampling for existing flows.
+            self.dense_control_groups = [list(range(len(self.p)))]
+        else:
+            groups = spec['dense_control_groups']
+            if (not isinstance(groups, list) or not groups or
+                    any(not isinstance(group, list) or not group for group in groups)):
+                raise ValueError('Invalid landmark flow dense control groups')
+            seen = set()
+            checked_groups = []
+            for group in groups:
+                if any(not isinstance(index, int) or isinstance(index, bool) or
+                       not 0 <= index < len(self.p) for index in group):
+                    raise ValueError('Invalid landmark flow dense control groups')
+                if len(set(group)) != len(group) or seen.intersection(group):
+                    raise ValueError('Invalid landmark flow dense control groups')
+                seen.update(group)
+                checked_groups.append(list(group))
+            if seen != set(range(len(self.p))):
+                raise ValueError('Invalid landmark flow dense control groups')
+            self.dense_control_groups = checked_groups
         delta = self.q-self.p
         times = np.linspace(0, 1, 2*self.steps+1)
         self.centers = self.p[None] + times[:, None, None]*delta[None]
@@ -236,13 +258,23 @@ class FeatureAdjustment:
         # allocate a continent-sized point array.
         flow_grids = [(flow.lo, flow.hi, 100) for flow in self.flows]
         control_grids = []
-        for flow in self.flows:
+        control_group_metadata = []
+        for flow_index, flow in enumerate(self.flows):
             # Closely spaced real-city controls can expand from country scale
             # toward the game's nearly real-size landmark models. Sample their
             # source neighborhood much more densely than the city-wide grid.
             if isinstance(flow, LandmarkFlow):
-                lo, hi = flow.p.min(axis=0)-200, flow.p.max(axis=0)+200
-                control_grids.append((lo, hi, 5))
+                for group_index, source_indices in enumerate(flow.dense_control_groups):
+                    source_points = flow.p[source_indices]
+                    lo, hi = source_points.min(axis=0)-200, source_points.max(axis=0)+200
+                    control_grids.append((lo, hi, 5))
+                    control_group_metadata.append({
+                        'flow_index': flow_index,
+                        'group_index': group_index,
+                        'source_indices': list(source_indices),
+                        'bounds_xz': [float(lo[0]), float(lo[1]),
+                                      float(hi[0]), float(hi[1])],
+                        'samples': 0})
 
         active_steps = [step for step in self.steps if np.any(step.weights != 0)]
         composed_bounds = None
@@ -268,7 +300,7 @@ class FeatureAdjustment:
         worst_det_point = None
         for source, specs in grid_sources:
             source_count = 0
-            for lo, hi, spacing in specs:
+            for spec_index, (lo, hi, spacing) in enumerate(specs):
                 for grid in _grid_chunks(lo, hi, spacing):
                     a = self(grid+[.5, 0])-self(grid-[.5, 0])
                     b = self(grid+[0, .5])-self(grid-[0, .5])
@@ -286,6 +318,8 @@ class FeatureAdjustment:
                     cycle = np.linalg.norm(self.inverse(mapped)-grid, axis=1)
                     max_cycle = max(max_cycle, float(cycle.max()))
                     source_count += len(grid)
+                    if source == 'control':
+                        control_group_metadata[spec_index]['samples'] += len(grid)
             source_samples[source] = source_count
 
         sample_count = sum(source_samples.values())
@@ -297,7 +331,9 @@ class FeatureAdjustment:
                 'feature_grid_samples': sample_count, 'sample_counts_by_region': source_samples,
                 'sample_grids': {
                     'flow_support': {'spacing_units': 100, 'samples': source_samples['flow']},
-                    'control_neighborhoods': {'spacing_units': 5, 'samples': source_samples['control']},
+                    'control_neighborhoods': {
+                        'spacing_units': 5, 'samples': source_samples['control'],
+                        'groups': control_group_metadata},
                     'composed_compact_step_support': {
                         'spacing_units': 500, 'samples': source_samples['composed_step'],
                         'active_steps': len(active_steps),
