@@ -17,6 +17,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0054: Diagnose r3 detailed world-map background loss](done/TASK-0054-diagnose-r3-detailed-map-background-loss.md) — archive-specific DirectStorage request-too-large error correlates with fourfold detailed DDS payload; unchanged zoom/materials verified, controlled resize recommended, runtime fix pending.
+
 - [TASK-0053: Repair background shores and deliver r3](done/TASK-0053-repair-background-shoreline-feature-alignment.md) — 8-of11 practical geometry gate, all25 comparisons, preserved accepted zoom,326tests and exact production/repeat/source-ZIP reproduction; runtime and named residuals remain explicit.
 
 - [TASK-0052: Record r2 feedback and prepare shoreline goal](done/TASK-0052-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.

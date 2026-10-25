@@ -9,3 +9,4 @@ Use the [incident template](../templates/INCIDENT_TEMPLATE.md) and link the evid
 Initialization opened no incidents. Subsequent investigations:
 
 - [INC-0001: Connector icon cache write failure](INC-0001-connector-icon-cache/README.md) — valid packaged JPEG, logged copy failure, shorter r8 filename mitigation; in-game confirmation pending.
+- [INC-0002: R3 detailed world-map background loss](INC-0002-r3-background-detailed-texture-loading/README.md) — user-reported three-level blank background, archive-specific DirectStorage request-too-large error, detailed tile pixels increased 64→256 MiB; analysis complete, corrective build/runtime confirmation pending.

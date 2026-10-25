@@ -1,5 +1,7 @@
 # North America background 1.61-r3-experimental
 
+**Runtime regression — user report, 2026-10-25:** r3 shows the background only at maximum world-map zoom out; all three detailed levels are blank. [INC-0002](../incidents/INC-0002-r3-background-detailed-texture-loading/README.md) records an archive-specific DirectStorage request-too-large failure and the fourfold detailed-texture size increase. The package below remains the exact historical r3 delivery, not a corrected or runtime-accepted build. Its offline geometry results do not override this rendering failure. Corrective packaging and runtime confirmation remain pending.
+
 **Observed locally, 2026-10-25:** r3 is ready for the user's manual testing. The offline gate finds material road/shore improvements in **8 of 11 independently catalogued problem groups**, with all 25 supplied views accounted for. This is a substantial partial repair, not a claim that every coastline is correct. Haida Gwaii, Gulf-delta and Texas/harbor relationships remain unresolved or mixed.
 
 ## Authoritative files
