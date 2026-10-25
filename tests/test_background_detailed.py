@@ -9,6 +9,7 @@ pytest.importorskip("numpy")
 pytest.importorskip("PIL")
 pytest.importorskip("scipy")
 pytest.importorskip("shapefile")
+pytest.importorskip("pyproj")
 
 import numpy as np
 from PIL import ImageFont
@@ -114,3 +115,23 @@ def test_render_keeps_lake_island_and_clips_country_seam_to_land(tmp_path, monke
     assert counts["nhd_lake_michigan"] == 1
     # GSHHG records and the two country features are each projected in a batch.
     assert len(calibration_calls) == 4
+
+
+def test_narrow_source_island_is_expanded_before_raster_classification(monkeypatch):
+    """A subpixel source feature must survive at its expanded game-plane position."""
+    from PIL import Image
+    from ats_road_trip.background.render import Canvas
+    narrow = _polygon_shape([_clockwise_box(-50.45, 30, -50.40, 70)])
+    monkeypatch.setattr(shores, '_gshhg_reader', lambda _path: SimpleNamespace(
+        iterShapeRecords=lambda: iter([SimpleNamespace(shape=narrow)]), close=lambda: None))
+    def expanded_city(points):
+        points = np.asarray(points, dtype=float).copy()
+        points[:, 0] = (points[:, 0]+50.5)*40-50
+        return points
+    mask = Image.new('L', (100, 100))
+    shores._paint_detailed_land(mask, Path('unused.zip'), [-100, 0, 0, 100],
+                                expanded_city, Canvas([-100, 0, 0, 100], 100))
+    # Rasterizing in the source plane first would place/collapse this island
+    # in a different pixel. The expanded two-unit land strip belongs here.
+    assert mask.getpixel((53, 50)) == 255
+    assert mask.getpixel((50, 50)) == 0

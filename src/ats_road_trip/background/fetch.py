@@ -1,4 +1,4 @@
-"""Download pinned public-domain data and permitted font into an ignored run.
+"""Download pinned licensed geographic data and a permitted font into an ignored run.
 
 Usage: python -m ats_road_trip.background.fetch --output local_outputs/work/TIMESTAMP/source-data
 No tools, font binaries or geographic archives are added to the source repository.
