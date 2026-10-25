@@ -300,6 +300,45 @@ class StandaloneTruckTriggerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'metadata'):
             self.write(bytes(broken))
 
+    def test_nonoriented_native_polygon_can_retain_distinct_unit_node_rotations(self):
+        from ats_road_trip.map_sector import parse_sector
+        from ats_road_trip.rest_stops import _standalone
+        data,_,_=self.native_sector(flags=0x90c)
+        original=bytearray(data);parsed=parse_sector(data)
+        yaw=(math.cos(math.pi/12),0.,-math.sin(math.pi/12),0.)
+        for index in (0,2):
+            struct.pack_into('<4f',original,parsed.nodes[index].offset+20,*yaw)
+        data=bytes(original)
+        result,_,report=self.write(data)
+        before=parse_sector(data);after=parse_sector(result);nodes={n.uid:n for n in after.nodes}
+        source=before.items[0]
+        for area in report['areas']:
+            generated=next(i for i in after.items if i.uid==int(area['uid'],16))
+            source_nodes=_standalone(data,source)['nodes'];new_nodes=_standalone(result,generated)['nodes']
+            for old,new in zip(source_nodes,new_nodes):
+                self.assertEqual(nodes[old].rotation,nodes[new].rotation)
+            self.assertEqual(generated.flags,0x90c)
+        bad=bytearray(data)
+        struct.pack_into('<4f',bad,before.nodes[1].offset+20,0.,0.,0.,0.)
+        with self.assertRaisesRegex(ValueError,'unit quaternions'):
+            self.write(bytes(bad))
+        oriented=bytearray(data);struct.pack_into('<I',oriented,source.offset+52,0x90e)
+        with self.assertRaisesRegex(ValueError,'Oriented'):
+            self.write(bytes(oriented))
+
+    def test_native_source_and_gentle_new_truck_slope_use_no_car_height_span_cap(self):
+        source_region=[(0.,0.,0.),(30.,1.2,0.),(30.,1.2,22.),(0.,0.,22.)]
+        data,_,_=self.native_sector(region=source_region)
+        gentle=[(40.,0.,10.),(100.,1.2,10.),(100.,1.2,35.),(40.,0.,35.)]
+        result,_,report=self.write(data,areas=[{'id':'gentle-truck-bank','vertices':gentle}])
+        self.assertGreater(report['geometry_contract']['source_height_span'],0.5)
+        self.assertGreater(report['areas'][0]['height_span'],0.5)
+        self.assertEqual(report['geometry_contract']['new_maximum_edge_grade'],0.1)
+        self.assertTrue(report['source_items_and_nodes_preserved'])
+        steep=[(40.,0.,10.),(100.,10.,10.),(100.,10.,35.),(40.,0.,35.)]
+        with self.assertRaisesRegex(ValueError,'edge grade'):
+            self.write(data,areas=[{'id':'unsafe-steep-bank','vertices':steep}])
+
     def test_native_bounds_calibration_and_emitted_envelope(self):
         from ats_road_trip.truck_parking.standalone import _projections
         data,_,_=self.native_sector()

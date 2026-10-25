@@ -103,8 +103,8 @@ def _source_census(original, work_dir=None):
                 cache=Path(work_dir)/'original-sector-cache'/_digest(str(package.path).encode())[:12]
             if cache is not None:
                 package.prefetch(selected,disk_cache=cache,max_bytes=_LIMIT)
-    banks=[]; diagnostics=[]; native=[]; visibility=defaultdict(list); occupied=set()
-    prefab_rows=[]; descriptors={}; unresolved={}; uncertain_bounds=[]
+    banks=[]; diagnostics=[]; native=[]; visibility=defaultdict(list); occupied=set();root_seen=defaultdict(set);root_shared=defaultdict(set)
+    prefab_rows=[]; descriptors={}; unresolved={}; uncertain_bounds=[];companies=[]
     def walk_nested(items,path,lineage=()):
         for item in items:
             occupied.add(item.uid)
@@ -125,6 +125,8 @@ def _source_census(original, work_dir=None):
             row['source_sector_sha256']=_digest(data)
         banks.extend(found);diagnostics.extend(issues)
         nodes={n.uid:n for n in sector.nodes}
+        namespace=path.split('/')[1]
+        root_shared[namespace].update(set(nodes)&root_seen[namespace]);root_seen[namespace].update(nodes)
         occupied.update(nodes)
         occupied.update(i.uid for i in sector.items)
         occupied.update(sector.visibility_children)
@@ -135,6 +137,9 @@ def _source_census(original, work_dir=None):
                 visibility[uid].append(path)
             if item.kind==0x28:
                 walk_nested(item.details['items'],path,(item.uid,))
+            if item.kind==6 and item.details.get('city') and item.details.get('node') in nodes:
+                companies.append({'uid':hex(item.uid),'sector':path,'city_token':item.details['city'],
+                    'company_token':item.details['company'],'position':nodes[item.details['node']].position})
             if item.kind==0x22:
                 bounds=struct.unpack_from('<10f',data,item.offset+12)
                 bounds_xyz=[*bounds[:3],*bounds[5:8]]
@@ -254,6 +259,7 @@ def _source_census(original, work_dir=None):
                         row['node_conflict']=True
                     row['_nodes'][node.uid]=node
     for row in native:
+        row['shared_root_node_uids']=[hex(u) for u in row['node_uids'] if u in root_shared[row['sector'].split('/')[1]]]
         ns=row['_nodes']
         if (set(row['node_uids'])<=ns.keys() and not row.get('node_conflict')
                 and len(row['node_uids'])>=3 and not row['radius']):
@@ -273,7 +279,7 @@ def _source_census(original, work_dir=None):
         'sector_count':len(paths),'modes':modes,'source_stack':original,
         'reviewed_model_sources':model_receipts,'occupied_uids':occupied,
         'original_uid_count':len(occupied),'uncertain_standalone_bounds':uncertain_bounds,
-        'action_index':action_index}
+        'action_index':action_index,'companies':companies}
     original._truck_coverage_census=cached
     return cached
 
@@ -319,6 +325,14 @@ def _select_regions(census):
         uncertain_standalone.append({'uid':source['uid'],'footprint':footprint,'low':low,'high':high})
     other_native=[{**g,'uid':p['uid'],'kind':'prefab'} for p in census['native_prefabs']
         for g in p.get('world_polygons',()) if g.get('vertices')]
+    bounds={}
+    def near(vertices,row):
+        key=id(row)
+        if key not in bounds:
+            p=row['polygon_xz'];bounds[key]=(min(x for x,z in p),max(x for x,z in p),min(z for x,z in p),max(z for x,z in p))
+        lo,hi,left,right=bounds[key]
+        return not (max(p[0] for p in vertices)<lo-150. or min(p[0] for p in vertices)>hi+150.
+                    or max(p[2] for p in vertices)<left-150. or min(p[2] for p in vertices)>right+150.)
     classified=[]
     for bank in census['banks']:
         row=dict(bank); vertices=_vertices(bank)
@@ -326,9 +340,9 @@ def _select_regions(census):
             row.update(coverage_state='unknown',reason='bank_has_no_resolved_world_geometry')
             classified.append(row);continue
         centre=_centre(vertices)
-        nearby=[r for r in native if abs(r['height']-centre[1])<=1.
+        nearby=[r for r in native if abs(r['height']-centre[1])<=1. and near(vertices,r)
                 and polygon_distance(_xz(vertices),r['polygon_xz'])<150.]
-        prefab_coverage=[r for r in other_native if abs(r['height']-centre[1])<=1.
+        prefab_coverage=[r for r in other_native if abs(r['height']-centre[1])<=1. and near(vertices,r)
                 and polygon_distance(_xz(vertices),r['polygon_xz'])<150.]
         polygons=[r['vertices'] for r in nearby+prefab_coverage]
         state=compare_coverage(vertices,polygons)
@@ -349,8 +363,21 @@ def _select_regions(census):
         row['coverage_state']=state
         row['covering_native_uids']=[r['uid'] for r in nearby+prefab_coverage
              if _coverage_state(compare_coverage(vertices,[r['vertices']]))=='fully_covered']
+        row['native_coverages']=[{'uid':r['uid'],'sector':r['sector'],'flags':r['flags'],
+            **compare_coverage(vertices,[r['vertices']])} for r in nearby]
+        if state=='partially_covered' and any(r['flags']&1 and
+                compare_coverage(vertices,[r['vertices']]).get('maximum_native_coverage_fraction',0.)>=.95 for r in nearby):
+            row['operationally_covered']=True
         row['_nearby']=nearby
         classified.append(row)
+    for row in classified:
+        evidence=row.get('coverage_evidence',{})
+        fraction=evidence.get('maximum_native_coverage_fraction',0.)
+        if row['coverage_state']=='partially_covered' and fraction>=.995:
+            row['operationally_covered']=True
+            row['native_edge_inset_preserved']={
+                'coverage_fraction':fraction,
+                'policy':'At least 99.5% native convex coverage; preserve the existing bank marker rather than duplicate it for a paint-edge sliver.'}
     anchors=[]
     for row in classified:
         if row['coverage_state'] in ('fully_covered','partially_covered') and _lineage(row):
@@ -368,6 +395,11 @@ def _select_regions(census):
     selected=[]
     for row in classified:
         if row.get('operationally_covered') or row['coverage_state'] not in ('uncovered','partially_covered'):
+            continue
+        fraction=row.get('coverage_evidence',{}).get('maximum_native_coverage_fraction',0.)
+        if row['coverage_state']=='partially_covered' and fraction>=.5:
+            row['reason']='partial_native_bank_requires_reviewed_extension_not_duplicate_marker'
+            row['planning_action']='unchanged_pending_safe_geometry_extension'
             continue
         matching=[]
         for anchor,source in anchors:
@@ -391,12 +423,50 @@ def _select_regions(census):
     return classified,selected
 
 
+def _decode_token(value):
+    alphabet='\0'+'0123456789abcdefghijklmnopqrstuvwxyz_';chars=[]
+    while value:chars.append(alphabet[value%38]);value//=38
+    return ''.join(chars)
+
+
+def _location_hint(original,census,vertices,sector=None):
+    companies=census.get('companies',())
+    if sector:companies=[r for r in companies if r['sector'].split('/')[1]==sector.split('/')[1]]
+    if not companies:return {}
+    labels=getattr(original,'_truck_city_labels',None)
+    if labels is None:
+        from ..sii import _expand_includes,parse_units
+        labels={};original.prefetch(r'def/city.*\.(?:sii|sui)')
+        for path in original.matching(r'def/city(?:\.[^/]+)?\.sii'):
+            try:units=parse_units(_expand_includes(original.text(path),path,original.text,()),source=path)
+            except (ValueError,KeyError,OSError):continue
+            for unit in units:
+                if unit.kind!='city_data':continue
+                try:key=token(unit.name.removeprefix('city.'))
+                except ValueError:continue
+                label=unit.one('city_name','') or ''
+                if label and not label.startswith('@@'):labels[key]=label
+        original._truck_city_labels=labels
+    center=_centre(vertices)
+    nearest=sorted(companies,key=lambda row:math.hypot(row['position'][0]-center[0],row['position'][2]-center[2]))[:3]
+    rows=[{**row,'city_name':labels.get(row['city_token'],_decode_token(row['city_token']).replace('_',' ').title()),
+        'company_name':_decode_token(row['company_token']),
+        'straight_line_distance_world_units':math.hypot(row['position'][0]-center[0],row['position'][2]-center[2])} for row in nearest]
+    return {'nearest_city':rows[0]['city_name'],'locator':{'center_xyz':list(center),
+        'basis':'nearest original Company semantic city; proximity reference, not a road-access or city-boundary claim',
+        'nearby_companies':rows}}
+
+
 def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=None,
                            game_version='1.61.3.18', work_dir=None):
     """Compose truck-only standalone additions after fuel/car sector edits."""
     original=ownership_stack or stack
     census=_source_census(original,work_dir=work_dir)
-    classified,selected=_select_regions(census)
+    cached=census.get('_region_classification') if census.get('source_stack') is original else None
+    if cached is None:
+        classified,selected=_select_regions(census)
+        if census.get('source_stack') is original:census['_region_classification']=(classified,selected)
+    else:classified,selected=cached
     owners=set(map_packages)
     resources={}; changed=[]; skipped=[]; blockers=[]; generated=set()
     occupied=set(census.get('occupied_uids',()))
@@ -422,7 +492,7 @@ def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=Non
         if native_matches[0]['source_provider'] in owners:
             for area in site_review['areas']:
                 reviewed.append({**area,'source_uid':site_review['template_trigger_uid'],
-                    'source_sector':site_review['source_sector'],'required':True,
+                    'source_sector':site_review['source_sector'],'sector':site_review['visual_sector'],'required':True,
                     'source_review':{k:v for k,v in site_review.items() if k!='areas'}})
                 required_ids.add(area['id'])
             for row,source in selected:
@@ -436,10 +506,23 @@ def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=Non
             blockers.append({'reason':'reviewed_native_source_absent_or_ambiguous','target':row.get('id')})
             continue
         selected.append((row,sources[0]))
+    from .obstacles import clear_bank
     grouped=defaultdict(list)
     for row,source in selected:
-        if source['source_provider'] in owners:
+        if source['source_provider'] not in owners:continue
+        try:
+            geometry,clearance=clear_bank(original,row)
+            row=dict(row,authored_vertices=_vertices(row),vertices=geometry,clearance=clearance)
+            if clearance['blockers']:
+                issue={'id':row['id'],'reason':'source_model_obstruction','blockers':clearance['blockers']}
+                skipped.append(issue)
+                if row.get('required'):blockers.append(issue)
+                continue
             grouped[(source['sector'],source['uid'])].append((row,source))
+        except (ValueError,KeyError,OSError) as exc:
+            issue={'id':row['id'],'reason':'source_clearance_unresolved','detail':str(exc)}
+            skipped.append(issue)
+            if row.get('required'):blockers.append(issue)
     for (path,source_uid),pairs in sorted(grouped.items()):
         source=pairs[0][1]
         native_actions=source['actions']
@@ -482,6 +565,45 @@ def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=Non
             issue={'sector':path,'native_uid':source_uid,'reason':'unsupported_native_writer_contract','detail':str(exc)}
             skipped.append(issue)
             if any(row.get('required') for row,_ in pairs):blockers.append(issue)
+    from .extensions import plan_bank_extension,extend_truck_standalone_polygon
+    extended=[]
+    native_by_uid={r['uid']:r for r in census['native_standalone']}
+    for row in classified:
+        if row.get('source_provider') not in owners or row.get('operationally_covered') or row['coverage_state']!='partially_covered':continue
+        choices=[r for r in row.get('native_coverages',()) if r.get('maximum_native_coverage_fraction',0.)>=.5]
+        if not choices:continue
+        choices.sort(key=lambda r:(-r['maximum_native_coverage_fraction'],r['uid']))
+        source=native_by_uid[choices[0]['uid']]
+        if source['source_provider'] not in owners:continue
+        if len(choices)>1 and sum(r.get('maximum_native_coverage_fraction',0.) for r in choices)>=.995:
+            skipped.append({'id':row['id'],'reason':'native_union_coverage_requires_separate_proof'});continue
+        if source.get('shared_root_node_uids'):
+            skipped.append({'id':row['id'],'native_uid':source['uid'],'reason':'native_node_copies_require_cross_sector_extension',
+                'shared_node_uids':source['shared_root_node_uids']});continue
+        path=source['sector'];data=resources.get(path)
+        if data is None:data=stack.read(path,max_bytes=_LIMIT)
+        try:
+            # Previous bank extensions of this same source become the next
+            # authoritative geometry, without changing original association.
+            current=parse_sector(data);item=next(i for i in current.items if hex(i.uid)==source['uid'])
+            trigger=_standalone(data,item);nodes={n.uid:n for n in current.nodes}
+            native_vertices=[nodes[u].position for u in trigger['nodes']]
+            vertices,union=plan_bank_extension(native_vertices,_vertices(row))
+            _,clearance=clear_bank(original,{**row,'vertices':vertices},original_vertices=native_vertices)
+            if clearance['blockers']:
+                skipped.append({'id':row['id'],'native_uid':source['uid'],'reason':'source_model_obstruction_in_extension','clearance':clearance});continue
+            result,receipt=extend_truck_standalone_polygon(data,source_uid=int(source['uid'],16),vertices=vertices,
+                action_modes=census['modes'],uid_namespace='ats-road-trip:truck-extension:v1',occupied_uids=occupied)
+            resources[path]=result;occupied.update(int(u,16) for u in receipt['generated_uids'])
+            emitted={'id':row['id'],**receipt}
+            location={'id':row['id'],'kind':'native_extension','map':map_name,'source_provider':source['source_provider'],
+                'sector':path,'native_uid':source['uid'],'source_evidence':{**row,'clearance':clearance},
+                'before_native_vertices_xyz':native_vertices,'emitted':emitted,'writer':{'union':union}}
+            changed.append(location);extended.append(location)
+        except (ValueError,KeyError,OSError,StopIteration) as exc:
+            skipped.append({'id':row['id'],'native_uid':source['uid'],'reason':'unsupported_native_extension_contract','detail':str(exc)})
+    for location in changed:
+        location.update(_location_hint(original,census,location['emitted']['vertices_xyz'],location['sector']))
     emitted_ids={r['id'] for r in changed}
     for missing in sorted(required_ids-emitted_ids):
         blockers.append({'reason':'required_reviewed_truck_region_not_emitted','id':missing})
@@ -497,8 +619,8 @@ def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=Non
         'native_prefab_families':dict(Counter(r['descriptor'] for r in own_prefabs)),
         'discovered_painted_banks':len(own_banks),
         'operationally_covered_banks':sum(bool(r.get('operationally_covered')) for r in own_banks),'bank_coverage_counts':dict(Counter(r['coverage_state'] for r in own_banks)),
-        'banks':own_banks,'changed_locations':changed,'added_truck_regions':len(changed),
-        'added_markers':len(changed),'changed_facilities':len({r['native_uid'] for r in changed}),
+        'banks':own_banks,'changed_locations':changed,'added_truck_regions':len(changed)-len(extended),
+        'extended_truck_regions':len(extended),'added_markers':len(changed)-len(extended),'changed_facilities':len({r['native_uid'] for r in changed}),
         'skipped':skipped,'source_diagnostics':[r for r in census['diagnostics'] if r.get('sector') in original.resources and str(original.resources[r['sector']][0].path) in owners],
         'composed_resource_paths':sorted(resources),
         'coverage':{'complete':not blockers,'blockers':blockers,'original_sector_files_scanned':census['sector_count'],

@@ -21,6 +21,40 @@ from .trigger import _vehicles
 _TRIGGER_SOURCE = 'https://github.com/sk-zk/TruckLib/blob/master/TruckLib/ScsMap/Trigger.cs'
 _NODE_SOURCE = 'https://github.com/sk-zk/TruckLib/blob/master/TruckLib/ScsMap/Node.cs'
 _BOUNDS_SOURCE = 'https://github.com/sk-zk/TruckLib/blob/master/TruckLib/ScsMap/Serialization/MapItemSerializer.cs'
+_MAX_NEW_EDGE_GRADE = 0.10
+
+
+def _validate_truck_vertices(vertices, *, source=False):
+    """Reuse finite/simple XZ checks without the passenger-car Y-span rule.
+
+    Existing native source geometry stays exact and supplies no new footprint.
+    New reviewed truck regions use a conservative 10% edge-grade guard. This
+    is a project safety bound, not a claimed ATS activation or road limit.
+    """
+    if not isinstance(vertices,list):
+        raise ValueError('Truck parking vertices must be a list of XYZ triples')
+    heights=[];flat=[]
+    for point in vertices:
+        if not isinstance(point,(list,tuple)) or len(point)!=3 or isinstance(point[1],bool):
+            raise ValueError('Truck parking vertices must be numeric XYZ triples')
+        try:
+            y=float(point[1])
+        except (TypeError,ValueError,OverflowError) as exc:
+            raise ValueError('Truck parking heights must be finite numbers') from exc
+        if not math.isfinite(y) or abs(y)>1_000_000.:
+            raise ValueError('Truck parking heights must be finite within +/-1,000,000 game units')
+        heights.append(y);flat.append((point[0],0.,point[2]))
+    try:
+        horizontal=_validate_vertices(flat)
+    except ValueError as exc:
+        raise ValueError(str(exc).replace('Car parking','Truck parking').replace('car parking','truck parking')) from exc
+    points=[(p[0],y,p[2]) for p,y in zip(horizontal,heights)]
+    if not source:
+        for a,b in zip(points,points[1:]+points[:1]):
+            length=math.hypot(b[0]-a[0],b[2]-a[2])
+            if abs(b[1]-a[1])>length*_MAX_NEW_EDGE_GRADE+1e-9:
+                raise ValueError('Truck parking edge grade exceeds the reviewed 10% project guard')
+    return points
 
 
 def _projections(vertices):
@@ -85,7 +119,7 @@ def append_truck_standalone_polygons(
     each new item. Local visibility parents/children are composed here.
     Source native parameters only: exactly one resolved truck-rest action,
     no per-instance parameter override, nonoriented vehicle and connected-
-    trailer activation, and uniform native node metadata. An effective mixed
+    trailer activation, uniform native non-red flags and finite unit rotations. An effective mixed
     car action requires an explicitly selected validated car-free rest action.
     """
     if type(source_uid) is not int or not 0 < source_uid < 0xffffffffffffffff:
@@ -137,11 +171,17 @@ def append_truck_standalone_polygons(
     # IsRed is bit 0. Country and all other native flags are preserved; reject
     # an unexplained per-vertex difference instead of synthesizing metadata.
     base_flags=native_nodes[0].flags & ~1
-    if any(n.flags != base_flags | (1 if index==0 else 0) or n.rotation!=native_nodes[0].rotation
+    if any(n.flags != base_flags | (1 if index==0 else 0)
            for index,n in enumerate(native_nodes)):
-        raise ValueError('Standalone source node metadata is not a uniform native polygon contract')
+        raise ValueError('Standalone source node metadata flags are not a uniform native polygon contract')
+    # Trigger.cs ties oriented activation to bit 0x2, already rejected above.
+    # Ordinary native polygons can retain different unit node rotations. Copy
+    # their per-index templates without interpreting yaw as parking direction.
+    if any(not all(math.isfinite(v) for v in n.rotation)
+           or abs(math.sqrt(sum(v*v for v in n.rotation))-1.)>0.001 for n in native_nodes):
+        raise ValueError('Standalone source node rotations must be finite unit quaternions')
     try:
-        _validate_vertices([n.position for n in native_nodes])
+        _validate_truck_vertices([n.position for n in native_nodes],source=True)
     except ValueError as exc:
         raise ValueError('Standalone source geometry is unsupported: '+str(exc)) from exc
     source_bounds=struct.unpack_from('<10f',data,source.offset+12)
@@ -152,9 +192,9 @@ def append_truck_standalone_polygons(
             raise ValueError('Standalone areas require unique bounded id strings and only vertices')
         area_ids.add(area['id'])
         try:
-            requested=_validate_vertices(area['vertices'])
+            requested=_validate_truck_vertices(area['vertices'])
             quantized=[tuple(round(v*256)/256. for v in p) for p in requested]
-            vertices=_validate_vertices(quantized)
+            vertices=_validate_truck_vertices(quantized)
         except ValueError as exc:
             raise ValueError('Standalone truck geometry is unsupported: '+str(exc)) from exc
         prepared.append((area['id'],requested,vertices))
@@ -175,7 +215,7 @@ def append_truck_standalone_polygons(
         new_node_ids=[]
         for index,point in enumerate(vertices):
             node_uid=allocate(seed+f':node:{index}')
-            raw=bytearray(native_nodes[0].raw)
+            raw=bytearray(native_nodes[index%len(native_nodes)].raw)
             struct.pack_into('<Q3i',raw,0,node_uid,*(round(v*256) for v in point))
             struct.pack_into('<QQI',raw,36,0,uid,base_flags | (1 if index==0 else 0))
             node_records.append(bytes(raw));new_node_ids.append(node_uid)
@@ -192,7 +232,8 @@ def append_truck_standalone_polygons(
                         'requested_vertices_xyz':[list(p) for p in requested],
                         'vertices_xyz':[list(p) for p in vertices], 'bounds':bounds,
                         'flags':source.flags,'action_token':action,'vehicles':sorted(vehicles),
-                        'marker_count':1,'new_car_eligibility':False})
+                        'marker_count':1,'new_car_eligibility':False,
+                        'height_span':max(p[1] for p in vertices)-min(p[1] for p in vertices)})
     operations=[]
     for item in before.items:
         children=item.details.get('children',())
@@ -249,6 +290,10 @@ def append_truck_standalone_polygons(
         'visibility_clone_pairs':[{'original_uid':hex(source_uid),'new_uid':hex(u)} for u in clone_ids],
         'local_visibility_composed':True,'layer_composed':layer_data is not None,
         'source_items_and_nodes_preserved':True,'new_car_eligibility':False,
+        'geometry_contract':{'source_height_span':max(n.position[1] for n in native_nodes)-min(n.position[1] for n in native_nodes),
+            'source_validation':'Finite native XYZ and simple XZ; no passenger-car height-span cap',
+            'new_maximum_edge_grade':_MAX_NEW_EDGE_GRADE,'grade_limit_scope':'Conservative project guard, not an engine limit',
+            'source_rotation_templates':'Finite unit per-node rotations copied by corresponding index; oriented activation rejected'},
         'source_bounds':list(source_bounds), 'bounds_padding':{'lower':padding[0],'upper':padding[1]},
         'bounds_contract':{'status':'Observed locally','axes':['x','y','z','(x+z)/2','(x-z)/2'],
                            'source_envelope_calibrated':True,'new_bounds_outward_float32':True,

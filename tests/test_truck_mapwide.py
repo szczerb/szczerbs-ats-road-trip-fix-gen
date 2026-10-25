@@ -84,6 +84,27 @@ class TruckRegionSelectionTests(unittest.TestCase):
         self.assertEqual(selected,[])
         self.assertTrue(all(r['coverage_state']=='fully_covered' for r in classified))
 
+    def test_native_full_containment_paint_edge_sliver_does_not_add_duplicate_marker(self):
+        c=census();c['native_standalone'][0]['flags']=12
+        original=fixtures.NATIVE
+        expanded=[(x-.001 if x==min(p[0] for p in original) else x,y,z) for x,y,z in original]
+        c['banks']=[bank('nearly-native-bank',expanded)]
+        rows,selected=_select_regions(c)
+        self.assertEqual(selected,[])
+        self.assertTrue(rows[0]['operationally_covered'])
+        self.assertGreater(rows[0]['native_edge_inset_preserved']['coverage_fraction'],.995)
+
+    def test_material_same_bank_inset_requires_reviewed_extension_instead_of_colocated_marker(self):
+        c=census();c['native_standalone'][0]['flags']=12
+        original=fixtures.NATIVE
+        low=min(p[0] for p in original)
+        expanded=[(x-2. if x==low else x,y,z) for x,y,z in original]
+        c['banks']=[bank('same-logical-bank',expanded)]
+        rows,selected=_select_regions(c)
+        self.assertEqual(selected,[])
+        self.assertEqual(rows[0]['coverage_state'],'partially_covered')
+        self.assertEqual(rows[0]['planning_action'],'unchanged_pending_safe_geometry_extension')
+
     def test_height_distance_provider_and_ambiguous_native_sources_are_safe_skips(self):
         elevated=[(x,y+2.,z) for x,y,z in fixtures.BANK]
         far=[(x+400,y,z) for x,y,z in fixtures.BANK]
