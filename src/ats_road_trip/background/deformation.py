@@ -116,14 +116,73 @@ class LandmarkFlow:
         return self._integrate(points, reverse=True)
 
 
+class RegionalTranslation:
+    """Move a feature rigidly in a moving core, blending smoothly outside it.
+
+    This is a shared coordinate flow, not a per-layer polygon translation.
+    Source vertices inside the core retain all relative positions exactly.
+    """
+    def __init__(self, spec):
+        if set(spec) != {'center_xz', 'delta_xz', 'inner_radius', 'outer_radius',
+                         'integration_steps'}:
+            raise ValueError('Invalid regional translation fields')
+        self.center = np.asarray(spec['center_xz'], dtype=float)
+        self.delta = np.asarray(spec['delta_xz'], dtype=float)
+        self.inner = float(spec['inner_radius'])
+        self.outer = float(spec['outer_radius'])
+        self.steps = spec['integration_steps']
+        if (self.center.shape != (2,) or self.delta.shape != (2,) or
+                not np.isfinite(self.center).all() or not np.isfinite(self.delta).all() or
+                np.max(np.abs(self.center)) > 400000 or np.linalg.norm(self.delta) > 5000 or
+                not 100 <= self.inner < self.outer-500 or self.outer > 30000 or
+                not isinstance(self.steps, int) or isinstance(self.steps, bool) or
+                not 64 <= self.steps <= 512):
+            raise ValueError('Unsafe regional translation')
+        self.lo = np.minimum(self.center, self.center+self.delta)-self.outer
+        self.hi = np.maximum(self.center, self.center+self.delta)+self.outer
+
+    def velocity(self, points, t):
+        distance = np.linalg.norm(points-(self.center+t*self.delta), axis=1)
+        u = np.clip((distance-self.inner)/(self.outer-self.inner), 0, 1)
+        # Quintic smootherstep has zero first/second derivatives at both joins.
+        blend = 1-u*u*u*(10+u*(-15+6*u))
+        return blend[:, None]*self.delta
+
+    def _integrate(self, points, reverse=False):
+        result = np.asarray(points, dtype=float).reshape(-1, 2).copy()
+        ids = np.flatnonzero(np.all((result > self.lo) & (result < self.hi), axis=1))
+        h = (-1 if reverse else 1)/self.steps
+        for start in range(0, len(ids), 16384):
+            use = ids[start:start+16384]
+            p = result[use].copy()
+            for step in range(self.steps):
+                t = 1-step/self.steps if reverse else step/self.steps
+                a = self.velocity(p, t)
+                b = self.velocity(p+a*h/2, t+h/2)
+                c = self.velocity(p+b*h/2, t+h/2)
+                d = self.velocity(p+c*h, t+h)
+                p += h/6*(a+2*b+2*c+d)
+            result[use] = p
+        return result
+
+    def __call__(self, points):
+        return self._integrate(points)
+
+    def inverse(self, points):
+        return self._integrate(points, reverse=True)
+
+
 class FeatureAdjustment:
     def __init__(self, spec):
-        if (set(spec) != {'method', 'landmark_flows', 'compact_steps'} or
+        fields = {'method', 'landmark_flows', 'compact_steps'}
+        if (not fields <= set(spec) or set(spec)-fields-{'translation_flows'} or
                 spec['method'] != 'landmark-flow-ground-steps-v1' or
                 not 1 <= len(spec['landmark_flows']) <= 8 or
-                not 1 <= len(spec['compact_steps']) <= 32):
+                not 1 <= len(spec['compact_steps']) <= 32 or
+                len(spec.get('translation_flows', [])) > 8):
             raise ValueError('Invalid feature adjustment')
         self.flows = [LandmarkFlow(v) for v in spec['landmark_flows']]
+        self.flows += [RegionalTranslation(v) for v in spec.get('translation_flows', [])]
         self.steps = [CompactStep(v) for v in spec['compact_steps']]
 
     def __call__(self, points):
@@ -162,10 +221,11 @@ class FeatureAdjustment:
             # Closely spaced real-city controls can expand from country scale
             # toward the game's nearly real-size landmark models. Sample their
             # source neighborhood much more densely than the city-wide grid.
-            lo, hi = flow.p.min(axis=0)-200, flow.p.max(axis=0)+200
-            x, z = np.meshgrid(np.arange(lo[0], hi[0]+5, 5),
-                               np.arange(lo[1], hi[1]+5, 5))
-            checks.append(np.c_[x.ravel(), z.ravel()])
+            if isinstance(flow, LandmarkFlow):
+                lo, hi = flow.p.min(axis=0)-200, flow.p.max(axis=0)+200
+                x, z = np.meshgrid(np.arange(lo[0], hi[0]+5, 5),
+                                   np.arange(lo[1], hi[1]+5, 5))
+                checks.append(np.c_[x.ravel(), z.ravel()])
         grid = np.concatenate(checks)
         a = (self(grid+[.5, 0])-self(grid-[.5, 0]))
         b = (self(grid+[0, .5])-self(grid-[0, .5]))
