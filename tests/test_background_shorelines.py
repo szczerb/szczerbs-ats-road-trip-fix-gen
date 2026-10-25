@@ -73,3 +73,38 @@ def test_local_corrections_retain_baseline_and_do_not_fit_check_points():
     assert config['zoom_uplift'][7]*1.2==old_config['zoom_uplift'][7]
     for key in ('palette','map_items_flags','icon_size','city_icon_size','company_icon_size','world_bounds'):
         assert config[key]==old_config[key]
+
+
+def _feature_adjustment(compact_steps):
+    from ats_road_trip.background.deformation import FeatureAdjustment
+    flow={'source_xz':[[50000,50000],[50010,50000]],
+          'target_xz':[[50000,50000],[50010,50000]],
+          'radius':1000,'integration_steps':64}
+    return FeatureAdjustment({'method':'landmark-flow-ground-steps-v1',
+        'landmark_flows':[flow],'compact_steps':compact_steps})
+
+
+def test_feature_report_checks_safe_composed_step_chain():
+    # This mild nonzero step composes safely with an identity landmark flow.
+    step={'radius':1000,'centers_xz':[[0,0]],'weights_xz':[[100,0]]}
+    report=_feature_adjustment([step]).report()
+    assert report['min_determinant']>.05
+    assert report['composed_step_count']==1
+    assert report['composed_step_grid_spacing_units']==500
+    assert report['composed_step_grid_samples']>0
+    assert report['sample_counts_by_region']['flow']>0
+    assert report['sample_counts_by_region']['control']>0
+
+
+def test_feature_report_rejects_cumulative_compression_between_flows():
+    # A symmetric pair of controls keeps the origin fixed while each step
+    # contracts its X axis by about 10%. Each step passes its own limits, but
+    # the 32-step chain has determinant below the composed .05 guard at 0,0.
+    step={'radius':1000,'centers_xz':[[-500,0],[500,0]],
+          'weights_xz':[[40,0],[-40,0]]}
+    individual=_feature_adjustment([step]).report()
+    assert individual['step_checks'][0]['min_determinant']>.5
+    assert individual['step_checks'][0]['max_displacement_gradient_norm']<.75
+    chain=_feature_adjustment([step.copy() for _ in range(32)])
+    with pytest.raises(ValueError,match=r'minimum determinant source XZ=\[0.0, 0.0\]'):
+        chain.report()

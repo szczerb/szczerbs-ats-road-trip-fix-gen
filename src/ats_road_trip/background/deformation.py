@@ -17,6 +17,21 @@ def kernel(distance):
     return np.maximum(0, 1-distance)**4 * (4*distance+1)
 
 
+def _grid_axes(lo, hi, spacing):
+    return (np.arange(lo[0], hi[0]+spacing, spacing),
+            np.arange(lo[1], hi[1]+spacing, spacing))
+
+
+def _grid_chunks(lo, hi, spacing, chunk_size=8192):
+    """Yield a rectangular sampling grid in bounded row-major batches."""
+    xs, zs = _grid_axes(lo, hi, spacing)
+    nx = len(xs)
+    total = nx*len(zs)
+    for start in range(0, total, chunk_size):
+        indices = np.arange(start, min(start+chunk_size, total))
+        yield np.column_stack((xs[indices % nx], zs[indices // nx]))
+
+
 class CompactStep:
     def __init__(self, spec):
         if set(spec) != {'radius', 'centers_xz', 'weights_xz'}:
@@ -199,45 +214,107 @@ class FeatureAdjustment:
         """Numerical checks; these do not certify continuous invertibility."""
         rows = []
         for step in self.steps:
-            gx, gz = np.meshgrid(np.arange(step.lo[0], step.hi[0]+500, 500),
-                                 np.arange(step.lo[1], step.hi[1]+500, 500))
-            grid = np.c_[gx.ravel(), gz.ravel()]
-            a = (step(grid+[.5, 0])-step(grid-[.5, 0]))
-            b = (step(grid+[0, .5])-step(grid-[0, .5]))
-            jac = np.stack((a, b), axis=2)
-            det = np.linalg.det(jac)
-            grad = np.linalg.svd(jac-np.eye(2), compute_uv=False)[:, 0]
-            if det.min() <= .5 or grad.max() >= .75:
+            min_det, max_det, max_grad, samples = np.inf, -np.inf, 0., 0
+            for grid in _grid_chunks(step.lo, step.hi, 500):
+                a = step(grid+[.5, 0])-step(grid-[.5, 0])
+                b = step(grid+[0, .5])-step(grid-[0, .5])
+                jac = np.stack((a, b), axis=2)
+                det = np.linalg.det(jac)
+                grad = np.linalg.svd(jac-np.eye(2), compute_uv=False)[:, 0]
+                min_det = min(min_det, float(det.min()))
+                max_det = max(max_det, float(det.max()))
+                max_grad = max(max_grad, float(grad.max()))
+                samples += len(grid)
+            if min_det <= .5 or max_grad >= .75:
                 raise ValueError('Unsafe compact feature step')
-            rows.append({'samples': len(grid), 'min_determinant': float(det.min()),
-                         'max_determinant': float(det.max()),
-                         'max_displacement_gradient_norm': float(grad.max())})
-        # Dense local samples catch city expansion missed by the continental grid.
-        checks = []
+            rows.append({'samples': samples, 'min_determinant': min_det,
+                         'max_determinant': max_det,
+                         'max_displacement_gradient_norm': max_grad})
+
+        # Existing flow coverage remains dense near flow support and landmark
+        # controls. Stream each grid so closely spaced or broad inputs cannot
+        # allocate a continent-sized point array.
+        flow_grids = [(flow.lo, flow.hi, 100) for flow in self.flows]
+        control_grids = []
         for flow in self.flows:
-            x, z = np.meshgrid(np.arange(flow.lo[0], flow.hi[0]+100, 100),
-                               np.arange(flow.lo[1], flow.hi[1]+100, 100))
-            checks.append(np.c_[x.ravel(), z.ravel()])
             # Closely spaced real-city controls can expand from country scale
             # toward the game's nearly real-size landmark models. Sample their
             # source neighborhood much more densely than the city-wide grid.
             if isinstance(flow, LandmarkFlow):
                 lo, hi = flow.p.min(axis=0)-200, flow.p.max(axis=0)+200
-                x, z = np.meshgrid(np.arange(lo[0], hi[0]+5, 5),
-                                   np.arange(lo[1], hi[1]+5, 5))
-                checks.append(np.c_[x.ravel(), z.ravel()])
-        grid = np.concatenate(checks)
-        a = (self(grid+[.5, 0])-self(grid-[.5, 0]))
-        b = (self(grid+[0, .5])-self(grid-[0, .5]))
-        det = a[:, 0]*b[:, 1]-a[:, 1]*b[:, 0]
-        singular = np.linalg.svd(np.stack((a, b), axis=2), compute_uv=False)
-        cycle = np.max(np.linalg.norm(self.inverse(self(grid))-grid, axis=1))
-        if det.min() <= .05 or det.max() >= 500 or singular[:, 0].max() >= 30 or cycle > .05:
-            raise ValueError(f'Unsafe composed feature correction: det={det.min()}..{det.max()}, cycle={cycle}')
+                control_grids.append((lo, hi, 5))
+
+        active_steps = [step for step in self.steps if np.any(step.weights != 0)]
+        composed_bounds = None
+        if active_steps:
+            composed_lo = np.min([step.lo for step in active_steps], axis=0)
+            composed_hi = np.max([step.hi for step in active_steps], axis=0)
+            composed_bounds = (composed_lo, composed_hi)
+            composed_grids = [(composed_lo, composed_hi, 500)]
+        else:
+            composed_grids = []
+
+        # The compact-step chain can accumulate compression far from any
+        # landmark-flow controls. Sample its complete union support after all
+        # flows and steps have composed. Keep only per-batch arrays live.
+        grid_sources = [
+            ('flow', flow_grids),
+            ('control', control_grids),
+            ('composed_step', composed_grids),
+        ]
+        source_samples = {}
+        min_det, max_det = np.inf, -np.inf
+        max_stretch, min_stretch, max_cycle = 0., np.inf, 0.
+        worst_det_point = None
+        for source, specs in grid_sources:
+            source_count = 0
+            for lo, hi, spacing in specs:
+                for grid in _grid_chunks(lo, hi, spacing):
+                    a = self(grid+[.5, 0])-self(grid-[.5, 0])
+                    b = self(grid+[0, .5])-self(grid-[0, .5])
+                    jac = np.stack((a, b), axis=2)
+                    det = jac[:, 0, 0]*jac[:, 1, 1]-jac[:, 0, 1]*jac[:, 1, 0]
+                    singular = np.linalg.svd(jac, compute_uv=False)
+                    local_min = float(det.min())
+                    if local_min < min_det:
+                        min_det = local_min
+                        worst_det_point = grid[int(np.argmin(det))].tolist()
+                    max_det = max(max_det, float(det.max()))
+                    max_stretch = max(max_stretch, float(singular[:, 0].max()))
+                    min_stretch = min(min_stretch, float(singular[:, 1].min()))
+                    mapped = self(grid)
+                    cycle = np.linalg.norm(self.inverse(mapped)-grid, axis=1)
+                    max_cycle = max(max_cycle, float(cycle.max()))
+                    source_count += len(grid)
+            source_samples[source] = source_count
+
+        sample_count = sum(source_samples.values())
+        if (min_det <= .05 or max_det >= 500 or max_stretch >= 30 or
+                max_cycle > .05):
+            raise ValueError(f'Unsafe composed feature correction: det={min_det}..{max_det}, '
+                             f'cycle={max_cycle}, minimum determinant source XZ={worst_det_point}')
         return {'step_checks': rows, 'feature_grid_spacing_units': 100,
-                'feature_grid_samples': len(grid), 'min_determinant': float(det.min()),
-                'max_determinant': float(det.max()), 'max_linear_stretch': float(singular[:, 0].max()),
-                'min_linear_stretch': float(singular[:, 1].min()),
+                'feature_grid_samples': sample_count, 'sample_counts_by_region': source_samples,
+                'sample_grids': {
+                    'flow_support': {'spacing_units': 100, 'samples': source_samples['flow']},
+                    'control_neighborhoods': {'spacing_units': 5, 'samples': source_samples['control']},
+                    'composed_compact_step_support': {
+                        'spacing_units': 500, 'samples': source_samples['composed_step'],
+                        'active_steps': len(active_steps),
+                        'bounds_xz':
+                            ([float(composed_lo[0]), float(composed_lo[1]),
+                              float(composed_hi[0]), float(composed_hi[1])]
+                             if composed_bounds is not None else None)}},
+                'composed_step_grid_spacing_units': 500,
+                'composed_step_grid_samples': source_samples['composed_step'],
+                'composed_step_count': len(active_steps),
+                'composed_step_support_bounds_xz':
+                    ([float(composed_lo[0]), float(composed_lo[1]),
+                      float(composed_hi[0]), float(composed_hi[1])]
+                     if composed_bounds is not None else None),
+                'min_determinant': min_det,
+                'max_determinant': max_det, 'max_linear_stretch': max_stretch,
+                'min_linear_stretch': min_stretch,
                 'control_neighborhood_grid_spacing_units': 5,
-                'max_inverse_cycle_units': float(cycle),
+                'max_inverse_cycle_units': max_cycle,
                 'continuous_invertibility_proven': False}
