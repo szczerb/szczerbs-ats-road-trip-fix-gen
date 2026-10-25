@@ -9,6 +9,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -16,6 +17,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0055: Repair detailed texture-size regression only](done/TASK-0055-repair-r3-detailed-texture-size-only.md) — four detailed DDS downsampled to 4096 square, manifest revision only; 20 other members unchanged, exact repeat build and package checks pass; runtime confirmation pending.
 
 - [TASK-0054: Diagnose r3 detailed world-map background loss](done/TASK-0054-diagnose-r3-detailed-map-background-loss.md) — archive-specific DirectStorage request-too-large error correlates with fourfold detailed DDS payload; unchanged zoom/materials verified, controlled resize recommended, runtime fix pending.
 
