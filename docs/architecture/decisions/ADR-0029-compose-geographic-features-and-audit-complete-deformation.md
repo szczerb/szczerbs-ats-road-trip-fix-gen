@@ -1,0 +1,27 @@
+# ADR-0029: Compose geographic feature corrections and audit complete deformation
+
+## Context
+
+**Documented — user feedback, 2026-10-25:** r2 market zoom is usable, but the same conspicuous shoreline defects remain. [TASK-0053](../../tasks/active/TASK-0053-repair-background-shoreline-feature-alignment.md) requires stronger screenshot-level acceptance. **Observed locally:** settlement representatives and route-normal matching underconstrain expanded city footprints. Better source detail and safe individual field increments alone do not establish correct final geography. Successive increments can accumulate substantial compression outside landmark regions.
+
+## Decision
+
+Preserve the complete r2 map definition independently of geographic calibration. Add optional shared feature stages after its baseline: compact landmark velocity flows integrated with RK4, coherent regional translation cores, then bounded compact physical-ground increments. Every geographic layer uses the same composition. No playable geometry is moved, and no per-layer coastline painting or generic land buffer is introduced.
+
+Use qualified two-dimensional geographic/native feature facts with explicit semantics and uncertainty. A model's geometric center is a feature proxy, not a surveyed shore point. The twelve current Chicago/San Francisco/Seattle/Everett pairs are fitting controls; former candidate/check labels do not override their actual use. Preserve frozen holdouts and identify same-feature ground checks as correlated. Versioned factual controls and authored coefficients are editable rendering source; protected native meshes, road arrays, sectors and diagnostic overlays remain outside the SCS and corresponding source ZIP.
+
+Separate source detail from calibration. The detailed renderer can use pinned GSHHG high-resolution L1 coast polygons and selected USGS NHD Lake Michigan geometry, retaining Natural Earth lakes elsewhere. GSHHG is **LGPL-3.0-or-later**, not public domain; retain its notices and corresponding public source. USGS NHD is archived public-domain hydrography, not a current survey. Keep data/font rights separate from project AGPL-3.0-only code. A finer raster does not itself demonstrate a repaired road/shore relationship.
+
+Build clean classification masks from public source vectors **after feature flows and before physical increments** when deriving ground constraints. Select the mainland by geographic source component identity rather than nearest arbitrary land. Use qualified road-ground facts only within their inspected scope; bridge, dock and uncertain maritime geometry is not universally dry. Source island/lake shapes can regularize coherence, with free placement/orientation where no observed bank correspondence exists; such priors are not native water observations.
+
+Regularization must address accumulated deformation, rather than allowing repeated increments to evade a fresh zero-increment prior. Check final source-feature shape and topology separately. Rigid shape regularization must eliminate translation/rotation modes from its design, rather than fixing a pseudo-target pose that accidentally resists coherent movement.
+
+Retain the baseline country-scale deformation guard. Feature checks cover 100-unit flow supports, 5-unit control neighborhoods and **500-unit coverage across all active compact-step support bounds after full composition**. Preserve minimum determinant >0.05, maximum determinant <500, maximum linear stretch <30 and reverse-cycle error ≤0.05, plus existing per-step checks. Stream sample grids to bound memory. These are sampled diagnostics, not a proof of continuous invertibility.
+
+Require original-scale and regional comparisons with identical native geometry for every supplied view, correct pixel/world frames, direct final-mask distances, regional/worst-case checks and explicit regressions. A substantial majority of frozen independent problem-area groups must materially improve without an unexplained new severe regression. Fitting residuals, source-shape conservation, city markers, safe steps or a cleaner texture cannot independently satisfy that gate.
+
+## Consequences
+
+**Observed locally:** the new composed-support regression rejects an individually safe 32-step chain that the earlier landmark-local coverage missed. The broader four-anchor draft also failed a separate Yellowknife composition check and remains rejected. The current architecture and safety repair are accepted implementation decisions; **no r3 testing package or shoreline acceptance is implied by this ADR**. Final candidate coefficients, source provenance, resource cost and remaining defects belong in the version-specific handoff after verification. Runtime acceptance remains the user's.
+
+The proposed 16384-square atlas uses four 8192-square BGRA8 tiles (1 GiB texture payload), with unchanged world bounds and resource mapping. Static support for this format does not establish in-game performance. Retain r0/r1/r2 as unchanged fallbacks and require deterministic package and extracted-source reproduction before delivery.
