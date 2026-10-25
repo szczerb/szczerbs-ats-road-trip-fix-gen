@@ -99,8 +99,9 @@ def _source_census(original, work_dir=None):
             # The complete-stack prefetch normally already attaches these to
             # its timestamped cache. Never extract into the supplied inputs.
             cache=getattr(package,'_disk_cache_root',None)
-            if cache is None and work_dir:
-                cache=Path(work_dir)/'original-sector-cache'/_digest(str(package.path).encode())[:12]
+            if cache is None:
+                from ..archive import Archive
+                cache=Archive._scratch_root().parent/'package-cache'/_digest(str(package.path).encode())[:12]
             if cache is not None:
                 package.prefetch(selected,disk_cache=cache,max_bytes=_LIMIT)
     banks=[]; diagnostics=[]; native=[]; visibility=defaultdict(list); occupied=set();root_seen=defaultdict(set);root_shared=defaultdict(set)

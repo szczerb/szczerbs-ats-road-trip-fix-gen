@@ -389,3 +389,24 @@ class TruckMapwideCompositionTests(unittest.TestCase):
 
 if __name__=='__main__':
     unittest.main()
+
+
+class TruckSourceCacheCompositionTests(unittest.TestCase):
+    def test_full_source_census_uses_the_shared_archive_package_cache(self):
+        from tempfile import TemporaryDirectory
+        import hashlib
+        from ats_road_trip.archive import Archive
+        from ats_road_trip.truck_parking.mapwide import _source_census
+        calls=[]
+        package=SimpleNamespace(path=Path('/source.scs'),prefetch=lambda names,**kwargs:calls.append((names,kwargs)))
+        original=SimpleNamespace(packages=[package],resources={SECTOR:(package,None)},read=lambda *a,**k:sector([],[]))
+        with TemporaryDirectory() as directory, \
+             patch.object(Archive,'_work_root',Path(directory)), \
+             patch('ats_road_trip.truck_parking.catalog.load_curve_definitions',return_value={}), \
+             patch('ats_road_trip.truck_parking.catalog.reviewed_curve_catalog',return_value={}), \
+             patch('ats_road_trip.truck_parking.mapwide.prefab_definitions',return_value={}), \
+             patch('ats_road_trip.truck_parking.mapwide._native_modes',return_value={}):
+            _source_census(original,work_dir=Path(directory)/'some-owner'/'truck-parking')
+            key=hashlib.sha256(str(package.path).encode()).hexdigest()[:12]
+            self.assertEqual(calls[0][1]['disk_cache'],Path(directory)/'package-cache'/key)
+            self.assertEqual(calls[0][0],[SECTOR])
