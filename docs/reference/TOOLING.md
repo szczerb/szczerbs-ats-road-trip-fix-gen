@@ -1,5 +1,7 @@
 # Inspection and experimental generation CLI
 
+**Station parking prerequisite — 2026-10-30:** pass `--station-evidence-dir` to stack or single-map commands using `station_bays`. [Portable evidence preparation and source/version gates](STATION_PARKING_EVIDENCE.md) replace the former retained-research-directory assumption.
+
 **New fuel-selection interface — 2026-10-21:** `generate-map-fuel`, `generate-map-fix` and `analyze-map` accept either `--fuel-policy broad|realistic` or `--fuel-selection-json PATH`. Broad is backward-compatible/default; bare realistic skips unreviewed groups. `analyze-fuel-selection-batch` / `generate-fuel-selection-batch` take `--manifest`, repeated original `--package` arguments in low-to-high order and an explicit policy. [Reviewed six-site configuration and reproduction](../examples/selective-fuel-tour/README.md); [evidence, exclusions and comparison handoff](SELECTIVE_CAR_FUELING.md).
 
 Tested on 2026-10-17 in Linux/WSL with Python 3.12 against ATS 1.61.3.18 and the supplied inputs. Requires Python 3.11+. There are no runtime Python dependencies. From the repository root:

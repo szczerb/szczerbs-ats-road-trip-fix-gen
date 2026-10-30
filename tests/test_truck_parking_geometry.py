@@ -87,13 +87,27 @@ class TruckCurveGeometryTests(unittest.TestCase):
         self.assertEqual(rows[token('89')]['unit'].one('name'),'bright:'+chr(9)+'255,255,255')
         self.assertEqual(rows[token('89')]['model_path'],MODEL)
 
-    def test_reviewed_placement_blocks_provider_drift(self):
-        missing=NS(resources={})
+    def test_reviewed_placement_is_absent_without_its_selected_source(self):
+        missing=NS(resources={},packages=[])
         self.assertIsNone(north_platte_reviewed_regions(missing))
         source='map/usa/sec-0005-0003.base'
-        changed=NS(resources={source:(None,NS(package='/different/new-version.scs'))})
+        stock=NS(resources={source:(None,NS(package='base_map.scs'))},
+                 read=lambda *a,**k:self.fail('Unselected source must not be read'))
+        self.assertIsNone(north_platte_reviewed_regions(stock,map_packages={'base_map.scs'}))
+        self.assertIsNone(north_platte_reviewed_regions(stock,map_packages={'Western_Canada_Expansion.scs'}))
+
+    def test_reviewed_placement_keeps_selected_source_guards(self):
+        source='map/usa/sec-0005-0003.base'
+        selected={'originals/ATS_Expansion_v23.0_1.61.scs'}
+        changed=NS(resources={source:(None,NS(package='different/new-version.scs'))})
         with self.assertRaisesRegex(ValueError,'provider drift'):
-            north_platte_reviewed_regions(changed)
+            north_platte_reviewed_regions(changed,map_packages=selected)
+        with self.assertRaisesRegex(ValueError,'sector missing'):
+            north_platte_reviewed_regions(NS(resources={}),map_packages=selected)
+        changed=NS(resources={source:(None,NS(package='originals/ATS_Expansion_v23.0_1.61.scs'))},
+                   read=lambda *a,**k:b'changed source sector')
+        with self.assertRaisesRegex(ValueError,'sector drift'):
+            north_platte_reviewed_regions(changed,map_packages=selected)
 
     def test_partial_overlap_fraction_is_exact_and_not_a_full_coverage_claim(self):
         bank=[(0,0),(50,0),(50,24),(0,24)]

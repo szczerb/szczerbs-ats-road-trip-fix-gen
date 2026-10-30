@@ -27,57 +27,66 @@ def _sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def load_reviewed_catalog(repo_root=None):
-    """Load retained reviewed conversion evidence for four layout families.
+METADATA_PATH = Path(__file__).with_name('reviewed_catalog.json')
 
-    This is a model-family catalog; the template's station/sector/UID and
-    historical descriptor/sector hashes are deliberately discarded. Every
-    effective original placement of the family is eligible for evaluation.
+
+def reviewed_metadata(metadata_path=None):
+    """Read project-authored review metadata, including all four family pins."""
+    return json.loads(Path(metadata_path or METADATA_PATH).read_text(encoding='utf-8'))
+
+
+def read_evidence(path, expected, family, label):
+    """Read ConverterPIX text using the historical normalized-text hash contract."""
+    try:
+        value = Path(path).read_text(encoding='utf-8-sig')
+    except (OSError, UnicodeError) as exc:
+        raise ValueError(f'Station evidence missing or unreadable: {path}; '
+                         'prepare it with python -m ats_road_trip.station_parking.evidence') from exc
+    if _sha(value.encode()) != expected:
+        raise ValueError(f'Reviewed catalog converted {label} SHA-256 drift: {family}')
+    return value
+
+
+def load_reviewed_catalog(station_evidence_dir=None, *, metadata_path=None):
+    """Load four reviewed families from an explicitly supplied flat PIM/PIT dir.
+
+    No historical output directory is searched. Station placement identities and
+    historical effective sector/descriptor hashes never select family layouts.
     """
-    root=Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[3]
-    bundle=root/'local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/bundle'
-    rows=[
-        ('nm_gas_station1_chemron',root/'docs/examples/station-parking-forecourt-tour/P01.json',
-         bundle/'inputs/models/nm_gas_station1_chemron.pim',('painted_bays',)),
-        ('nm_truckstop1_chemron',root/'docs/examples/station-parking-forecourt-tour/P05.json',
-         bundle/'inputs/models/nm_truckstop1_chemron.pim',('painted_bays','unmarked_geometry')),
-        ('nm_gas_station2-corner_chemron',root/'docs/examples/station-parking-forecourt-tour/P09.json',
-         bundle/'inputs/models/nm_gas_station2-corner_chemron.pim',('unmarked_geometry',)),
-        ('nm_gas_station2-corner_gp',root/'local_outputs/work/2026-10-19_23-08-00/updated-site-probes/probes/6caf04816ba0000/config.json',
-         root/'local_outputs/work/2026-10-19_21-19-20/marked-station-inventory/converted-effective-gp/prefab/gas/nm_gas_station2-corner_gp.pim',('unmarked_geometry',)),
-    ]
-    catalog={}
-    for family,config_path,mesh_path,methods in rows:
-        config=json.loads(config_path.read_text(encoding='utf-8'))
-        mesh=mesh_path.read_text(encoding='utf-8-sig')
-        pit=mesh_path.with_suffix('.pit').read_text(encoding='utf-8-sig')
-        for label,text in [('mesh',mesh),('mesh_state',pit)]:
-            if _sha(text.encode())!=config['fingerprints'][label]:
-                raise ValueError('Reviewed catalog converted '+label+' SHA-256 drift: '+family)
-        model=config['model_geometry'][:-4]+'.pmd'
-        catalog[model]={
-            'family':family,'model_geometry':config['model_geometry'],
-            'fingerprints':{key:config['fingerprints'][key] for key in
-                            ('model_definition','model_geometry','mesh','mesh_state')},
-            'mesh_materials':deepcopy(config['mesh_materials']),
-            'material_resources':deepcopy(config['material_resources']),
-            'mesh_text':mesh,'mesh_state_text':pit,'methods':list(methods),
-            'parameters':{},'evidence_config':str(config_path),'evidence_mesh':str(mesh_path),
-            # Only original non-generated descriptor paths may supply a layout.
-            # Each actual source descriptor is hash-pinned in the map report.
-            'source_descriptors':[model[:-4]+'.ppd',model[:-4]+'_rt.ppd'],
-            'policy':{'curb_setback':.15,'prefer_perpendicular':True,
-                      'single_painted_bays':True,'require_curb_evidence':True},
+    if station_evidence_dir is None:
+        raise ValueError('station_bays requires --station-evidence-dir; '
+                         'see docs/reference/STATION_PARKING_EVIDENCE.md')
+    root = Path(station_evidence_dir).expanduser().resolve()
+    if not root.is_dir():
+        raise ValueError(f'Station evidence directory does not exist: {root}')
+    metadata = reviewed_metadata(metadata_path)
+    config_path = Path(metadata_path or METADATA_PATH)
+    catalog = {}
+    for config in metadata['families']:
+        family = config['family']
+        mesh_path = root / (family + '.pim')
+        mesh = read_evidence(mesh_path, config['fingerprints']['mesh'], family, 'mesh')
+        pit = read_evidence(mesh_path.with_suffix('.pit'),
+                            config['fingerprints']['mesh_state'], family, 'mesh_state')
+        model = config['model_geometry'][:-4] + '.pmd'
+        catalog[model] = {
+            'family': family, 'model_geometry': config['model_geometry'],
+            'fingerprints': deepcopy(config['fingerprints']),
+            'mesh_materials': deepcopy(config['mesh_materials']),
+            'material_resources': deepcopy(config['material_resources']),
+            'mesh_text': mesh, 'mesh_state_text': pit, 'methods': list(config['methods']),
+            'parameters': {}, 'evidence_config': str(config_path),
+            'evidence_mesh': str(mesh_path),
+            'source_descriptors': [model[:-4]+'.ppd', model[:-4]+'_rt.ppd'],
+            'policy': {'curb_setback': .15, 'prefer_perpendicular': True,
+                       'single_painted_bays': True, 'require_curb_evidence': True},
         }
-    # Keep the exact accepted Dawson geometry, but bind it to the original
-    # placement/source rather than mounting the historical generated r10/r11.
-    reviewed_path=root/'docs/examples/station-parking-dawson-two-reviewed-areas.json'
-    if reviewed_path.is_file():
-        reviewed=json.loads(reviewed_path.read_text(encoding='utf-8'))
-        override={'prefab_uid':reviewed['prefab_uid'],'sector':reviewed['sector'],
-                  **_DAWSON_ORIGINAL_SOURCE,
-                  'descriptor':'prefab/gas/nm_truckstop1_chemron.ppd',
-                  'mesh':reviewed['mesh_sha256'],'areas':deepcopy(reviewed['areas']),
-                  'provenance':'Exact areas: docs/examples/station-parking-dawson-two-reviewed-areas.json, user accepted 2026-10-24. Original guards: Alaska Expansion 1.2.3 archive and direct ZIP sector; effective ATS 1.61.3.18 descriptor from base.scs, inspected 2026-10-24. P05 historical effective sector/descriptor overlay hashes are deliberately excluded.'}
-        catalog['prefab/gas/nm_truckstop1_chemron.pmd']['policy']['reviewed_areas']=[override]
+    # Preserve the accepted exact geometry, bound to its original placement.
+    reviewed = metadata['dawson_reviewed_areas']
+    override = {'prefab_uid': reviewed['prefab_uid'], 'sector': reviewed['sector'],
+                **_DAWSON_ORIGINAL_SOURCE,
+                'descriptor': 'prefab/gas/nm_truckstop1_chemron.ppd',
+                'mesh': reviewed['mesh'], 'areas': deepcopy(reviewed['areas']),
+                'provenance': 'Exact areas: docs/examples/station-parking-dawson-two-reviewed-areas.json, user accepted 2026-10-24. Original guards: Alaska Expansion 1.2.3 archive and direct ZIP sector; effective ATS 1.61.3.18 descriptor from base.scs, inspected 2026-10-24. P05 historical effective sector/descriptor overlay hashes are deliberately excluded.'}
+    catalog['prefab/gas/nm_truckstop1_chemron.pmd']['policy']['reviewed_areas'] = [override]
     return catalog

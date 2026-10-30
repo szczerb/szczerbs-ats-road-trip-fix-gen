@@ -61,3 +61,5 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0028: Broad parking regions and independent service eligibility](ADR-0028-plan-broad-parking-with-independent-service-eligibility.md).
 
 - [ADR-0029: Independent truck-rest coverage](ADR-0029-add-independent-truck-rest-coverage.md).
+
+- [ADR-0030: Portable reviewed evidence and relative versioned paths](ADR-0030-use-portable-reviewed-evidence-and-versioned-paths.md).

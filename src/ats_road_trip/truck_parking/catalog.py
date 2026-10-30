@@ -150,22 +150,28 @@ _NORTH_PLATTE_REVIEW = {'site_id': 'north-platte-east-junction-truck-lot',
                   'flags': 512}]}
 
 
-def north_platte_reviewed_regions(stack):
+def north_platte_reviewed_regions(stack, *, map_packages=None):
     """Return two independent reviewed regions after exact original-source pins.
 
     The main long missing bank comes from general curve-family discovery.
     These supplement it with the source painted perpendicular bobtail bank
     and parallel full-rig edge strip, neither of which may expand car access.
     Call this on the original ownership stack, never a generated overlay.
+    Only the partition explicitly selecting the reviewed source may apply this
+    supplement. Other maps can legitimately provide these standard sector paths.
     """
     from copy import deepcopy
     import hashlib
     from pathlib import Path
     from ..map_sector import parse_sector
     review = deepcopy(_NORTH_PLATTE_REVIEW)
+    selected = (map_packages if map_packages is not None else
+                (str(package.path) for package in getattr(stack, 'packages', ())))
+    if not any(Path(package).name == review['source_package_name'] for package in selected):
+        return None
     for path,digest in review['source_hashes'].items():
         if path not in stack.resources:
-            return None
+            raise ValueError('North Platte reviewed source sector missing: '+path)
         _,resource = stack.resources[path]
         if Path(resource.package).name != review['source_package_name']:
             raise ValueError('North Platte reviewed source provider drift: '+path)

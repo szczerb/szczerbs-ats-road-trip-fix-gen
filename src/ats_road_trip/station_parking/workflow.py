@@ -560,4 +560,3 @@ def run_station_parking(config_path: str | Path, mesh_path: str | Path, map_pack
         raise
     finally:
         Archive.configure_work_root(prior_work_root)
-

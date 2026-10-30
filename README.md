@@ -27,6 +27,8 @@ These are experimental builds for community testing. The map/connector fixes des
 | **Reasonable gas tank upgrades** | Change the Mustang from 61 to 76 L and the non-hybrid 5.0 V8 F-150 from 98 to 136 L. Crown Victoria and Bronco stay unchanged. Disable conflicting tank mods, including the old 3× override. |
 | **Inspection and reports** | Inspect archives and report map-company/context data to investigate courier compatibility. General map courier generation remains unsupported. |
 
+Realistic station parking additionally requires an explicitly prepared private model-evidence directory, passed with `--station-evidence-dir`. [Preparation, exact source prerequisites and examples](docs/reference/STATION_PARKING_EVIDENCE.md). Converted game assets remain outside Git.
+
 Fuel and rest are independently selectable. Broad truck-area rest uses a 1,000 game-world-unit straight-line XZ search within inspected sectors and a bounded neighboring area. Realistic mode instead adds supported station bays and skips unsupported locations. Existing geometry and shared actions are retained. [Processor behavior and limits](docs/reference/COMPATIBILITY_PROCESSORS.md).
 
 ## Game and map versions checked

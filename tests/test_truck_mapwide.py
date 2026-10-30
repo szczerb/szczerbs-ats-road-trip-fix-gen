@@ -207,6 +207,16 @@ class TruckMapwideCompositionTests(unittest.TestCase):
         self.assertEqual(set(report['composed_resource_paths']),{SECTOR,LAYER})
         self.assertEqual(len(parse_layer(resources[LAYER])),3)
 
+    def test_unrelated_stock_north_platte_sector_does_not_block_generic_truck_work(self):
+        data,layer,_=fixtures.StandaloneTruckTriggerTests().native_sector()
+        north='map/usa/sec-0005-0003.base'
+        original=MemoryStack({SECTOR:data,LAYER:layer,north:sector([],[])},
+                             owners={north:'base_map.scs'})
+        report,resources=self.plan(original,original,census(data))
+        self.assertTrue(report['coverage']['complete'])
+        self.assertEqual(report['added_truck_regions'],2)
+        self.assertNotIn(north,resources)
+
     def test_cross_sector_visibility_and_layer_membership_compose_all_new_regions(self):
         data,layer,_=fixtures.StandaloneTruckTriggerTests().native_sector()
         visibility=item(0x30,600,struct.pack('<Qff',0,100.,200.)+refs(500))
@@ -398,7 +408,7 @@ class TruckSourceCacheCompositionTests(unittest.TestCase):
         from ats_road_trip.archive import Archive
         from ats_road_trip.truck_parking.mapwide import _source_census
         calls=[]
-        package=SimpleNamespace(path=Path('/source.scs'),prefetch=lambda names,**kwargs:calls.append((names,kwargs)))
+        package=SimpleNamespace(path=Path('source.scs'),prefetch=lambda names,**kwargs:calls.append((names,kwargs)))
         original=SimpleNamespace(packages=[package],resources={SECTOR:(package,None)},read=lambda *a,**k:sector([],[]))
         with TemporaryDirectory() as directory, \
              patch.object(Archive,'_work_root',Path(directory)), \

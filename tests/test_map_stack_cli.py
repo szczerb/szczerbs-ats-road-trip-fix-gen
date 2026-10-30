@@ -11,7 +11,7 @@ from ats_road_trip.cli import main,parser
 class MapStackCliTests(unittest.TestCase):
     def invoke(self,args,result=None):
         result=result or {'status':'analyzed','outputs':[],
-            'report_path':'/authored/audit.json','workflow':{'work_dir':'/authored'},
+            'report_path':'authored/audit.json','workflow':{'work_dir':'authored'},
             'planner':{'coverage':{'complete':True}}}
         stdout=io.StringIO()
         with patch('ats_road_trip.map_stack.run_map_stack',return_value=result) as run,redirect_stdout(stdout):
@@ -22,19 +22,19 @@ class MapStackCliTests(unittest.TestCase):
         code,output,run=self.invoke(['analyze-map-stack','--package','first.scs','--package','second.scs'])
         self.assertEqual(code,0)
         run.assert_called_once_with(packages=['first.scs','second.scs'],preset='realistic',
-            game_dir=None,extractor=None,run_id=None,generate=False,experimental=False,revision=13,improve_existing_car_parking=False,improve_truck_parking=False)
+            game_dir=None,extractor=None,run_id=None,generate=False,experimental=False,revision=13,station_evidence_dir=None,improve_existing_car_parking=False,improve_truck_parking=False)
         self.assertTrue(output['analysis_only'])
         self.assertEqual(output['generated_mod_count'],0)
-        self.assertEqual(output['report_path'],'/authored/audit.json')
-        self.assertEqual(output['work_dir'],'/authored')
+        self.assertEqual(output['report_path'],'authored/audit.json')
+        self.assertEqual(output['work_dir'],'authored')
 
     def test_analysis_forwards_broad_stack_order_and_runtime_flags(self):
-        _,_,run=self.invoke(['--extractor','/tools/extractor','analyze-map-stack',
+        _,_,run=self.invoke(['--extractor','tools/extractor','analyze-map-stack',
             '--package','low.scs','--package','high.scs','--preset','broad',
-            '--game-dir','/games/ATS','--run-id','2026-10-21_20-57-43'])
+            '--game-dir','games/ATS','--run-id','2026-10-21_20-57-43'])
         run.assert_called_once_with(packages=['low.scs','high.scs'],preset='broad',
-            game_dir='/games/ATS',extractor='/tools/extractor',run_id='2026-10-21_20-57-43',
-            generate=False,experimental=False,revision=13,improve_existing_car_parking=False,improve_truck_parking=False)
+            game_dir='games/ATS',extractor='tools/extractor',run_id='2026-10-21_20-57-43',
+            generate=False,experimental=False,revision=13,station_evidence_dir=None,improve_existing_car_parking=False,improve_truck_parking=False)
 
     def test_generation_requires_experimental_before_workflow_dispatch(self):
         stderr=io.StringIO()
@@ -48,13 +48,13 @@ class MapStackCliTests(unittest.TestCase):
     def test_generation_forwards_revision_and_all_options(self):
         result={'status':'generated','outputs':[{'path':'/outputs/first.scs'},{'path':'/outputs/second.scs'}],
                 'planner':{'coverage':{'complete':True}}}
-        code,output,run=self.invoke(['--extractor','/tools/extractor','generate-map-stack',
+        code,output,run=self.invoke(['--extractor','tools/extractor','generate-map-stack',
             '--package','low.scs','--package','high.scs','--preset','realistic','--revision','12',
-            '--game-dir','/games/ATS','--run-id','2026-10-21_20-57-43','--experimental'],result)
+            '--game-dir','games/ATS','--run-id','2026-10-21_20-57-43','--experimental'],result)
         self.assertEqual(code,0)
         run.assert_called_once_with(packages=['low.scs','high.scs'],preset='realistic',
-            game_dir='/games/ATS',extractor='/tools/extractor',run_id='2026-10-21_20-57-43',
-            generate=True,experimental=True,revision=12,improve_existing_car_parking=False,improve_truck_parking=False)
+            game_dir='games/ATS',extractor='tools/extractor',run_id='2026-10-21_20-57-43',
+            generate=True,experimental=True,revision=12,station_evidence_dir=None,improve_existing_car_parking=False,improve_truck_parking=False)
         self.assertFalse(output['analysis_only'])
         self.assertEqual(output['generated_mod_count'],2)
         self.assertEqual(output['outputs'],result['outputs'])

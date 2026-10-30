@@ -485,7 +485,7 @@ def plan_map_truck_parking(stack, *, map_packages, map_name, ownership_stack=Non
     # turning the general scan into a finite station UID allowlist.
     from . import catalog
     reviewed=getattr(catalog,'reviewed_placement_regions',lambda *_:[])(original,census)
-    site_review=catalog.north_platte_reviewed_regions(original)
+    site_review=catalog.north_platte_reviewed_regions(original, map_packages=owners)
     required_ids=set()
     if site_review:
         native_matches=[n for n in census['native_standalone'] if n['uid']==site_review['template_trigger_uid']]

@@ -135,6 +135,8 @@ def parser() -> argparse.ArgumentParser:
                            help='Opt in to safe improvements at native car-supported stations (realistic only; default OFF)')
         stack.add_argument('--improve-truck-parking', action='store_true',
                            help='Complete missing truck-rest regions at supported native-rest facilities; default OFF')
+        stack.add_argument('--station-evidence-dir',
+                           help='Private flat reviewed PIM/PIT directory; required for station_bays')
         stack.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
         stack.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
         if name.startswith('generate'):
@@ -167,6 +169,8 @@ def parser() -> argparse.ArgumentParser:
             bulk.add_argument('--processor', action='append', required=True,
                               choices=[p.value for p in Processor],
                               help='Select fuel, rest, or analysis-only courier; repeat as needed')
+            bulk.add_argument('--station-evidence-dir',
+                              help='Private flat reviewed PIM/PIT directory; required for station_bays')
             bulk.add_argument('--parking-strategy', choices=('none', 'truck_areas', 'station_bays'),
                               help='Select one rest strategy; default is legacy truck_areas')
             bulk.add_argument('--improve-existing-car-parking', action='store_true',
@@ -296,6 +300,7 @@ def main(argv: list[str] | None = None) -> int:
                 game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
                 generate=generate, experimental=getattr(args, 'experimental', False),
                 revision=getattr(args, 'revision', 13),
+                station_evidence_dir=args.station_evidence_dir,
                 improve_existing_car_parking=args.improve_existing_car_parking,
                 improve_truck_parking=args.improve_truck_parking)
             _emit({'status': result['status'], 'analysis_only': not generate,
@@ -318,6 +323,8 @@ def main(argv: list[str] | None = None) -> int:
             elif args.fuel_policy:
                 options['fuel_selection'] = FuelSelectionConfig(mode=args.fuel_policy)
             if args.command in ('analyze-map', 'generate-map-fix'):
+                if args.station_evidence_dir is not None:
+                    options['station_evidence_dir'] = args.station_evidence_dir
                 if args.parking_strategy is not None:
                     options['parking_strategy'] = args.parking_strategy
                 if args.improve_existing_car_parking:

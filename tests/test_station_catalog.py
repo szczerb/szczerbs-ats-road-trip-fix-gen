@@ -15,34 +15,21 @@ class ReviewedCatalogTests(unittest.TestCase):
         self.root=Path(self.temporary.name)
         self.reviewed=json.loads((Path(__file__).parents[1]/
             'docs/examples/station-parking-dawson-two-reviewed-areas.json').read_text())
-        bundle=self.root/'local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/bundle/inputs/models'
-        rows=[('nm_gas_station1_chemron','P01',bundle),
-              ('nm_truckstop1_chemron','P05',bundle),
-              ('nm_gas_station2-corner_chemron','P09',bundle),
-              ('nm_gas_station2-corner_gp',None,self.root/'local_outputs/work/2026-10-19_21-19-20/marked-station-inventory/converted-effective-gp/prefab/gas')]
-        for family,site,mesh_root in rows:
+        self.metadata=json.loads((Path(__file__).parents[1]/
+            'src/ats_road_trip/station_parking/reviewed_catalog.json').read_text())
+        self.evidence=self.root/'portable-evidence';self.evidence.mkdir()
+        for config in self.metadata['families']:
+            family=config['family']
             mesh='Authored mesh evidence '+family;pit='Authored paired state '+family
-            mesh_root.mkdir(parents=True,exist_ok=True)
-            (mesh_root/(family+'.pim')).write_text(mesh)
-            (mesh_root/(family+'.pit')).write_text(pit)
-            config={'fingerprints':{'mesh':hashlib.sha256(mesh.encode()).hexdigest(),
-                'mesh_state':hashlib.sha256(pit.encode()).hexdigest(),
-                'model_definition':'1'*64,'model_geometry':'2'*64,
-                # Deliberately historical effective-overlay values: these must
-                # never supply the accepted placement's original-source guard.
-                'source_archive':'3'*64,'sector':'799fc3c78bd6a7e2d9ff6d5a84cefe82328dfac7043475fb7d22faaaec034500',
-                'descriptor':'ec979dade04903dd84080e7454849845df2f363324a0559785f51fe05f344a17'},
-                'model_geometry':'prefab/gas/'+family+'.pmg',
-                'mesh_materials':{'ground':['authored_ground'],'paint':['authored_paint']},
-                'material_resources':{'material/authored.dds':'4'*64}}
-            path=(self.root/'docs/examples/station-parking-forecourt-tour'/f'{site}.json'
-                  if site else self.root/'local_outputs/work/2026-10-19_23-08-00/updated-site-probes/probes/6caf04816ba0000/config.json')
-            path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(config))
-        reviewed_path=self.root/'docs/examples/station-parking-dawson-two-reviewed-areas.json'
-        reviewed_path.write_text(json.dumps(self.reviewed))
+            (self.evidence/(family+'.pim')).write_text(mesh)
+            (self.evidence/(family+'.pit')).write_text(pit)
+            config['fingerprints'].update(mesh=hashlib.sha256(mesh.encode()).hexdigest(),
+                                         mesh_state=hashlib.sha256(pit.encode()).hexdigest())
+        self.metadata_path=self.root/'authored-metadata.json'
+        self.metadata_path.write_text(json.dumps(self.metadata))
 
     def override(self):
-        entry=load_reviewed_catalog(self.root)['prefab/gas/nm_truckstop1_chemron.pmd']
+        entry=load_reviewed_catalog(self.evidence,metadata_path=self.metadata_path)['prefab/gas/nm_truckstop1_chemron.pmd']
         return entry['policy']['reviewed_areas'][0]
 
     def test_dawson_guards_pin_original_alaska_sector_and_effective_base_descriptor(self):
@@ -64,13 +51,44 @@ class ReviewedCatalogTests(unittest.TestCase):
         override['areas'][0]['vertices'][0][0]=999
         self.assertEqual(self.override()['areas'],self.reviewed['areas'])
 
-    def test_historical_template_guard_edits_cannot_change_original_dawson_pins(self):
+    def test_catalog_needs_no_checkout_or_historical_output_directory(self):
         before=deepcopy(self.override())
-        path=self.root/'docs/examples/station-parking-forecourt-tour/P05.json'
-        historical=json.loads(path.read_text())
-        historical['fingerprints'].update(source_archive='a'*64,sector='b'*64,descriptor='c'*64)
-        path.write_text(json.dumps(historical))
+        # Only authored metadata and eight explicit files exist in this fixture.
+        self.assertFalse((self.root/'local_outputs').exists())
+        self.assertFalse((self.root/'docs').exists())
         self.assertEqual(self.override(),before)
+
+    def test_missing_directory_and_missing_state_fail_clearly(self):
+        with self.assertRaisesRegex(ValueError,'requires --station-evidence-dir'):
+            load_reviewed_catalog()
+        with self.assertRaisesRegex(ValueError,'directory does not exist'):
+            load_reviewed_catalog(self.root/'missing')
+        state=self.evidence/'nm_gas_station2-corner_gp.pit'
+        state.unlink()
+        with self.assertRaisesRegex(ValueError,'missing or unreadable'):
+            load_reviewed_catalog(self.evidence,metadata_path=self.metadata_path)
+
+    def test_mesh_and_paired_state_drift_remain_fatal(self):
+        for suffix,label in (('.pim','mesh'),('.pit','mesh_state')):
+            path=self.evidence/('nm_gas_station2-corner_gp'+suffix)
+            before=path.read_bytes();path.write_text('drift')
+            with self.subTest(suffix=suffix),self.assertRaisesRegex(ValueError,label+' SHA-256 drift'):
+                load_reviewed_catalog(self.evidence,metadata_path=self.metadata_path)
+            path.write_bytes(before)
+
+    def test_tracked_gp_metadata_retains_reviewed_source_and_material_pins(self):
+        from ats_road_trip.station_parking.catalog import reviewed_metadata
+        rows=reviewed_metadata()['families']
+        self.assertEqual(len(rows),4)
+        gp=next(row for row in rows if row['family']=='nm_gas_station2-corner_gp')
+        self.assertEqual(gp['fingerprints'],{
+            'model_definition':'2a8d37fa45d33a87284ec29b36c7303ad0b55c1c5c4b9f9515bf739b6eaff294',
+            'model_geometry':'39d1d65208af5d676887a4ae7f06ec8eb35bb74d47793190a8630aa4a266a648',
+            'mesh':'3088fd090938ad4971540da99d7636de46aca64fe36dcc7779ab0e3e5a0abc02',
+            'mesh_state':'4db3aaee046f13b908649362171849ec0cce54da541b145a60e5c36a8e4e8ff8'})
+        self.assertEqual(len(gp['mesh_materials']['ground']),4)
+        self.assertEqual(gp['mesh_materials']['paint'],[])
+        self.assertEqual(len(gp['material_resources']),12)
 
 
 if __name__=='__main__':unittest.main()

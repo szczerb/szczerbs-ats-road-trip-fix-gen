@@ -74,7 +74,7 @@ def _prefetch_planning_inputs(raw, work, config):
     paths={(unit.one('prefab_desc','') or '').lstrip('/') for unit,_,_ in definitions.values()}
     if config.parking_strategy is ParkingStrategy.STATION_BAYS:
         from .station_parking.catalog import load_reviewed_catalog
-        for model,family in load_reviewed_catalog().items():
+        for model,family in load_reviewed_catalog(config.station_evidence_dir).items():
             paths.update((model,family['model_geometry']))
             paths.update(family['material_resources'])
     paths &= raw.resources.keys()
@@ -121,6 +121,7 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
             effective=OverlayResourceStack(raw,staged)
             parking,changes=plan_map_station_parking(effective,map_packages=owners,map_name=name,
                 game_version=game_version,ownership_stack=raw,
+                station_evidence_dir=config.station_evidence_dir,
                 improve_existing_car_parking=config.improve_existing_car_parking,
                 work_dir=Path(work_dir)/_slug(name)/'parking' if work_dir else None)
             if parking.get('coverage',{}).get('blockers'):
@@ -190,6 +191,7 @@ def plan_stack(raw, game_only, *, parts, config, game_version, work_dir=None):
         partitions[index][path]=data
     summary={'preset':config.fuel_selection.mode,'fuel_selection':config.fuel_selection.to_dict(),
         'parking_strategy':config.parking_strategy.value,
+        'station_evidence_dir':config.station_evidence_dir,
         'improve_existing_car_parking':config.improve_existing_car_parking,
         'improve_truck_parking':config.improve_truck_parking,'source_reports':reports,
         'price_policy':policy_report,'prices':prices,'contexts':contexts,
@@ -233,7 +235,8 @@ def _package_description(part, parts, workflow, preset, revision):
 
 def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None,
                   generate=False, experimental=False, revision=13,run_id=None,
-                  improve_existing_car_parking=False, improve_truck_parking=False):
+                  improve_existing_car_parking=False, improve_truck_parking=False,
+                  station_evidence_dir=None):
     """Mount an explicit original low-to-high stack and produce all replacements."""
     if generate and not experimental:raise ValueError('Generation requires --experimental')
     if type(revision)is not int or revision<10:raise ValueError('Replacement revision must be at least10')
@@ -241,7 +244,10 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}',stamp):raise ValueError('Invalid run timestamp')
     preset=CompatibilityPreset(preset);config=ProcessorConfig.from_preset(preset,
         improve_existing_car_parking=improve_existing_car_parking,
-        improve_truck_parking=improve_truck_parking)
+        improve_truck_parking=improve_truck_parking, station_evidence_dir=station_evidence_dir)
+    if config.parking_strategy is ParkingStrategy.STATION_BAYS:
+        from .station_parking.catalog import load_reviewed_catalog
+        load_reviewed_catalog(config.station_evidence_dir)
     work=REPO_ROOT/'local_outputs/work'/stamp/f'{preset.value}-map-stack'
     generated=REPO_ROOT/'local_outputs/generated'/stamp
     if work.exists():raise FileExistsError('Use a new run timestamp')
@@ -286,6 +292,7 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                 'archive_identities':[{'path':str(p),'size':v[0],'mtime_ns':v[1]} for p,v in identities.items()],
                 'directory_snapshots':[{'path':str(p),'sha256':_sha(json.dumps(s).encode()),'files':len(s)} for p,s in snapshots.items()],
                 'parts':parts,'improve_existing_car_parking':config.improve_existing_car_parking,
+                'station_evidence_dir':config.station_evidence_dir,
                 'improve_truck_parking':config.improve_truck_parking,
                 'profile_modified':False,'work_dir':str(work)}
             result={'status':'analyzed','report_path':str(work/'audit.json'),'workflow':workflow,'planner':report,'outputs':[]}
@@ -302,6 +309,7 @@ def run_map_stack(*, packages, preset='realistic', game_dir=None, extractor=None
                     if isinstance(icon,(str,Path)):icon=Path(icon).read_bytes()
                     embedded={'analysis':'complete_map_stack_replacement','processors_enabled':['fuel','rest'],
                         'preset':preset.value,'parking_strategy':config.parking_strategy.value,
+                        'station_evidence_dir':config.station_evidence_dir,
                         'improve_existing_car_parking':config.improve_existing_car_parking,
                         'improve_truck_parking':config.improve_truck_parking,
                         'map_name':label,'source_packages':part['source_packages'],

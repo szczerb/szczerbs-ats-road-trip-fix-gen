@@ -94,6 +94,7 @@ def _service_context(parsed):
 
 def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                              game_version='1.61.3.18',catalog=None,ownership_stack=None,
+                             station_evidence_dir=None,
                              work_dir=None,method='automatic',improve_existing_car_parking=False):
     """Return ``(report, resources)`` for all original source-owned placements.
 
@@ -110,6 +111,7 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
     if method not in ('automatic','painted_bays','unmarked_geometry'):
         raise ValueError('Select automatic, painted_bays or unmarked_geometry station method')
     if not isinstance(map_packages,set) or not map_packages:raise ValueError('Declare original map_packages')
+    catalog=load_reviewed_catalog(station_evidence_dir) if catalog is None else catalog
     original=ownership_stack or stack
     if any(path.startswith('prefab/rtfix/') for path in original.resources):
         raise ValueError('Original ownership stack contains generated private fixes; dedicated parking requires original sources')
@@ -118,7 +120,6 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
     if not sources:raise ValueError('No declared original map source is mounted')
     if any(not p.path.is_file() for p in sources):raise ValueError('Original station map source must be an archive')
     source_paths={str(p.path) for p in sources}
-    catalog=load_reviewed_catalog() if catalog is None else catalog
     definitions=prefab_definitions(stack);original_defs=prefab_definitions(original)
     from .native_support import station_action_state
     action_state=station_action_state(stack)
@@ -133,6 +134,7 @@ def plan_map_station_parking(stack, *, map_packages:set[str], map_name:str,
                    for p in sources if str(p.path) in used_sources}
     report={'schema_version':1,'processor':'station_parking','map_name':map_name,'game_version':game_version,
             'strategy':'station_bays','method':method,'in_game_verified':False,
+            'station_evidence_dir':str(Path(station_evidence_dir).expanduser().resolve()) if station_evidence_dir is not None else None,
             'improve_existing_car_parking':improve_existing_car_parking,
             'coverage':{'complete':True,'blockers':[]},'locations':[],'changed_sectors':[],
             'composed_resource_paths':[],'source_archive_sha256':source_hashes,

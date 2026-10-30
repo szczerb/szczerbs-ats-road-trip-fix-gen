@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 import math
 import re
 from typing import Iterable
@@ -48,6 +49,7 @@ class ProcessorConfig:
     parking_strategy: ParkingStrategy | None = None
     improve_existing_car_parking: bool = False
     improve_truck_parking: bool = False
+    station_evidence_dir: str | None = None
 
     def __post_init__(self) -> None:
         selected = tuple(Processor(value) for value in self.enabled)
@@ -77,6 +79,11 @@ class ProcessorConfig:
             raise ValueError('improve_existing_car_parking must be a boolean')
         if self.improve_existing_car_parking and parking is not ParkingStrategy.STATION_BAYS:
             raise ValueError('Improving existing car parking requires rest with station_bays')
+        if self.station_evidence_dir is not None:
+            if not isinstance(self.station_evidence_dir, (str, Path)) or not str(self.station_evidence_dir).strip():
+                raise ValueError('station_evidence_dir must be a nonempty directory path')
+            object.__setattr__(self, 'station_evidence_dir',
+                               str(Path(self.station_evidence_dir).expanduser().resolve()))
         object.__setattr__(self, 'parking_strategy', parking)
         object.__setattr__(self, 'enabled', selected)
         object.__setattr__(self, 'mode', mode)
@@ -173,6 +180,7 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
                 staged = OverlayResourceStack(effective, resources)
                 report, changes = plan_map_station_parking(staged, map_packages={source},
                     map_name=map_name, ownership_stack=effective,
+                    station_evidence_dir=config.station_evidence_dir,
                     improve_existing_car_parking=config.improve_existing_car_parking)
                 # This pipeline emits the authoritative context lineage once,
                 # after fuel and parking transitions have both been recorded.
