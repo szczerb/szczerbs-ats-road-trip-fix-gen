@@ -94,6 +94,10 @@ class PackagesAndAuditTest(unittest.TestCase):
                 package.prefetch(['def/company/a.sii'], disk_cache=cache, max_bytes=64)
                 self.assertEqual(package.read('def/company/a.sii', max_bytes=64), b'alpha')
                 package.prefetch(['def/company/a.sii'], disk_cache=cache, max_bytes=64)
+                # Memory-prefetch callers must reuse a recorded disk member,
+                # avoiding another large-archive extractor invocation.
+                package.prefetch(['def/company/a.sii'])
+                self.assertEqual(package.read('def/company/a.sii'),b'alpha')
                 self.assertEqual(len(fake.extract_calls), 1)
                 self.assertEqual(fake.extract_calls[0][0], ['base/def/company/a.sii'])
                 self.assertEqual(fake.extract_calls[0][1], 64)

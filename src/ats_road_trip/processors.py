@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 import math
+import re
 from typing import Iterable
 
+from .fuel_selection import FuelSelectionConfig
 from .package import ResourceStack
 from .petrol_policy import DEFAULT_REFERENCE, build_policy
 from .petrol_prices import plan_petrol_prices
@@ -16,6 +19,17 @@ class Processor(str, Enum):
     FUEL = 'fuel'
     REST = 'rest'
     COURIER = 'courier'
+
+
+class ParkingStrategy(str, Enum):
+    NONE = 'none'
+    TRUCK_AREAS = 'truck_areas'
+    STATION_BAYS = 'station_bays'
+
+
+class CompatibilityPreset(str, Enum):
+    BROAD = 'broad'
+    REALISTIC = 'realistic'
 
 
 class ProcessorMode(str, Enum):
@@ -31,6 +45,11 @@ class ProcessorConfig:
     rest_radius: float = 1000
     petrol_reference: str = DEFAULT_REFERENCE
     mode: ProcessorMode = ProcessorMode.GENERATE
+    fuel_selection: FuelSelectionConfig = FuelSelectionConfig()
+    parking_strategy: ParkingStrategy | None = None
+    improve_existing_car_parking: bool = False
+    improve_truck_parking: bool = False
+    station_evidence_dir: str | None = None
 
     def __post_init__(self) -> None:
         selected = tuple(Processor(value) for value in self.enabled)
@@ -43,8 +62,45 @@ class ProcessorConfig:
             raise ValueError('Courier Jobs map-wide generation is not implemented')
         if isinstance(self.rest_radius, bool) or not isinstance(self.rest_radius, (int, float)) or not math.isfinite(self.rest_radius) or self.rest_radius < 0:
             raise ValueError('Rest radius must be a nonnegative finite coordinate distance')
+        if not isinstance(self.fuel_selection, FuelSelectionConfig):
+            raise ValueError('fuel_selection must be a FuelSelectionConfig')
+        if Processor.FUEL not in selected and self.fuel_selection != FuelSelectionConfig():
+            raise ValueError('Selective fuel configuration requires the fuel processor')
+        parking = (ParkingStrategy.TRUCK_AREAS if Processor.REST in selected else ParkingStrategy.NONE
+                   ) if self.parking_strategy is None else ParkingStrategy(self.parking_strategy)
+        if type(self.improve_truck_parking) is not bool:
+            raise ValueError('improve_truck_parking must be a boolean')
+        if self.improve_truck_parking and Processor.REST not in selected:
+            raise ValueError('Truck parking improvement requires the rest processor')
+        if ((Processor.REST not in selected and parking is not ParkingStrategy.NONE)
+                or (Processor.REST in selected and parking is ParkingStrategy.NONE and not self.improve_truck_parking)):
+            raise ValueError('Select a car parking strategy with rest, or enable truck-only improvement with none')
+        if type(self.improve_existing_car_parking) is not bool:
+            raise ValueError('improve_existing_car_parking must be a boolean')
+        if self.improve_existing_car_parking and parking is not ParkingStrategy.STATION_BAYS:
+            raise ValueError('Improving existing car parking requires rest with station_bays')
+        if self.station_evidence_dir is not None:
+            if not isinstance(self.station_evidence_dir, (str, Path)) or not str(self.station_evidence_dir).strip():
+                raise ValueError('station_evidence_dir must be a nonempty directory path')
+            object.__setattr__(self, 'station_evidence_dir',
+                               str(Path(self.station_evidence_dir).expanduser().resolve()))
+        object.__setattr__(self, 'parking_strategy', parking)
         object.__setattr__(self, 'enabled', selected)
         object.__setattr__(self, 'mode', mode)
+
+    @classmethod
+    def from_preset(cls, preset, **overrides):
+        preset = CompatibilityPreset(preset)
+        enabled = overrides.pop('enabled', (Processor.FUEL, Processor.REST))
+        selection = (FuelSelectionConfig(mode='realistic', unknown='include', classifier='facilities')
+                     if preset is CompatibilityPreset.REALISTIC and Processor.FUEL in tuple(Processor(value) for value in enabled)
+                     else FuelSelectionConfig())
+        parking = (ParkingStrategy.STATION_BAYS if preset is CompatibilityPreset.REALISTIC
+                   else ParkingStrategy.TRUCK_AREAS)
+        if Processor.REST not in tuple(Processor(value) for value in enabled):
+            parking = ParkingStrategy.NONE
+        return cls(enabled=tuple(enabled), fuel_selection=overrides.pop('fuel_selection', selection),
+                   parking_strategy=overrides.pop('parking_strategy', parking), **overrides)
 
     @classmethod
     def from_names(cls, names: Iterable[str | Processor], **kwargs) -> ProcessorConfig:
@@ -60,13 +116,16 @@ class PipelineResult:
 
 
 def _fuel_plan(effective: ResourceStack, game_only: ResourceStack, *,
-               source: str, map_name: str, petrol_reference: str) -> tuple[dict, dict[str, bytes]]:
+               source: str, map_name: str, petrol_reference: str,
+               fuel_selection: FuelSelectionConfig = FuelSelectionConfig()) -> tuple[dict, dict[str, bytes]]:
     # Imported at call time so the legacy planner remains an independent unit
     # and can be substituted by focused tests or future planner revisions.
     from .bulk_fuel import plan_map_fuel
 
     report, station_resources = plan_map_fuel(effective,
-                                              map_packages={source}, map_name=map_name)
+                                              map_packages={source}, map_name=map_name,
+                                              **({'fuel_selection': fuel_selection}
+                                                 if fuel_selection != FuelSelectionConfig() else {}))
     policy, policy_report = build_policy(effective, game_only,
                                          target_packages={source},
                                          reference_path=petrol_reference)
@@ -111,13 +170,30 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
         if processor is Processor.FUEL:
             report, changes = _fuel_plan(effective, game_only, source=source,
                                          map_name=map_name,
-                                         petrol_reference=config.petrol_reference)
+                                         petrol_reference=config.petrol_reference,
+                                         **({'fuel_selection': config.fuel_selection}
+                                            if config.fuel_selection != FuelSelectionConfig() else {}))
         elif processor is Processor.REST:
-            from .rest_stops import plan_rest_stops
-            report, changes = plan_rest_stops(effective, map_packages={source},
-                                              map_name=map_name,
-                                              radius=config.rest_radius,
-                                              resource_overrides=dict(resources))
+            if config.parking_strategy is ParkingStrategy.STATION_BAYS:
+                from .resource_overlay import OverlayResourceStack
+                from .station_parking.mapwide import plan_map_station_parking
+                staged = OverlayResourceStack(effective, resources)
+                report, changes = plan_map_station_parking(staged, map_packages={source},
+                    map_name=map_name, ownership_stack=effective,
+                    station_evidence_dir=config.station_evidence_dir,
+                    improve_existing_car_parking=config.improve_existing_car_parking)
+                # This pipeline emits the authoritative context lineage once,
+                # after fuel and parking transitions have both been recorded.
+                changes={path:data for path,data in changes.items()
+                         if not re.fullmatch(r'def/data_context(?:\.[^/]+)?\.sii',path)}
+            elif config.parking_strategy is ParkingStrategy.TRUCK_AREAS:
+                from .rest_stops import plan_rest_stops
+                report, changes = plan_rest_stops(effective, map_packages={source},
+                                                  map_name=map_name,
+                                                  radius=config.rest_radius,
+                                                  resource_overrides=dict(resources))
+            else:
+                report, changes = {'disabled':True,'coverage':{'complete':True,'blockers':[]}}, {}
         else:
             from .courier_locations import plan_courier_report
             report = plan_courier_report(effective, map_packages={source}, map_name=map_name)
@@ -148,6 +224,25 @@ def run_processors(effective: ResourceStack, game_only: ResourceStack, *,
                 before = resources[path] if path in resources else effective.read(path, max_bytes=64*1024*1024)
                 transitions.append((processor.value, path, before, after))
         resources.update(changes)
+    if config.improve_truck_parking:
+        from .resource_overlay import OverlayResourceStack
+        from .truck_parking.mapwide import plan_map_truck_parking
+        truck_report, changes = plan_map_truck_parking(OverlayResourceStack(effective,resources),
+            map_packages={source},map_name=map_name,ownership_stack=effective)
+        reports['truck_parking']=truck_report
+        blockers.extend({'processor':'truck_parking',**b} for b in truck_report.get('coverage',{}).get('blockers',[]))
+        if not truck_report.get('coverage',{}).get('complete',False) and not truck_report.get('coverage',{}).get('blockers'):
+            blockers.append({'processor':'truck_parking','reason':'Truck planner returned incomplete coverage'})
+        composed=set(truck_report.get('composed_resource_paths',[]))
+        for path,data in changes.items():
+            if re.fullmatch(r'def/data_context(?:\.[^/]+)?\.sii',path):continue
+            if path in resources and path not in composed:
+                blockers.append({'processor':'truck_parking','path':path,'reason':'Unacknowledged resource collision'})
+            before=resources.get(path)
+            if before is None and path in effective.resources:before=effective.read(path,max_bytes=64*1024*1024)
+            if path.startswith('map/') and path.endswith(('.base','.aux')) and before is not None:
+                transitions.append(('truck_parking',path,before,data))
+            resources[path]=data
     if config.mode is ProcessorMode.GENERATE and any(p in config.enabled for p in (Processor.FUEL, Processor.REST)):
         from .prefab_contexts import plan_prefab_contexts
         context_report, context_resources = plan_prefab_contexts(

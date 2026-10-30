@@ -12,6 +12,7 @@ import sys
 from .archive import Archive, ArchiveError
 from .courier_audit import audit_courier
 from .fuel_generator import plan_fuel
+from .fuel_selection import FuelSelectionConfig, load_fuel_selection_config
 from .mod_writer import write_mod
 from .package import Package, PackageError, ResourceStack, virtual_path
 from .petrol_policy import DEFAULT_REFERENCE
@@ -86,6 +87,61 @@ def parser() -> argparse.ArgumentParser:
             tanks.add_argument('--revision', type=int, default=0)
             tanks.add_argument('--icon', help='Optional 276x162 JPEG tank icon')
             tanks.add_argument('--experimental', action='store_true')
+    for name in ('analyze-fuel-selection-batch', 'generate-fuel-selection-batch'):
+        batch = sub.add_parser(name, help='Analyze or generate a pinned, finite pump-selection comparison')
+        batch.add_argument('--manifest', required=True, help='Pinned finite-site fuel comparison JSON')
+        batch.add_argument('--package', action='append', default=[], help='Original map/resource archives in LOW-HIGH order; omit generated fixes and installed game packages')
+        batch.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        batch.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        selection = batch.add_mutually_exclusive_group(required=True)
+        selection.add_argument('--fuel-policy', choices=('broad', 'realistic'))
+        selection.add_argument('--fuel-selection-json', help='Strict reviewed fuel policy JSON')
+        if name.startswith('generate'):
+            batch.add_argument('--revision', type=int, default=1)
+            batch.add_argument('--experimental', action='store_true')
+    for name in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
+        batch = sub.add_parser(name, help='Analyze or generate one explicit multi-site station parking overlay')
+        batch.add_argument('--manifest', required=True, help='Explicit P01/P02 batch manifest JSON')
+        batch.add_argument('--package', action='append', default=[], help='Resource archives/directories including standard fixes in LOW-HIGH order; omit installed game packages')
+        batch.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        batch.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            batch.add_argument('--revision', type=int, default=1, help='Positive experimental batch revision')
+            batch.add_argument('--experimental', action='store_true')
+    for name in ('analyze-station-parking', 'generate-station-parking'):
+        station = sub.add_parser(name, help=('Analyze one source-pinned station parking candidate'
+                                             if name == 'analyze-station-parking' else
+                                             'Generate one experimental station parking candidate'))
+        station.add_argument('--config', required=True, help='Source-pinned station JSON config')
+        station.add_argument('--mesh', required=True, help='Converted station PIM; schema 2 also requires its paired sibling PIT')
+        station.add_argument('--map-package', required=True, help='Pinned source map archive')
+        station.add_argument('--package', action='append', default=[],
+                             help='Map/dependency archive or directory in LOW-HIGH order; include custom source once, omit installed game packages')
+        station.add_argument('--base-fix', help='Optional pinned fuel-only base fix mounted above explicit map packages')
+        station.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        station.add_argument('--run-id', help='Run folder timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            station.add_argument('--revision', type=int, default=0, help='Experiment revision; schema-2 generation requires at least 1')
+            station.add_argument('--experimental', action='store_true')
+    for name in ('analyze-map-stack', 'generate-map-stack'):
+        stack = sub.add_parser(name, help=('Analyze the declared original map stack without writing mods'
+                                           if name == 'analyze-map-stack' else
+                                           'Generate the complete supported map replacement set'))
+        stack.add_argument('--package', action='append', required=True,
+                           help='Original map/resource package, repeat LOW-HIGH; omit generated fixes and installed game packages')
+        stack.add_argument('--preset', choices=('broad', 'realistic'), default='realistic',
+                           help='Combined fuel/parking policy (default: realistic)')
+        stack.add_argument('--improve-existing-car-parking', action='store_true',
+                           help='Opt in to safe improvements at native car-supported stations (realistic only; default OFF)')
+        stack.add_argument('--improve-truck-parking', action='store_true',
+                           help='Complete missing truck-rest regions at supported native-rest facilities; default OFF')
+        stack.add_argument('--station-evidence-dir',
+                           help='Private flat reviewed PIM/PIT directory; required for station_bays')
+        stack.add_argument('--game-dir', help='ATS installation; otherwise detected automatically')
+        stack.add_argument('--run-id', help='Run timestamp YYYY-MM-DD_HH-MM-SS (Europe/Warsaw)')
+        if name.startswith('generate'):
+            stack.add_argument('--revision', type=int, default=13)
+            stack.add_argument('--experimental', action='store_true')
     for name in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
         bulk = sub.add_parser(name, help=('Discover missing car fuel points in an entire source map'
                                           if name == 'generate-map-fuel' else
@@ -101,6 +157,11 @@ def parser() -> argparse.ArgumentParser:
         bulk.add_argument('--dependency', action='append', default=[], help='Explicit additional package, lowest priority first')
         bulk.add_argument('--petrol-reference', default=DEFAULT_REFERENCE,
                           help='Game-only mounted country path for the petrol/diesel fallback ratio')
+        selection = bulk.add_mutually_exclusive_group()
+        selection.add_argument('--fuel-policy', choices=('broad', 'realistic'),
+                               help='Added car fueling: legacy broad coverage or conservative reviewed selection')
+        selection.add_argument('--fuel-selection-json',
+                               help='Strict source-pinned fuel policy JSON, including rules and uncertain-case behavior')
         if name != 'analyze-map':
             bulk.add_argument('--icon', help='Optional map-labelled JPEG 276x162')
             bulk.add_argument('--experimental', action='store_true')
@@ -108,6 +169,14 @@ def parser() -> argparse.ArgumentParser:
             bulk.add_argument('--processor', action='append', required=True,
                               choices=[p.value for p in Processor],
                               help='Select fuel, rest, or analysis-only courier; repeat as needed')
+            bulk.add_argument('--station-evidence-dir',
+                              help='Private flat reviewed PIM/PIT directory; required for station_bays')
+            bulk.add_argument('--parking-strategy', choices=('none', 'truck_areas', 'station_bays'),
+                              help='Select one rest strategy; default is legacy truck_areas')
+            bulk.add_argument('--improve-existing-car-parking', action='store_true',
+                              help='Improve native car parking with rest and station_bays; default OFF')
+            bulk.add_argument('--improve-truck-parking', action='store_true',
+                              help='Complete native truck-rest coverage independently of car parking; default OFF')
             bulk.add_argument('--rest-radius', type=float, default=1000,
                               help='Straight-line rest search distance in map coordinate units (default: 1000)')
     for name in ('fuel-audit', 'generate-fuel'):
@@ -181,6 +250,66 @@ def main(argv: list[str] | None = None) -> int:
                    'coverage': result['planner'].get('coverage'),
                    'generated_mod_count': result['generated_mod_count']}, None)
             return 0
+        if args.command in ('analyze-fuel-selection-batch', 'generate-fuel-selection-batch'):
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(message)s')
+            from .fuel_selection.batch_workflow import run_fuel_selection_batch
+            selection = (load_fuel_selection_config(args.fuel_selection_json) if args.fuel_selection_json
+                         else FuelSelectionConfig(mode=args.fuel_policy))
+            result = run_fuel_selection_batch(args.manifest, packages=args.package,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=args.command.startswith('generate'), revision=getattr(args, 'revision', 1),
+                experimental=getattr(args, 'experimental', False), fuel_selection=selection)
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result.get('planner', {}).get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-station-parking-batch', 'generate-station-parking-batch'):
+            from .station_parking.batch_workflow import run_station_parking_batch
+            generate = args.command.startswith('generate')
+            result = run_station_parking_batch(args.manifest, packages=args.package,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=generate, revision=getattr(args, 'revision', 1),
+                experimental=getattr(args, 'experimental', False))
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result.get('planner', {}).get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-station-parking', 'generate-station-parking'):
+            from .station_parking.workflow import run_station_parking
+            generate = args.command.startswith('generate')
+            result = run_station_parking(
+                args.config, args.mesh, args.map_package, packages=args.package,
+                base_fix=args.base_fix, game_dir=args.game_dir, run_id=args.run_id,
+                extractor=args.extractor, generate=generate,
+                revision=args.revision if generate else 0,
+                experimental=getattr(args, 'experimental', False))
+            _emit({'status': result['status'], 'output': result.get('output'),
+                   'report_path': result['report_path'], 'work_dir': result['workflow']['work_dir'],
+                   'coverage': result['planner'].get('coverage'),
+                   'generated_mod_count': result['generated_mod_count']}, None)
+            return 0
+        if args.command in ('analyze-map-stack', 'generate-map-stack'):
+            import logging
+            logging.basicConfig(level=logging.INFO, format='%(message)s')
+            from .map_stack import run_map_stack
+            generate = args.command == 'generate-map-stack'
+            result = run_map_stack(packages=args.package, preset=args.preset,
+                game_dir=args.game_dir, extractor=args.extractor, run_id=args.run_id,
+                generate=generate, experimental=getattr(args, 'experimental', False),
+                revision=getattr(args, 'revision', 13),
+                station_evidence_dir=args.station_evidence_dir,
+                improve_existing_car_parking=args.improve_existing_car_parking,
+                improve_truck_parking=args.improve_truck_parking)
+            _emit({'status': result['status'], 'analysis_only': not generate,
+                   'outputs': result.get('outputs', []),
+                   'report_path': result.get('report_path'),
+                   'work_dir': result.get('workflow', {}).get('work_dir'),
+                   'coverage': result.get('planner', {}).get('coverage'),
+                   'generated_mod_count': len(result.get('outputs', []))}, None)
+            return 0
         if args.command in ('generate-map-fuel', 'generate-map-fix', 'analyze-map'):
             import logging
             logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -189,6 +318,19 @@ def main(argv: list[str] | None = None) -> int:
                            run_id=args.run_id,
                            extractor=args.extractor, dependency=args.dependency,
                            petrol_reference=args.petrol_reference)
+            if args.fuel_selection_json:
+                options['fuel_selection'] = load_fuel_selection_config(args.fuel_selection_json)
+            elif args.fuel_policy:
+                options['fuel_selection'] = FuelSelectionConfig(mode=args.fuel_policy)
+            if args.command in ('analyze-map', 'generate-map-fix'):
+                if args.station_evidence_dir is not None:
+                    options['station_evidence_dir'] = args.station_evidence_dir
+                if args.parking_strategy is not None:
+                    options['parking_strategy'] = args.parking_strategy
+                if args.improve_existing_car_parking:
+                    options['improve_existing_car_parking'] = True
+                if args.improve_truck_parking:
+                    options['improve_truck_parking'] = True
             if args.command == 'analyze-map':
                 result = analyze_map(args.source, processors=args.processor,
                                      rest_radius=args.rest_radius, **options)

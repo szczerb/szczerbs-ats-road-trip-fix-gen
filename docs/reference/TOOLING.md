@@ -1,5 +1,9 @@
 # Inspection and experimental generation CLI
 
+**Station parking prerequisite — 2026-10-30:** pass `--station-evidence-dir` to stack or single-map commands using `station_bays`. [Portable evidence preparation and source/version gates](STATION_PARKING_EVIDENCE.md) replace the former retained-research-directory assumption.
+
+**New fuel-selection interface — 2026-10-21:** `generate-map-fuel`, `generate-map-fix` and `analyze-map` accept either `--fuel-policy broad|realistic` or `--fuel-selection-json PATH`. Broad is backward-compatible/default; bare realistic skips unreviewed groups. `analyze-fuel-selection-batch` / `generate-fuel-selection-batch` take `--manifest`, repeated original `--package` arguments in low-to-high order and an explicit policy. [Reviewed six-site configuration and reproduction](../examples/selective-fuel-tour/README.md); [evidence, exclusions and comparison handoff](SELECTIVE_CAR_FUELING.md).
+
 Tested on 2026-10-17 in Linux/WSL with Python 3.12 against ATS 1.61.3.18 and the supplied inputs. Requires Python 3.11+. There are no runtime Python dependencies. From the repository root:
 
 ```bash
@@ -99,3 +103,15 @@ The [Practical Courier Jobs generator](PRACTICAL_COURIER_GENERATOR.md) is separa
 ## Separate reasonable tank upgrades
 
 Use `analyze-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml` for a report, or `generate-tank-upgrades --config docs/examples/reasonable-gas-tank-upgrades.toml --experimental` for a standalone capacity mod. Both run under `PYTHONPATH=src python3 -m ats_road_trip`. [Automotive evidence, exact model policy, priority and manual checks](REASONABLE_GAS_TANK_UPGRADES.md). The default r0 changes only Mustang/F-150 capacities; it does not regenerate map or courier fixes.
+
+## Navigation parking-icon experiment
+
+The source-pinned N1 experiment is separate from station geometry and the map-wide processors:
+
+```bash
+PYTHONPATH=src python3 -m ats_road_trip.navigation_icons \
+  --source-package "/path/to/Workshop/3348711188/universal" \
+  --game-version 1.61.3.18 --acknowledge-experimental
+```
+
+The command verifies North America Background Map 5.3's reviewed map-data and three included-member hashes, then changes only car-parking visibility at four local map tiers. It writes a new timestamped `local_outputs/generated/` SCS and `local_outputs/work/` audit in this worktree. The build argument is caller-declared; the command does not inspect or launch ATS. Updated/missing inputs block generation. Existing runs are not overwritten. [Evidence, exact scope, priority and N0/N1 manual comparison](CAR_PARKING_NAVIGATION_ICONS.md). N1 parking visibility is now user-confirmed at the reported Dawson test; broader coverage is unestablished. Add `--variant parking-fuel` to generate the separate N2 r2 fuel-visibility candidate; it replaces N1 above the retained background mod and now has user-confirmed fuel and parking icon visibility in Mustang navigation at the reported test scope.

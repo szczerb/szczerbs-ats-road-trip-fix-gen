@@ -4,15 +4,39 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
 
 No unstarted tasks.
 
-
-
 ## Done
+
+- [TASK-0056: Clean research history and prepare a public PR](done/TASK-0056-clean-research-history-and-prepare-public-pr.md) — sanitized historical paths, explicit reviewed evidence input, scoped North Platte guards, 644 tests and independent publication audits; [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is open for a later squash merge.
+
+- [TASK-0054: Complete incomplete truck-rest lots](done/TASK-0054-complete-incomplete-truck-rest-lots.md) — eight r13 replacements, 4 new regions/icons, 156 banks completed across 143 native regions, preserved car/fuel baseline, 633 tests and independent final audits. [Delivery](../reference/TRUCK_REST_COVERAGE_1_61_R13.md).
+
+- [TASK-0052: Broad station parking areas](done/TASK-0052-generate-broad-station-parking-areas.md) — complete eight-package r12 set, 231 areas at 117 stations, native improvements default-OFF, independent fueling, 557 tests and final archive/context/namespace audits. [Delivery](../reference/REALISTIC_PARKING_AREAS_1_61_R12.md).
+
+- [TASK-0051: Two reviewed Dawson parking areas](done/TASK-0051-expand-dawson-to-two-reviewed-parking-areas.md) — full Alaska r11 replacement with two broad contact-enabled areas; 516 tests and 29 independent archive checks. User accepted the Dawson result on 2026-10-24; broader generation is a separate next goal.
+
+- [TASK-0043: Polish navigation-fix metadata and artwork](done/TASK-0043-polish-navigation-fix-metadata-and-artwork.md) — N2 r3 metadata, user-directed A2 art and report-free local testing copy, 508 tests, exact accepted payload/N1 preservation; third-party redistribution permission remains unestablished.
+
+- [TASK-0047: Complete realistic map replacements](done/TASK-0047-deliver-realistic-map-replacements.md) — eight complete r10 packages and ZIP, 3,073 fuel additions / 208 policy omissions / 125 dedicated bays, 508 tests and independent actual-stack audits; optional career feedback. [Delivery](../reference/REALISTIC_MAP_REPLACEMENTS_1_61_R10.md).
+
+- [TASK-0046: Selective passenger-car fueling](done/TASK-0046-add-selective-passenger-car-fueling.md) — opt-in pump-level suitability; G1/G2 six-site fuel comparison, five guarded resources, 460 tests and independent actual-output/effective-stack verification. [Test handoff](../reference/SELECTIVE_CAR_FUELING.md).
+- [TASK-0045: Build one curated station-parking test batch](done/TASK-0045-build-curated-station-parking-test-batch.md) — one nine-site / three-family SCS over retained r9, effective census/action audit, 418 tests, independent nine-site preservation audit and checked test ZIP; [eight-site user feedback received](../reference/STATION_PARKING_FORECOURT_TOUR_FEEDBACK_2026_10_21.md), P05 skipped.
+
+- [TASK-0044: Improve effective station-parking heuristics](done/TASK-0044-improve-effective-station-parking-heuristics.md) — pinned effective models, raised-boundary proposals and clearance ranking; operational native marked control, C2/E1 alternatives, 381 tests and independent archive/composition audits. Runtime usability remains pending.
+
+- [TASK-0042: Test the analogous local-navigation fuel icon mask](done/TASK-0042-test-local-navigation-fuel-icon-mask.md) — N1 parking success and both A/B prompts recorded; engine-backed N2 fuel candidate, preserved N1 and geometry, 336 tests and payload/stack audits. Both fuel and parking icons subsequently user-confirmed in Mustang navigation.
+
+- [TASK-0041: Refactor station parking and investigate navigation icons](done/TASK-0041-refactor-station-parking-and-investigate-navigation-icons.md) — separate behavior-preserving refactor commit, effective background-mask research, source-pinned N1 navigation candidate, 332 tests and independent payload audit; N1 parking-navigation result subsequently user-confirmed at Dawson; N2 fuel follow-up is separate.
+
+- [TASK-0040: Identify Dawson test and label variants](done/TASK-0040-identify-dawson-test-and-label-variants.md) — log identifies successful A/painted session; active Workshop model explains missing paint; labelled metadata-only copies preserve all gameplay bytes; 326 tests.
+
+- [TASK-0039: Research gas-station car rest areas](done/TASK-0039-research-gas-station-car-rest.md) — isolated explicit-station PoC, two Alaska-based Dawson alternatives, 326 tests, independent package/preservation audits and manual handoff; gameplay remains unverified.
 
 - [TASK-0038: Repair missing car parking markers](done/TASK-0038-investigate-missing-car-parking-icons.md) — truck-first marker cause verified, native car-only twins, 281 tests and independent seven-package/effective-stack audits; r9 icons subsequently user-confirmed in two towns in Alaska/Canada; detailed controls remain TASK-0007.
 

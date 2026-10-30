@@ -10,6 +10,8 @@ The two features have equal research priority. Automation and small patch size a
 
 **Documented — expanded user direction, 2026-10-18:** include passenger-car rest eligibility as its own selectable processor alongside fuel and future Courier Jobs. Only add car support to a truck/bus rest area if no existing car rest lies within 1,000 game-world units in a straight line. Preserve truck/bus behavior and shared action definitions; compose selected changes into one source-specific mod. See [processor scope](../reference/COMPATIBILITY_PROCESSORS.md).
 
+**Documented — parking strategy clarification, 2026-10-21:** dedicated painted/geometry-derived station car bays are an alternative to enabling truck rest areas for cars. Choose one strategy per generated mod, with fuel independently selectable and original/native facilities preserved. No automatic truck-area fallback in dedicated-bay mode. [ADR-0022](../architecture/decisions/ADR-0022-select-mutually-exclusive-car-parking-strategies.md) records the accepted requirement; implementation remains pending.
+
 **Documented — authorized scope extension, 2026-10-18:** implement a standalone courier vehicle-eligibility generator, starting with reviewed practical Crown Victoria cargo jobs excluded for the Mustang. See the [generator guide](../reference/PRACTICAL_COURIER_GENERATOR.md). This is separate from source-map compatibility fixes and does not authorize silently bundling eligibility changes into them. Physical cargo suitability, class-wide effects and runtime behavior remain unverified; broader economy rebalancing remains outside the goal.
 
 ## Reported problem and evidence boundary

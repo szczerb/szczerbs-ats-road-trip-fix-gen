@@ -17,6 +17,7 @@ from pathlib import Path
 import re
 
 from .archive import Archive, ArchiveError
+from .fuel_selection import FuelSelectionConfig
 from .mod_writer import write_mod
 from .package import Package, ResourceStack
 from .petrol_policy import DEFAULT_REFERENCE
@@ -183,6 +184,9 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
                      map_name=None, revision=9, run_id=None, extractor=None,
                      dependency: list[str] = (), icon=None,
                      petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
+                     fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
+                     parking_strategy=None, improve_existing_car_parking=False, improve_truck_parking=False,
+                     station_evidence_dir=None,
                      _legacy_fuel=False, _analysis_only=False) -> dict:
     """Audit one supplied map and emit a complete selected compatibility package.
 
@@ -192,7 +196,15 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
     """
     config = ProcessorConfig.from_names(processors, rest_radius=rest_radius,
                                         petrol_reference=petrol_reference,
+                                        fuel_selection=fuel_selection,
+                                        parking_strategy=parking_strategy,
+                                        station_evidence_dir=station_evidence_dir,
+                                        improve_existing_car_parking=improve_existing_car_parking,
+                                        improve_truck_parking=improve_truck_parking,
                                         mode=ProcessorMode.ANALYZE if _analysis_only else ProcessorMode.GENERATE)
+    if config.parking_strategy.value == 'station_bays':
+        from .station_parking.catalog import load_reviewed_catalog
+        load_reviewed_catalog(config.station_evidence_dir)
     topics = tuple(p.value for p in (Processor.FUEL, Processor.REST, Processor.COURIER)
                    if p in config.enabled)
     topic = '-'.join(topics)
@@ -209,6 +221,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
         icon = map_icon(REPO_ROOT, name, topics)
     work, output, stamp = _run_paths(name, revision, run_id, topic=topic,
                                     analysis_only=_analysis_only)
+    if fuel_selection.mode == 'realistic' and output is not None:
+        output = output.with_name('select-fuel-' + output.name)
     if (work / 'audit.json').exists() or (output is not None and output.exists()):
         raise FileExistsError('Run audit or generated package already exists; choose a new run ID')
     work.mkdir(parents=True, exist_ok=True)
@@ -230,6 +244,10 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             'run_id': stamp, 'map_name': name, 'source': str(source),
             'processors_enabled': list(topics),
             'rest_radius_coordinate_units': config.rest_radius if Processor.REST in config.enabled else None,
+            'parking_strategy':config.parking_strategy.value,
+            'station_evidence_dir':config.station_evidence_dir,
+            'improve_existing_car_parking':config.improve_existing_car_parking,
+            'improve_truck_parking':config.improve_truck_parking,
             'game_dir': str(installed), 'game_version': version,
             'packages_low_to_high': [str(path) for path in order],
             'target_map_package': str(source),
@@ -240,6 +258,8 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
             'source_package_identities': [{'path':str(path), 'size':size, 'mtime_ns':mtime}
                                           for path,(size,mtime) in identities.items()],
         }
+        if fuel_selection.mode == 'realistic':
+            workflow['fuel_selection'] = fuel_selection.summary()
         if _analysis_only:
             workflow['operation'] = 'analysis_only'
         with ExitStack() as manager:
@@ -293,13 +313,36 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
         description = map_description(name, topics,
                                       version='.'.join(version.split('.')[:2]) + f'-r{revision}-experimental',
                                       rest_radius=config.rest_radius)
+        if config.parking_strategy.value == 'station_bays':
+            description = description.replace(
+                'Adds passenger-car rest access where the inspected nearby area has no '
+                f'existing car rest within {config.rest_radius:,g} game-world units. ',
+                'Adds broad station parking areas where original car rest is absent; '
+                'unknown layouts are skipped without truck-area fallback. ')
+            description = ('STATION AREAS | Native parking improvements: '
+                + ('ON' if config.improve_existing_car_parking else 'OFF')
+                + '. Fueling remains independent.\n' + description)
+        if fuel_selection.mode == 'realistic':
+            description = ('SELECT FUEL — reviewed car fueling, uncertain cases ' + fuel_selection.unknown + '\n'
+                           'Alternative to broad fuel coverage for the same source; enable only one.\n'
+                           'Preserves original facilities; not a diesel-only fuel specification.\n'
+                           + description.replace('Lets passenger cars refuel at supported truck fuel points',
+                                                 'Adds passenger-car refueling only at policy-selected fuel points'))
         # Time/run paths belong to the external audit, keeping generated mod
         # content stable across timestamped runs with identical source inputs.
         provenance = {k:v for k,v in workflow.items() if k not in ('run_id', 'work_dir')}
         full_report = {**report, 'workflow': provenance}
+        if config.parking_strategy.value == 'none' and config.improve_truck_parking:
+            description = description.replace(
+                'Adds passenger-car rest access where the inspected nearby area has no '
+                f'existing car rest within {config.rest_radius:,g} game-world units. ',
+                'Adds independent truck-rest regions within supported incomplete parking facilities. ')
+        if config.improve_truck_parking:
+            description += '\nTruck-rest coverage improvements: ON; independent of car parking and fueling.\n'
         written = write_mod(output, resources, full_report, game_version=version,
                             map_name=name, revision=revision, icon=icon_bytes,
                             description=description,
+                            **({'variant_label': 'SELECT FUEL'} if fuel_selection.mode == 'realistic' else {}),
                             **({} if _legacy_fuel else {'fix_topics': topics}))
         audit.update({'status': 'generated', 'output': str(output), 'written_report': written})
         _write_audit(work / 'audit.json', audit)
@@ -315,18 +358,22 @@ def generate_map_fix(source, *, processors=(Processor.FUEL,), game_dir=None,
 
 def generate_map_fuel(source, *, game_dir=None, map_name=None, revision=2,
                       run_id=None, extractor=None, dependency: list[str] = (),
-                      icon=None, petrol_reference=DEFAULT_REFERENCE) -> dict:
+                      icon=None, petrol_reference=DEFAULT_REFERENCE,
+                      fuel_selection: FuelSelectionConfig = FuelSelectionConfig()) -> dict:
     """Preserve the r2 fuel-and-petrol interface and package contract."""
     return generate_map_fix(source, processors=(Processor.FUEL,),
                             game_dir=game_dir, map_name=map_name, revision=revision,
                             run_id=run_id, extractor=extractor, dependency=dependency,
                             icon=icon, petrol_reference=petrol_reference,
-                            _legacy_fuel=True)
+                            fuel_selection=fuel_selection, _legacy_fuel=True)
 
 
 def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
                 map_name=None, run_id=None, extractor=None, dependency=(),
-                petrol_reference=DEFAULT_REFERENCE, rest_radius=1000) -> dict:
+                petrol_reference=DEFAULT_REFERENCE, rest_radius=1000,
+                fuel_selection: FuelSelectionConfig = FuelSelectionConfig(),
+                parking_strategy=None, improve_existing_car_parking=False, improve_truck_parking=False,
+                station_evidence_dir=None) -> dict:
     """Write source-relative reports without packaging or installing a mod.
 
     Incomplete inspection is a reported partial result, not a statement about
@@ -335,4 +382,7 @@ def analyze_map(source, *, processors=(Processor.COURIER,), game_dir=None,
     return generate_map_fix(source, processors=processors, game_dir=game_dir,
                             map_name=map_name, run_id=run_id, extractor=extractor,
                             dependency=dependency, petrol_reference=petrol_reference,
-                            rest_radius=rest_radius, _analysis_only=True)
+                            rest_radius=rest_radius, fuel_selection=fuel_selection,
+                            parking_strategy=parking_strategy,
+                            station_evidence_dir=station_evidence_dir,
+                            improve_existing_car_parking=improve_existing_car_parking, improve_truck_parking=improve_truck_parking, _analysis_only=True)

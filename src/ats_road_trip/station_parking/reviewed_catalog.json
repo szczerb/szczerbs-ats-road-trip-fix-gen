@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "game_version": "1.61.3.18",
+  "reviewed_date": "2026-10-24",
+  "converter": {
+    "repository": "https://github.com/mwl4/ConverterPIX",
+    "revision": "3cd4e73a86d0c6bd28e117664c50a36cabeccf38",
+    "binary_sha256": "fba5a52f763d07d3dc110dea4980fe2c7e656a8c0afa05b6b7a4ab4373dc950d"
+  },
+  "families": [
+    {
+      "family": "nm_gas_station1_chemron",
+      "model_geometry": "prefab/gas/nm_gas_station1_chemron.pmg",
+      "fingerprints": {
+        "model_definition": "f34965d3613eaac120256cf04fcbefb48aeff3924e0b098c513fb5c4d8f95301",
+        "model_geometry": "c9874060404d200024e158c86399e30ed191ddf8364bab478a88da0f5d6f6526",
+        "mesh": "68011614086e4e78505d3ab3849f416b29e7b26cf2eaf93cb84e426226429644",
+        "mesh_state": "98d12127c619f7796b839f544145e580157a678bd217145e6e94e260e6c2401d"
+      },
+      "mesh_materials": {
+        "ground": [
+          "mat_0004_asphalt_ca_prefab_light"
+        ],
+        "paint": [
+          "mat_0005_lines1"
+        ]
+      },
+      "material_resources": {
+        "material/decal/kerb_dirt_diff.dds": "b5c566b22cda3c090abc7b9825fee128f3d424556e1f64c8d7de3f785e2ba73e",
+        "material/decal/kerb_dirt_diff.tobj": "dd3f11ad81b49274016b161249ca0fec75c727831c91314a7f5dd0e72e5c384a",
+        "material/road/asphalt_ca_prefab_light.dds": "9560820da1384b4c73ad9056dea275bc4b7336750369fe6010c0ddf24c3a6fef",
+        "material/road/asphalt_ca_prefab_light.mat": "c6f7b651ab9f8e67ff301f5beedf0edca3c8f4580b5c7cdf90b07fb16a68cb1b",
+        "material/road/asphalt_ca_prefab_light.tobj": "2beb5187bc659786e2407e2e8bc1ea15db5cb946ae39fdc2c374316a1a1dbc97",
+        "material/road/lines1.dds": "d8aee10263e57c75be9bf729d194115d634f2d17bac83f1e341722b359b95051",
+        "material/road/lines1.mat": "78d566bea210b627ef1c2b94c81d070e6f98b1f47ee97c59592f3bd5a6405b10",
+        "material/road/lines1.tobj": "32b26f53393753f7419711238ea32d053c3dbfe0db8704faf8008c36b1d52f13",
+        "material/special/doors_00.dds": "7da5289223a462c55ea6ab66c51ab0fb4c3c8b5b6f299577ff19c7932c09763c",
+        "material/special/doors_00.tobj": "3f40181dd2cac7253aba2b0a5b7e1a8c2bb29b1cfc3c57ec45905017e9bd038a",
+        "material/tiled/pavement.dds": "8f5265443c77cb27144af02df54674f2ba162e3fdaff0e6b607e7b9666072967",
+        "material/tiled/pavement.tobj": "46d5476b148b51077e40523a90d5383f6237b6dcb1b5dd8a7107bb12207ea79c"
+      },
+      "methods": [
+        "painted_bays"
+      ],
+      "source_model_provider": "Real Companies 4.02.01 (Workshop 2316796205/latest)"
+    },
+    {
+      "family": "nm_truckstop1_chemron",
+      "model_geometry": "prefab/gas/nm_truckstop1_chemron.pmg",
+      "fingerprints": {
+        "model_definition": "8128199e3eccb67b5843c48524aa01d9ae1d95583e9127c2a9f695962b550061",
+        "model_geometry": "1178ad1c0c8378d60261278e74bf52514d395479790bc711ddd5bc7843b3bf7c",
+        "mesh": "4d9d4e11353d5aebaafc9eef3e650f56bd3ccdd51b33b399fdfdb4a1bc25fbaa",
+        "mesh_state": "9636530d37cac78b3109909ccd7af50ba034f59adde0f1276cf9e7edfea5e220"
+      },
+      "mesh_materials": {
+        "ground": [
+          "mat_0009_asphalt_ca_prefab_light"
+        ],
+        "paint": [
+          "mat_0006_lines1"
+        ]
+      },
+      "material_resources": {
+        "material/decal/kerb_dirt_diff.dds": "b5c566b22cda3c090abc7b9825fee128f3d424556e1f64c8d7de3f785e2ba73e",
+        "material/decal/kerb_dirt_diff.tobj": "dd3f11ad81b49274016b161249ca0fec75c727831c91314a7f5dd0e72e5c384a",
+        "material/road/asphalt_ca_prefab_light.dds": "9560820da1384b4c73ad9056dea275bc4b7336750369fe6010c0ddf24c3a6fef",
+        "material/road/asphalt_ca_prefab_light.mat": "c6f7b651ab9f8e67ff301f5beedf0edca3c8f4580b5c7cdf90b07fb16a68cb1b",
+        "material/road/asphalt_ca_prefab_light.tobj": "2beb5187bc659786e2407e2e8bc1ea15db5cb946ae39fdc2c374316a1a1dbc97",
+        "material/road/lines1.dds": "d8aee10263e57c75be9bf729d194115d634f2d17bac83f1e341722b359b95051",
+        "material/road/lines1.mat": "78d566bea210b627ef1c2b94c81d070e6f98b1f47ee97c59592f3bd5a6405b10",
+        "material/road/lines1.tobj": "32b26f53393753f7419711238ea32d053c3dbfe0db8704faf8008c36b1d52f13",
+        "material/special/doors_00.dds": "7da5289223a462c55ea6ab66c51ab0fb4c3c8b5b6f299577ff19c7932c09763c",
+        "material/special/doors_00.tobj": "3f40181dd2cac7253aba2b0a5b7e1a8c2bb29b1cfc3c57ec45905017e9bd038a",
+        "material/tiled/pavement.dds": "8f5265443c77cb27144af02df54674f2ba162e3fdaff0e6b607e7b9666072967",
+        "material/tiled/pavement.tobj": "46d5476b148b51077e40523a90d5383f6237b6dcb1b5dd8a7107bb12207ea79c"
+      },
+      "methods": [
+        "painted_bays",
+        "unmarked_geometry"
+      ],
+      "source_model_provider": "Real Companies 4.02.01 (Workshop 2316796205/latest)"
+    },
+    {
+      "family": "nm_gas_station2-corner_chemron",
+      "model_geometry": "prefab/gas/nm_gas_station2-corner_chemron.pmg",
+      "fingerprints": {
+        "model_definition": "a472b46db2911373b806b6aad7d037d68f80b67e3f567ceea74a731a753d4b28",
+        "model_geometry": "04cfa38be260b82dc5b26ff146ffccdfd1e4b20a3b3ff7e87a72e0d15eaa4008",
+        "mesh": "0e4b6f9c40a0ba3bbb7f1c4c4e7dab584aa721f669f9aa0497e7687fa34b03e8",
+        "mesh_state": "6fd85033d31a16e207b49809a3448d253fb74a7ce748efe197792b8229762db8"
+      },
+      "mesh_materials": {
+        "ground": [
+          "mat_0014_asphalt_ca_prefab_light"
+        ],
+        "paint": []
+      },
+      "material_resources": {
+        "material/decal/kerb_dirt_diff.dds": "b5c566b22cda3c090abc7b9825fee128f3d424556e1f64c8d7de3f785e2ba73e",
+        "material/decal/kerb_dirt_diff.tobj": "dd3f11ad81b49274016b161249ca0fec75c727831c91314a7f5dd0e72e5c384a",
+        "material/road/asphalt_ca_prefab_light.dds": "9560820da1384b4c73ad9056dea275bc4b7336750369fe6010c0ddf24c3a6fef",
+        "material/road/asphalt_ca_prefab_light.mat": "c6f7b651ab9f8e67ff301f5beedf0edca3c8f4580b5c7cdf90b07fb16a68cb1b",
+        "material/road/asphalt_ca_prefab_light.tobj": "2beb5187bc659786e2407e2e8bc1ea15db5cb946ae39fdc2c374316a1a1dbc97",
+        "material/road/lines1.dds": "d8aee10263e57c75be9bf729d194115d634f2d17bac83f1e341722b359b95051",
+        "material/road/lines1.mat": "78d566bea210b627ef1c2b94c81d070e6f98b1f47ee97c59592f3bd5a6405b10",
+        "material/road/lines1.tobj": "32b26f53393753f7419711238ea32d053c3dbfe0db8704faf8008c36b1d52f13",
+        "material/special/doors_00.dds": "7da5289223a462c55ea6ab66c51ab0fb4c3c8b5b6f299577ff19c7932c09763c",
+        "material/special/doors_00.tobj": "3f40181dd2cac7253aba2b0a5b7e1a8c2bb29b1cfc3c57ec45905017e9bd038a",
+        "material/tiled/pavement.dds": "8f5265443c77cb27144af02df54674f2ba162e3fdaff0e6b607e7b9666072967",
+        "material/tiled/pavement.tobj": "46d5476b148b51077e40523a90d5383f6237b6dcb1b5dd8a7107bb12207ea79c"
+      },
+      "methods": [
+        "unmarked_geometry"
+      ],
+      "source_model_provider": "Real Companies 4.02.01 (Workshop 2316796205/latest)"
+    },
+    {
+      "family": "nm_gas_station2-corner_gp",
+      "model_geometry": "prefab/gas/nm_gas_station2-corner_gp.pmg",
+      "fingerprints": {
+        "model_definition": "2a8d37fa45d33a87284ec29b36c7303ad0b55c1c5c4b9f9515bf739b6eaff294",
+        "model_geometry": "39d1d65208af5d676887a4ae7f06ec8eb35bb74d47793190a8630aa4a266a648",
+        "mesh": "3088fd090938ad4971540da99d7636de46aca64fe36dcc7779ab0e3e5a0abc02",
+        "mesh_state": "4db3aaee046f13b908649362171849ec0cce54da541b145a60e5c36a8e4e8ff8"
+      },
+      "mesh_materials": {
+        "ground": [
+          "mat_0025_asphalt_ca_prefab_light",
+          "mat_0026_asphalt_ca_prefab_light",
+          "mat_0027_asphalt_ca_prefab_light",
+          "mat_0028_asphalt_ca_prefab_light"
+        ],
+        "paint": []
+      },
+      "material_resources": {
+        "material/decal/kerb_dirt_diff.dds": "b5c566b22cda3c090abc7b9825fee128f3d424556e1f64c8d7de3f785e2ba73e",
+        "material/decal/kerb_dirt_diff.tobj": "dd3f11ad81b49274016b161249ca0fec75c727831c91314a7f5dd0e72e5c384a",
+        "material/road/asphalt_ca_prefab_light.dds": "9560820da1384b4c73ad9056dea275bc4b7336750369fe6010c0ddf24c3a6fef",
+        "material/road/asphalt_ca_prefab_light.mat": "c6f7b651ab9f8e67ff301f5beedf0edca3c8f4580b5c7cdf90b07fb16a68cb1b",
+        "material/road/asphalt_ca_prefab_light.tobj": "2beb5187bc659786e2407e2e8bc1ea15db5cb946ae39fdc2c374316a1a1dbc97",
+        "material/road/lines1.dds": "d8aee10263e57c75be9bf729d194115d634f2d17bac83f1e341722b359b95051",
+        "material/road/lines1.mat": "78d566bea210b627ef1c2b94c81d070e6f98b1f47ee97c59592f3bd5a6405b10",
+        "material/road/lines1.tobj": "32b26f53393753f7419711238ea32d053c3dbfe0db8704faf8008c36b1d52f13",
+        "material/special/doors_00.dds": "7da5289223a462c55ea6ab66c51ab0fb4c3c8b5b6f299577ff19c7932c09763c",
+        "material/special/doors_00.tobj": "3f40181dd2cac7253aba2b0a5b7e1a8c2bb29b1cfc3c57ec45905017e9bd038a",
+        "material/tiled/pavement.dds": "8f5265443c77cb27144af02df54674f2ba162e3fdaff0e6b607e7b9666072967",
+        "material/tiled/pavement.tobj": "46d5476b148b51077e40523a90d5383f6237b6dcb1b5dd8a7107bb12207ea79c"
+      },
+      "methods": [
+        "unmarked_geometry"
+      ],
+      "source_model_provider": "Real Companies 4.02.01 (Workshop 2316796205/latest)"
+    }
+  ],
+  "dawson_reviewed_areas": {
+    "prefab_uid": "0x5ca1fea582800001",
+    "sector": "map/usa/sec-0029-0045.base",
+    "mesh": "4d9d4e11353d5aebaafc9eef3e650f56bd3ccdd51b33b399fdfdb4a1bc25fbaa",
+    "areas": [
+      {
+        "id": "storefront",
+        "vertices": [
+          [
+            9,
+            0.13931791,
+            -21.15
+          ],
+          [
+            26,
+            0.13931791,
+            -21.15
+          ],
+          [
+            26,
+            0.13931791,
+            -14.7
+          ],
+          [
+            9,
+            0.13931791,
+            -14.7
+          ]
+        ],
+        "partial_activation": true
+      },
+      {
+        "id": "roadside",
+        "vertices": [
+          [
+            -13,
+            0.13931791,
+            7.25
+          ],
+          [
+            10,
+            0.13931791,
+            7.25
+          ],
+          [
+            10,
+            0.13931791,
+            9.85
+          ],
+          [
+            -13,
+            0.13931791,
+            9.85
+          ]
+        ],
+        "partial_activation": true
+      }
+    ]
+  }
+}

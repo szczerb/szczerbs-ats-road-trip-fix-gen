@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "batch_id": "fuel-tour",
+  "game_version": "1.61.3.18",
+  "sites": [
+    {
+      "id": "G01",
+      "sector": "map/usa/sec-0010+0007.base",
+      "sector_sha256": "d4af07b80c309a40e9d404420e376c511fa841e00c8d2cdc3c8a0929ddef9ce5",
+      "source_package": "ATS_Expansion_v23.0_1.61.scs",
+      "prefab_uid": "0x70b9ed1f7920001"
+    },
+    {
+      "id": "G02",
+      "sector": "map/usa/sec-0014+0008.base",
+      "sector_sha256": "7ddb3d359111583b4ff3bb1d43b0d9e4a3e6259a2051c66325d3f1f4aea78f8f",
+      "source_package": "dlc_nm.scs",
+      "prefab_uid": "0x67e7b3845260001"
+    },
+    {
+      "id": "G03",
+      "sector": "map/usa/sec-0023+0007.base",
+      "sector_sha256": "dbff77823907aebbaeea687da1c760a949b98e174df571104a3e584158cc2f9e",
+      "source_package": "Reforma_3_0_1_161.scs",
+      "prefab_uid": "0x42bb1d1c99000001"
+    },
+    {
+      "id": "G04",
+      "sector": "map/usa/sec+0000+0010.base",
+      "sector_sha256": "6825d763854c54c36dd741faf1d172b15beebea47d9ece9a1a0b4a0e7c7a8356",
+      "source_package": "ATS_Expansion_v23.0_1.61.scs",
+      "prefab_uid": "0x5bb643564f800001"
+    },
+    {
+      "id": "G05",
+      "sector": "map/usa/sec-0010+0007.base",
+      "sector_sha256": "d4af07b80c309a40e9d404420e376c511fa841e00c8d2cdc3c8a0929ddef9ce5",
+      "source_package": "ATS_Expansion_v23.0_1.61.scs",
+      "prefab_uid": "0x7f23b92a8d20000"
+    },
+    {
+      "id": "G06",
+      "sector": "map/usa/sec-0010+0008.base",
+      "sector_sha256": "83cac47d06db4377c115b085a87e04229d2ed4be3026eff21e85dff5c88db25d",
+      "source_package": "base_map.scs",
+      "prefab_uid": "0x6032dc12c1350001"
+    }
+  ],
+  "price_packages": [
+    "ATS_Expansion_v23.0_1.61.scs",
+    "Reforma_3_0_1_161.scs",
+    "Reforma_OtherMaps_Patch_40_161.scs",
+    "Western_Canada_Expansion_v1.7.3.scs",
+    "Western_Canada_Promods_Connections_v1.7.3.scs",
+    "Alaska_Expansion_v1.2.3.scs",
+    "promods-ats-map-v164.scs"
+  ]
+}

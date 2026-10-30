@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "mode": "realistic",
+  "unknown": "skip",
+  "rules": [
+    {
+      "descriptor": "prefab/gas/nm_gas_station1_chemron.ppd",
+      "descriptor_sha256": "3d986bd488fb034f21043540bf9cca3f5966503d8715c6e70612bb722dea5fca",
+      "model_desc": "/prefab/gas/nm_gas_station1_chemron.pmd",
+      "variant": 92136531712,
+      "parts": [],
+      "additional_parts": [],
+      "id": "retail-chemron-reference",
+      "groups": [
+        {
+          "spawn_index": 0,
+          "role": "public_car",
+          "confidence": "high",
+          "reason": "Legacy retail locator matches an original Road Trip car locator at the same model transform.",
+          "evidence": "Observed locally: nm_gas_station1_chemron_rt.ppd SHA e0a9084f767216f1611b30ec1f8729dd00a490ad520fc2002072527b5edc4d8b, GAS 0 flags=1; source GAS 0 transform is exact."
+        },
+        {
+          "spawn_index": 1,
+          "role": "uncertain",
+          "confidence": "low",
+          "reason": "The other legacy pump has no exact native car-reference match; the RT layout relocates locators.",
+          "evidence": "Observed locally: source GAS1 Z=1.349537, native truck GAS2 Z=2.425830, native car GAS1 Z=-4.010911; the reference relocates locators, so a loose nearest match is not audience proof."
+        }
+      ]
+    },
+    {
+      "descriptor": "prefab/gas/nm_truckstop1_depot_rt.ppd",
+      "descriptor_sha256": "0e7954cd155d6019d04c70dd73623ce7407a9378f742003a2a17026a5f400519",
+      "model_desc": "/prefab/gas/nm_truckstop1_depot.pmd",
+      "variant": 97903579674243,
+      "parts": [],
+      "additional_parts": [],
+      "id": "mixed-gallon-native-separation",
+      "groups": [
+        {
+          "spawn_index": 0,
+          "role": "truck_lane",
+          "confidence": "medium",
+          "reason": "Retain the reviewed native separation: this group is truck-correlated while two other pump groups already serve cars.",
+          "evidence": "Observed locally: same-parent Gallon Oil truckstop, descriptor has GAS0/1 flags0 and separate GAS2/3 flags1 matched to native services; this is a suitability policy, not diesel-only proof."
+        },
+        {
+          "spawn_index": 1,
+          "role": "truck_lane",
+          "confidence": "medium",
+          "reason": "Retain the reviewed native separation: this group is truck-correlated while two other pump groups already serve cars.",
+          "evidence": "Observed locally: same-parent Gallon Oil truckstop, descriptor has GAS0/1 flags0 and separate GAS2/3 flags1 matched to native services; this is a suitability policy, not diesel-only proof."
+        }
+      ]
+    },
+    {
+      "descriptor": "prefab/empresas/cedis/castores1.ppd",
+      "descriptor_sha256": "b130fdfb51503158d55b06cae22a7f603f23269f1cedf5ea50c83236cdb1d79d",
+      "model_desc": "/prefab/empresas/cedis/castores1.pmd",
+      "variant": 92136531712,
+      "parts": [],
+      "additional_parts": [],
+      "id": "logistics-yard-same-parent",
+      "groups": [
+        {
+          "spawn_index": 4,
+          "role": "fleet_yard",
+          "confidence": "medium",
+          "reason": "Freight distribution-yard pumps belong to the same prefab as the Company, inside the fenced logistics lot behind the warehouse.",
+          "evidence": "Observed locally: Castores default visible geometry and logistica01 signage; private-yard-evidence.json, descriptor SHA b130fdfb51503158d55b06cae22a7f603f23269f1cedf5ea50c83236cdb1d79d. Public access restrictions and diesel-only fuel remain unknown."
+        },
+        {
+          "spawn_index": 5,
+          "role": "fleet_yard",
+          "confidence": "medium",
+          "reason": "Freight distribution-yard pumps belong to the same prefab as the Company, inside the fenced logistics lot behind the warehouse.",
+          "evidence": "Observed locally: Castores default visible geometry and logistica01 signage; private-yard-evidence.json, descriptor SHA b130fdfb51503158d55b06cae22a7f603f23269f1cedf5ea50c83236cdb1d79d. Public access restrictions and diesel-only fuel remain unknown."
+        }
+      ],
+      "company_linked": true
+    },
+    {
+      "descriptor": "prefab/gas/nm_gas_station1_chemron_rt.ppd",
+      "descriptor_sha256": "e0a9084f767216f1611b30ec1f8729dd00a490ad520fc2002072527b5edc4d8b",
+      "model_desc": "/prefab/gas/nm_gas_station1_chemron.pmd",
+      "variant": 92136531712,
+      "parts": [],
+      "additional_parts": [],
+      "id": "native-chemron-separation",
+      "groups": [
+        {
+          "spawn_index": 2,
+          "role": "truck_lane",
+          "confidence": "medium",
+          "reason": "Preserve the native layout distinction and keep its two existing car fueling groups unchanged.",
+          "evidence": "Observed locally: pinned original RT descriptor GAS0/1 flags1 plus GAS2 flags0, all matched to original map services; no fuel chemistry claim."
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,8 @@ A small personal project for making experimental **American Truck Simulator: Roa
 
 You can download the ready-to-use mods below or run the Python tools locally to generate your own `.scs` files. Game files, third-party map archives, generated packages and local research artifacts are excluded from the Git source history; downloadable builds are attached separately to GitHub Releases. Development is driven by the maintainer’s own setup and community feedback; compatibility is limited to the evidence below.
 
+**Latest local research delivery:** [REALISTIC r13 truck-rest improvements](docs/reference/TRUCK_REST_COVERAGE_1_61_R13.md), with the r12 car/fuel baseline preserved. These eight replacement packages and their career checklist are local research-worktree artifacts; runtime feedback remains open.
+
 ## Download ready-to-use experimental mods
 
 The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):
@@ -20,11 +22,14 @@ These are experimental builds for community testing. The map/connector fixes des
 | Tool | What it changes |
 | --- | --- |
 | **Map fuel/rest fixes** | Add passenger-car fuel interactions while retaining original truck interactions; enable car rest areas where the local proximity rule calls for them; repair missing petrol-price fields. |
+| **Realistic map replacements** | Independent facility-level fueling and broad station parking areas. Complete source-relative r12 set plus stock-game companion; native parking preserved by default with opt-in improvements. Legacy broad behavior remains selectable. [Local delivery, coverage and verification](docs/reference/REALISTIC_PARKING_AREAS_1_61_R12.md). |
 | **Job Types Compat Mustang** | Add the `muscle` vehicle class to 58 reviewed cargo job definitions. Other muscle-tagged cars and Quick Jobs may also be affected; all nine vehicle-transfer definitions stay unchanged. |
 | **Reasonable gas tank upgrades** | Change the Mustang from 61 to 76 L and the non-hybrid 5.0 V8 F-150 from 98 to 136 L. Crown Victoria and Bronco stay unchanged. Disable conflicting tank mods, including the old 3× override. |
 | **Inspection and reports** | Inspect archives and report map-company/context data to investigate courier compatibility. General map courier generation remains unsupported. |
 
-Fuel and rest are independently selectable. Rest uses a 1,000 game-world-unit straight-line XZ search within the inspected source sectors and a bounded neighboring area; existing geometry and shared actions are retained. [Processor behavior and limits](docs/reference/COMPATIBILITY_PROCESSORS.md).
+Realistic station parking additionally requires an explicitly prepared private model-evidence directory, passed with `--station-evidence-dir`. [Preparation, exact source prerequisites and examples](docs/reference/STATION_PARKING_EVIDENCE.md). Converted game assets remain outside Git.
+
+Fuel and rest are independently selectable. Broad truck-area rest uses a 1,000 game-world-unit straight-line XZ search within inspected sectors and a bounded neighboring area. Realistic mode instead adds supported station bays and skips unsupported locations. Existing geometry and shared actions are retained. [Processor behavior and limits](docs/reference/COMPATIBILITY_PROCESSORS.md).
 
 ## Game and map versions checked
 
@@ -46,7 +51,7 @@ Reforma generation also uses **Mega Resources 3.0.1.161** (`Reforma_MegaResource
 
 These Expansion names identify the specific sources above. They do not imply support for every map covering Alaska or western Canada. OtherMaps naming other maps in its description does not establish testing of those maps. Exact input metadata, dependencies and historical observations are in the [input inventory](docs/reference/LOCAL_INPUT_INVENTORY.md) and [research baseline](docs/reference/RESEARCH_BASELINE.md).
 
-The latest local generated candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; the maintainer confirms parking icons in Alaska and Canada after checking two towns, with denser map coverage. Individual fatigue/truck/reload checks were not enumerated. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
+The historical r9 baseline and separate local candidates are **map fixes r9**, **Job Types Compat Mustang r3** and **reasonable tank upgrades r0**. R9 gives selected car rest areas independent native parking triggers so the marker classifier can recognize them; the maintainer confirms parking icons in Alaska and Canada after checking two towns, with denser map coverage. Individual fatigue/truck/reload checks were not enumerated. Revision numbers identify generated packages, separately from source-map versions. Their [map handoff](docs/reference/MOD_REST_MARKERS_1_61_R9.md), [courier guide](docs/reference/PRACTICAL_COURIER_GENERATOR.md) and [tank guide](docs/reference/REASONABLE_GAS_TANK_UPGRADES.md) record the checks and local fingerprints. See GitHub Releases above for the published tank and job-compatibility downloads and their release-specific details.
 
 ## What has been tried in game?
 

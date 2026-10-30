@@ -5,6 +5,8 @@ import tempfile
 import unittest
 
 from ats_road_trip.bulk_fuel import plan_map_fuel
+from ats_road_trip.fuel_selection import FuelSelectionConfig
+from tests.test_fuel_selection import config, rule, group
 from ats_road_trip.local_fuel import token
 from ats_road_trip.map_sector import parse_layer, parse_sector
 from ats_road_trip.package import Package, ResourceStack
@@ -70,6 +72,34 @@ def resources(spawns=None, *, garage=False, visibility=False, legacy=False, sema
     return result
 
 
+def duplicate_placement(source, *, delta=1000, separate_sector=None):
+    """Add a second authored placement sharing the original PPD and definition."""
+    parsed = parse_sector(source[SECTOR])
+    entries, nodes = [], []
+    for original in parsed.items:
+        raw = bytearray(source[SECTOR][original.offset:original.end])
+        struct.pack_into('<Q', raw, 4, original.uid + delta)
+        if original.kind == 4:
+            raw = item(4, original.uid + delta, struct.pack('<QQ', token('02003'), 0) + refs()
+                       + refs(*(uid + delta for uid in original.details['nodes']))
+                       + refs(*(uid + delta for uid in original.details['slaves']))
+                       + struct.pack('<QH', 0, original.details['origin'])
+                       + bytes(len(original.details['nodes']) * 12 + 8))
+        else:
+            struct.pack_into('<QQ', raw, 57, original.details['node'] + delta, original.details['parent'] + delta)
+        entries.append(bytes(raw))
+    for original in parsed.nodes:
+        raw = bytearray(original.raw)
+        struct.pack_into('<Q', raw, 0, original.uid + delta)
+        struct.pack_into('<QQ', raw, 36, original.backward + delta if original.backward else 0,
+                         original.forward + delta if original.forward else 0)
+        nodes.append(bytes(raw))
+    if separate_sector is not None:
+        return {**source, separate_sector: sector(entries, nodes)}
+    originals = [source[SECTOR][entry.offset:entry.end] for entry in parsed.items]
+    return {**source, SECTOR: sector(originals + entries, [node.raw for node in parsed.nodes] + nodes)}
+
+
 class BulkFuelTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -96,6 +126,263 @@ class BulkFuelTests(unittest.TestCase):
 
     def assert_complete(self, report):
         self.assertTrue(report['coverage']['complete'], report['coverage']['blockers'])
+
+    def selective_plan(self, source, selection):
+        package = self.package('map', source)
+        return plan_map_fuel(ResourceStack([package]), map_packages={str(package.path)},
+                             map_name='fixture', fuel_selection=selection)
+
+    def test_explicit_broad_is_identical_to_legacy(self):
+        package = self.package('map', resources())
+        stack = ResourceStack([package])
+        args = {'map_packages': {str(package.path)}, 'map_name': 'fixture'}
+        self.assertEqual(plan_map_fuel(stack, **args),
+                         plan_map_fuel(stack, **args, fuel_selection=FuelSelectionConfig()))
+
+    def test_selective_mixed_layout_adds_only_reviewed_public_pump(self):
+        source = resources([((2., 0., 3.), 0), ((8., 0., 3.), 0)])
+        selected = config(rule(source[PPD], roles=('public_car', 'truck_lane')))
+        report, output = self.selective_plan(source, selected)
+        self.assert_complete(report)
+        self.assertEqual(report['coverage']['policy_skipped_truck_points'], 1)
+        self.assertEqual(report['coverage']['added_car_points'], 1)
+        self.assertEqual(report['static_validation']['truck_points_with_car_counterparts'], 1)
+        after = parse_sector(output[SECTOR])
+        self.assertEqual(len(after.services), 3)
+        ppd = next(data for name, data in output.items() if name.endswith('.ppd'))
+        spawns = inspect_ppd(ppd)['spawns']
+        self.assertEqual(len(spawns), 3)
+        self.assertEqual(spawns[-1]['position'], spawns[0]['position'])
+        original = parse_sector(source[SECTOR])
+        for service in original.services:
+            new = next(item for item in after.services if item.uid == service.uid)
+            self.assertEqual(source[SECTOR][service.offset:service.end], output[SECTOR][new.offset:new.end])
+        nodes = {node.uid: node.raw for node in after.nodes}
+        self.assertTrue(all(nodes[node.uid] == node.raw for node in original.nodes))
+
+    def test_unknown_skip_is_complete_and_emits_no_changes(self):
+        report, output = self.selective_plan(resources(), config())
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+        self.assertEqual(report['coverage']['uncertain_skipped_points'], 1)
+        self.assertEqual(report['stations'][0]['status'], 'policy_skipped')
+
+    def test_unknown_include_is_explicitly_reported(self):
+        report, output = self.selective_plan(resources(), config(unknown='include'))
+        self.assert_complete(report)
+        self.assertEqual(report['coverage']['uncertain_included_points'], 1)
+        self.assertEqual(report['coverage']['added_car_points'], 1)
+
+    def test_native_car_support_is_retained_at_rejected_and_separate_pumps(self):
+        source = resources([((2., 0., 3.), 0), ((2., 0., 3.), 1), ((8., 0., 3.), 1)])
+        report, output = self.selective_plan(source, config(rule(source[PPD], roles=('truck_lane',))))
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+        self.assertEqual(report['coverage']['native_car_services_retained'], 2)
+        self.assertEqual(report['coverage']['native_car_locators_retained'], 2)
+        self.assertEqual(report['coverage']['skipped_points_with_native_car_support'], 1)
+        details = report['stations'][0]['fuel_selection']
+        self.assertEqual(details['native_car_spawn_indices'], [1, 2])
+        self.assertTrue(details['groups'][0]['native_support_prevents_exclusion'])
+
+    def test_rejected_native_locator_is_not_given_new_cached_service(self):
+        source = resources()
+        source[PPD] = resources([((2., 0., 3.), 0), ((2., 0., 3.), 1)])[PPD]
+        report, output = self.selective_plan(source, config())
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+        self.assertEqual(report['coverage']['skipped_points_with_native_car_support'], 1)
+        self.assertEqual(report['coverage']['added_car_points'], 0)
+
+    def test_garage_is_excluded_even_with_uncertain_include(self):
+        report, output = self.selective_plan(resources(garage=True), config(unknown='include'))
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+        self.assertEqual(report['stations'][0]['fuel_selection']['groups'][0]['role'], 'fleet_yard')
+
+    def test_drift_is_a_blocker_and_skipping_does_not_hide_invalid_source(self):
+        source = resources()
+        report, output = self.selective_plan(source, config(rule(source[PPD], descriptor_sha256='0' * 64)))
+        self.assertFalse(report['coverage']['complete'])
+        self.assertIn('SHA256 drift', report['coverage']['blockers'][0]['reason'])
+        self.assertEqual(output, {})
+
+    def test_unknown_skip_does_not_hide_unsupported_legacy_semaphore(self):
+        report, output = self.selective_plan(resources(legacy=True, semaphore=True), config())
+        self.assertFalse(report['coverage']['complete'])
+        self.assertIn('semaphore', report['coverage']['blockers'][0]['reason'])
+        self.assertEqual(output, {})
+
+    def test_policy_skip_does_not_hide_invalid_fuel_node_ownership(self):
+        source = resources()
+        parsed = parse_sector(source[SECTOR])
+        service = parsed.services[0]
+        fuel_node = next(node for node in parsed.nodes if node.uid == service.details['node'])
+        changed = bytearray(source[SECTOR])
+        struct.pack_into('<Q', changed, fuel_node.offset + 36, 123)
+        source[SECTOR] = bytes(changed)
+        report, output = self.selective_plan(source, config())
+        self.assertFalse(report['coverage']['complete'])
+        self.assertIn('ownership', report['coverage']['blockers'][0]['reason'])
+        self.assertEqual(output, {})
+
+    def test_car_only_native_facility_is_counted_and_unchanged(self):
+        source = resources([((2., 0., 3.), 1)])
+        report, output = self.selective_plan(source, config())
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+        self.assertEqual(report['coverage']['native_car_services_retained'], 1)
+        self.assertEqual(report['stations'][0]['fuel_selection']['native_car_spawn_indices'], [0])
+
+    def test_legacy_unknown_skip_does_not_emit_upgrade_only_alias(self):
+        report, output = self.selective_plan(resources(legacy=True), config())
+        self.assert_complete(report)
+        self.assertEqual(output, {})
+
+    def test_same_descriptor_two_placements_use_distinct_subset_aliases(self):
+        source = resources([((2., 0., 3.), 0), ((8., 0., 3.), 0)])
+        parsed = parse_sector(source[SECTOR])
+        entries = [source[SECTOR][item.offset:item.end] for item in parsed.items]
+        nodes = [node.raw for node in parsed.nodes]
+        for original in parsed.items:
+            raw = bytearray(source[SECTOR][original.offset:original.end])
+            struct.pack_into('<Q', raw, 4, original.uid + 1000)
+            if original.kind == 4:
+                # Rebuild the independent placement using the same model/state.
+                raw = item(4, original.uid + 1000, struct.pack('<QQ', token('02003'), 0) + refs()
+                           + refs(*(uid + 1000 for uid in original.details['nodes']))
+                           + refs(*(uid + 1000 for uid in original.details['slaves']))
+                           + struct.pack('<QH', 0, original.details['origin'])
+                           + bytes(len(original.details['nodes']) * 12 + 8))
+            else:
+                struct.pack_into('<QQ', raw, 57, original.details['node'] + 1000, original.details['parent'] + 1000)
+            entries.append(bytes(raw))
+        for original in parsed.nodes:
+            raw = bytearray(original.raw)
+            struct.pack_into('<Q', raw, 0, original.uid + 1000)
+            struct.pack_into('<QQ', raw, 36, original.backward + 1000 if original.backward else 0,
+                             original.forward + 1000 if original.forward else 0)
+            nodes.append(bytes(raw))
+        entries.append(item(6, 900, struct.pack('<4Q', token('city'), 1100, token('company'), 0) + refs()))
+        source[SECTOR] = sector(entries, nodes)
+        selected = config(rule(source[PPD], roles=('public_car', 'truck_lane'), company_linked=False),
+                          rule(source[PPD], id='company-layout', roles=('truck_lane', 'public_car'), company_linked=True))
+        report, output = self.selective_plan(source, selected)
+        self.assert_complete(report)
+        self.assertEqual(report['coverage']['added_car_points'], 2)
+        self.assertEqual(len([name for name in output if name.endswith('.ppd')]), 2)
+        self.assertEqual(len({station['private_alias'] for station in report['stations']}), 2)
+        self.assertEqual([station['fuel_selection']['groups'][0]['same_parent_company_uids']
+                          for station in report['stations']], [[], ['0x384']])
+
+    def test_bounded_scope_mutates_only_target_of_two_shared_descriptor_placements(self):
+        source = duplicate_placement(resources())
+        package = self.package('map', source)
+        report, output = plan_map_fuel(ResourceStack([package]), map_packages={str(package.path)},
+                                      map_name='fixture', target_prefab_uids=frozenset({100}),
+                                      source_sector_paths=frozenset({SECTOR}))
+        self.assert_complete(report)
+        self.assertEqual(report['analysis'], 'bounded_missing_car_fuel')
+        self.assertEqual(report['scope']['target_prefab_uids'], ['0x64'])
+        self.assertEqual(report['coverage']['added_car_points'], 1)
+        before, after = parse_sector(source[SECTOR]), parse_sector(output[SECTOR])
+        originals = {entry.uid: source[SECTOR][entry.offset:entry.end] for entry in before.items}
+        for entry in after.items:
+            if entry.uid in originals and entry.uid != 100:
+                self.assertEqual(output[SECTOR][entry.offset:entry.end], originals[entry.uid])
+        parents = {entry.uid: entry for entry in after.prefabs}
+        self.assertNotEqual(parents[100].details['model'], token('02003'))
+        self.assertEqual(parents[1100].details['model'], token('02003'))
+        self.assertEqual(source[PPD], package.read(PPD))
+        self.assertNotIn(PPD, output)
+        self.assertEqual(len([service for service in after.services if service.flags & 0x4000]), 1)
+
+    def test_scope_paths_bound_the_source_inventory(self):
+        other = 'map/usa/sec+0004+0000.base'
+        source = duplicate_placement(resources(), separate_sector=other)
+        package = self.package('map', source)
+        report, output = plan_map_fuel(ResourceStack([package]), map_packages={str(package.path)},
+                                      map_name='fixture', source_sector_paths=frozenset({SECTOR}))
+        self.assert_complete(report)
+        self.assertEqual(report['sectors_inspected'], 1)
+        self.assertEqual(report['coverage']['added_car_points'], 1)
+        self.assertNotIn(other, output)
+        self.assertEqual(report['scope']['source_sector_paths'], [SECTOR])
+
+    def test_unknown_or_outside_scope_target_is_a_blocker(self):
+        source = duplicate_placement(resources(), separate_sector='map/usa/sec+0004+0000.base')
+        package = self.package('map', source)
+        for uid in (999, 300, 1100):
+            with self.subTest(uid=uid):
+                report, output = plan_map_fuel(ResourceStack([package]), map_packages={str(package.path)},
+                                              map_name='fixture', target_prefab_uids=frozenset({uid}),
+                                              source_sector_paths=frozenset({SECTOR}))
+                self.assertFalse(report['coverage']['complete'])
+                self.assertEqual(report['coverage']['blockers'][0]['area'], 'scope')
+                self.assertEqual(output, {})
+
+    def test_explicit_none_scope_is_identical_to_legacy(self):
+        package = self.package('map', resources())
+        stack = ResourceStack([package]); arguments = {'map_packages': {str(package.path)}, 'map_name': 'fixture'}
+        self.assertEqual(plan_map_fuel(stack, **arguments), plan_map_fuel(stack, **arguments,
+                            target_prefab_uids=None, source_sector_paths=None))
+
+    def test_invalid_scope_and_ineligible_provider_are_rejected(self):
+        package = self.package('map', resources())
+        stack = ResourceStack([package]); arguments = {'map_packages': {str(package.path)}, 'map_name': 'fixture'}
+        for value in (frozenset(), {100}, frozenset({True}), frozenset({0}), frozenset({'100'}), frozenset({2**64})):
+            with self.subTest(targets=value), self.assertRaises(ValueError):
+                plan_map_fuel(stack, **arguments, target_prefab_uids=value)
+        for value in (frozenset(), {SECTOR}, frozenset({True}), frozenset({'/' + SECTOR}),
+                      frozenset({'map/../sec+0000+0000.base'}), frozenset({'map/usa/sec+0008+0000.base'})):
+            with self.subTest(paths=value), self.assertRaises(ValueError):
+                plan_map_fuel(stack, **arguments, source_sector_paths=value)
+        with self.assertRaisesRegex(ValueError, 'eligible source'):
+            plan_map_fuel(stack, map_packages=set(), map_name='fixture', source_sector_paths=frozenset({SECTOR}))
+        override = self.package('override', {SECTOR: resources()[SECTOR]})
+        with self.assertRaisesRegex(ValueError, 'eligible source'):
+            plan_map_fuel(ResourceStack([package, override]), **arguments,
+                          source_sector_paths=frozenset({SECTOR}))
+
+    def test_full_facility_selection_reuses_broad_aliases_and_graph_bytes(self):
+        package=self.package('map', resources([((2.,0.,3.),0), ((8.,0.,3.),0)]))
+        stack=ResourceStack([package]);options={'map_packages':{str(package.path)},'map_name':'fixture'}
+        broad, expected=plan_map_fuel(stack,**options)
+        report, actual=plan_map_fuel(stack,**options,
+            fuel_selection=FuelSelectionConfig(mode='realistic',unknown='include',classifier='facilities'))
+        self.assert_complete(report)
+        self.assertEqual(actual,expected)
+        self.assertEqual(report['coverage']['uncertain_included_points'],2)
+
+    def test_parent_owner_only_delegates_foreign_root_without_editing(self):
+        contents, stock, _, _, _ = self.orphan_garage_packages()
+        source=self.package('map', contents)
+        report, output=plan_map_fuel(ResourceStack([stock,source]),map_packages={str(source.path)},
+                                     map_name='fixture',parent_owner_only=True)
+        self.assert_complete(report)
+        self.assertEqual(output,{})
+        self.assertEqual(len(report['delegated_parent_groups']),1)
+        self.assertEqual(report['delegated_parent_groups'][0]['source_package'],str(stock.path))
+
+    def test_facility_unsafe_station_emits_no_partial_resources(self):
+        from unittest.mock import patch
+        source=resources([((2.,0.,3.),0),((8.,0.,3.),0)])
+        original_sha=__import__('hashlib').sha256
+        # Force generated service/node UID collision after a private alias was
+        # staged, exercising the transactional failure path rather than an
+        # error caught before any output existed.
+        class Digest:
+            def __init__(self, data):self.data=data
+            def hexdigest(self):return original_sha(self.data).hexdigest()
+            def digest(self):
+                return bytes(32) if b':12d:' in self.data else original_sha(self.data).digest()
+        with patch('ats_road_trip.bulk_fuel.hashlib.sha256',side_effect=lambda data:Digest(data)):
+            report,output=self.selective_plan(source,FuelSelectionConfig(mode='realistic',unknown='include',classifier='facilities'))
+        self.assertFalse(report['coverage']['complete'])
+        self.assertEqual(output,{})
+        self.assertTrue(report['coverage']['blockers'][0]['unsupported_unchanged'])
+        self.assertEqual(report['source_resources'],[])
+        self.assertEqual(report['coverage']['added_car_points'],0)
 
     def test_uppercase_declared_prefab_resolves_lowercase_map_token(self):
         source = resources()

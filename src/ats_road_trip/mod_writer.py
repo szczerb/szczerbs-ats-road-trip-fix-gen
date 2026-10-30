@@ -65,7 +65,7 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
               description: str | None = None, map_name: str | None = None,
               revision: int = 0, icon: bytes | None = None,
               fix_topics: tuple[str, ...] | None = None,
-              category: str = 'map') -> dict:
+              category: str = 'map', variant_label: str | None = None) -> dict:
     """Write a new ZIP_STORED .scs, with source/change report included.
 
     Existing outputs are never overwritten. Caller must explicitly acknowledge
@@ -100,6 +100,11 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
         title = topic_titles[frozenset(fix_topics)] if fix_topics is not None else 'Gas Stations Fix'
         display_name = f"szczerb's Road Trip {title} for {map_name}"
     display_name = display_name if display_name is not None else 'Road Trip map compatibility experiment'
+    if variant_label is not None:
+        _manifest_text(variant_label, 'Variant label')
+        if variant_label != variant_label.strip() or len(variant_label) > 48:
+            raise ValueError('Variant label must be at most 48 characters without edge whitespace')
+        display_name = variant_label + ' | ' + display_name
     display_literal = _manifest_text(display_name, 'Display name')
     package_version = '.'.join(game_version.split('.')[:2]) + f'-r{revision}-experimental'
     if icon is not None:
@@ -118,6 +123,8 @@ def write_mod(output: str | Path, resources: dict[str, bytes], report: dict,
     metadata = {'display_name': display_name, 'author': 'szczerb',
                 'package_version': package_version, 'map_name': map_name,
                 'revision': revision}
+    if variant_label is not None:
+        metadata['variant_label'] = variant_label
     if fix_topics is not None:
         metadata['fix_topics'] = sorted(fix_topics)
     if category != 'map':

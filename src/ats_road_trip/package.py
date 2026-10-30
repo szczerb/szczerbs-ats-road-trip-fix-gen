@@ -182,7 +182,7 @@ class Package:
                 self._disk_cache_root = cache_root
             return
 
-        pending = sorted(selected - self._cache.keys())
+        pending = sorted(selected - self._cache.keys() - self._disk_cache.keys())
         if not pending:
             return
         with TemporaryDirectory(dir=self.archive._scratch_root()) as temporary:

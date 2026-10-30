@@ -43,3 +43,23 @@ Runtime fix validation and general map-sector authoring remain open.
 - [ADR-0015: Source-pinned reasonable tank upgrades](ADR-0015-source-pinned-reasonable-tank-upgrades.md): documented model-specific capacities, unchanged unsupported models, separate packaging and manual saved-fuel checks.
 
 - [ADR-0014: Shorten generated map package filenames](ADR-0014-shorten-map-package-cache-paths.md): preserve full map identities while reducing the icon-cache path budget after a logged connector failure.
+
+- [ADR-0018: Isolate source-pinned station-parking experiments](ADR-0018-isolate-source-pinned-station-parking-poc.md): separate per-station methods, exact input pins, model-derived geometry, native car-only triggers and fuel/context preservation; no proximity integration.
+
+- [ADR-0019: Separate station-parking workflow, proposal, validation, and output responsibilities](ADR-0019-station-parking-module-boundaries.md): bound the station-parking refactor and keep any navigation-marker change evidence-led and separate from geometry policy.
+
+- [ADR-0020: Plan parking from effective model state](ADR-0020-plan-parking-from-effective-model-state.md) — schema-2 source/model/material pins and explainable independent access/ranking.
+
+- [ADR-0021: Compose explicit station-parking batches](ADR-0021-compose-explicit-station-parking-batches.md) — guarded disjoint sector edits, private placement aliases and retained effective standard fixes.
+
+- [ADR-0022: Select mutually exclusive car-parking strategies](ADR-0022-select-mutually-exclusive-car-parking-strategies.md) — choose truck-area car access or dedicated station bays per generated mod; fuel stays independent, with no automatic fallback.
+
+- [ADR-0023: Select car-fuel additions by reviewed pump role](ADR-0023-select-car-fuel-additions-by-reviewed-pump-role.md) — opt-in source-pinned per-group suitability, explicit uncertainty, native preservation and audited comparison guards.
+
+- [ADR-0024: Compose complete realistic map replacements](ADR-0024-compose-complete-realistic-map-replacements.md) — original-owner staged composition, realistic presets, provisional facility policy and complete source-relative packaging.
+
+- [ADR-0028: Broad parking regions and independent service eligibility](ADR-0028-plan-broad-parking-with-independent-service-eligibility.md).
+
+- [ADR-0029: Independent truck-rest coverage](ADR-0029-add-independent-truck-rest-coverage.md).
+
+- [ADR-0030: Portable reviewed evidence and relative versioned paths](ADR-0030-use-portable-reviewed-evidence-and-versioned-paths.md).

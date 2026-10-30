@@ -1,0 +1,28 @@
+{
+  "fingerprints": {
+    "base_fix": "d9959c7f97d17997eefa7c87cbe23b7dea7bcc8128d73c743ca10c75047b6fad",
+    "descriptor": "7a61eccd9d614cd7892c68949b0d4ffcc27fd8dc70a0dd4df741273d67bb1855",
+    "mesh": "7a9ea5a438a75ecab933f71ec78574ef9ecac3db3f22124d6808e6b15997af74",
+    "model_geometry": "eaf63893a37537bc2acb5e0d961115ea1534c422b6e12c56c94dd7fee89ce491",
+    "sector": "16fedf8d4033bcecb21e335c9640dcc0327bafb6d2999a3be0559a2d90ad9d7b",
+    "source_archive": "b90a2ec0210b1ca40c95c413089b3da098574040c39c7e03261d6cb2c9c76713"
+  },
+  "game_version": "1.61.3.18",
+  "map_name": "Western Canada Expansion",
+  "mesh_materials": {
+    "ground": [
+      "mat_0008_asphalt_ca_prefab_light"
+    ],
+    "paint": [
+      "mat_0005_lines1"
+    ]
+  },
+  "method": "painted_bays",
+  "model_geometry": "prefab/gas/nm_truckstop1_chemron.pmg",
+  "parameters": {},
+  "prefab_uid": "0x57320980a1000001",
+  "processor": "station_parking",
+  "schema_version": 1,
+  "sector": "map/usa/sec-0018-0030.base",
+  "station_id": "wce-chemron-truckstop-transformed"
+}

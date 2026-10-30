@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "station_id": "dawson-city-two-reviewed-areas",
+  "game_version": "1.61.3.18",
+  "map_name": "Alaska Expansion",
+  "source_map_version": "1.2.3",
+  "revision": 11,
+  "variant_label": "DAWSON 2 AREAS r11",
+  "source_package_sha256": "d3588d328a0254c0eb2e67892ee04f5118944a88879bcb6398f1429eb61050f8",
+  "sector": "map/usa/sec-0029-0045.base",
+  "prefab_uid": "0x5ca1fea582800001",
+  "private_alias": "rspa9d76084",
+  "baseline_descriptor": "prefab/rtfix/rtg822b7379.ppd",
+  "descriptor": "prefab/rtfix/rspa9d76084.ppd",
+  "resource_sha256": {
+    "prefab/rtfix/rtg822b7379.ppd": "7a61eccd9d614cd7892c68949b0d4ffcc27fd8dc70a0dd4df741273d67bb1855",
+    "prefab/rtfix/rspa9d76084.ppd": "a8853f68ee958249a8a8ec72ce93f205381925d2ff588781aaac0b79a98dc0e6",
+    "map/usa/sec-0029-0045.base": "52776b9975aef57ee9b772d5132ed1bd5afa62a92392885425b44508077bd2b9"
+  },
+  "previous_vertices": [
+    [
+      9.132280218601228,
+      0.13931791155559495,
+      -20.993039703369142
+    ],
+    [
+      12.132280218601228,
+      0.1393179142627171,
+      -20.993039703369142
+    ],
+    [
+      12.132280218601228,
+      0.1393179147315869,
+      -14.99303970336914
+    ],
+    [
+      9.132280218601228,
+      0.13931791202446475,
+      -14.99303970336914
+    ]
+  ],
+  "mesh_project_relative": "local_outputs/work/2026-10-19_23-16-09/forecourt-tour-handoff/bundle/inputs/models/nm_truckstop1_chemron.pim",
+  "mesh_sha256": "4d9d4e11353d5aebaafc9eef3e650f56bd3ccdd51b33b399fdfdb4a1bc25fbaa",
+  "ground_materials": [
+    "mat_0009_asphalt_ca_prefab_light"
+  ],
+  "areas": [
+    {
+      "id": "storefront",
+      "vertices": [
+        [
+          9,
+          0.13931791,
+          -21.15
+        ],
+        [
+          26,
+          0.13931791,
+          -21.15
+        ],
+        [
+          26,
+          0.13931791,
+          -14.7
+        ],
+        [
+          9,
+          0.13931791,
+          -14.7
+        ]
+      ],
+      "partial_activation": true
+    },
+    {
+      "id": "roadside",
+      "vertices": [
+        [
+          -13,
+          0.13931791,
+          7.25
+        ],
+        [
+          10,
+          0.13931791,
+          7.25
+        ],
+        [
+          10,
+          0.13931791,
+          9.85
+        ],
+        [
+          -13,
+          0.13931791,
+          9.85
+        ]
+      ],
+      "partial_activation": true
+    }
+  ]
+}
