@@ -1,6 +1,8 @@
 # North America background r2: user gameplay feedback, 2026-10-25
 
-Applies to the r2 testing handoff in [TASK-0051](../tasks/done/TASK-0051-recalibrate-background-to-roads-and-shores.md). This records the user's report and prepares a subsequent goal prompt; it does not start the next calibration implementation or establish an agent-run game test.
+Historical delivery artifacts, comparison images and supporting evidence cited here are private local evidence, absent from the source repository and not published. The identifiers below are local references only; no external release link or new upload is provided.
+
+Applies to the r2 testing handoff in [TASK-0057](../tasks/done/TASK-0057-recalibrate-background-to-roads-and-shores.md). This records the user's report and prepares a subsequent goal prompt; it does not start the next calibration implementation or establish an agent-run game test.
 
 ## Accepted market zoom
 
@@ -18,9 +20,9 @@ Applies to the r2 testing handoff in [TASK-0051](../tasks/done/TASK-0051-recalib
 
 The desktop attachment reader again reported missing Windows paths, but **all 25 supplied PNGs exist** through `local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/user-evidence/`. Copies and SHA-256/dimension records are preserved under ignored `local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/`:
 
-- [Inventory](../../local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/inventory.json).
-- [All-image contact sheet](../../local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/contact-sheet-25.png).
-- [Preserved screenshots](../../local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/user-evidence/).
+- Inventory (local-only evidence identifier: `local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/inventory.json`).
+- All-image contact sheet (local-only evidence identifier: `local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/contact-sheet-25.png`).
+- Preserved screenshots (local-only evidence identifier: `local_outputs/work/2026-10-25_00-22-06/screenshot-inventory/user-evidence/`).
 
 Exact filenames are `ats_20261025_<TIME>_00.png`, with times:
 `000340`, `000349`, `000357`, `000407`, `000417`, `000429`, `000435`, `000441`, `000447`, `000500`, `000506`, `000513`, `000520`, `000524`, `000538`, `000548`, `000553`, `000606`, `000640`, `000655`, `000735`, `000748`, `000756`, `000808`, `000817`.
@@ -31,4 +33,4 @@ GPT-6 Luna/medium performed bounded inventory, original-preserving copy/hash/dim
 
 [Complete r3 goal prompt](NORTH_AMERICA_BACKGROUND_R3_GOAL_PROMPT.md) requires per-view defect accounting, stronger two-dimensional/independent geometry validation, full road/prefab footprint awareness, clean shore masks, explicit bridge-channel/approach checks and permission to replace r2's calibration approach. It preserves the confirmed zoom by requiring byte-identical `def/map_data.sii`, and sets a practical multi-region/screenshot-level improvement gate. A modest aggregate improvement alone does not satisfy that gate.
 
-Only feedback/prompt preparation was performed here. No new goal, r3 build, live installation, game/profile modification, push or publication occurred. [Preparation task](../tasks/done/TASK-0052-record-r2-feedback-and-prepare-shoreline-goal.md).
+Only feedback/prompt preparation was performed here. No new goal, r3 build, live installation, game/profile modification, push or publication occurred. [Preparation task](../tasks/done/TASK-0058-record-r2-feedback-and-prepare-shoreline-goal.md).

@@ -1,4 +1,4 @@
-# ADR-0028: Calibrate the background with roads and physical-ground constraints
+# ADR-0031: Calibrate the background with roads and physical-ground constraints
 
 ## Context
 
@@ -20,4 +20,4 @@ Set shared `zoom_uplift[7]` to 60,000 instead of 100,000; leave the other seven 
 
 **Observed locally:** local road-check RMS falls about 19%; two withheld Chicago intersections and the Coronado bridge diagnostic improve. Actual deep-water endpoint overlap falls in several reported regions. Shallow Gulf overlaps, sparse Canadian lakes, the Galveston causeway and LA port bridge remain explicit limitations; normal-only fitting cannot constrain tangential displacement. No universal projection fix, exact shoreline fit or in-game success is claimed.
 
-The versioned coefficients are preferred editable source for deterministic rendering without proprietary game inputs. Calibration provenance and limits accompany them. Ignored native observations and investigation images remain local evidence, outside both SCS and corresponding source ZIP. [R2 handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md), [configuration](../../examples/north-america-background/r2/README.md), [TASK-0051](../../tasks/done/TASK-0051-recalibrate-background-to-roads-and-shores.md).
+The versioned coefficients are preferred editable source for deterministic rendering without proprietary game inputs. Calibration provenance and limits accompany them. Ignored native observations and investigation images remain local evidence, outside both SCS and corresponding source ZIP. [R2 handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md), [configuration](../../examples/north-america-background/r2/README.md), [TASK-0057](../../tasks/done/TASK-0057-recalibrate-background-to-roads-and-shores.md).

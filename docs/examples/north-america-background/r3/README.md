@@ -1,5 +1,7 @@
 # North America background r3 reproduction
 
+**Historical intermediate:** r3 has a user-reported detailed-texture loading failure. Use the [r4 build guide](../r4/README.md) to reproduce r3 as an intermediate and apply the size-only correction before testing. R4 runtime confirmation remains pending.
+
 This directory contains the selected editable r3 cartographic sources for ATS 1.61. Offline geometry is experimental; runtime acceptance remains with the user. The authoritative archive/reproduction receipts are identified by the delivery handoff. It preserves the r2 map definition, including the user-confirmed job-market zoom and navigation masks. The archived r0/r1/r2 builds are unchanged fallbacks.
 
 ## Rendering

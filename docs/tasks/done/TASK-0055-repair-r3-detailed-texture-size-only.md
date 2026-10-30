@@ -4,7 +4,7 @@ title: Repair detailed texture-size regression without other map changes
 status: done
 priority: high
 repositories: [.]
-depends_on: [TASK-0054]
+depends_on: [TASK-0059]
 owner: shared
 ---
 
@@ -42,7 +42,7 @@ Resize only the four original r3 detailed textures to 4096 square using the pinn
 ## Links
 
 - [INC-0002](../../incidents/INC-0002-r3-background-detailed-texture-loading/README.md)
-- [Diagnosis](TASK-0054-diagnose-r3-detailed-map-background-loss.md)
+- [Diagnosis](TASK-0059-diagnose-r3-detailed-map-background-loss.md)
 - [Source-pinned repair recipe](../../examples/north-america-background/r4/README.md)
 
 - [R4 testing handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md)

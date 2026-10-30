@@ -2,15 +2,15 @@
 
 **Runtime regression — user report, 2026-10-25:** r3 shows the background only at maximum world-map zoom out; all three detailed levels are blank. [INC-0002](../incidents/INC-0002-r3-background-detailed-texture-loading/README.md) records an archive-specific DirectStorage request-too-large failure and the fourfold detailed-texture size increase. The package below remains the exact historical r3 delivery, not a corrected or runtime-accepted build. Its offline geometry results do not override this rendering failure. The subsequent [size-only r4 correction](NORTH_AMERICA_BACKGROUND_1_61_R4.md) is delivered; runtime confirmation remains pending.
 
-**Observed locally, 2026-10-25:** r3 is ready for the user's manual testing. The offline gate finds material road/shore improvements in **8 of 11 independently catalogued problem groups**, with all 25 supplied views accounted for. This is a substantial partial repair, not a claim that every coastline is correct. Haida Gwaii, Gulf-delta and Texas/harbor relationships remain unresolved or mixed.
+**Historical offline assessment, 2026-10-25:** r3 was prepared for manual testing before the runtime regression report. The offline gate found material road/shore improvements in **8 of 11 independently catalogued problem groups**, with all 25 supplied views accounted for. This is a substantial partial repair, not a claim that every coastline is correct. The r3 archive and comparison images are private local evidence, absent from the source repository and not published; r3 is a faulty historical build and has no runtime acceptance claim. Haida Gwaii, Gulf-delta and Texas/harbor relationships remain unresolved or mixed.
 
 ## Authoritative files
 
-Enable only this SCS:
+The historical r3 testing archive is preserved only as local evidence:
 
-- [R3 testing mod](../../local_outputs/generated/2026-10-25_07-07-39/szczerbs-road-trip-north-america-background-map-ats-1.61-r3-experimental.scs) — SHA-256 `8d29a9531e4ffab939f11891042e3a5fc2260310d7919eae83797f0329be9329`.
-- [Corresponding source ZIP](../../local_outputs/generated/2026-10-25_07-07-39/szczerbs-road-trip-north-america-background-1.61-r3-source.zip) — SHA-256 `e231a2e2f4dae05501e90b74cc0edc2d9041f3b7b8262e089fb8b3e4937ca2d9`; source snapshot `bd613b7d14580996d9ae26400bf8398d26185ec8`.
-- [All 25 original/comparison views](../../local_outputs/generated/2026-10-25_07-07-39/comparisons/gallery.html), [overall/regional previews](../../local_outputs/generated/2026-10-25_07-07-39/previews/index.html), [per-view results](../../local_outputs/generated/2026-10-25_07-07-39/validation-summary.json), [checksums](../../local_outputs/generated/2026-10-25_07-07-39/SHA256SUMS.txt).
+- R3 archive (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/szczerbs-road-trip-north-america-background-map-ats-1.61-r3-experimental.scs`) — SHA-256 `8d29a9531e4ffab939f11891042e3a5fc2260310d7919eae83797f0329be9329`.
+- Corresponding source ZIP (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/szczerbs-road-trip-north-america-background-1.61-r3-source.zip`) — SHA-256 `e231a2e2f4dae05501e90b74cc0edc2d9041f3b7b8262e089fb8b3e4937ca2d9`; source snapshot `bd613b7d14580996d9ae26400bf8398d26185ec8`.
+- All 25 original/comparison views (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/comparisons/gallery.html`), overall/regional previews (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/previews/index.html`), per-view results (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/validation-summary.json`), checksums (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/SHA256SUMS.txt`).
 
 The source ZIP is source, not another mod. The repeat directory `2026-10-25_07-07-40` and extracted-source build are reproduction evidence. The earlier `06-22-47` r3 candidate is explicitly **not selected**. Historical r0/r1/r2 files remain unchanged fallbacks.
 
@@ -90,11 +90,11 @@ PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python -m ats_road_trip.background \
   --data-dir render-inputs --font render-inputs/DejaVuSans.ttf --experimental
 ```
 
-[Repeat proof](../../local_outputs/generated/2026-10-25_07-07-39/repeat-build-verification.json), [source-ZIP rebuild proof](../../local_outputs/generated/2026-10-25_07-07-39/source-bundle-reproduction.json), [build receipt](../../local_outputs/generated/2026-10-25_07-07-39/build-receipt.json), [independent package audit](../../local_outputs/generated/2026-10-25_07-07-39/verification/final-package/final-package-audit-summary.md), [geometry/role audit](../../local_outputs/generated/2026-10-25_07-07-39/verification/qualified-ground-final-audit/audit-summary.md).
+Repeat proof (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/repeat-build-verification.json`), source-ZIP rebuild proof (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/source-bundle-reproduction.json`), build receipt (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/build-receipt.json`), independent package audit (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/verification/final-package/final-package-audit-summary.md`), geometry/role audit (local-only evidence identifier: `local_outputs/generated/2026-10-25_07-07-39/verification/qualified-ground-final-audit/audit-summary.md`).
 
 ## Rights
 
 Project-authored generator, configuration, definitions and composition: AGPL-3.0-only. Natural Earth and USGS NHD data are public domain; GSHHG 2.3.7 is LGPL-3.0-or-later, with original ZIP/full notices and GPL/LGPL texts supplied. DejaVu Sans retains its separate font notice. Wikidata structured points are CC0; historical NRCan facts retain OGL–Canada attribution. Additional source-specific factual references/uncertainty are recorded in the source configuration. Native game/map meshes, textures, sectors, road arrays, screenshots and diagnostic overlays are excluded from the SCS and source ZIP. The comparison gallery is private diagnostic evidence, not mod artwork or a licensing grant over native content.
 
 
-[Editable r3 source guide](../examples/north-america-background/r3/README.md), [ADR-0029](../architecture/decisions/ADR-0029-compose-geographic-features-and-audit-complete-deformation.md), [completed task](../tasks/done/TASK-0053-repair-background-shoreline-feature-alignment.md).
+[Editable r3 source guide](../examples/north-america-background/r3/README.md), [ADR-0032](../architecture/decisions/ADR-0032-compose-geographic-features-and-audit-complete-deformation.md), [completed task](../tasks/done/TASK-0053-repair-background-shoreline-feature-alignment.md).

@@ -1,5 +1,7 @@
 # North America background r0: user gameplay feedback, 2026-10-24
 
+Historical delivery artifacts, comparison images and supporting evidence cited here are private local evidence, absent from the source repository and not published. The identifiers below are local references only; no external release link or new upload is provided.
+
 Applies to the r0 background delivered in [TASK-0048](../tasks/done/TASK-0048-build-original-north-america-background.md). The user supplied feedback during ordinary play, requested collection without investigation until finished, then authorized investigation and continued work in [TASK-0049](../tasks/done/TASK-0049-correct-background-alignment-and-job-market-zoom.md). No agent launched ATS, installed a mod or edited a profile.
 
 ## Reported positives and scope
@@ -20,7 +22,7 @@ Screenshot: `ats_20261024_004056_00.png`. **Observed locally:** the supplied vie
 
 ## Evidence preservation and accessibility
 
-The desktop attachment reader reported missing Windows paths, but **all 43 referenced PNGs exist** through `local_outputs/work/2026-10-24_02-39-28/user-evidence/`. They were copied read-only into ignored `local_outputs/work/2026-10-24_02-39-28/user-evidence/`; the originals were not renamed/edited. [Snapshot inventory and SHA-256 values](../../local_outputs/work/2026-10-24_02-39-28/user-evidence/inventory.json) records one market screenshot, 12 Mobridge views (six cab/map pairs), 23 coast/lake views and seven border views. The exact file lists are in that inventory; no screenshots or game assets are committed to Git.
+The desktop attachment reader reported missing Windows paths, but **all 43 referenced PNGs exist** through `local_outputs/work/2026-10-24_02-39-28/user-evidence/`. They were copied read-only into ignored `local_outputs/work/2026-10-24_02-39-28/user-evidence/`; the originals were not renamed/edited. Snapshot inventory and SHA-256 values (local-only evidence identifier: `local_outputs/work/2026-10-24_02-39-28/user-evidence/inventory.json`) records one market screenshot, 12 Mobridge views (six cab/map pairs), 23 coast/lake views and seven border views. The exact file lists are in that inventory; no screenshots or game assets are committed to Git.
 
 Luna/medium visually reviewed all 30 coast/lake/border images; root reviewed the market and Mobridge images plus selected regional detail. Diagnostic crops/contact sheets and source-review notes remain in the same timestamped run. They are evidence aids, not substitute screenshots or artwork for the mod.
 

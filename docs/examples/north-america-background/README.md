@@ -1,6 +1,6 @@
 # Original North America background: reproducible inputs
 
-**Latest revision:** [r1 reproduction and configuration](r1/README.md); the commands and inputs below preserve historical r0 reproduction.
+**Latest revision:** [r4 reproduction and size-only repair](r4/README.md); the commands and inputs below preserve historical r0 reproduction.
 
 **Observed locally — 2026-10-23, ATS 1.61.3.18:** the original generator is independent of map-fix generation. It needs licensed vector/font inputs, its configuration and the Python libraries below. It does not need the vanished Workshop background, N2, game/DLC assets or third-party map archives to reproduce this pinned r0 artwork. The factual calibration was obtained by read-only inspection of the installed stack. Recalibration after map changes requires new observations.
 

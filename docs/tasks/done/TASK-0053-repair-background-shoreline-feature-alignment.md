@@ -4,7 +4,7 @@ title: Repair background shoreline feature alignment and deliver r3
 status: done
 priority: high
 repositories: [.]
-depends_on: [TASK-0051, TASK-0052]
+depends_on: [TASK-0057, TASK-0058]
 owner: shared
 ---
 
@@ -106,5 +106,5 @@ All new screenshot defects plus earlier Baja, California/Pacific, Vancouver/nort
 - [New feedback](../../reference/NORTH_AMERICA_BACKGROUND_FEEDBACK_2026_10_25.md)
 - [R2 baseline](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md)
 - [ADR-0027](../../architecture/decisions/ADR-0027-check-backgrounds-against-road-and-shore-geometry.md)
-- [ADR-0028](../../architecture/decisions/ADR-0028-calibrate-background-with-roads-and-ground-constraints.md)
-- [ADR-0029](../../architecture/decisions/ADR-0029-compose-geographic-features-and-audit-complete-deformation.md)
+- [ADR-0031](../../architecture/decisions/ADR-0031-calibrate-background-with-roads-and-ground-constraints.md)
+- [ADR-0032](../../architecture/decisions/ADR-0032-compose-geographic-features-and-audit-complete-deformation.md)

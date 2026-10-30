@@ -1,5 +1,5 @@
 ---
-id: TASK-0051
+id: TASK-0057
 title: Recalibrate North America background to roads and shores and deliver r2
 status: done
 priority: high
@@ -47,7 +47,7 @@ In progress. Goal file read at start; branch `codex/north-america-background`, c
 
 **Observed locally — checkpoint verification:** `OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:. local_outputs/work/2026-10-23_21-16-53/venv/bin/python -m pytest -q`: **304 passed**. No r2 SCS has been accepted or delivered yet. Natural Earth 4.1.0 road supplement and official SICT station tables support new road/corridor correspondence work, including distinguishing unnamed federal Baja corridors from same-number state roads. Main owns final matching/model acceptance; delegated work remains ignored scratch.
 
-**Observed locally — r2 implementation/build milestone:** accepted the joint road/physical-ground compact candidate for an explicitly experimental trial. Versioned coefficients/provenance, [ADR-0028](../../architecture/decisions/ADR-0028-calibrate-background-with-roads-and-ground-constraints.md), reproduction instructions and [r2 handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md) now record the implementation and limits. Main reviewed correspondence selection, rejected global/normal-only and urban-footprint models, inspected the native comparison panels, and confirmed production atlas pixels equal the selected candidate. Corrected native classification excludes hidden roads; no map resources are changed.
+**Observed locally — r2 implementation/build milestone:** accepted the joint road/physical-ground compact candidate for an explicitly experimental trial. Versioned coefficients/provenance, [ADR-0031](../../architecture/decisions/ADR-0031-calibrate-background-with-roads-and-ground-constraints.md), reproduction instructions and [r2 handoff](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md) now record the implementation and limits. Main reviewed correspondence selection, rejected global/normal-only and urban-footprint models, inspected the native comparison panels, and confirmed production atlas pixels equal the selected candidate. Corrected native classification excludes hidden roads; no map resources are changed.
 
 **Delegation and verification:** Luna/high `route_landmarks` supplied effective named-road/native geometry and expanded regional regression endpoints; Luna/high `water_landmarks` supplied typed physical-ground observations and independent final inverse/Jacobian/holdout-bias audit; Luna/medium `zoom_and_review` measured fixed-symbol spacing, audited r2 config, authored its reproduction README and independently audited the final archive. GPT-6 Sol/high `shore_geometry` resolved road graph/bridge correspondences and independently audited physical bridge depictions. Each worked in assigned ignored scratch; main owns coefficients, implementation acceptance and tracked integration. Two delegated interpretation errors (native flag offsets and an alleged coordinate-slot defect) were independently corrected/retracted rather than adopted.
 

@@ -1,12 +1,14 @@
 # North America background 1.61-r4-experimental
 
+**Source-only public status:** This reference and the linked [r4 reproduction recipe](../examples/north-america-background/r4/README.md) document source-side reproduction. The historical r4 delivery archive and its comparison/verification artifacts are private local evidence, absent from the source repository and not published. No external release link or new upload is provided.
+
 **Observed locally, 2026-10-25:** this is a texture-size repair only. It addresses the resource-size regression investigated in INC-0002; restoration in the running game awaits the user's test.
 
 ## Testing package
 
-Enable [the r4 SCS](../../local_outputs/generated/2026-10-25_18-06-28/szczerbs-road-trip-north-america-background-map-ats-1.61-r4-experimental.scs) instead of r3, keeping the same load order above other background/map-data overrides. Keep separate map/fuel/rest/courier/tank mods in their existing order. No live installation or profile/settings changes were made.
+The historical r4 archive is recorded as local-only evidence (identifier: `local_outputs/generated/2026-10-25_18-06-28/szczerbs-road-trip-north-america-background-map-ats-1.61-r4-experimental.scs`). When testing a locally reproduced r4, enable it instead of r3 and keep the same load order above other background/map-data overrides. Keep separate map/fuel/rest/courier/tank mods in their existing order. No live installation or profile/settings changes were made.
 
-SHA-256: `00e3932434dee49003fbf6f02da925f239939fd2997cbab78a54d5e305f013b4` ([checksum file](../../local_outputs/generated/2026-10-25_18-06-28/SHA256SUMS.txt)).
+SHA-256: `00e3932434dee49003fbf6f02da925f239939fd2997cbab78a54d5e305f013b4` (checksum file (local-only evidence identifier: `local_outputs/generated/2026-10-25_18-06-28/SHA256SUMS.txt`)).
 
 ## Exact scope
 
@@ -16,7 +18,7 @@ All 20 other members are byte-identical to r3: the overview, map definition, zoo
 
 ## Verification and runtime boundary
 
-Existing package/resource validation passes. Independent audit checks identical 25-member sets, the exact five-member change set, revision-only manifest edit, all 20 copied members, DDS structure/dimensions/opacity and ZIP CRC. [Build receipt](../../local_outputs/generated/2026-10-25_18-06-28/build-receipt.json), [repeat proof](../../local_outputs/generated/2026-10-25_18-06-28/repeat-build-verification.json), [independent audit](../../local_outputs/generated/2026-10-25_18-06-28/independent-audit/audit.md) and [focused package tests](../../local_outputs/generated/2026-10-25_18-06-28/package-tests.txt) record the checks. Repeat generation produces the same archive SHA. No game was launched.
+Existing package/resource validation passes. Independent audit checks identical 25-member sets, the exact five-member change set, revision-only manifest edit, all 20 copied members, DDS structure/dimensions/opacity and ZIP CRC. Build receipt (local-only evidence identifier: `local_outputs/generated/2026-10-25_18-06-28/build-receipt.json`), repeat proof (local-only evidence identifier: `local_outputs/generated/2026-10-25_18-06-28/repeat-build-verification.json`), independent audit (local-only evidence identifier: `local_outputs/generated/2026-10-25_18-06-28/independent-audit/audit.md`) and focused package tests (local-only evidence identifier: `local_outputs/generated/2026-10-25_18-06-28/package-tests.txt`) record the checks. Repeat generation produces the same archive SHA. No game was launched.
 
 After replacing r3 with r4 and fully restarting ATS, check that the background appears at all four world-map zoom levels. This is the outstanding runtime confirmation; the user-confirmed job-market zoom was not changed.
 

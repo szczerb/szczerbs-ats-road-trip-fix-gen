@@ -1,10 +1,10 @@
 ---
-id: TASK-0052
+id: TASK-0058
 title: Record r2 gameplay feedback and prepare the next shoreline repair goal
 status: done
 priority: high
 repositories: [.]
-depends_on: [TASK-0051]
+depends_on: [TASK-0057]
 owner: shared
 ---
 

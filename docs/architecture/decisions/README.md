@@ -8,9 +8,9 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
-- [ADR-0029: Compose geographic feature corrections and audit complete deformation](ADR-0029-compose-geographic-features-and-audit-complete-deformation.md): shared feature stages, qualified controls/source shapes, separately licensed fine geography and full-support composed safety checks; candidate acceptance remains separate.
+- [ADR-0032: Compose geographic feature corrections and audit complete deformation](ADR-0032-compose-geographic-features-and-audit-complete-deformation.md): shared feature stages, qualified controls/source shapes, separately licensed fine geography and full-support composed safety checks; candidate acceptance remains separate.
 
-- [ADR-0028: Calibrate backgrounds with roads and physical-ground constraints](ADR-0028-calibrate-background-with-roads-and-ground-constraints.md): bounded all-layer field, local route checks and independent geometry diagnostics, explicit shoreline/bridge limits and stronger shared market zoom.
+- [ADR-0031: Calibrate backgrounds with roads and physical-ground constraints](ADR-0031-calibrate-background-with-roads-and-ground-constraints.md): bounded all-layer field, local route checks and independent geometry diagnostics, explicit shoreline/bridge limits and stronger shared market zoom.
 
 - [ADR-0027: Check backgrounds against roads and shores](ADR-0027-check-backgrounds-against-road-and-shore-geometry.md): separate runtime texture mapping from geographic calibration; city-center fit/pixels cannot establish a repaired road/water relationship.
 

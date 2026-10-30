@@ -11,8 +11,8 @@ Read AGENTS.md, inspect the current branch/worktree and preserve unrelated chang
 - docs/reference/NORTH_AMERICA_BACKGROUND_1_61_R2.md
 - docs/reference/NORTH_AMERICA_BACKGROUND_GEOMETRY_DIAGNOSIS_2026_10_24.md
 - docs/architecture/decisions/ADR-0027-check-backgrounds-against-road-and-shore-geometry.md
-- docs/architecture/decisions/ADR-0028-calibrate-background-with-roads-and-ground-constraints.md
-- docs/tasks/done/TASK-0051-recalibrate-background-to-roads-and-shores.md
+- docs/architecture/decisions/ADR-0031-calibrate-background-with-roads-and-ground-constraints.md
+- docs/tasks/done/TASK-0057-recalibrate-background-to-roads-and-shores.md
 - docs/examples/north-america-background/r2/ and src/ats_road_trip/background/
 
 Baseline: local_outputs/generated/2026-10-24_18-30-20/szczerbs-road-trip-north-america-background-map-ats-1.61-r2-experimental.scs

@@ -1,6 +1,6 @@
 # Third-party tools and research sources
 
-The Python package has no third-party runtime Python dependencies. HashFS inspection invokes an independently downloaded executable; that binary and its downloaded ZIP are ignored local artifacts, not part of this repository.
+The core command-line tools have no third-party runtime Python dependencies. The optional background renderer uses the separately listed Python libraries and geographic/font inputs below. HashFS inspection invokes an independently downloaded executable; that binary and its downloaded ZIP are ignored local artifacts, not part of this repository.
 
 ## sk-zk Extractor
 

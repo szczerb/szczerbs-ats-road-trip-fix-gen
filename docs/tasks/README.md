@@ -10,6 +10,7 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 
 
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -18,15 +19,17 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0060: Rebase background and prepare public source PR](done/TASK-0060-rebase-background-and-prepare-public-source-pr.md) — 19 sanitized/rebased milestones, unique IDs, public-source documentation, 692 tests, wheel/import and exact r4 reproduction; independent source-publication audit passes; no push/PR/release.
+
 - [TASK-0055: Repair detailed texture-size regression only](done/TASK-0055-repair-r3-detailed-texture-size-only.md) — four detailed DDS downsampled to 4096 square, manifest revision only; 20 other members unchanged, exact repeat build and package checks pass; runtime confirmation pending.
 
-- [TASK-0054: Diagnose r3 detailed world-map background loss](done/TASK-0054-diagnose-r3-detailed-map-background-loss.md) — archive-specific DirectStorage request-too-large error correlates with fourfold detailed DDS payload; unchanged zoom/materials verified, controlled resize recommended, runtime fix pending.
+- [TASK-0059: Diagnose r3 detailed world-map background loss](done/TASK-0059-diagnose-r3-detailed-map-background-loss.md) — archive-specific DirectStorage request-too-large error correlates with fourfold detailed DDS payload; unchanged zoom/materials verified, controlled resize recommended, runtime fix pending.
 
 - [TASK-0053: Repair background shores and deliver r3](done/TASK-0053-repair-background-shoreline-feature-alignment.md) — 8-of11 practical geometry gate, all25 comparisons, preserved accepted zoom,326tests and exact production/repeat/source-ZIP reproduction; runtime and named residuals remain explicit.
 
-- [TASK-0052: Record r2 feedback and prepare shoreline goal](done/TASK-0052-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.
+- [TASK-0058: Record r2 feedback and prepare shoreline goal](done/TASK-0058-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.
 
-- [TASK-0051: Recalibrate background to roads/shores and deliver r2](done/TASK-0051-recalibrate-background-to-roads-and-shores.md) — road/ground field, stronger shared market zoom, actual native comparisons with explicit regressions, 305 tests, independent audits and exact corresponding-source rebuild; runtime acceptance pending.
+- [TASK-0057: Recalibrate background to roads/shores and deliver r2](done/TASK-0057-recalibrate-background-to-roads-and-shores.md) — road/ground field, stronger shared market zoom, actual native comparisons with explicit regressions, 305 tests, independent audits and exact corresponding-source rebuild; runtime acceptance pending.
 
 - [TASK-0050: Diagnose common background geometry mismatch](done/TASK-0050-diagnose-common-background-geometry-mismatch.md) — actual texture/road registration verifies sampled mapping; center-based calibration is insufficient, tested global corrections trade regions off; no verified replacement transform or practical repair yet.
 

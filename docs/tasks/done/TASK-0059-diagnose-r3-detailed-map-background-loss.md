@@ -1,5 +1,5 @@
 ---
-id: TASK-0054
+id: TASK-0059
 title: Diagnose r3 background loss at detailed world-map zooms
 status: done
 priority: high

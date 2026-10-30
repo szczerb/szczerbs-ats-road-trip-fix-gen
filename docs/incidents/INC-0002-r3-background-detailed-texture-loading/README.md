@@ -10,7 +10,7 @@
 - [Debugging plan and controlled correction](DEBUGGING_PLAN.md)
 - [Inspection steps and provenance](STEP_BY_STEP.md)
 - [Findings, alternatives and limits](RESULTS.md)
-- [Analysis task](../../tasks/done/TASK-0054-diagnose-r3-detailed-map-background-loss.md)
+- [Analysis task](../../tasks/done/TASK-0059-diagnose-r3-detailed-map-background-loss.md)
 - [R3 delivery and original offline checks](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R3.md)
 
 **Subsequent authorized correction, 2026-10-25:** [TASK-0055](../../tasks/done/TASK-0055-repair-r3-detailed-texture-size-only.md) delivers the [size-only r4 package](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md). Four detailed tiles are 4096 square again; the manifest revision is the only other changed member. Overview and all settings/artwork inputs remain unchanged. Offline package/pixel/repeat checks pass; no in-game restoration is claimed.
