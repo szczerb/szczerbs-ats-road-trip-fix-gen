@@ -15,16 +15,33 @@ from scipy.spatial.distance import cdist
 import shapefile
 
 
+ROOT = Path(__file__).resolve().parents[3]
+
+
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def validate_download_cache(cache: Path) -> Path:
+    """Resolve downloads beneath the checkout's work tree without creating it."""
+    resolved = cache.resolve()
+    # Do not resolve the work suffix: a redirected output tree must not turn
+    # supplied inputs (or another location) into an allowed download root.
+    allowed = ROOT.resolve() / 'local_outputs' / 'work'
+    if not resolved.is_relative_to(allowed):
+        raise ValueError('Downloads belong beneath this checkout local_outputs/work')
+    return resolved
 
 
 def source_files(manifest: dict, cache: Path, *, download: bool = False) -> dict[str, Path]:
     """Verify pinned archives before reading; download only when requested.
 
+    Offline caches can be anywhere and are never created or changed here.
     Never extract arbitrary archive paths or silently accept new upstream data.
     """
-    cache.mkdir(parents=True, exist_ok=True)
+    if download:
+        cache = validate_download_cache(cache)
+        cache.mkdir(parents=True, exist_ok=True)
     result = {}
     for name, spec in manifest.items():
         if not name.replace('_', '').isalnum():

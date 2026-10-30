@@ -6,7 +6,7 @@ R4 preserves the selected r3 artwork, geographic calibration, overview, map defi
 
 Run from the repository root on Linux/WSL. Use CPython 3.12 and the exact libraries in `../r3/requirements.txt`. The recorded byte-reproduction environment is Python 3.12.3, Pillow 12.0.0 with FreeType 2.14.1, zlib build/runtime 1.3, NumPy 2.3.4, SciPy 1.16.3, pyproj 3.7.2/PROJ 9.5.1 and PyShp 2.3.1. The pinned font is downloaded separately; an arbitrary installed font is not interchangeable. Other renderer/library environments may produce different bytes; the source pin intentionally refuses an unverified replacement.
 
-No game installation, supplied map archive, private screenshot or dated research directory is needed. The fetch command verifies seven public geographic inputs and the font against the tracked source/font manifests. Data and fonts retain their own terms; do not bypass a failed hash check or assume a changed upstream response is equivalent.
+No game installation, supplied map archive, private screenshot or dated research directory is needed. The fetch command verifies seven public geographic inputs and the font against the tracked source/font manifests. Data and fonts retain their own terms; do not bypass a failed hash check or assume a changed upstream response is equivalent. Both fetch and generator `--download-data` restrict the resolved download destination to this checkout's `local_outputs/work`; traversal and symlink escapes are rejected before writes or network access. Without `--download-data`, `--data-dir` can point to an existing cache anywhere and is read-only; missing offline cache directories are never created.
 
 ```sh
 python3 -m pip install -r docs/examples/north-america-background/r3/requirements.txt

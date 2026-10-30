@@ -11,7 +11,7 @@ from pathlib import Path
 import tarfile
 import urllib.request
 
-from .geography import digest, source_files
+from .geography import digest, source_files, validate_download_cache
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -44,10 +44,7 @@ def main(argv=None):
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--config-dir',type=Path,default=ROOT/'docs/examples/north-america-background')
     args=parser.parse_args(argv)
-    output=args.output.resolve()
-    allowed=(ROOT/'local_outputs/work').resolve()
-    if not output.is_relative_to(allowed):
-        raise ValueError('Downloads belong beneath this checkout local_outputs/work')
+    output=validate_download_cache(args.output)
     source_files(json.loads((args.config_dir/'sources.json').read_text()),output,download=True)
     spec=json.loads((args.config_dir/'font.json').read_text())
     font=output/'DejaVuSans.ttf'

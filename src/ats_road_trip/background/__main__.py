@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 
-from .geography import Calibration, digest, source_files
+from .geography import Calibration, digest, source_files, validate_download_cache
 from .render import render, icon, previews
 from .resources import TITLE, archive_name, build_resources, validate_package, write_package, decode_texture
 
@@ -92,8 +92,8 @@ def validate_inputs(config, anchors):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path,default=DEFAULT_CONFIG)
-    parser.add_argument('--data-dir',type=Path)
-    parser.add_argument('--download-data',action='store_true')
+    parser.add_argument('--data-dir',type=Path,help='Existing source cache; offline reads may use any directory')
+    parser.add_argument('--download-data',action='store_true',help='Download missing inputs only beneath this checkout local_outputs/work')
     parser.add_argument('--font',type=Path,required=True,help='Pinned DejaVuSans.ttf (see reproduction guide)')
     parser.add_argument('--run-id',default=None)
     parser.add_argument('--experimental',action='store_true',required=True)
@@ -101,6 +101,11 @@ def main(argv=None):
     run = args.run_id or datetime.now(ZoneInfo('Europe/Warsaw')).strftime('%Y-%m-%d_%H-%M-%S')
     if not re.fullmatch(r'\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d',run):
         parser.error('run-id must be a Europe/Warsaw timestamp YYYY-MM-DD_HH-MM-SS')
+    work = ROOT/'local_outputs/work'/run/'north-america-background'
+    generated = ROOT/'local_outputs/generated'/run
+    cache = args.data_dir or work/'source-data'
+    if args.download_data:
+        cache = validate_download_cache(cache)
     config = json.loads(args.config.read_text())
     anchors_path = args.config.parent/'anchors.json'
     anchors = json.loads(anchors_path.read_text())
@@ -109,12 +114,10 @@ def main(argv=None):
     validate_inputs(config,anchors)
     if digest(args.font.read_bytes()) != config['font_sha256']:
         raise ValueError('Font drift: use the exact recorded DejaVu Sans input')
-    work = ROOT/'local_outputs/work'/run/'north-america-background'
-    generated = ROOT/'local_outputs/generated'/run
     if work.exists() or generated.exists():
         raise FileExistsError('Run already exists; use a fresh timestamp')
     work.mkdir(parents=True)
-    sources = source_files(manifest,args.data_dir or work/'source-data',download=args.download_data)
+    sources = source_files(manifest,cache,download=args.download_data)
     calibration = Calibration(config,anchors)
     report = calibration.report(anchors)
     report['jacobian'] = calibration.jacobian_report(config['geographic_extent'])

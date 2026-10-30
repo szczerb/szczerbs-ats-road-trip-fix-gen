@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0062: Isolate background downloads and resolve review](active/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared resolved-path download guard, offline read-only caches and regression coverage; PR reply/resolution pending verification.
+
 
 
 
