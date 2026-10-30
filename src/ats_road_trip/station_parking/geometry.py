@@ -15,16 +15,56 @@ def _contains(point, polygon):
         _point_segment(point, a, b) < 1e-7 for a, b in zip(polygon, polygon[1:] + polygon[:1]))
 
 def _within(points, polygon):
-    # Corners alone do not prove containment in a concave polygon. Check edge
-    # midpoints as well, and refuse every proper boundary crossing.
-    probes = points + [((a[0]+b[0])/2, (a[1]+b[1])/2)
-                       for a, b in zip(points, points[1:]+points[:1])]
-    if not all(_contains(p, polygon) for p in probes):
+    """Check every candidate edge against a boundary-inclusive simple polygon."""
+    if len(points) < 3 or len(polygon) < 3:
         return False
-    for a,b in zip(points, points[1:]+points[:1]):
-        for c,d in zip(polygon, polygon[1:]+polygon[:1]):
-            cross = lambda p,q,r: (q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0])
-            if cross(a,b,c)*cross(a,b,d) < -1e-10 and cross(c,d,a)*cross(c,d,b) < -1e-10:
+    if not all(math.isfinite(value) for point in (*points, *polygon) for value in point):
+        return False
+    if not all(_contains(point, polygon) for point in points):
+        return False
+
+    def cross(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    for a, b in zip(points, points[1:] + points[:1]):
+        direction = (b[0] - a[0], b[1] - a[1])
+        length2 = direction[0] * direction[0] + direction[1] * direction[1]
+        if not math.isfinite(length2):
+            return False
+        if length2 == 0:
+            continue
+        cuts = [0., 1.]
+        for c, d in zip(polygon, polygon[1:] + polygon[:1]):
+            boundary = (d[0] - c[0], d[1] - c[1])
+            offset = (c[0] - a[0], c[1] - a[1])
+            denominator = cross(direction, boundary)
+            if not math.isfinite(denominator):
+                return False
+            if denominator == 0:
+                # Collinear overlaps may start or end between candidate
+                # vertices. Include both projected boundary endpoints.
+                if cross(offset, direction) == 0:
+                    for p in (c, d):
+                        t = ((p[0] - a[0]) * direction[0] +
+                             (p[1] - a[1]) * direction[1]) / length2
+                        if not math.isfinite(t):
+                            return False
+                        if 0. <= t <= 1.:
+                            cuts.append(t)
+                continue
+            t = cross(offset, boundary) / denominator
+            u = cross(offset, direction) / denominator
+            if not math.isfinite(t) or not math.isfinite(u):
+                return False
+            if 0. <= t <= 1. and 0. <= u <= 1.:
+                cuts.append(t)
+        cuts.sort()
+        for start, end in zip(cuts, cuts[1:]):
+            if start == end:
+                continue
+            t = start + (end - start) / 2.
+            probe = (a[0] + t * direction[0], a[1] + t * direction[1])
+            if not all(math.isfinite(value) for value in probe) or not _contains(probe, polygon):
                 return False
     return True
 

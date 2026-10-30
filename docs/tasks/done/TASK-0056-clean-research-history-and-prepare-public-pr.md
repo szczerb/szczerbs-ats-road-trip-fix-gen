@@ -48,6 +48,9 @@ Delegation: GPT-6.1 Sol/high owns evidence configuration/preparation, CLI plumbi
 
 Root rehashes all eight existing r13 SCS archives against their audited delivery checksums and verifies the existing ZIP SHA-256 remains `d683759ae42e65f3de631164d75c91e5225aa5e4db0d805fc0d0e91d5a917d2c`. No existing generated package changes. The latest remote master still matches the unchanged local base; no existing research-branch PR or remote branch was found. **Observed remotely — 2026-10-30:** the sanitized research branch was created on origin without a force push. [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is OPEN, targets master and is MERGEABLE with CLEAN merge status; automatic merge is disabled. The initial remote head matches reviewed implementation commit `e1f5334bc288251160b6a9887e20fea59857f886`. The PR is attached to the chat. This final documentation closure is pushed to the same PR branch; the PR remains open for a subsequent squash merge. No master update, generated-mod upload or game/profile operation occurred.
 
+
+**Observed locally — PR review follow-up, 2026-10-30:** Copilot identified a concave-lot containment gap where an edge leaves and re-enters through boundary vertices away from its midpoint. The shared containment check now tests intervals split at boundary contacts, including collinear overlaps, while retaining boundary-inclusive behavior. Regression coverage includes the reproduced notch, reversed winding, crossing, tangency, shared boundaries, nonfinite inputs and the station access caller. All **647 tests pass** and `git diff --check` is clean. An independent GPT-6 Luna/medium review found no actionable defect in the revised algorithm for valid simple polygons; the parent integrated the change and verification. No new gameplay or generated-package validation is implied.
+
 # Links
 
 - [Working agreements](../../project/WORKING_AGREEMENTS.md#portable-versioned-paths)

@@ -93,3 +93,24 @@ class StationGeometryTests(unittest.TestCase):
         crossing=[(2,2),(8,2),(8,8),(2,8)]
         self.assertFalse(_within(crossing,lot))
         self.assertTrue(_within([(1,1),(3,1),(3,3),(1,3)],lot))
+
+    def test_concave_vertex_notch_away_from_midpoint_is_rejected(self):
+        lot = [(0,0),(2,0),(2,1),(3,2),(4,1),(4,0),(10,0),(10,10),(0,10)]
+        rectangle = [(1,1),(9,1),(9,3),(1,3)]
+        self.assertFalse(_within(rectangle, lot))
+        self.assertFalse(_within(list(reversed(rectangle)), list(reversed(lot))))
+
+    def test_boundary_contacts_and_collinear_overlaps_remain_inside(self):
+        lot = [(0,0),(10,0),(10,10),(5,10),(5,8),(4,8),(4,10),(0,10)]
+        cases = [
+            [(0,0),(10,0),(10,2),(0,2)],  # full shared edge
+            [(2,0),(8,0),(8,2),(2,2)],    # partial shared edge
+            [(1,6),(4,8),(3,6)],           # tangent at concave vertex
+            [(1,1),(3,1),(3,3),(1,3)],
+        ]
+        for candidate in cases:
+            with self.subTest(candidate=candidate):
+                self.assertTrue(_within(candidate, lot))
+        self.assertFalse(_within([(2,8),(7,8),(7,9),(2,9)], lot))
+        self.assertFalse(_within([(1,1),(11,1),(11,2),(1,2)], lot))
+        self.assertFalse(_within([(1,1),(float('nan'),1),(1,2)], lot))

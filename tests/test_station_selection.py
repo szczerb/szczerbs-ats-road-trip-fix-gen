@@ -116,6 +116,16 @@ class StationSelectionTests(unittest.TestCase):
         self.assertEqual(result['access_checks']['road_conflicts'][0]['regions'], ['approach'])
         self.assertEqual(result['access_checks']['obstacle_proxy_conflicts'][0]['regions'], ['approach'])
 
+    def test_vertex_notch_rejects_footprint_in_access_check(self):
+        candidate, geometry, mesh = fixture()
+        candidate['polygon_xz'] = rectangle(1, 1, 9, 3)
+        candidate['approach_xz'] = rectangle(1, 3, 9, 5)
+        lot = [(0,0),(2,0),(2,1),(3,2),(4,1),(4,0),(10,0),(10,10),(0,10)]
+        geometry['polygons'][0]['vertices'] = [[x, 0, z] for x, z in lot]
+        result = evaluate(candidate, geometry, mesh)
+        self.assertIn('footprint_or_approach_outside_accessible_map_proxy', result['rejection_reasons'])
+        self.assertIn('footprint', result['access_checks']['outside_accessible_proxy'])
+
     def test_outside_accessible_and_missing_ground_remain_blockers(self):
         candidate, geometry, mesh = fixture()
         candidate['approach_xz'] = rectangle(-3., 24., 3., 28.)
