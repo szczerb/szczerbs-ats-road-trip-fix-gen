@@ -2,7 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-10-30
-- Related task: [TASK-0056](../../tasks/active/TASK-0056-clean-research-history-and-prepare-public-pr.md)
+- Related task: [TASK-0056](../../tasks/done/TASK-0056-clean-research-history-and-prepare-public-pr.md)
 
 ## Context
 

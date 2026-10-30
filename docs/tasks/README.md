@@ -4,8 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0056: Clean research history and prepare a public PR](active/TASK-0056-clean-research-history-and-prepare-public-pr.md) — authorized history cleanup, portable evidence inputs, scoped North Platte supplement, independent audit and an open PR.
-
 
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
@@ -14,6 +12,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0056: Clean research history and prepare a public PR](done/TASK-0056-clean-research-history-and-prepare-public-pr.md) — sanitized historical paths, explicit reviewed evidence input, scoped North Platte guards, 644 tests and independent publication audits; [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is open for a later squash merge.
 
 - [TASK-0054: Complete incomplete truck-rest lots](done/TASK-0054-complete-incomplete-truck-rest-lots.md) — eight r13 replacements, 4 new regions/icons, 156 banks completed across 143 native regions, preserved car/fuel baseline, 633 tests and independent final audits. [Delivery](../reference/TRUCK_REST_COVERAGE_1_61_R13.md).
 

@@ -1,7 +1,7 @@
 ---
 id: TASK-0056
 title: Clean research history and prepare a public PR
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0054]
@@ -46,7 +46,7 @@ Delegation: GPT-6.1 Sol/high owns evidence configuration/preparation, CLI plumbi
 
 **Observed locally — final implementation verification, 2026-10-30:** all **644 tests pass** (`PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -q`, 4.831 seconds); the focused truck/source-gating suite passes 37 tests. Checks cover missing/changed/ambiguous evidence, all four CLI forwarding paths, early failure, broad defaults, provider/hash drift and unrelated stock-sector processing. Whitespace checks are clean. Root independently compares the new catalog with the original loader: every semantic field, source/material/state pin and both accepted Dawson areas are identical, excluding evidence locations. Setuptools package-data checks prove the metadata is included and usable without checkout documentation. Preparation imports and validates eight retained PIM/PIT files into a new directory; no fresh conversion or gameplay result is claimed.
 
-Root rehashes all eight existing r13 SCS archives against their audited delivery checksums and verifies the existing ZIP SHA-256 remains `d683759ae42e65f3de631164d75c91e5225aa5e4db0d805fc0d0e91d5a917d2c`. No existing generated package changes. The latest remote master still matches the unchanged local base; no existing research-branch PR or remote branch was found. Publication remains the final pending step.
+Root rehashes all eight existing r13 SCS archives against their audited delivery checksums and verifies the existing ZIP SHA-256 remains `d683759ae42e65f3de631164d75c91e5225aa5e4db0d805fc0d0e91d5a917d2c`. No existing generated package changes. The latest remote master still matches the unchanged local base; no existing research-branch PR or remote branch was found. **Observed remotely — 2026-10-30:** the sanitized research branch was created on origin without a force push. [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is OPEN, targets master and is MERGEABLE with CLEAN merge status; automatic merge is disabled. The initial remote head matches reviewed implementation commit `e1f5334bc288251160b6a9887e20fea59857f886`. The PR is attached to the chat. This final documentation closure is pushed to the same PR branch; the PR remains open for a subsequent squash merge. No master update, generated-mod upload or game/profile operation occurred.
 
 # Links
 
