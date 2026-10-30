@@ -1,5 +1,7 @@
 # Background branch: public-source review and rebase, 2026-10-30
 
+**Subsequent authorized publication, 2026-10-30:** a fresh independent second review and all 692 tests pass. The reviewed source branch is pushed and [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2) is OPEN/mergeable against master with automatic merge disabled. [TASK-0061](../tasks/done/TASK-0061-review-and-open-background-source-pr.md) records that later authorization and source-only publication. The preparation history below remains the evidence for that decision; private release artifacts remain excluded and r4 runtime confirmation is pending.
+
 **Observed locally — source preparation verified, 2026-10-30:** the user authorizes branch-only history sanitation, a rebase onto current master, and public-source readiness work. No push, PR, release, visibility change, live installation or game/profile action is part of this task. This record concerns source, not approval to upload existing SCS/source ZIPs or private comparison evidence.
 
 ## Findings and remediation
@@ -56,6 +58,6 @@ These are source-history fingerprints, not public download or commit links. Orig
 
 ## Readiness decision
 
-**Ready for a later push of this reviewed branch and a PR as experimental source.** No concrete source-publication blocker remains in the bounded review. Retain the documented source/GIS provenance limits and pending r4 runtime status in the PR description. This judgment does not clear existing private SCS/source ZIPs, screenshots or other release artifacts for publication. The branch is not pushed; no PR or release has been created.
+**Ready for a later push of this reviewed branch and a PR as experimental source.** No concrete source-publication blocker remains in the bounded review. Retain the documented source/GIS provenance limits and pending r4 runtime status in the PR description. This judgment does not clear existing private SCS/source ZIPs, screenshots or other release artifacts for publication. At the end of that preparation stage the branch was not pushed and no PR or release had been created. The subsequent authorized source push/PR is recorded above; no mod release was created.
 
 [Task](../tasks/done/TASK-0060-rebase-background-and-prepare-public-source-pr.md), [r4 reproduction](../examples/north-america-background/r4/README.md), [r4 runtime boundary](NORTH_AMERICA_BACKGROUND_1_61_R4.md), [portable evidence policy](../architecture/decisions/ADR-0030-use-portable-reviewed-evidence-and-versioned-paths.md).

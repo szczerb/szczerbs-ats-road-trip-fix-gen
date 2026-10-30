@@ -19,6 +19,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0061: Review and open background source PR](done/TASK-0061-review-and-open-background-source-pr.md) — fresh clean review and 692 tests; reviewed source branch pushed and [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2) opened against master; mergeable, automatic merge disabled, no release artifacts.
+
 - [TASK-0060: Rebase background and prepare public source PR](done/TASK-0060-rebase-background-and-prepare-public-source-pr.md) — 19 sanitized/rebased milestones, unique IDs, public-source documentation, 692 tests, wheel/import and exact r4 reproduction; independent source-publication audit passes; no push/PR/release.
 
 - [TASK-0055: Repair detailed texture-size regression only](done/TASK-0055-repair-r3-detailed-texture-size-only.md) — four detailed DDS downsampled to 4096 square, manifest revision only; 20 other members unchanged, exact repeat build and package checks pass; runtime confirmation pending.
