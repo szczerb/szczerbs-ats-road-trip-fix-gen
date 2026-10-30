@@ -34,6 +34,24 @@ def sector(items, nodes=(), children=()):
 
 
 class SectorReaderTests(unittest.TestCase):
+    def test_road_ui_flags_are_header_flags_and_preserve_road_payload(self):
+        # Road payload flags deliberately disagree with KDOP/UI flags. Reading
+        # +59/+60 instead of +54/+55 must not silently produce an inverse result.
+        road_flags=0x02080000
+        payload=(struct.pack('<IQ',road_flags,token('test_road'))
+                 + bytes(8*8+2*12+3*8+6*10+8)
+                 + struct.pack('<QQf',11,12,150.5))
+        for flags,city,shown in [(0,False,True),(8<<16,True,True),
+                                 (2<<24,False,False),((8<<16)|(2<<24),True,False)]:
+            data=sector([item(3,88,payload,flags=flags),prefab()])
+            parsed=parse_sector(data)
+            road=parsed.items[0]
+            self.assertEqual(road.details,dict(road_flags=road_flags,
+                road_type=token('test_road'),node=11,forward_node=12,length=150.5,
+                is_city_road=city,show_in_ui_map=shown))
+            self.assertEqual(data[road.offset:road.end],item(3,88,payload,flags=flags))
+            self.assertEqual(parsed.items[1].uid,100)
+
     def test_company_identity_prefab_marker_and_raw_spawn_flags(self):
         payload = (struct.pack('<4Q', token('helena'), 100, token('shop'), 300)
                    + refs(301, 302) + struct.pack('<2I', 0, 0xf1234567))
@@ -74,6 +92,42 @@ class SectorReaderTests(unittest.TestCase):
         self.assertEqual(result.nodes[0].position, (1., -2., 3.))
         self.assertEqual(result.nodes[0].rotation, (1., 0., 0., 0.))
         self.assertEqual(result.items[2].details['children'], (100, 200))
+
+    def test_ferry_payload_links_port_prefab_node_and_offset(self):
+        # Pinned FerrySerializer order: Port token, Prefab UID, Node UID,
+        # then Vector3 UnloadOffset. Keep high-bit UIDs unsigned and exact.
+        port = token('horseshoebay')
+        prefab_uid = 0xf8aff2c8aa800001
+        ferry_uid = 0xfbe44a3da1000001
+        node_uid = 0xfbe44a3e02800000
+        prefab_item = item(4, prefab_uid,
+                           struct.pack('<QQ', token('02003'), 0)
+                           + refs() + refs(node_uid) + refs()
+                           + struct.pack('<QH', ferry_uid, 0)
+                           + bytes(12 + 8))
+        ferry_item = item(0x13, ferry_uid,
+                          struct.pack('<QQQ3f', port, prefab_uid, node_uid,
+                                      -26.3, 0.0, 10.0))
+        service = item(7, 0xf23456789abcdef0,
+                       struct.pack('<QQ', node_uid, prefab_uid) + refs())
+        data = sector([prefab_item, ferry_item, service], [node(node_uid)],
+                      (ferry_uid, node_uid))
+
+        result = parse_sector(data)
+        prefab_parsed, ferry_parsed, service_parsed = result.items
+        self.assertEqual(prefab_parsed.details['ferry'], ferry_uid)
+        self.assertEqual({key: ferry_parsed.details[key] for key in ('port', 'prefab', 'node')},
+                         {'port': port, 'prefab': prefab_uid, 'node': node_uid})
+        for actual, expected in zip(ferry_parsed.details['unload_offset'], (-26.3, 0.0, 10.0)):
+            self.assertAlmostEqual(actual, expected, places=5)
+        self.assertEqual(ferry_parsed.offset, prefab_parsed.end)
+        self.assertEqual(ferry_parsed.end, ferry_parsed.offset + 57 + 36)
+        self.assertEqual(data[ferry_parsed.offset:ferry_parsed.end], ferry_item)
+        self.assertEqual(service_parsed.uid, 0xf23456789abcdef0)
+        self.assertEqual(service_parsed.details['node'], node_uid)
+        self.assertEqual(result.nodes[0].uid, node_uid)
+        self.assertEqual(result.visibility_children, (ferry_uid, node_uid))
+        self.assertEqual(result.suffix, refs(ferry_uid, node_uid))
 
     def test_compound_is_scoped_not_discovered_as_root_fuel(self):
         nested = item(0x23, 99, struct.pack('<QQ', 15, 100) + refs())

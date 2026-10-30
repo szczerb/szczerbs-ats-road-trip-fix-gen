@@ -8,6 +8,16 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
+- [ADR-0032: Compose geographic feature corrections and audit complete deformation](ADR-0032-compose-geographic-features-and-audit-complete-deformation.md): shared feature stages, qualified controls/source shapes, separately licensed fine geography and full-support composed safety checks; candidate acceptance remains separate.
+
+- [ADR-0031: Calibrate backgrounds with roads and physical-ground constraints](ADR-0031-calibrate-background-with-roads-and-ground-constraints.md): bounded all-layer field, local route checks and independent geometry diagnostics, explicit shoreline/bridge limits and stronger shared market zoom.
+
+- [ADR-0027: Check backgrounds against roads and shores](ADR-0027-check-backgrounds-against-road-and-shore-geometry.md): separate runtime texture mapping from geographic calibration; city-center fit/pixels cannot establish a repaired road/water relationship.
+
+- [ADR-0026: Bound regional background corrections](ADR-0026-bound-regional-background-corrections.md): preserve r0 affine, local corrections with explicit uncertainty, finer shorelines and shared market/world zoom tradeoff.
+
+- [ADR-0025: Generate original geographic backgrounds](ADR-0025-generate-original-geographic-backgrounds.md): pinned public-domain geography, configurable measured calibration, original standalone UI resources and offline verification.
+
 - [ADR-0016: License project-authored materials under AGPLv3](ADR-0016-license-project-under-agpl-v3.md): AGPL-3.0-only, explicit scope and third-party exclusions, and matching package notices.
 
 - [ADR-0001: Use a documentation and evidence workflow before generator implementation](ADR-0001-documentation-and-evidence-workflow.md).

@@ -79,3 +79,5 @@ Read foundational formats before interpreting feature-specific hypotheses. Each 
 
 - [N2 r3 navigation metadata/artwork handoff](reference/NAVIGATION_ICONS_METADATA_1_61_R3.md).
 - [Navigation overlay scope and publication rights](reference/NAVIGATION_ICONS_PUBLICATION.md).
+
+- [North America background r4 source and runtime limits](reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md), [public-input reproduction](examples/north-america-background/r4/README.md), [historical engine/data research](reference/NORTH_AMERICA_BACKGROUND_RESEARCH.md) and [public-source review](reference/NORTH_AMERICA_BACKGROUND_PUBLIC_SOURCE_REVIEW_2026_10_30.md).

@@ -1,6 +1,6 @@
 # Third-party tools and research sources
 
-The Python package has no third-party runtime Python dependencies. HashFS inspection invokes an independently downloaded executable; that binary and its downloaded ZIP are ignored local artifacts, not part of this repository.
+The core command-line tools have no third-party runtime Python dependencies. The optional background renderer uses the separately listed Python libraries and geographic/font inputs below. HashFS inspection invokes an independently downloaded executable; that binary and its downloaded ZIP are ignored local artifacts, not part of this repository.
 
 ## sk-zk Extractor
 
@@ -33,3 +33,19 @@ The station-map reader extends existing PPD research using the 48-byte MapPoint 
 ## Navigation overlay source dependency
 
 The source-pinned N2 navigation generator transforms North America Background Map 5.3 by CairamR (installed author CAIRAM), Steam Workshop item 3348711188. Local generated N2 archives contain one complete modified background definition; the three SUI includes and background artwork remain supplied by the original mod. This project's AGPL does not relicense that definition. No redistribution grant was found in the inspected author listing/installed package; [scope, sources and publication boundary](docs/reference/NAVIGATION_ICONS_PUBLICATION.md) record the evidence and limits. The source definition itself is not tracked.
+
+## Original geographic background inputs (2026-10-23)
+
+The optional background generator uses Natural Earth vectors, expressly public domain under [Natural Earth's terms](https://www.naturalearthdata.com/about/terms-of-use/). Dataset-specific versions, download URLs and SHA-256 pins are in [sources.json](docs/examples/north-america-background/sources.json); downloaded archives are ignored. The renderer does not use or trace any third-party background image.
+
+DejaVu Sans Book 2.37 from Debian fonts-dejavu-core 2.37-8 is a separately licensed font input. The exact archive/member pins are in [font.json](docs/examples/north-america-background/font.json); the [Bitstream Vera notice](assets/background-map/FONT-LICENSE.txt) accompanies rendered artwork. DejaVu changes are public domain. No font binary is committed or bundled in the mod.
+
+Optional Python build libraries (not bundled in the mod): Pillow (HPND), NumPy and SciPy (BSD-3-Clause), PyShp (MIT), and pyproj (MIT; its PROJ dependency has its own permissive notices). Pinned versions are in the background requirements file; installed distributions retain their license files. The build uses these as libraries, without copying their sources into project code. The SCS shader and stock UI remain supplied by the game; functional format/field observations do not convey rights in its artwork.
+
+## Detailed background shore sources (r3, 2026-10-25)
+
+The r3 development pipeline additionally selects GSHHG 2.3.7 high-resolution L1 coast polygons, licensed **LGPL-3.0-or-later** rather than public domain. The original upstream notice and full LGPLv3/GPLv3 texts are retained under `assets/background-map/GSHHG-*`; the pinned original archive accompanies the corresponding source bundle. [NOAA dataset description](https://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html), [upstream project](https://www.soest.hawaii.edu/wessel/gshhg/). GSHHG lake layers were evaluated but are not selected.
+
+The selected USGS NHD Lake Michigan waterbody (OBJECTID 8439286, GNIS 01623080) is public-domain federal hydrography. NHD is archived/retired; a later service refresh does not establish current surveyed shorelines. [USGS NHD](https://www.usgs.gov/national-hydrography/national-hydrography-dataset). Its island/constructed-fill geometry is used directly as geographic source data.
+
+Named Chicago and Seattle feature coordinates use hash-pinned Wikidata entity structured data under [CC0](https://www.wikidata.org/wiki/Wikidata:Copyright); they are factual feature points with explicitly limited accuracy, not surveys. Published Golden Gate Bridge District, NPS and ASCE feature-location facts retain attribution and anchor-semantics caveats in the configuration provenance. City GIS/footprint geometry inspected for diagnostics is not a rendered source or a redistributed source asset. Native game/map resource bytes and diagnostic overlays remain outside the background package and corresponding source assets.

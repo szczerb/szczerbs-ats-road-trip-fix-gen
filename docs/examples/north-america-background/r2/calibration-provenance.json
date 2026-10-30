@@ -1,0 +1,77 @@
+{
+  "inspection_date": "2026-10-24",
+  "target_game": "1.61.3.18",
+  "method": "route-ground-compact-v1",
+  "coefficient_count": 865,
+  "support_radius_world_units": 15000,
+  "fit": {
+    "same_route_normal_observations": 576,
+    "physical_ground_class_observations": 962,
+    "all_ground_observations_used_for_fit": true,
+    "ground_prior_split_is_not_validation": true
+  },
+  "check": {
+    "same_route_normal_observations": 135,
+    "split": "deterministic 4,000-world-unit cell hash; local interpolation, not a spatially independent extrapolation test",
+    "selection": "route identity, initial distance <=5000, heading agreement >=0.65, along-track <=150, marker snap <=120; all selected before final model fitting",
+    "independent_2d_intersections": [
+      "Chicago I-57 / I-80",
+      "Chicago I-55 / I-90"
+    ],
+    "independent_bridge_diagnostics": [
+      "San Diego-Coronado",
+      "Galveston causeway",
+      "Los Angeles port bridge candidate (identity uncertain)"
+    ]
+  },
+  "road_summary": {
+    "road:fit": {
+      "n": 576,
+      "before_rms": 668.1599735173608,
+      "after_rms": 286.68579822119136,
+      "before_median": 349.0014654351491,
+      "after_median": 115.95384305226113
+    },
+    "road:check": {
+      "n": 135,
+      "before_rms": 699.0592043636416,
+      "after_rms": 565.5593476571704,
+      "before_median": 402.297938815771,
+      "after_median": 232.21295031509447
+    }
+  },
+  "calibration_source": {
+    "natural_earth_roads": {
+      "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_roads_north_america.zip",
+      "sha256": "108b2e2aad60e5ac6b8c27ee074b4b147ffd1c02b14e7a0d41e1d030bd737c63",
+      "bytes": 47780425,
+      "version": "4.1.0",
+      "rights": "Natural Earth public domain; used for calibration, not rendered as roads"
+    },
+    "mexican_federal_route_identity": [
+      "https://www.sct.gob.mx/fileadmin/DireccionesGrales/DGST/Datos-Viales-2014/02_BAJA_CALIFORNIA.pdf",
+      "https://www.sct.gob.mx/fileadmin/DireccionesGrales/DGST/Datos-Viales-2015/03_BAJA_CALIFORNIA_SUR.pdf"
+    ],
+    "native_observations": "Read-only effective ATS/map resources; no geometry/artwork distributed with package or source bundle."
+  },
+  "fitting": {
+    "kernel": "Wendland C2: max(0,1-r)^4*(4*r+1)",
+    "coordinates": "R1-calibrated XZ output plane",
+    "grid_world_units": 5000,
+    "regularization": 0.2,
+    "route_weight": 1,
+    "physical_ground_weight": 4,
+    "ground_tolerance_world_units": 50,
+    "iterations": 20,
+    "damping": 0.5,
+    "inverse_iterations": 32,
+    "ground_loss": "Inequality on typed fuel/rest/service observations using signed distance of R1 rendered water; source/raster uncertainty applies. No universal road-on-land loss.",
+    "road_loss": "Normal distance to geographically identified route, allowing along-route sliding."
+  },
+  "limits": [
+    "Local held-out route samples were prefiltered using r1 and are not blind checks.",
+    "All physical-ground class observations are calibration facts; their residuals are training diagnostics.",
+    "Water-pixel diagnostics include true bridges/ports and cannot be treated as all-road land requirements.",
+    "No global alignment or exact shoreline guarantee; lake-belt and shallow Gulf regressions remain."
+  ]
+}

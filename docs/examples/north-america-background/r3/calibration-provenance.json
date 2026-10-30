@@ -1,0 +1,77 @@
+{
+  "inspection_date": "2026-10-25",
+  "configuration_sha256": "47881120de059c600fd5961fb40b44b6c9fced5e372624813f1a5b962e28d58c",
+  "source_model": "Five shared feature flows, one rigid lake translation, 32 fixed global compact fields, 16 Puerto-only fields, and 8 local increments for each of two source-qualified existing FIT facility points",
+  "feature_fit_controls": 17,
+  "frozen_semantic_checks": 7,
+  "retired_galveston_diagnostics": 4,
+  "rows": {
+    "legacy": 6057,
+    "original_added": 320,
+    "late_puerto": 55,
+    "total": 6432,
+    "fit": 5030,
+    "check": 1402
+  },
+  "role_boundary": "Original6377 rowroles/mainland classifications unchanged; Puerto38FIT/17CHECK arelate/regression-selected, notblind. All60Galveston street-window samples remain neverfitted.",
+  "public_shape_priors": 131,
+  "local_shape_priors": 9,
+  "data_sources": "sources.json pins seven licensed public rendering inputs; feature-controls.json retains separate factual correspondences/uncertainty.",
+  "native_facts": "Readonly geometry/terrain/material/provider checks inform calibration; no source sectors, meshes, roadarrays, screenshots or diagnostic overlays enterSCS/sourceZIP.",
+  "source_plane": "Positive sourceSDF=water/negative=land. All validationnativeXZ remainsunchanged; onlypublicsourcegeometry istransported.",
+  "reported_success": "User confirmsr2 job-market zoomusableand carfuel/restnavigationicons; preservewholemapdefinition exact. No new runtimepass claimed.",
+  "frozen_map_data_sha256": "3467c3d500ef31f13567983a06e6b54c6774a496f982c93ec0cbb42ae849a5f6",
+  "selection_bias": "Multiple candidate models and reused checks informed selection. Named-site checks and adjacent roadholds are correlated. Sourcearea/shapepriors arecartographic constraints, notnative wet-bank surveys.",
+  "chosen_model_limits": [
+    "Haida coast road remainswet",
+    "Gulfdelta/CORPUS/harbor relationships are partlyunresolved",
+    "Source and gameurban geometry cannot be matchedexactly by a globalresize",
+    "1GiB highresolutiontexturepayload runtimecost isuntested"
+  ],
+  "implementation_tests": 326,
+  "qualified_existing_fit_points": [
+    {
+      "company": "Gallon Oil / Oakland",
+      "q_native_xz": [
+        -113788.8203125,
+        -11893.5
+      ],
+      "role": "existing FIT, unchanged",
+      "ground_evidence_kind": "native PPD NavCurve road centerline",
+      "source_archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+      "prefab_ppd_sha256": "4069c035b2a3241c2c6f38444c7d37f965895ace910ec202e5dbd70d65a650f3",
+      "prefab_pmg_sha256": "8cd263c749a08013b78f3a0bb35fccfdc13c978d336eed718295662977bea961",
+      "qualification_limit": "Oakland uses near-chord vehicle-path correspondence plus adjacent pavement, not a PMG triangle over q; La Paz has actual asphalt triangle containment. No full-site coverage inferred."
+    },
+    {
+      "company": "Gallon Oil / La Paz",
+      "q_native_xz": [
+        -73533.6796875,
+        79225.9765625
+      ],
+      "role": "existing FIT, unchanged",
+      "ground_evidence_kind": "referenced PMG triangle surface",
+      "source_archive_sha256": "8f980093aa7270ead0897dbb8b6d24e39b5e7bf197358f7abacbc1d517bc03da",
+      "prefab_ppd_sha256": "dccbada8923cc8dd8c7e6738111eae4a9d643cb932c251738d5f47ad3f85e677",
+      "prefab_pmg_sha256": "b300a67925a162e0c97a101c868e1388aa99cd2bc9820778c6e8b7f2ae618d89",
+      "qualification_limit": "Oakland uses near-chord vehicle-path correspondence plus adjacent pavement, not a PMG triangle over q; La Paz has actual asphalt triangle containment. No full-site coverage inferred."
+    }
+  ],
+  "data_distance_policy": "Canonical native-q actual mask audit uses floor cell, continuous pixel coordinates and nearest3x3 morphological-edgepixel. Positivewater/negativeLAND. An earlier opposite-class-cell-center diagnostic was retired; its distance values are not acceptance evidence.",
+  "additional_public_shape_audit": {
+    "near_new_sites": 5,
+    "invalid": 0,
+    "area_change_48_to64_percent_range": [
+      -4.57,
+      15.25
+    ],
+    "scope": "Source polygons, not native wet-bank observations."
+  },
+  "full_facility_floor_audit": {
+    "coverage": "1075 Oakland paving/concrete triangle centroids;246 LaPaz asphalt centroids;coincident surfaces deduplicated;plus50u cellcoverage",
+    "new_land_to_water_gt150": 0,
+    "remaining_limit": "Oakland has36.21% area-weighted centroid proxy in shoreline-edge water;LaPaz1.02%. This is sampled floor-area proxy, notexactpolygon-overlap measurement orclaimofwhole-floor preservation.",
+    "q_edge_distance_authority": "main-2-fit-point-actual-mask-audit.json: continuousnativeq and3x3edge;Oakland+8.3049water/LaPaz\u22128.5235land",
+    "fit_scope": "No new floor samples were fitted;2existingFITpointqualifications only, alloldCHECKrolesunchanged."
+  }
+}
