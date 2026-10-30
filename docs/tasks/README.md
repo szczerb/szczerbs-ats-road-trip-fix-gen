@@ -4,7 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0062: Isolate background downloads and resolve review](active/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared resolved-path download guard, offline read-only caches and regression coverage; PR reply/resolution pending verification.
 
 
 
@@ -20,6 +19,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0062: Isolate background downloads and resolve review](done/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared pre-write download boundary, read-only offline caches, 21 regressions and 713 tests; fix pushed, direct Copilot reply posted and exact thread confirmed resolved.
 
 - [TASK-0061: Review and open background source PR](done/TASK-0061-review-and-open-background-source-pr.md) — fresh clean review and 692 tests; reviewed source branch pushed and [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2) opened against master; mergeable, automatic merge disabled, no release artifacts.
 

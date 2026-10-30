@@ -1,7 +1,7 @@
 ---
 id: TASK-0062
 title: Isolate background downloads and resolve the Copilot review
-status: active
+status: done
 priority: high
 repositories: [.]
 depends_on: [TASK-0061]
@@ -36,10 +36,12 @@ One shared resolved-path validator; both download entry points and the source lo
 
 ## Verification
 
-**Observed locally — 2026-10-30:** all 21 new mocked/synthetic isolation regressions pass; the full suite passes 713 tests in 12.23 seconds. Independent GPT-6 Luna/medium code review finds no concrete blocking issue in the scoped path/order semantics. Main independently verifies unchanged geographic definitions, rendering/resource/calibration bytes and the original r4 package SHA. The tests exercise both CLI routes and the direct loader, including traversal/cache-root symlink escapes and successful/default/offline cases, without real network downloads or supplied-input modifications. Fix publication, direct reply and thread-resolution verification follow. Local-only scratch: `local_outputs/work/2026-10-30_19-17-43/`. Main owns production/documentation; GPT-6 Luna/medium owns the regression test file and its ignored `tests-review/` output. No game or real input-directory experiment is performed.
+**Observed locally — 2026-10-30:** all 21 new mocked/synthetic isolation regressions pass; the full suite passes 713 tests in 12.23 seconds. Independent GPT-6 Luna/medium code review finds no concrete blocking issue in the scoped path/order semantics. Main independently verifies unchanged geographic definitions, rendering/resource/calibration bytes and the original r4 package SHA. The tests exercise both CLI routes and the direct loader, including traversal/cache-root symlink escapes and successful/default/offline cases, without real network downloads or supplied-input modifications. The fix is published as `0157548`; the direct reply and resolved thread have been verified through the GitHub API. Local-only scratch: `local_outputs/work/2026-10-30_19-17-43/`. Main owns production/documentation; GPT-6 Luna/medium owns the regression test file and its ignored `tests-review/` output. No game or real input-directory experiment is performed.
 
 ## Links
 
 - [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2)
 - [Original finding](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2#discussion_r4426960951)
 - [R4 runtime boundary](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md)
+
+**PR follow-up completed:** commit `0157548375ab4cbc019e3152d77f7cf04c385668` was pushed to the existing PR branch, and the PR head was verified to match before posting the reply. [Direct reply](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2#discussion_r4427110435) records the shared guard, offline behavior, 21 regression cases and 713 passing tests. The exact Copilot thread was then resolved, and an independent API read confirms `isResolved: true` and the reply's reference to the published fix. A documentation-only completion commit records this outcome; final remote/local identity is checked after pushing it. No merge, release, package upload or game/profile change occurred.
