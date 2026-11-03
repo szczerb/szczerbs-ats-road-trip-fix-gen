@@ -37,7 +37,7 @@ The renderer crops to the selected footprint with padding. Use `--bounds XMIN ZM
 - A colored corner mark flags a tile with a geometry diagnostic. The JSON includes road and prefab accounting, affected virtual members, reason codes, selected providers, and resources shadowed by a higher-priority archive. The effective view can have mixed providers inside one tile.
 - `no_sector_geometry` is a clean skip with a summary and no PNG. `partial` supplies an image with reported limitations. `failed` means the requested view could not be produced, for example if an effective stack input is unreadable. An unsupported sector can still contribute to the footprint when its member name is readable.
 - HashFS v1 deep discovery can return malformed path candidates. The renderer reports how many it discarded and only requests validated member paths. Archive generation and ordinary inspection retain strict discovery.
-- Native map layouts and prefab versions have explicit parser limits. Prefab links describe the supported map-point graph. An incomplete dependency list can leave gaps even in an otherwise valid archive. Use the provider and omission records when examining a seam. Static geometry cannot establish runtime compatibility.
+- The renderer reads the prefab descriptor field independently of unrelated model fields. It still validates descriptor paths and includes. Native map layouts and prefab versions have explicit parser limits. Prefab links describe the supported map-point graph. An incomplete dependency list can leave gaps even in an otherwise valid archive. Use the provider and omission records when examining a seam. Static geometry cannot establish runtime compatibility.
 
 ## Geometry evidence
 

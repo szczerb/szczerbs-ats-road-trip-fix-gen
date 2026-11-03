@@ -53,6 +53,18 @@ class DefinitionsTest(unittest.TestCase):
         self.assertEqual(unit.one('value'), '(1,\n2)')
         self.assertEqual(unit.one('note'), 'literal field: text')
 
+    def test_projection_still_validates_requested_attributes(self):
+        text = ('prefab_model : prefab.example { model_desc: "obfuscated\r\tmodel.pmd" '
+                'prefab_desc: "/prefab/example.ppd" }')
+        with self.assertRaisesRegex(DefinitionError, 'Unsupported quoted SII value'):
+            parse_units(text)
+        selected = frozenset({'prefab_desc'})
+        unit, = parse_units(text, attribute_filter=selected)
+        self.assertEqual(unit.one('prefab_desc'), '/prefab/example.ppd')
+        self.assertIsNone(unit.one('model_desc'))
+        with self.assertRaisesRegex(DefinitionError, 'Unsupported quoted SII value'):
+            parse_units(text.replace('example.ppd', 'example\r\t.ppd'), attribute_filter=selected)
+
     def test_indexed_array_count_and_order(self):
         unit = parse_units('x : .x { tags: 2 tags[1]: second tags[0]: first }')[0]
         self.assertEqual(unit.values('tags'), ('first', 'second'))

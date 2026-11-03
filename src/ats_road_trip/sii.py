@@ -64,8 +64,13 @@ def _unquote(value: str) -> str:
 
 def parse_units(text: str, *, source: str = '<text>',
                 include_reader: Callable[[str], str] | None = None,
+                attribute_filter: frozenset[str] | None = None,
                 _stack: tuple[str, ...] = ()) -> list[Unit]:
-    """Read units; include paths are relative virtual paths, resolved by caller."""
+    """Read units with caller-resolved virtual includes.
+
+    An attribute filter projects selected values without interpreting unrelated
+    attributes. Include resolution and unit structure checks still apply.
+    """
     if source in _stack or len(_stack) >= 32:
         raise DefinitionError(f'Include cycle or depth limit at {source}')
     clean = strip_comments(text.lstrip('\ufeff'))
@@ -92,7 +97,7 @@ def parse_units(text: str, *, source: str = '<text>',
     clean = _INCLUDE.sub(include, clean)
     if '@include' in _mask_strings(clean):
         raise DefinitionError(f'{source}: unsupported @include syntax')
-    return _parse_clean(clean, source)
+    return _parse_clean(clean, source, attribute_filter)
 
 
 def _expand_includes(text: str, source: str, reader: Callable[[str], str],
@@ -119,7 +124,8 @@ def _mask_strings(text: str) -> str:
     return re.sub(r'"(?:\\.|[^"\\])*"', lambda m: ' ' * len(m.group()), text)
 
 
-def _parse_clean(clean: str, source: str) -> list[Unit]:
+def _parse_clean(clean: str, source: str,
+                 attribute_filter: frozenset[str] | None = None) -> list[Unit]:
     masked = _mask_strings(clean)
     depth = 0
     for char in masked:
@@ -149,6 +155,8 @@ def _parse_clean(clean: str, source: str) -> list[Unit]:
         starts = list(_ATTRIBUTE.finditer(_mask_strings(body)))
         for index, attr in enumerate(starts):
             key, array_index = attr.groups()
+            if attribute_filter is not None and key not in attribute_filter:
+                continue
             end_value = starts[index + 1].start() if index + 1 < len(starts) else len(body)
             value = body[attr.end():end_value].strip()
             if not value:

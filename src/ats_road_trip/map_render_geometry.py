@@ -280,7 +280,8 @@ def _definitions(stack, cache, models, issues):
     cache.prefetch(stack, stack.matching(_PREFETCH_DEF))
     for path in stack.matching(_DEF):
         try:
-            units = parse_units(stack.text(path), source=path, include_reader=stack.text)
+            units = parse_units(stack.text(path), source=path, include_reader=stack.text,
+                                attribute_filter=frozenset({'prefab_desc'}))
         except _READ_ERRORS:
             issues.append({'path': path, 'reason': 'unreadable_or_unsupported_prefab_definitions'})
             continue

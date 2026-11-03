@@ -127,7 +127,8 @@ class MapRenderGeometryTests(unittest.TestCase):
             PPD: _ppd(broken_neighbors=True),
         })
         overlay = self.mount('overlay.scs', {
-            DEF: 'SiiNunit\n{\nprefab_model : prefab.test { prefab_desc: "/prefab/synthetic.ppd" }\n}',
+            DEF: ('SiiNunit\n{\nprefab_model : prefab.test { model_desc: "ignored\r\tmodel.pmd" '
+                  'prefab_desc: "/prefab/synthetic.ppd" }\n}'),
             PPD: _ppd(),
         })
         result = collect_geometry(ResourceStack([selected, overlay]), [DRAW])
