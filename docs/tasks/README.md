@@ -4,6 +4,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
+- [TASK-0063: Render ATS map-mod coverage and roads](active/TASK-0063-render-map-mod-coverage-and-roads.md) — archive footprint, road geometry, and effective-stack images.
+
 
 
 

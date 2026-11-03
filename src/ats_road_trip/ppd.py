@@ -5,6 +5,7 @@ inferred from installed ATS 1.61 Road Trip car station descriptors, and still
 requires gameplay validation. This module does not rebuild map spawn caches.
 """
 
+from dataclasses import dataclass
 import math
 import struct
 
@@ -134,3 +135,47 @@ def upgrade_fuel_descriptor(data: bytes) -> tuple[bytes, dict]:
     inspect_ppd(result)
     return result, {'from_version': version, 'to_version': 25, 'upgraded': True,
                     'legacy_semaphores': 0, 'opaque_nonspawn_sections_preserved': True}
+
+
+PpdPoint = tuple[float, float, float]
+@dataclass(frozen=True)
+class PpdMapLinks:
+    edges: tuple[tuple[PpdPoint, PpdPoint], ...]
+    base_only: bool
+
+
+def inspect_map_links(data: bytes) -> PpdMapLinks:
+    """Read reciprocal road edges from supported PPD UI-map point records.
+
+    Area outlines (road size 13) are excluded. Automatic width is valid for
+    road points. If there are authored road edges, the generated NAV_BASE
+    graph is suppressed so it cannot introduce competing junction shortcuts.
+    When only the base graph is available, callers can style it as a fallback.
+    """
+    inspect_ppd(data)
+    header = struct.unpack_from('<24I', data)
+    count, start, end = header[8], header[20], header[21]
+    if count > 4096 or start + count * 48 != end:
+        raise PpdError('PPD map-point count and extent disagree or exceed budget')
+    points = []
+    for index in range(count):
+        flags, navigation_flags, x, y, z, *rest = struct.unpack_from('<II3f6iI', data, start + index * 48)
+        degree = rest[-1]
+        neighbors = tuple(rest[:degree])
+        if (degree > 6 or not all(math.isfinite(v) for v in (x, y, z))
+                or len(set(neighbors)) != degree
+                or any(other < 0 or other >= count or other == index for other in neighbors)):
+            raise PpdError('Invalid PPD map-point coordinates or neighbors')
+        points.append(((x, y, z), (flags >> 8) & 15, bool(navigation_flags & 0x200), neighbors))
+    authored, base = [], []
+    for index, (position, size, generated, neighbors) in enumerate(points):
+        for other in neighbors:
+            other_position, other_size, other_generated, other_neighbors = points[other]
+            if index not in other_neighbors:
+                raise PpdError('Nonreciprocal PPD map-point neighbors')
+            if (other > index and size != 13 and other_size != 13
+                    and position != other_position):
+                if generated != other_generated:
+                    raise PpdError('Mixed authored and base PPD map-point edge')
+                (base if generated else authored).append((position, other_position))
+    return PpdMapLinks(tuple(authored or base), base_only=bool(base and not authored))
