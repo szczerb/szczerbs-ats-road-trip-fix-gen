@@ -57,6 +57,7 @@ class Package:
             if part.endswith('.zip') and part[:-4] in active:
                 raise PackageError(f'{self.path}: nested package part {part} requires explicit extraction')
         parts_mode = 'base' in tops or any(t.startswith('dlc_') and '.' not in t for t in tops)
+        self._flat_mount = not parts_mode
         self.files: dict[str, str] = {}
         for name in names:
             parts = name.split('/')
@@ -69,6 +70,17 @@ class Package:
             if mounted in self.files:
                 raise PackageError(f'{self.path}: ambiguous mounted path {mounted}')
             self.files[mounted] = name
+
+    def recover_hashfs_v1_members(self, names: list[str]) -> tuple[str, ...]:
+        """Add exact, bounded direct hits from a flat HashFS v1 mount."""
+        if self.archive is None or self.archive.format != 'hashfs_v1' or not self._flat_mount:
+            return ()
+        selected = [name for name in names if name not in self.files]
+        recovered = self.archive.read_exact_hashfs_v1(selected, max_bytes=8 * 1024 * 1024)
+        for name, data in recovered.items():
+            self.files[name] = name
+            self._cache[name] = data
+        return tuple(recovered)
 
     def read(self, name: str, *, max_bytes: int = 8 * 1024 * 1024) -> bytes:
         if max_bytes < 0:

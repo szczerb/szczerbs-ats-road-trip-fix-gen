@@ -180,6 +180,34 @@ class ArchiveTests(unittest.TestCase):
             self.assertIn("--deep", command)
             self.assertIn("--partial=/prefab/gas/station.ppd", command)
 
+    def test_exact_hashfs_v1_lookup_reads_only_requested_safe_hits(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'mod.scs'
+            source.write_bytes(b'SCS#\x01\x00\x00\x00')
+            extractor = root / 'extractor'
+            extractor.touch(mode=0o755)
+
+            def extract(command, **options):
+                self.assertNotIn('--deep', command)
+                self.assertIn('--partial=/missing.ppd,/prefab/known.ppd', command)
+                stage = Path(next(arg.removeprefix('--dest=') for arg in command
+                                  if arg.startswith('--dest=')))
+                (stage / 'prefab').mkdir()
+                (stage / 'prefab/known.ppd').write_bytes(b'descriptor')
+                (stage / 'extra').write_bytes(b'ignored')
+                return SimpleNamespace(returncode=0)
+
+            with Archive(source, extractor=extractor) as archive, \
+                 patch.object(Archive, '_scratch_root', return_value=root), \
+                 patch('ats_road_trip.archive.subprocess.run', side_effect=extract):
+                self.assertEqual(archive.read_exact_hashfs_v1(['prefab/known.ppd', 'missing.ppd']),
+                                 {'prefab/known.ppd': b'descriptor'})
+                with self.assertRaises(ArchiveError):
+                    archive.read_exact_hashfs_v1(['../escape.ppd'])
+                with self.assertRaises(ArchiveError):
+                    archive.read_exact_hashfs_v1(['prefab/known.ppd', 'missing.ppd'], max_bytes=1)
+
     def test_archive_staging_uses_configured_work_root(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary) / "run-work"

@@ -3,6 +3,7 @@ from contextlib import ExitStack
 import math
 import struct
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -138,6 +139,34 @@ class MapRenderGeometryTests(unittest.TestCase):
         self.assertEqual([line.points for line in result.lines],
                          [((0, 0), (-25, 50)), ((-25, 50), (0, 100))])
         self.assertEqual(result.prefab_resources, {DEF, PPD})
+
+    def test_unlisted_descriptor_recovers_from_exact_v1_provider(self):
+        lower = self.mount('lower.scs', {})
+        higher = self.mount('higher.scs', {})
+        source = self.mount('source.scs', {
+            DRAW: _sector((_prefab(origin=0),),
+                          (_node(5, 0, 0, forward=4), _node(6, 100, 0, backward=4))),
+            DEF: 'SiiNunit\n{\nprefab_model : prefab.test { prefab_desc: "/prefab/synthetic.ppd" }\n}',
+        })
+        stack = ResourceStack([lower, higher, source])
+
+        def recover(names):
+            self.assertEqual(names, [PPD])
+            lower.files[PPD] = PPD
+            lower._cache[PPD] = _ppd()
+            return (PPD,)
+
+        with (patch.object(lower.archive, 'format', 'hashfs_v1'),
+              patch.object(higher.archive, 'format', 'hashfs_v1'),
+              patch.object(higher, 'recover_hashfs_v1_members', return_value=(), create=True) as high,
+              patch.object(lower, 'recover_hashfs_v1_members', side_effect=recover, create=True) as low):
+            result = collect_geometry(stack, [DRAW], cache=GeometryCache(self.directory / 'cache'))
+        high.assert_called_once_with([PPD])
+        low.assert_called_once_with([PPD])
+        self.assertEqual(result.issues, [])
+        self.assertEqual(result.counts['prefab_links'], 2)
+        self.assertEqual(result.prefab_resources, {DEF, PPD})
+        self.assertIs(stack.resources[PPD][0], lower)
 
     def test_pitched_prefab_uses_verified_spatial_rotation(self):
         selected = self.mount('selected.scs', {

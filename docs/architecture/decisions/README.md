@@ -8,6 +8,8 @@ Do not rewrite old ADRs to hide history. If a decision changes, create a newer A
 
 ## Accepted decisions
 
+- [ADR-0033: Render sector footprints and effective stacks separately](ADR-0033-render-sector-footprints-and-effective-stacks.md). Exact per-archive tiles, calibrated road images, and explicit per-resource priority.
+
 - [ADR-0032: Compose geographic feature corrections and audit complete deformation](ADR-0032-compose-geographic-features-and-audit-complete-deformation.md): shared feature stages, qualified controls/source shapes, separately licensed fine geography and full-support composed safety checks; candidate acceptance remains separate.
 
 - [ADR-0031: Calibrate backgrounds with roads and physical-ground constraints](ADR-0031-calibrate-background-with-roads-and-ground-constraints.md): bounded all-layer field, local route checks and independent geometry diagnostics, explicit shoreline/bridge limits and stronger shared market zoom.

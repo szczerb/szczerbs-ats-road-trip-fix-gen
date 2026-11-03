@@ -18,7 +18,7 @@ from .archive import Archive
 from .fuel_matching import _control_positions
 from .local_fuel import token
 from .map_sector import MapItem, MapNode, SectorFormatError, parse_sector
-from .package import Package, ResourceStack, virtual_path
+from .package import Package, Resource, ResourceStack, virtual_path
 from .ppd import PpdError, PpdMapLinks, inspect_map_links
 from .rest_stops import _placed_vertices
 from .sii import parse_units
@@ -78,6 +78,7 @@ class GeometryCache:
     _members: dict[tuple[Package, str], _Member | str] = field(default_factory=dict, init=False)
     _descriptors: dict[tuple[Package, str], tuple[bytes, PpdMapLinks] | str] = field(default_factory=dict, init=False)
     _prefetched: set[tuple[Package, str]] = field(default_factory=set, init=False)
+    _missing_descriptors: dict[Package, set[str]] = field(default_factory=dict, init=False)
     _package_dirs: dict[Package, Path] = field(default_factory=dict, init=False)
 
     def prefetch(self, stack: ResourceStack, paths: Iterable[str]) -> None:
@@ -103,6 +104,31 @@ class GeometryCache:
                 # Individual reads below isolate failures to their virtual member.
                 continue
             self._prefetched.update((package, name) for name in names)
+
+    def recover_descriptors(self, stack: ResourceStack, names: set[str]) -> None:
+        """Probe exact definition-referenced paths omitted by v1 discovery."""
+        pending = names - stack.resources.keys()
+        for package in reversed(stack.packages):
+            if not pending:
+                break
+            if not package.archive or package.archive.format != 'hashfs_v1':
+                continue
+            # Other views may have recovered members since this stack was
+            # built. Existing effective winners above are already excluded.
+            found = pending & package.files.keys()
+            missing = self._missing_descriptors.setdefault(package, set())
+            candidates = pending - found - missing
+            if candidates:
+                try:
+                    recovered = package.recover_hashfs_v1_members(sorted(candidates))
+                except _READ_ERRORS:
+                    recovered = ()
+                found.update(recovered)
+                missing.update(candidates - found)
+            for path in found:
+                resource = Resource(str(package.path), package.files[path], path)
+                stack.resources[path] = package, resource
+            pending.difference_update(found)
 
     def member(self, stack: ResourceStack, path: str) -> _Member | str:
         if path not in stack.resources:
@@ -297,9 +323,9 @@ def _definitions(stack, cache, models, issues):
                     definitions[model].add((path, descriptor))
             except ValueError:
                 issues.append({'path': path, 'reason': 'invalid_prefab_definition'})
-    descriptors = {descriptor for entries in definitions.values() for _, descriptor in entries
-                   if descriptor in stack.resources}
-    cache.prefetch(stack, sorted(descriptors))
+    descriptors = {descriptor for entries in definitions.values() for _, descriptor in entries}
+    cache.recover_descriptors(stack, descriptors)
+    cache.prefetch(stack, sorted(descriptors & stack.resources.keys()))
     return definitions
 
 
