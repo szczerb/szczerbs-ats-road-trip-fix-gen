@@ -38,12 +38,14 @@ class Package:
     """
 
     def __init__(self, path: str | Path, *, extractor: str | Path | None = None,
-                 dlcs: tuple[str, ...] = ()):
+                 dlcs: tuple[str, ...] = (), skip_invalid_deep_paths: bool = False):
         self.path = Path(path).resolve()
         self._cache: dict[str, bytes] = {}
         self._disk_cache: dict[str, Path] = {}
         self._disk_cache_root: Path | None = None
-        self.archive = None if self.path.is_dir() else Archive(self.path, extractor=extractor)
+        self.archive = None if self.path.is_dir() else Archive(
+            self.path, extractor=extractor, skip_invalid_deep_paths=skip_invalid_deep_paths,
+        )
         if self.path.is_dir():
             names = [str(p.relative_to(self.path).as_posix()) for p in self.path.rglob('*') if p.is_file()]
         else:

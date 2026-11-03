@@ -36,11 +36,14 @@ The renderer crops to the selected footprint with padding. Use `--bounds XMIN ZM
 - Solid lines are native road centerlines. Dashed lines are hidden roads. Light dotted segments mark a verified endpoint pair drawn without a supported curve or a prefab’s generated base links. Thin colored segments are authored prefab UI-map links. Authored road edges take precedence over generated base edges. Gray roads in an effective view come from the installed baseline.
 - A colored corner mark flags a tile with a geometry diagnostic. The JSON includes road and prefab accounting, affected virtual members, reason codes, selected providers, and resources shadowed by a higher-priority archive. The effective view can have mixed providers inside one tile.
 - `no_sector_geometry` is a clean skip with a summary and no PNG. `partial` supplies an image with reported limitations. `failed` means the requested view could not be produced, for example if an effective stack input is unreadable. An unsupported sector can still contribute to the footprint when its member name is readable.
+- HashFS v1 deep discovery can return malformed path candidates. The renderer reports how many it discarded and only requests validated member paths. Archive generation and ordinary inspection retain strict discovery.
 - Native map layouts and prefab versions have explicit parser limits. Prefab links describe the supported map-point graph. An incomplete dependency list can leave gaps even in an otherwise valid archive. Use the provider and omission records when examining a seam. Static geometry cannot establish runtime compatibility.
 
 ## Geometry evidence
 
 **Documented** — The ATS editor derives road curvature from the direction of the road nodes. The renderer reconstructs centerlines from native endpoint quaternions and the serialized road length, using Hermite interpolation and bounded curve subdivision. [SCS road creation guide](https://modding.scssoft.com/wiki/Tutorials/Map_Editor/Roads/Creating_a_Simple_Road).
+
+**Observed locally** — Native junction controls verify that supported prefab link endpoints meet the adjacent road endpoints. Tilted prefabs can use a checked 3D rigid placement when the planar check fails and the controls establish a unique fit.
 
 **Observed locally** — Comparison with four registered ATS 1.61 road-mask screenshots supports the native-field reconstruction, especially on curved roads in the Yellowknife sample. This is a centerline comparison at sampled locations. [Upstream format research and provenance](../../THIRD_PARTY_NOTICES.md).
 

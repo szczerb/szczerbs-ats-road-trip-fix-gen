@@ -155,7 +155,8 @@ class MapRenderSession:
     def _open(self, path):
         path = Path(path).resolve()
         if path not in self.packages:
-            package = Package(path, extractor=self.extractor, dlcs=self.dlcs)
+            package = Package(path, extractor=self.extractor, dlcs=self.dlcs,
+                              skip_invalid_deep_paths=True)
             self.packages[path] = package
             label = _name(path.name) or 'archive'
             duplicate = sum(value.split(' #', 1)[0] == label for value in self.identities.values())
@@ -172,7 +173,7 @@ class MapRenderSession:
         self.index += 1
         report = {
             'mode': mode, 'background': self.background, 'packages': [], 'images': [],
-            'errors': [], 'stock_baseline': bool(self.stock),
+            'errors': [], 'warnings': [], 'stock_baseline': bool(self.stock),
         }
         result_name = _filename(name or f'{mode}-{self.index:02d}')
         summary = self.output / f'{result_name}.json'
@@ -199,6 +200,12 @@ class MapRenderSession:
                 try:
                     package = self._open(path)
                     loaded.append(package)
+                    if package.archive and package.archive.discarded_deep_path_count:
+                        report['warnings'].append({
+                            'archive': self.identities[package], 'role': role,
+                            'reason': 'invalid_hashfs_deep_path_candidates_discarded',
+                            'count': package.archive.discarded_deep_path_count,
+                        })
                 except INPUT_ERRORS as exc:
                     report['errors'].append({
                         'archive': _name(Path(path).name) or 'archive', 'role': role,
@@ -225,10 +232,10 @@ class MapRenderSession:
             records[package] = sectors
             report['packages'].append(record)
         namespaces = sorted({sector[0] for sectors in records.values() for sector in sectors.values()})
-        if not namespaces:
-            return finish('partial' if report['errors'] else 'no_sector_geometry')
         if mode == 'effective' and report['errors']:
             return finish('failed')
+        if not namespaces:
+            return finish('partial' if len(selected) != len(targets) else 'no_sector_geometry')
 
         baseline = ResourceStack(lower)
         ordered = [*lower, *selected]
@@ -239,7 +246,7 @@ class MapRenderSession:
                       [package]) for package in selected if records[package]]
         report['load_order'] = [self.identities[package] for package in ordered]
         shadow_candidates = set().union(*(record.keys() for record in records.values()))
-        partial = bool(report['errors'])
+        partial = bool(report['errors'] or any(w['role'] == 'target' for w in report['warnings']))
         for namespace in namespaces:
             tiles = {}
             preceding = {sector[1] for path in baseline.resources

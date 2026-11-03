@@ -104,3 +104,12 @@ def test_cli_skip_missing_and_unsupported_are_distinct(tmp_path, atlas, capsys, 
         assert str(tmp_path) not in report
         assert json.loads(report)['status'] == status
     assert len(list(output.glob('*.png'))) == 1
+
+    assert main([
+        'render-map', str(valid), '--name', 'non-map-with-missing-dependency',
+        '--dependency', str(tmp_path / 'missing-dependency.scs'), *flags,
+    ]) == 0
+    stdout = json.loads(capsys.readouterr().out)
+    result = json.loads((output / stdout['summary']).read_text())
+    assert result['status'] == 'no_sector_geometry'
+    assert result['errors'][0]['role'] == 'dependency'

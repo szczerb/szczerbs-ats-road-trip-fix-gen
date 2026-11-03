@@ -110,6 +110,32 @@ class ArchiveTests(unittest.TestCase):
             self.assertIn("--deep", command)
             self.assertIn("--list", command)
 
+    def test_only_opt_in_hashfs_v1_listing_discards_invalid_candidates(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'mod.scs'
+            extractor = root / 'extractor'
+            extractor.touch(mode=0o755)
+            result = SimpleNamespace(
+                returncode=0, stdout='/bad:/member.tobj\n/map/usa/sec+0000+0000.base\n', stderr='',
+            )
+            with patch('ats_road_trip.archive.subprocess.run', return_value=result):
+                for version in (1, 2):
+                    source.write_bytes(b'SCS#' + bytes((version, 0, 0, 0)))
+                    with Archive(source, extractor=extractor) as strict:
+                        with self.assertRaises(ArchiveError):
+                            strict.entries()
+                    with Archive(source, extractor=extractor, skip_invalid_deep_paths=True) as archive:
+                        if version == 2:
+                            with self.assertRaises(ArchiveError):
+                                archive.entries()
+                            continue
+                        self.assertEqual([entry.path for entry in archive.entries()],
+                                         ['map/usa/sec+0000+0000.base'])
+                        self.assertEqual(archive.discarded_deep_path_count, 1)
+                        with self.assertRaises(ArchiveError):
+                            archive.read('bad:/member.tobj')
+
     def test_hashfs_v2_listing_does_not_use_deep_scan(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary)

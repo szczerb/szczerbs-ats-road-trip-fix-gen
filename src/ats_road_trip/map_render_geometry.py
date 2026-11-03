@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from itertools import combinations
 from lzma import LZMAError
 import math
 from pathlib import Path
@@ -14,6 +15,7 @@ from zipfile import BadZipFile
 from zlib import error as DeflateError
 
 from .archive import Archive
+from .fuel_matching import _control_positions
 from .local_fuel import token
 from .map_sector import MapItem, MapNode, SectorFormatError, parse_sector
 from .package import Package, ResourceStack, virtual_path
@@ -32,7 +34,7 @@ _MAX_MEMBER = 64 * 1024 * 1024
 _COUNTERS = (
     'roads_decoded', 'roads_curved', 'roads_approximated', 'roads_omitted', 'roads_hidden',
     'prefabs_decoded', 'prefabs_drawn', 'prefabs_omitted', 'prefabs_without_links', 'prefab_links',
-    'prefab_base_links',
+    'prefab_base_links', 'prefabs_placed_3d',
     'sector_members_decoded', 'sector_members_failed', 'context_members_failed',
 )
 
@@ -216,6 +218,59 @@ def _midpoint(a, b):
     return (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
 
 
+def _difference(a, b):
+    return tuple(x - y for x, y in zip(a, b))
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0])
+
+
+def _spatial_frame(a, b):
+    """A right-handed orthonormal frame from two independent spans."""
+    normal = _cross(a, b)
+    scale = math.hypot(*a)
+    area = math.hypot(*normal)
+    if scale < 1e-6 or area <= 1e-6 * scale * math.hypot(*b):
+        raise ValueError('Three noncollinear controls are required for 3D prefab placement')
+    axis_x = tuple(v / scale for v in a)
+    axis_z = tuple(v / area for v in normal)
+    return axis_x, _cross(axis_z, axis_x), axis_z
+
+
+def _placed_spatial_vertices(data, item, nodes, vertices):
+    """Fit a proper XYZ rotation and verify every reciprocal control point."""
+    control = _control_positions(data)
+    refs, origin = item.details['nodes'], item.details['origin']
+    if len(control) != len(refs) or not 0 <= origin < len(control):
+        raise ValueError('Prefab control references/origin disagree with descriptor')
+    if len(control) < 3:
+        raise ValueError('Three noncollinear controls are required for 3D prefab placement')
+
+    local = control[origin:] + control[:origin]
+    world = [nodes[uid].position for uid in refs]
+    local_spans = [_difference(point, local[0]) for point in local]
+    world_spans = [_difference(point, world[0]) for point in world]
+    # The largest source triangle gives the best-conditioned frame while
+    # preserving the native origin as the placement translation.
+    a, b = max(combinations(range(1, len(control)), 2),
+               key=lambda pair: math.hypot(*_cross(local_spans[pair[0]], local_spans[pair[1]])))
+    local_frame = _spatial_frame(local_spans[a], local_spans[b])
+    world_frame = _spatial_frame(world_spans[a], world_spans[b])
+
+    def place(point):
+        span = _difference(point, local[0])
+        components = [sum(x * y for x, y in zip(span, axis)) for axis in local_frame]
+        return tuple(world[0][i] + sum(axis[i] * value for axis, value in zip(world_frame, components))
+                     for i in range(3))
+
+    if any(math.dist(place(p), q) > 0.05 for p, q in zip(local, world)):
+        raise ValueError('Prefab controls fail 3D rigid placement check')
+    return [_xz(place(point)) for point in vertices]
+
+
 def _definitions(stack, cache, models, issues):
     definitions: dict[int, set[tuple[str, str]]] = defaultdict(set)
     if not models:
@@ -388,7 +443,14 @@ def _emit_prefab(path, entry, external, counts, result, stack, cache, definition
         nodes = {uid: _resolve_node(uid, item.uid, 'either', local, external)
                  for uid in item.details['nodes']}
         vertices = [point for link in links.edges for point in link]
-        placed = _placed_vertices(data, item, nodes, vertices)
+        try:
+            placed = _placed_vertices(data, item, nodes, vertices)
+        except ValueError as planar_error:
+            try:
+                placed = _placed_spatial_vertices(data, item, nodes, vertices)
+            except ValueError as spatial_error:
+                raise ValueError(f'{planar_error}; {spatial_error}') from spatial_error
+            counts['prefabs_placed_3d'] += 1
     except ValueError as exc:
         counts['prefabs_omitted'] += 1
         result.issues.append({**issue, 'reason': str(exc)})

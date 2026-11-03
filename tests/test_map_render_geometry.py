@@ -19,8 +19,9 @@ DEF = 'def/world/prefab.synthetic.sii'
 PPD = 'prefab/synthetic.ppd'
 
 
-def _node(uid, x, z, *, forward=0, backward=0, rotation=(1, 0, 0, 0)):
-    return struct.pack('<Q3i4fQQI', uid, x * 256, 0, z * 256, *rotation, backward, forward, 0)
+def _node(uid, x, z, *, y=0, forward=0, backward=0, rotation=(1, 0, 0, 0)):
+    position = tuple(round(value * 256) for value in (x, y, z))
+    return struct.pack('<Q3i4fQQI', uid, *position, *rotation, backward, forward, 0)
 
 
 def _item(kind, uid, flags=0):
@@ -32,9 +33,10 @@ def _road(uid=1, start=2, end=3, *, length=150, hidden=False):
             + struct.pack('<IQ', 0, 0) + bytes(180) + struct.pack('<QQf', start, end, length))
 
 
-def _prefab(uid=4, first=5, second=6, origin=1):
-    return (_item(4, uid) + struct.pack('<QQIIQQIQH', token('test'), 0, 0, 2, first, second, 0, 0, origin)
-            + bytes(32))
+def _prefab(uid=4, refs=(5, 6), origin=1):
+    return (_item(4, uid) + struct.pack('<QQII', token('test'), 0, 0, len(refs))
+            + struct.pack(f'<{len(refs)}QIQH', *refs, 0, 0, origin)
+            + bytes(len(refs) * 12 + 8))
 
 
 def _sector(items=(), nodes=()):
@@ -42,9 +44,12 @@ def _sector(items=(), nodes=()):
             + struct.pack('<I', len(nodes)) + b''.join(nodes) + bytes(4))
 
 
-def _ppd(*, broken_neighbors=False, base_only=False):
-    controls = bytearray(208)
+def _ppd(*, broken_neighbors=False, base_only=False, tilted=False):
+    control_count = 3 if tilted else 2
+    controls = bytearray(control_count * 104)
     struct.pack_into('<3f', controls, 120, 100, 0, 0)
+    if tilted:
+        struct.pack_into('<3f', controls, 224, 0, 0, 100)
     points = b''.join([
         struct.pack('<II3f6iI', 14 << 8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1),
         struct.pack('<II3f6iI', 0, 0, 50, 0, 25, 0, 0, 0, 0, 0, 0, 1 if broken_neighbors else 2),
@@ -56,8 +61,9 @@ def _ppd(*, broken_neighbors=False, base_only=False):
     if base_only:
         for index in range(3):
             struct.pack_into('<I', points, 48 * index + 4, 0x200)
-    offsets = [96] + [304] * 8 + [448] * 3
-    return struct.pack('<24I', 25, 2, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, *offsets) + controls + points
+    point_start = 96 + len(controls)
+    offsets = [96] + [point_start] * 8 + [point_start + len(points)] * 3
+    return struct.pack('<24I', 25, control_count, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, *offsets) + controls + points
 
 
 class MapRenderGeometryTests(unittest.TestCase):
@@ -131,6 +137,22 @@ class MapRenderGeometryTests(unittest.TestCase):
         self.assertEqual([line.points for line in result.lines],
                          [((0, 0), (-25, 50)), ((-25, 50), (0, 100))])
         self.assertEqual(result.prefab_resources, {DEF, PPD})
+
+    def test_pitched_prefab_uses_verified_spatial_rotation(self):
+        selected = self.mount('selected.scs', {
+            DRAW: _sector((_prefab(refs=(5, 6, 7), origin=0),),
+                          (_node(5, 0, 0, forward=4), _node(6, 100, 0, forward=4),
+                           _node(7, 0, 50 * math.sqrt(3), y=-50, backward=4))),
+            DEF: 'SiiNunit\n{\nprefab_model : prefab.test { prefab_desc: "/prefab/synthetic.ppd" }\n}',
+            PPD: _ppd(tilted=True),
+        })
+        result = collect_geometry(ResourceStack([selected]), [DRAW])
+        self.assertEqual(result.issues, [])
+        self.assertEqual(result.counts['prefabs_placed_3d'], 1)
+        self.assertEqual(result.counts['prefab_links'], 2)
+        x, z = result.lines[0].points[1]
+        self.assertAlmostEqual(x, 50)
+        self.assertAlmostEqual(z, 12.5 * math.sqrt(3), places=3)
 
     def test_malformed_member_and_nonreciprocal_ppd(self):
         invalid = 'map/usa/sec+0001+0001.aux'

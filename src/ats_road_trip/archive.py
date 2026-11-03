@@ -79,9 +79,12 @@ class Archive:
 
     _work_root: Path | None = None
 
-    def __init__(self, path: str | os.PathLike[str], extractor: str | os.PathLike[str] | None = None):
+    def __init__(self, path: str | os.PathLike[str], extractor: str | os.PathLike[str] | None = None,
+                 *, skip_invalid_deep_paths: bool = False):
         self.path = Path(path)
         self.format = detect_format(self.path)
+        self._skip_invalid_deep_paths = skip_invalid_deep_paths
+        self.discarded_deep_path_count = 0
         self._zip: zipfile.ZipFile | None = None
         self._entries: list[ArchiveEntry] | None = None
         self._entry_index: dict[str, list[ArchiveEntry]] | None = None
@@ -150,9 +153,21 @@ class Archive:
                 raise ArchiveError(f"Extractor list failed: {result.stderr.strip() or result.stdout.strip()}")
             # The command prints paths (files and directories), rooted at '/'.
             raw = [line.strip() for line in result.stdout.splitlines() if line.startswith("/") and line.strip() != "/"]
-            if self.format == "hashfs_v1" and not raw:
+            paths = []
+            discarded = 0
+            for line in raw:
+                try:
+                    paths.append(_safe_member(line[1:]))
+                except ArchiveError:
+                    # Deep v1 discovery can infer malformed names from payload
+                    # strings. Ignore those candidates only for callers that
+                    # explicitly accept a partial read-only inventory.
+                    if self.format != "hashfs_v1" or not self._skip_invalid_deep_paths:
+                        raise
+                    discarded += 1
+            if self.format == "hashfs_v1" and not paths:
                 raise ArchiveError("Extractor deep listing returned no HashFS v1 members")
-            paths = [_safe_member(line[1:]) for line in raw]
+            self.discarded_deep_path_count = discarded
             directories: set[str] = set()
             for name in paths:
                 parent = PurePosixPath(name).parent
