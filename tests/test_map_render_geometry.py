@@ -44,8 +44,8 @@ def _sector(items=(), nodes=()):
             + struct.pack('<I', len(nodes)) + b''.join(nodes) + bytes(4))
 
 
-def _ppd(*, broken_neighbors=False, base_only=False, tilted=False):
-    control_count = 3 if tilted else 2
+def _ppd(*, broken_neighbors=False, base_only=False, tilted=False, extra_controls=0):
+    control_count = (3 if tilted else 2) + extra_controls
     controls = bytearray(control_count * 104)
     struct.pack_into('<3f', controls, 120, 100, 0, 0)
     if tilted:
@@ -153,6 +153,20 @@ class MapRenderGeometryTests(unittest.TestCase):
         x, z = result.lines[0].points[1]
         self.assertAlmostEqual(x, 50)
         self.assertAlmostEqual(z, 12.5 * math.sqrt(3), places=3)
+
+    def test_oversized_spatial_control_layout_is_omitted(self):
+        selected = self.mount('selected.scs', {
+            DRAW: _sector((_prefab(refs=(5, 6, 7, 8, 9, 10, 11), origin=0),),
+                          (_node(5, 0, 0, forward=4), _node(6, 100, 0, forward=4),
+                           _node(7, 0, 80, y=-60, backward=4),
+                           *(_node(uid, 0, 0, forward=4) for uid in range(8, 12)))),
+            DEF: 'SiiNunit\n{\nprefab_model : prefab.test { prefab_desc: "/prefab/synthetic.ppd" }\n}',
+            PPD: _ppd(tilted=True, extra_controls=4),
+        })
+        result = collect_geometry(ResourceStack([selected]), [DRAW])
+        self.assertEqual(result.lines, [])
+        self.assertEqual(result.counts['prefabs_omitted'], 1)
+        self.assertIn('3D prefab placement supports up to six controls', result.issues[0]['reason'])
 
     def test_malformed_member_and_nonreciprocal_ppd(self):
         invalid = 'map/usa/sec+0001+0001.aux'

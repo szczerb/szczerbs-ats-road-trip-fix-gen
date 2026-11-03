@@ -242,12 +242,14 @@ def _spatial_frame(a, b):
 
 def _placed_spatial_vertices(data, item, nodes, vertices):
     """Fit a proper XYZ rotation and verify every reciprocal control point."""
-    control = _control_positions(data)
     refs, origin = item.details['nodes'], item.details['origin']
+    if len(refs) > 6:
+        raise ValueError('3D prefab placement supports up to six controls')
+    if len(refs) < 3:
+        raise ValueError('Three noncollinear controls are required for 3D prefab placement')
+    control = _control_positions(data)
     if len(control) != len(refs) or not 0 <= origin < len(control):
         raise ValueError('Prefab control references/origin disagree with descriptor')
-    if len(control) < 3:
-        raise ValueError('Three noncollinear controls are required for 3D prefab placement')
 
     local = control[origin:] + control[:origin]
     world = [nodes[uid].position for uid in refs]
