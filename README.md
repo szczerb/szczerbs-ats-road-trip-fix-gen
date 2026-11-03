@@ -6,6 +6,10 @@ You can download the ready-to-use mods below or run the Python tools locally to 
 
 **Latest local research delivery:** [REALISTIC r13 truck-rest improvements](docs/reference/TRUCK_REST_COVERAGE_1_61_R13.md), with the r12 car/fuel baseline preserved. These eight replacement packages and their career checklist are local research-worktree artifacts; runtime feedback remains open.
 
+## Original North America background (local experimental build)
+
+The latest background source is [r4: detailed-texture size repair](docs/reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md) for ATS 1.61. It retains r3's cartography and corrects the oversized detailed resources; the r4 in-game zoom confirmation remains pending. It replaces the former North America Background Map and dependent N2 overlay without a Ford requirement. [Reproduce r4 from public inputs](docs/examples/north-america-background/r4/README.md). Natural Earth, GSHHG and USGS data retain their separate notices. Earlier revisions and remaining coastline/runtime limits are documented as historical evidence. No background mod package or comparison gallery is publicly released by this source change.
+
 ## Download ready-to-use experimental mods
 
 The maintainer has published experimental builds on the [GitHub Releases page](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/releases):
@@ -68,7 +72,7 @@ Detailed fuel quantities/prices/billing, remaining truck/bus and reload controls
 ## Getting started
 
 1. Obtain your own ATS/Road Trip installation and the source maps/resources you want to inspect. Keep the supplied map archives together under `local_inputs/`.
-2. Use Python **3.11+** in Linux/WSL. The project has **no third-party runtime Python dependencies**.
+2. Use Python **3.11+** in Linux/WSL. The core fuel/rest tools have **no third-party runtime Python dependencies**. The optional background renderer uses the separately pinned libraries described in its build guide.
 3. Install the separate Linux x64 [sk-zk Extractor, release 2026-07-29](https://github.com/sk-zk/Extractor/releases/tag/2026-07-29) for HashFS archives. This includes installed game packages, even when the source map itself is ZIP. Place its executable at `local_outputs/tools/extractor-2026-07-29/extractor`, with executable permission, or pass `--extractor /path/to/extractor` before the subcommand. The executable is not bundled here.
 4. Point the tool at your actual ATS installation using `--game-dir` or `ATS_GAME_DIR`.
 
@@ -110,11 +114,14 @@ Generation writes packages under `local_outputs/generated/<timestamp>/` and audi
 
 ## Tests, feedback and research
 
-Run the authored test suite:
+Run the complete authored test suite from the repository root. Include the optional background dependencies so those tests are collected rather than skipped:
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+python3 -m pip install -e '.[background]' pytest
+PYTHONPATH=src python3 -m pytest
 ```
+
+`unittest discover` alone does not collect the pytest-style background tests. Tests do not launch ATS or install mods.
 
 For useful feedback, include the ATS version, exact source-map and fix revisions, relevant load order, location and observed behavior. Review logs and reports for personal paths before posting them. Do not attach paid game/DLC or map files.
 

@@ -5,6 +5,13 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 ## Active
 
 
+
+
+
+
+
+
+
 - [TASK-0007: Validate experiments in game](active/TASK-0007-validate-courier-and-fuel-experiments-in-game.md) — refueling and tank acceptance retained; rest confidence reopened by the icon report; detailed controls, courier delivery and connector icon remain separate.
 
 ## Backlog
@@ -12,6 +19,28 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0062: Isolate background downloads and resolve review](done/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared pre-write download boundary, read-only offline caches, 21 regressions and 713 tests; fix pushed, direct Copilot reply posted and exact thread confirmed resolved.
+
+- [TASK-0061: Review and open background source PR](done/TASK-0061-review-and-open-background-source-pr.md) — fresh clean review and 692 tests; reviewed source branch pushed and [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2) opened against master; mergeable, automatic merge disabled, no release artifacts.
+
+- [TASK-0060: Rebase background and prepare public source PR](done/TASK-0060-rebase-background-and-prepare-public-source-pr.md) — 19 sanitized/rebased milestones, unique IDs, public-source documentation, 692 tests, wheel/import and exact r4 reproduction; independent source-publication audit passes; no push/PR/release.
+
+- [TASK-0055: Repair detailed texture-size regression only](done/TASK-0055-repair-r3-detailed-texture-size-only.md) — four detailed DDS downsampled to 4096 square, manifest revision only; 20 other members unchanged, exact repeat build and package checks pass; runtime confirmation pending.
+
+- [TASK-0059: Diagnose r3 detailed world-map background loss](done/TASK-0059-diagnose-r3-detailed-map-background-loss.md) — archive-specific DirectStorage request-too-large error correlates with fourfold detailed DDS payload; unchanged zoom/materials verified, controlled resize recommended, runtime fix pending.
+
+- [TASK-0053: Repair background shores and deliver r3](done/TASK-0053-repair-background-shoreline-feature-alignment.md) — 8-of11 practical geometry gate, all25 comparisons, preserved accepted zoom,326tests and exact production/repeat/source-ZIP reproduction; runtime and named residuals remain explicit.
+
+- [TASK-0058: Record r2 feedback and prepare shoreline goal](done/TASK-0058-record-r2-feedback-and-prepare-shoreline-goal.md) — user confirms usable market zoom; preserves all 25 new screenshots and prepares a complete r3 goal with stronger per-view geometry acceptance; implementation not started.
+
+- [TASK-0057: Recalibrate background to roads/shores and deliver r2](done/TASK-0057-recalibrate-background-to-roads-and-shores.md) — road/ground field, stronger shared market zoom, actual native comparisons with explicit regressions, 305 tests, independent audits and exact corresponding-source rebuild; runtime acceptance pending.
+
+- [TASK-0050: Diagnose common background geometry mismatch](done/TASK-0050-diagnose-common-background-geometry-mismatch.md) — actual texture/road registration verifies sampled mapping; center-based calibration is insufficient, tested global corrections trade regions off; no verified replacement transform or practical repair yet.
+
+- [TASK-0049: Correct background alignment and job-market zoom](done/TASK-0049-correct-background-alignment-and-job-market-zoom.md) — r1 finer shorelines, bounded corrections/shared zoom experiment, 295 tests, independent review and exact source-ZIP reproduction; explicit local/source limits and runtime trial remain.
+
+- [TASK-0048: Build original North America background](done/TASK-0048-build-original-north-america-background.md) — original standalone r0, 52 verified calibration references, 292 tests, independent archive audit, exact repeat/source-bundle reproduction and manual handoff; runtime remains unverified.
 
 - [TASK-0056: Clean research history and prepare a public PR](done/TASK-0056-clean-research-history-and-prepare-public-pr.md) — sanitized historical paths, explicit reviewed evidence input, scoped North Platte guards, 644 tests and independent publication audits; [PR #1](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/1) is open for a later squash merge.
 

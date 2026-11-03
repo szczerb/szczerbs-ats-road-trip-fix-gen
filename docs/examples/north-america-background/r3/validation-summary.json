@@ -1,0 +1,311 @@
+{
+  "inspection_date": "2026-10-25",
+  "selected_configuration_sha256": "47881120de059c600fd5961fb40b44b6c9fced5e372624813f1a5b962e28d58c",
+  "baseline_scs_sha256": "58cbfe4047113308bb82a0e5ed4d15e298515f22916bab8eb8b1fc403c521604",
+  "material_gate": "Predeclared >=2 screen pixels AND beyond source/feature uncertainty, improved dry/wet relationship without a comparably severe new conflict. Weak frames use fixed world context only.",
+  "group_gate": {
+    "required": "At least two-thirds of independent catalogue groups",
+    "total": 11,
+    "materially_improved": 8,
+    "improved_groups": [
+      "baja_south",
+      "baja_north_gulf",
+      "southern_california",
+      "california_coast",
+      "pacific_northwest",
+      "salish_sea",
+      "canadian_interior_lakes",
+      "great_lakes"
+    ],
+    "not_counted": [
+      "haida_gwaii",
+      "gulf_delta",
+      "texas_gulf"
+    ],
+    "decision": "Offline geometry accepted for experimental testing; partial improvement does not mean all views/defects resolved."
+  },
+  "main_inspection": "Main viewed all 25 bounded 48-stage comparisons, full 447/524 frames and overall artwork. Final 64-stage raw-mask proof: 21 registered whole viewports and 2 weak world crops are pixel-identical; main separately viewed changed 340/506 full views and ROIs.",
+  "native_q_audit": {
+    "total": 6432,
+    "fit": 5030,
+    "check": 1402,
+    "water_to_land": 301,
+    "land_to_water": 27,
+    "land_to_water_gt50": 3,
+    "land_to_water_gt100": 0,
+    "land_to_water_gt150": 0,
+    "new_severe_check_regressions": 0,
+    "role_limits": "Original 6377 roles unchanged; 55 late, regression-selected Puerto rows: 38 FIT/17 CHECK. Galveston 60 never fitted. Reused model-selection checks are not blind."
+  },
+  "source_geometry": {
+    "public_prior_polygons": 131,
+    "all_valid": true,
+    "none_area_change_exceeds30_percent": true,
+    "near_industrial_additional_polygons": 5,
+    "near_industrial_all_valid": true,
+    "split_lake_area_change_percent": -0.015219
+  },
+  "sampled_feature_guard": {
+    "samples": 443329,
+    "minimum_determinant": 0.08891325640076796,
+    "maximum_determinant": 171.59652062138937,
+    "maximum_linear_stretch": 20.731423249525918,
+    "maximum_inverse_cycle_units": 0.00010586656792537943,
+    "continuous_proof": false
+  },
+  "preserved_map_data_sha256": "3467c3d500ef31f13567983a06e6b54c6774a496f982c93ec0cbb42ae849a5f6",
+  "tests_passed": 326,
+  "runtime_verified": false,
+  "views": [
+    {
+      "filename": "ats_20261025_000340_00.png",
+      "location": "La Paz–Los Barriles",
+      "problem_group": "baja_south",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Los Barriles town/south road now land; La Paz paved spawn repaired to land. Harbor/island approaches remain uncertain.",
+      "comparison": "comparisons/ats_20261025_000340_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000340_00.png"
+    },
+    {
+      "filename": "ats_20261025_000349_00.png",
+      "location": "Ciudad Insurgentes–Ciudad Constitución–Puerto San Carlos",
+      "problem_group": "baja_south",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Qualified Puerto central streets/approaches improve; 27 of 55 source-road points change water→land. Western port grid remains mixed; one held road point is 10.21 units water-side.",
+      "comparison": "comparisons/ats_20261025_000349_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000349_00.png"
+    },
+    {
+      "filename": "ats_20261025_000357_00.png",
+      "location": "Loreto",
+      "problem_group": "baja_south",
+      "status": "materially improved",
+      "remaining_severity": "low",
+      "observed_relationship_and_limits": "Loreto coast road and curves largely mainland-side; Carmen remains a separate public source island. Small port parts remain uncertain.",
+      "comparison": "comparisons/ats_20261025_000357_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000357_00.png"
+    },
+    {
+      "filename": "ats_20261025_000407_00.png",
+      "location": "Bahía Tortugas–Guerrero Negro, Pacific coast of Baja California",
+      "problem_group": "baja_north_gulf",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Bahia Tortugas central/south street grid gains land. Northern semicircular loop remains water; its entire footprint is not proven dry by the short qualified connector.",
+      "comparison": "comparisons/ats_20261025_000407_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000407_00.png"
+    },
+    {
+      "filename": "ats_20261025_000417_00.png",
+      "location": "San Felipe–Puerto Peñasco",
+      "problem_group": "baja_north_gulf",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Fixed-world context shows Puerto Penasco city-grid gains; San Felipe remains mixed. Screenshot is unregistered; no screen-pixel score.",
+      "comparison": "comparisons/weak-world-context/000417-r2-qualified-ground-native-world-comparison.png",
+      "original": "comparisons/originals/ats_20261025_000417_00.png"
+    },
+    {
+      "filename": "ats_20261025_000429_00.png",
+      "location": "Tijuana–Tecate",
+      "problem_group": "southern_california",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Main Rosarito/Tijuana coastal curve gains land; several western local loops remain wet.",
+      "comparison": "comparisons/ats_20261025_000429_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000429_00.png"
+    },
+    {
+      "filename": "ats_20261025_000435_00.png",
+      "location": "San Diego",
+      "problem_group": "southern_california",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Fixed-world context improves San Diego mainland approach; Coronado remains partly wet. Screenshot unregistered; bridge chord is not a bank survey.",
+      "comparison": "comparisons/weak-world-context/000435-r2-qualified-ground-native-world-comparison.png",
+      "original": "comparisons/originals/ats_20261025_000435_00.png"
+    },
+    {
+      "filename": "ats_20261025_000441_00.png",
+      "location": "Los Angeles",
+      "problem_group": "southern_california",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Large LA freeway/city area gains mainland. Harbor/deck/pier relationships remain partial; do not dry every crossing.",
+      "comparison": "comparisons/ats_20261025_000441_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000441_00.png"
+    },
+    {
+      "filename": "ats_20261025_000447_00.png",
+      "location": "Oxnard",
+      "problem_group": "california_coast",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Full view, not empty-land frozen ROI, shows south Oxnard coast-road gains. Western coast freeway still partly wet.",
+      "comparison": "comparisons/ats_20261025_000447_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000447_00.png"
+    },
+    {
+      "filename": "ats_20261025_000500_00.png",
+      "location": "Santa Cruz",
+      "problem_group": "california_coast",
+      "status": "materially improved",
+      "remaining_severity": "low",
+      "observed_relationship_and_limits": "Santa Cruz coast-parallel road now land where r2 was offshore.",
+      "comparison": "comparisons/ats_20261025_000500_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000500_00.png"
+    },
+    {
+      "filename": "ats_20261025_000506_00.png",
+      "location": "San Francisco–Oakland–San Jose",
+      "problem_group": "california_coast",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Long southwest SF coastal route now land; bay/city compromise remains. Oakland access q stays 8.30 units raster-water; floor-area centroid proxy shows edge intersection, not full pavement preservation.",
+      "comparison": "comparisons/ats_20261025_000506_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000506_00.png"
+    },
+    {
+      "filename": "ats_20261025_000513_00.png",
+      "location": "Eureka",
+      "problem_group": "pacific_northwest",
+      "status": "unchanged",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Eureka harbor-side city grid remains wet/mixed; outline detail alone is not counted as repair.",
+      "comparison": "comparisons/ats_20261025_000513_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000513_00.png"
+    },
+    {
+      "filename": "ats_20261025_000520_00.png",
+      "location": "Newport, Oregon",
+      "problem_group": "pacific_northwest",
+      "status": "materially improved",
+      "remaining_severity": "low",
+      "observed_relationship_and_limits": "Newport coastal interchange/road now mainland-side rather than offshore.",
+      "comparison": "comparisons/ats_20261025_000520_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000520_00.png"
+    },
+    {
+      "filename": "ats_20261025_000524_00.png",
+      "location": "Astoria–Longview / Columbia River mouth",
+      "problem_group": "pacific_northwest",
+      "status": "uncertain",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Columbia estuary has new detail/approach changes, but bank/bridge/port relationships are not fully qualified; no repair counted from detail alone.",
+      "comparison": "comparisons/ats_20261025_000524_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000524_00.png"
+    },
+    {
+      "filename": "ats_20261025_000538_00.png",
+      "location": "Victoria–Port Angeles–Everett/Seattle",
+      "problem_group": "salish_sea",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Seattle/Everett site/approach gains retain independent markers and ground constraints; residual factory-edge/estuary conflicts remain. Site checks correlate with fitting features.",
+      "comparison": "comparisons/ats_20261025_000538_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000538_00.png"
+    },
+    {
+      "filename": "ats_20261025_000548_00.png",
+      "location": "Vancouver–lower mainland / Bellingham",
+      "problem_group": "salish_sea",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Northern Vancouver shore/city gains; western Delta/Surrey bay-road/crossing remains uncertain and partly wet.",
+      "comparison": "comparisons/ats_20261025_000548_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000548_00.png"
+    },
+    {
+      "filename": "ats_20261025_000553_00.png",
+      "location": "Nanaimo–Vancouver–Courtenay/Squamish overview",
+      "problem_group": "salish_sea",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Horseshoe Bay upper main approach gains land substantially. Central interchange/port loops remain water; not a full port repair.",
+      "comparison": "comparisons/ats_20261025_000553_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000553_00.png"
+    },
+    {
+      "filename": "ats_20261025_000606_00.png",
+      "location": "Port Clements",
+      "problem_group": "haida_gwaii",
+      "status": "unchanged",
+      "remaining_severity": "high",
+      "observed_relationship_and_limits": "Port Clements/Haida coast-parallel road remains a conspicuous held-out conflict. All its held road rows stay checks.",
+      "comparison": "comparisons/ats_20261025_000606_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000606_00.png"
+    },
+    {
+      "filename": "ats_20261025_000640_00.png",
+      "location": "Yellowknife / Great Slave Lake",
+      "problem_group": "canadian_interior_lakes",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Large Yellowknife curve shifts from lake to mainland; a few qualified FIT road samples and upper port/floor parts remain wet.",
+      "comparison": "comparisons/ats_20261025_000640_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000640_00.png"
+    },
+    {
+      "filename": "ats_20261025_000655_00.png",
+      "location": "Split Lake–Sundance corridor",
+      "problem_group": "canadian_interior_lakes",
+      "status": "materially improved",
+      "remaining_severity": "low",
+      "observed_relationship_and_limits": "Split Lake road is dry while lake shape/area is preserved. Rigid source placement is not a native wet-bank survey.",
+      "comparison": "comparisons/ats_20261025_000655_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000655_00.png"
+    },
+    {
+      "filename": "ats_20261025_000735_00.png",
+      "location": "Chicago / Lake Michigan",
+      "problem_group": "great_lakes",
+      "status": "materially improved",
+      "remaining_severity": "medium",
+      "observed_relationship_and_limits": "Chicago lake-shore roadway/urban strip gains land; northern rest/wharfs and true piers remain separately uncertain.",
+      "comparison": "comparisons/ats_20261025_000735_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000735_00.png"
+    },
+    {
+      "filename": "ats_20261025_000748_00.png",
+      "location": "New Orleans / Lake Pontchartrain",
+      "problem_group": "gulf_delta",
+      "status": "unchanged",
+      "remaining_severity": "high",
+      "observed_relationship_and_limits": "New Orleans freeway/interchanges still overlap lake. Some crossings may be bridges, but that does not qualify every interchange as water.",
+      "comparison": "comparisons/ats_20261025_000748_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000748_00.png"
+    },
+    {
+      "filename": "ats_20261025_000756_00.png",
+      "location": "Lafayette–Houma",
+      "problem_group": "gulf_delta",
+      "status": "uncertain",
+      "remaining_severity": "high",
+      "observed_relationship_and_limits": "Lafayette/Houma industrial loops remain partly water; wetlands and possible decks are not a blanket ground exemption.",
+      "comparison": "comparisons/ats_20261025_000756_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000756_00.png"
+    },
+    {
+      "filename": "ats_20261025_000808_00.png",
+      "location": "Houston–Galveston",
+      "problem_group": "texas_gulf",
+      "status": "uncertain",
+      "remaining_severity": "high",
+      "observed_relationship_and_limits": "Galveston failed flow retired. Qualified city-road window returns to ablation; some small edge losses remain and broader city/port/causeway mismatch persists. Not a group repair win.",
+      "comparison": "comparisons/ats_20261025_000808_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000808_00.png"
+    },
+    {
+      "filename": "ats_20261025_000817_00.png",
+      "location": "Corpus Christi",
+      "problem_group": "texas_gulf",
+      "status": "unchanged",
+      "remaining_severity": "high",
+      "observed_relationship_and_limits": "Corpus bay turn/approach remains a held-out ground conflict; nearby bridge parts were excluded from dry-ground claims.",
+      "comparison": "comparisons/ats_20261025_000817_00-registered-pair.jpg",
+      "original": "comparisons/originals/ats_20261025_000817_00.png"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "ne_10m_admin_1_states_provinces": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces.zip",
+    "sha256": "efc59726337323058f9446210adc96673179cd344e053666ee3d28cb58ba2b05",
+    "size": 14909524,
+    "version": "5.1.1"
+  },
+  "ne_10m_populated_places": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_populated_places.zip",
+    "sha256": "cd149186f03d2603e0410da399b980a4357d0ac32d3a2305a49ed3dffcc41d7b",
+    "size": 2811199,
+    "version": "5.1.2"
+  },
+  "ne_10m_admin_1_states_provinces_lines": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_1_states_provinces_lines.zip",
+    "sha256": "86acd56ce6c0e47f5fa79725591533b5766f26d6ed1437b086f2b8d4028fe456",
+    "size": 5993148,
+    "version": "5.1.0"
+  },
+  "ne_10m_admin_0_countries": {
+    "url": "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_countries.zip",
+    "sha256": "ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a7f6",
+    "size": 4930492,
+    "version": "5.1.1"
+  },
+  "ne_10m_lakes": {
+    "url": "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip",
+    "sha256": "0803a06f9c3cb4671d89b68c48b142aad9366ba40f665245e12a913fbc61722a",
+    "size": 2349685,
+    "version": "5.0.0"
+  },
+  "gshhg": {
+    "format": "gshhg-zip",
+    "version": "2.3.7",
+    "url": "https://github.com/GenericMappingTools/gshhg-gmt/releases/download/2.3.7/gshhg-shp-2.3.7.zip",
+    "sha256": "8dbbe7e071e77e9e75f2d639239099ebca8d5c16d6a07df8169729d49f15cf41",
+    "size": 149157845,
+    "license": "LGPL-3.0-or-later"
+  },
+  "nhd_lake_michigan": {
+    "format": "geojson",
+    "version": "archived-NHD-8439286-retrieved-2026-10-25",
+    "url": "https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer/12/query?objectIds=8439286&outFields=OBJECTID%2CPERMANENT_IDENTIFIER%2CGNIS_NAME%2CGNIS_ID%2CAREASQKM%2CELEVATION%2CREACHCODE%2CFTYPE%2CFCODE%2CRESOLUTION&returnGeometry=true&outSR=4326&f=geojson",
+    "sha256": "9b9bcd5a82bb6f85d82f46898642da9f81c01a11664e8c8ca68900f566677123",
+    "size": 4274361,
+    "license": "USGS-public-domain"
+  }
+}

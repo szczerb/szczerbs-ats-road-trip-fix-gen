@@ -1,0 +1,3408 @@
+{
+  "schema_version": 1,
+  "title": "R3 feature control pairs",
+  "inspection_date": "2026-10-25",
+  "status": "Source-qualified feature controls for street-ground-base: 17 FIT, 7 frozen CHECK, 4 retired Galveston diagnostic correspondences; no model acceptance claim.",
+  "coordinate_reference": {
+    "geographic": "WGS84 longitude, latitude",
+    "native": "ATS 1.61 native X,Z game-world units"
+  },
+  "role_policy": {
+    "fit_pairs": 17,
+    "counts_by_region": {
+      "chicago": 5,
+      "san_francisco": 3,
+      "pnw": 9
+    },
+    "check_pairs": 7,
+    "explicit_owner_role_changes": [
+      "Centennial Wheel is FIT despite its old check-only label.",
+      "All three San Francisco Bay Area pairs are FIT, though their prior source record labels were check-only.",
+      "Space Needle and Lacey\u2013Murrow are FIT despite prior check-only labels.",
+      "T-Mobile Park and Everett Darwing hall are FIT proposals.",
+      "Jos\u00e9 Rizal Bridge, West Seattle Bridge, Palace of Fine Arts and remaining listed checks stay checks."
+    ],
+    "correlation_rule": "Everett hall floor samples are from the same broad feature as the Boeing Everett geographic fit pair and must not count as independent geographic holdouts. SeaTac held parking checks are same-site correlated diagnostics. The four BC linked ferry activation controls are site-level terminal correspondences: Swartz Bay/Tsawwassen are a south-BC flow and Duke Point/Horseshoe Bay a north-BC flow; their source and terminal-definition provenance is shared by each terminal. San Francisco and Galveston flow targets are authored soft reconciliations within declared native-game-unit allowances, not observed native coordinates. Galveston\u2019s four observed geographic/native correspondences and four authored soft targets remain retired diagnostics after the flow\u2019s causal mainland-road loss; none is fitted in street-ground-base.",
+    "flow_groups": {
+      "chicago": 5,
+      "san_francisco_soft": 3,
+      "seattle5": 5,
+      "south_bc_pair": 2,
+      "north_bc_pair": 2
+    }
+  },
+  "fit_controls": [
+    {
+      "id": "chicago-shedd-aquarium",
+      "role": "fit",
+      "feature_group": "chicago",
+      "geographic": {
+        "name": "Shedd Aquarium",
+        "qid": "Q2166515",
+        "point_lonlat_wgs84": [
+          -87.613889,
+          41.867778
+        ],
+        "coordinate_property": "P625",
+        "precision_degrees": 0.0001,
+        "statement_id": "q2166515$9D75E3DA-2BE7-48E2-BEF7-84150494D739",
+        "statement_rank": "normal",
+        "statement_references": [
+          {
+            "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+            "snaks": {
+              "P143": [
+                {
+                  "snaktype": "value",
+                  "property": "P143",
+                  "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+                  "datavalue": {
+                    "value": {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    },
+                    "type": "wikibase-entityid"
+                  },
+                  "datatype": "wikibase-item"
+                }
+              ]
+            },
+            "snaks-order": [
+              "P143"
+            ]
+          }
+        ],
+        "entity_revision": 2512561951,
+        "entity_modified_utc": "2026-07-01T09:49:39Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q2166515.json",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-entitydata/Q2166515.json",
+        "source_snapshot_sha256": "3e5c7a98430389169ac5a4746619c76c9dd11b201f2415afc53ab52f9745c9bb",
+        "license": "Wikidata structured data CC0",
+        "coordinate_source_limit": "P625 is a feature-location statement, not a surveyed center; see statement reference metadata."
+      },
+      "native": {
+        "native_feature_semantics": "Named Shedd Aquarium building; same named feature as existing effective ATS panorama PMG. P625 reference is imported from English Wikipedia (Q328), not a primary survey or published footprint centroid.",
+        "native_center_xz": [
+          35617.53963567122,
+          -17859.871720938827
+        ],
+        "native_world_bbox_xz": [
+          35528.22654496006,
+          -17929.05028795764,
+          35709.02388409933,
+          -17791.855053980984
+        ],
+        "mesh_center_derivation_uncertainty_game_units": 1.0,
+        "native_semantic_uncertainty_bound_game_units": 114.7,
+        "native_model_path": "model/panorama/il_chicago/il_chicago_aquarium.pmg",
+        "native_model_sha256": "4ce3ca312f9d6a8241dd1a00e87827b488d6d67736262ed1cd2c299198ad782f",
+        "placement_item_uid": "0x5b555e41f493003a",
+        "effective_provider": "dlc_il.scs",
+        "provider_priority_index_high_to_low": 25,
+        "provider_archive_sha256": "575b7fd39d6652323fca084e66cb37a21ca773c812be2ea3c3aaff06f1f2376b",
+        "sector_path": "map/usa/sec+0008-0005.base",
+        "sector_sha256": "5ee46ec249995f191e0aaf96e493392d1c6c5b3566b45ceea4b67b58afed29a7"
+      },
+      "geographic_uncertainty_meters": 35.0,
+      "uncertainty_basis": {
+        "geographic": "Conservative point-location allowance. Four building P625s have precision 0.0001 degrees (roughly 8 m half-diagonal at Chicago latitude) but no original primary survey source; Shedd receives 35 m because it differs ~29 m from the earlier footprint centroid. Centennial Wheel precision is 0.00001 degrees but P625 has no reference, so use 30 m, not the printed decimal precision.",
+        "native": "Conservative bounding-volume bound: maximum XZ distance from the derived world mesh center to a world AABB corner. It is a size/anchor-semantics bound, not a one-sigma error estimate. Do not convert it to real-world metres or combine it with geographic_uncertainty_meters."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json",
+        "sha256": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd"
+      },
+      "selection_role_history": "Current role is FIT by explicit owner direction. Centennial Wheel was CHECK_ONLY in the source candidate JSON; all four Chicago buildings were fit candidates."
+    },
+    {
+      "id": "chicago-field-museum",
+      "role": "fit",
+      "feature_group": "chicago",
+      "geographic": {
+        "name": "Field Museum of Natural History",
+        "qid": "Q1122595",
+        "point_lonlat_wgs84": [
+          -87.617039,
+          41.866278
+        ],
+        "coordinate_property": "P625",
+        "precision_degrees": 0.0001,
+        "statement_id": "q1122595$9BD99C2F-A300-4ABA-941B-F7A59D32A7E8",
+        "statement_rank": "normal",
+        "statement_references": [
+          {
+            "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+            "snaks": {
+              "P143": [
+                {
+                  "snaktype": "value",
+                  "property": "P143",
+                  "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+                  "datavalue": {
+                    "value": {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    },
+                    "type": "wikibase-entityid"
+                  },
+                  "datatype": "wikibase-item"
+                }
+              ]
+            },
+            "snaks-order": [
+              "P143"
+            ]
+          }
+        ],
+        "entity_revision": 2526824353,
+        "entity_modified_utc": "2026-08-03T18:21:38Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q1122595.json",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-entitydata/Q1122595.json",
+        "source_snapshot_sha256": "a95e5dca7a5a44fd711021970c1960d96f7e655f3de0a0e78ac986461da38fee",
+        "license": "Wikidata structured data CC0",
+        "coordinate_source_limit": "P625 is a feature-location statement, not a surveyed center; see statement reference metadata."
+      },
+      "native": {
+        "native_feature_semantics": "Named Field Museum of Natural History building; same named feature as existing effective ATS panorama PMG. P625 reference is imported from English Wikipedia (Q328), not a primary survey or published footprint centroid.",
+        "native_center_xz": [
+          35353.255208466195,
+          -17752.84511540061
+        ],
+        "native_world_bbox_xz": [
+          35234.602172466715,
+          -17825.271604881786,
+          35477.850883868734,
+          -17629.95494235944
+        ],
+        "mesh_center_derivation_uncertainty_game_units": 1.0,
+        "native_semantic_uncertainty_bound_game_units": 175.0,
+        "native_model_path": "model/panorama/il_chicago/il_chicago_field_museum.pmg",
+        "native_model_sha256": "eee5f2942793858ffa9191f83f2405d6d10807ac23a2200c89f0ca2d77c0e957",
+        "placement_item_uid": "0x5b555e4377130038",
+        "effective_provider": "dlc_il.scs",
+        "provider_priority_index_high_to_low": 25,
+        "provider_archive_sha256": "575b7fd39d6652323fca084e66cb37a21ca773c812be2ea3c3aaff06f1f2376b",
+        "sector_path": "map/usa/sec+0008-0005.base",
+        "sector_sha256": "5ee46ec249995f191e0aaf96e493392d1c6c5b3566b45ceea4b67b58afed29a7"
+      },
+      "geographic_uncertainty_meters": 20.0,
+      "uncertainty_basis": {
+        "geographic": "Conservative point-location allowance. Four building P625s have precision 0.0001 degrees (roughly 8 m half-diagonal at Chicago latitude) but no original primary survey source; Shedd receives 35 m because it differs ~29 m from the earlier footprint centroid. Centennial Wheel precision is 0.00001 degrees but P625 has no reference, so use 30 m, not the printed decimal precision.",
+        "native": "Conservative bounding-volume bound: maximum XZ distance from the derived world mesh center to a world AABB corner. It is a size/anchor-semantics bound, not a one-sigma error estimate. Do not convert it to real-world metres or combine it with geographic_uncertainty_meters."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json",
+        "sha256": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd"
+      },
+      "selection_role_history": "Current role is FIT by explicit owner direction. Centennial Wheel was CHECK_ONLY in the source candidate JSON; all four Chicago buildings were fit candidates."
+    },
+    {
+      "id": "chicago-public-library-harold-washington",
+      "role": "fit",
+      "feature_group": "chicago",
+      "geographic": {
+        "name": "Harold Washington Library",
+        "qid": "Q3127656",
+        "point_lonlat_wgs84": [
+          -87.6282,
+          41.8763
+        ],
+        "coordinate_property": "P625",
+        "precision_degrees": 0.0001,
+        "statement_id": "q3127656$E9F07551-CCC9-4B72-B0E2-2D7C6EB85B7B",
+        "statement_rank": "normal",
+        "statement_references": [
+          {
+            "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+            "snaks": {
+              "P143": [
+                {
+                  "snaktype": "value",
+                  "property": "P143",
+                  "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+                  "datavalue": {
+                    "value": {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    },
+                    "type": "wikibase-entityid"
+                  },
+                  "datatype": "wikibase-item"
+                }
+              ]
+            },
+            "snaks-order": [
+              "P143"
+            ]
+          }
+        ],
+        "entity_revision": 2540669387,
+        "entity_modified_utc": "2026-09-05T21:28:08Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q3127656.json",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-entitydata/Q3127656.json",
+        "source_snapshot_sha256": "a830b6297f81a3c52eae8d8611d50c84d5ab4127f280a040907e22fed3514f0b",
+        "license": "Wikidata structured data CC0",
+        "coordinate_source_limit": "P625 is a feature-location statement, not a surveyed center; see statement reference metadata."
+      },
+      "native": {
+        "native_feature_semantics": "Named Harold Washington Library building; same named feature as existing effective ATS panorama PMG. P625 reference is imported from English Wikipedia (Q328), not a primary survey or published footprint centroid.",
+        "native_center_xz": [
+          34493.02186418228,
+          -18347.138138898063
+        ],
+        "native_world_bbox_xz": [
+          34461.94973701624,
+          -18412.487926459067,
+          34539.374507860935,
+          -18300.088458242633
+        ],
+        "mesh_center_derivation_uncertainty_game_units": 1.0,
+        "native_semantic_uncertainty_bound_game_units": 80.1,
+        "native_model_path": "model/panorama/il_chicago/il_chicago_public_library.pmg",
+        "native_model_sha256": "71649b75011366d46b6dfc8d5fd1fd7dbfec403b715436a49b063e5f3404639f",
+        "placement_item_uid": "0x5ad7fdcf1c020128",
+        "effective_provider": "dlc_il.scs",
+        "provider_priority_index_high_to_low": 25,
+        "provider_archive_sha256": "575b7fd39d6652323fca084e66cb37a21ca773c812be2ea3c3aaff06f1f2376b",
+        "sector_path": "map/usa/sec+0008-0005.aux",
+        "sector_sha256": "f1839b15b10f9ce9250802032c7a20b3ff0bc3f3cf0c46de4ef0e37c13e7e93f"
+      },
+      "geographic_uncertainty_meters": 20.0,
+      "uncertainty_basis": {
+        "geographic": "Conservative point-location allowance. Four building P625s have precision 0.0001 degrees (roughly 8 m half-diagonal at Chicago latitude) but no original primary survey source; Shedd receives 35 m because it differs ~29 m from the earlier footprint centroid. Centennial Wheel precision is 0.00001 degrees but P625 has no reference, so use 30 m, not the printed decimal precision.",
+        "native": "Conservative bounding-volume bound: maximum XZ distance from the derived world mesh center to a world AABB corner. It is a size/anchor-semantics bound, not a one-sigma error estimate. Do not convert it to real-world metres or combine it with geographic_uncertainty_meters."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json",
+        "sha256": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd"
+      },
+      "selection_role_history": "Current role is FIT by explicit owner direction. Centennial Wheel was CHECK_ONLY in the source candidate JSON; all four Chicago buildings were fit candidates."
+    },
+    {
+      "id": "chicago-old-main-post-office",
+      "role": "fit",
+      "feature_group": "chicago",
+      "geographic": {
+        "name": "Old Chicago Main Post Office",
+        "qid": "Q3881507",
+        "point_lonlat_wgs84": [
+          -87.6388,
+          41.8756
+        ],
+        "coordinate_property": "P625",
+        "precision_degrees": 0.0001,
+        "statement_id": "q3881507$DD072DEC-7BEF-45DC-BE90-CC4F5D16F5E0",
+        "statement_rank": "normal",
+        "statement_references": [
+          {
+            "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+            "snaks": {
+              "P143": [
+                {
+                  "snaktype": "value",
+                  "property": "P143",
+                  "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+                  "datavalue": {
+                    "value": {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    },
+                    "type": "wikibase-entityid"
+                  },
+                  "datatype": "wikibase-item"
+                }
+              ]
+            },
+            "snaks-order": [
+              "P143"
+            ]
+          }
+        ],
+        "entity_revision": 2540947291,
+        "entity_modified_utc": "2026-09-06T07:57:06Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q3881507.json",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-entitydata/Q3881507.json",
+        "source_snapshot_sha256": "72b5176d67a14bd11ed9e89ba6b96f09c4e698e8f376f74224440c0a69f4f6b5",
+        "license": "Wikidata structured data CC0",
+        "coordinate_source_limit": "P625 is a feature-location statement, not a surveyed center; see statement reference metadata."
+      },
+      "native": {
+        "native_feature_semantics": "Named Old Chicago Main Post Office building; same named feature as existing effective ATS panorama PMG. P625 reference is imported from English Wikipedia (Q328), not a primary survey or published footprint centroid.",
+        "native_center_xz": [
+          33710.96760545162,
+          -18275.992862177085
+        ],
+        "native_world_bbox_xz": [
+          33679.42251801706,
+          -18354.020578163818,
+          33791.39534526652,
+          -18207.495055306477
+        ],
+        "mesh_center_derivation_uncertainty_game_units": 1.0,
+        "native_semantic_uncertainty_bound_game_units": 112.1,
+        "native_model_path": "model/panorama/il_chicago/il_chicago_post_office.pmg",
+        "native_model_sha256": "edb246ae22544f3dfc52771494c924ec8bef1a8f36c82ade10e649ba131b5b26",
+        "placement_item_uid": "0x5ad7fdccfd820127",
+        "effective_provider": "dlc_il.scs",
+        "provider_priority_index_high_to_low": 25,
+        "provider_archive_sha256": "575b7fd39d6652323fca084e66cb37a21ca773c812be2ea3c3aaff06f1f2376b",
+        "sector_path": "map/usa/sec+0008-0005.aux",
+        "sector_sha256": "f1839b15b10f9ce9250802032c7a20b3ff0bc3f3cf0c46de4ef0e37c13e7e93f"
+      },
+      "geographic_uncertainty_meters": 25.0,
+      "uncertainty_basis": {
+        "geographic": "Conservative point-location allowance. Four building P625s have precision 0.0001 degrees (roughly 8 m half-diagonal at Chicago latitude) but no original primary survey source; Shedd receives 35 m because it differs ~29 m from the earlier footprint centroid. Centennial Wheel precision is 0.00001 degrees but P625 has no reference, so use 30 m, not the printed decimal precision.",
+        "native": "Conservative bounding-volume bound: maximum XZ distance from the derived world mesh center to a world AABB corner. It is a size/anchor-semantics bound, not a one-sigma error estimate. Do not convert it to real-world metres or combine it with geographic_uncertainty_meters."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json",
+        "sha256": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd"
+      },
+      "selection_role_history": "Current role is FIT by explicit owner direction. Centennial Wheel was CHECK_ONLY in the source candidate JSON; all four Chicago buildings were fit candidates."
+    },
+    {
+      "id": "chicago-centennial-wheel",
+      "role": "fit",
+      "feature_group": "chicago",
+      "geographic": {
+        "name": "Navy Pier Ferris Wheel",
+        "qid": "Q43153888",
+        "point_lonlat_wgs84": [
+          -87.60748,
+          41.89171
+        ],
+        "coordinate_property": "P625",
+        "precision_degrees": 1e-05,
+        "statement_id": "Q43153888$5061f961-4172-3069-f434-f37133720bb6",
+        "statement_rank": "normal",
+        "statement_references": [],
+        "entity_revision": 2014888270,
+        "entity_modified_utc": "2023-11-20T20:47:39Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q43153888.json",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-entitydata/Q43153888.json",
+        "source_snapshot_sha256": "73e429ec1eeae2c7b2832f5f887b3018d80135f3e4634f3f8c825ea6ffd40638",
+        "license": "Wikidata structured data CC0",
+        "coordinate_source_limit": "P625 is a feature-location statement, not a surveyed center; see statement reference metadata."
+      },
+      "native": {
+        "native_feature_semantics": "Navy Pier Ferris Wheel (Centennial Wheel); Wikidata identifier OpenStreetMap way 686996484 matches the existing OSM-derived wheel feature identity. P625 has no reference; remain check-only.",
+        "native_center_xz": [
+          35963.98006692915,
+          -19268.016348329693
+        ],
+        "native_world_bbox_xz": [
+          35959.98595412467,
+          -19304.84434696287,
+          35983.966163674195,
+          -19243.030243843434
+        ],
+        "mesh_center_derivation_uncertainty_game_units": 1.0,
+        "native_semantic_uncertainty_bound_game_units": 41.9,
+        "native_model_sha256": "d4c9be5911c864de2a494f5c7bd8c4ba3dfcd7ca60a522e2b0132c84353fe297",
+        "placement_item_uid": "0x5945e2c5db020001",
+        "effective_provider": "dlc_il.scs",
+        "provider_priority_index_high_to_low": 25,
+        "provider_archive_sha256": "575b7fd39d6652323fca084e66cb37a21ca773c812be2ea3c3aaff06f1f2376b",
+        "sector_path": "map/usa/sec+0008-0005.base",
+        "sector_sha256": "5ee46ec249995f191e0aaf96e493392d1c6c5b3566b45ceea4b67b58afed29a7"
+      },
+      "geographic_uncertainty_meters": 30.0,
+      "uncertainty_basis": {
+        "geographic": "Conservative point-location allowance. Four building P625s have precision 0.0001 degrees (roughly 8 m half-diagonal at Chicago latitude) but no original primary survey source; Shedd receives 35 m because it differs ~29 m from the earlier footprint centroid. Centennial Wheel precision is 0.00001 degrees but P625 has no reference, so use 30 m, not the printed decimal precision.",
+        "native": "Conservative bounding-volume bound: maximum XZ distance from the derived world mesh center to a world AABB corner. It is a size/anchor-semantics bound, not a one-sigma error estimate. Do not convert it to real-world metres or combine it with geographic_uncertainty_meters."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json",
+        "sha256": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd"
+      },
+      "selection_role_history": "Current role is FIT by explicit owner direction. Centennial Wheel was CHECK_ONLY in the source candidate JSON; all four Chicago buildings were fit candidates.",
+      "special_limits": [
+        "P625 point is unreferenced despite the OSM way identifier on the entity; fitted with 30m geographic uncertainty by explicit owner direction.",
+        "The mapped feature includes constructed Navy Pier fill; do not use this point as a natural shoreline observation."
+      ]
+    },
+    {
+      "id": "san-francisco-golden-gate-bridge-midspan",
+      "role": "fit",
+      "feature_group": "san_francisco",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.4779444,
+          37.8188889
+        ],
+        "feature_semantics": "Golden Gate Bridge, at the Bridge District's explicitly approximate published bridge-location coordinate (37\u00b049\u20328.0\u2033N, 122\u00b028\u203240.6\u2033W).",
+        "source_urls": [
+          "https://www.goldengate.org/faq/",
+          "https://www.goldengate.org/bridge/history-research/statistics-data/faqs/"
+        ],
+        "coordinate_revision": null,
+        "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/pacific-california-washington-qualified-controls.json",
+        "source_record_sha256": "5e0448c958224b2a339dc52d0d498d9f7d33f4ea68544fe5180f3426cea01ed7",
+        "uncertainty_meters": 300
+      },
+      "native": {
+        "center_xz": [
+          -116631.06049766966,
+          -11539.305538822788
+        ],
+        "native_anchor_definition": "Arithmetic midpoint of mesh-geometry centers for the effective named ca_sf_ggb_pillar_1 and ca_sf_ggb_pillar_2 PMG placements. This is a native bridge-span center estimate derived from both main-tower pieces, not the Golden Gate scenic-building origin or the city/road overlay centroid.",
+        "native_components": [
+          {
+            "name": "ca_sf_ggb_pillar_1",
+            "item_uid": "0x4fc2f89535850002",
+            "sector": "map/usa/sec-0030-0003.base",
+            "effective_provider": "base_map.scs",
+            "provider_priority_index_high_to_low": 31,
+            "archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+            "model_path": "model/panorama/ca_san_francisco/ca_sf_ggb_pillar_1.pmg",
+            "model_sha256": "76c692eafb5be54b07dccc168d86580a45cf372d49b0511a6f80e8bf67bab996",
+            "native_mesh_center_xz": [
+              -116687.34487924296,
+              -11323.945078471912
+            ],
+            "native_world_bbox_xz": [
+              -116785.34771187707,
+              -11551.45476062314,
+              -116596.74948661556,
+              -11098.618340957648
+            ]
+          },
+          {
+            "name": "ca_sf_ggb_pillar_2",
+            "item_uid": "0x4fc2f8979e850000",
+            "sector": "map/usa/sec-0030-0003.base",
+            "effective_provider": "base_map.scs",
+            "provider_priority_index_high_to_low": 31,
+            "archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+            "model_path": "model/panorama/ca_san_francisco/ca_sf_ggb_pillar_2.pmg",
+            "model_sha256": "2fa5dc125660cf8884175869c236aef1e59eecf0713bb899e326bda19a763604",
+            "native_mesh_center_xz": [
+              -116574.77611609637,
+              -11754.665999173661
+            ],
+            "native_world_bbox_xz": [
+              -116664.33735740301,
+              -11979.82091330022,
+              -116509.76611901406,
+              -11535.153247945022
+            ]
+          }
+        ],
+        "native_uncertainty_game_units": 25
+      },
+      "uncertainty_basis": "The official coordinate is bridge-scale approximate. The native point is the midpoint of two named tower-mesh centers; it approximates the middle of the modeled span but does not establish exact real/native bridge lengths or which native tower asset corresponds to which real tower. Native uncertainty is expressed in game-world units, not metres.",
+      "selection_role_history": "Current role is FIT by explicit owner direction; source JSON had these as CHECK_ONLY."
+    },
+    {
+      "id": "san-francisco-alcatraz-island",
+      "role": "fit",
+      "feature_group": "san_francisco",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.4230122,
+          37.8266636
+        ],
+        "feature_semantics": "Alcatraz Island location recorded in National Park Service NPGallery asset metadata; NPS independently identifies Alcatraz Island as a National Historic Landmark in Golden Gate National Recreation Area.",
+        "source_urls": [
+          "https://npgallery.nps.gov/AssetDetail?assetID=b4669471-e847-4ccb-8ee9-4f1b242a3289",
+          "https://home.nps.gov/places/alcatraz-island.htm"
+        ],
+        "coordinate_revision": null,
+        "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/pacific-california-washington-qualified-controls.json",
+        "source_record_sha256": "5e0448c958224b2a339dc52d0d498d9f7d33f4ea68544fe5180f3426cea01ed7",
+        "uncertainty_meters": 150
+      },
+      "native": {
+        "center_xz": [
+          -114846.95264638567,
+          -10863.070343103074
+        ],
+        "native_anchor_definition": null,
+        "native_components": [],
+        "native_uncertainty_game_units": 40
+      },
+      "uncertainty_basis": "The NPS asset location is a feature location, not a published island-polygon centroid. The native PMG is a scenic panorama with a large bbox; its geometry center is preferable to the item pivot but the panorama extent may generalize island shape. The values are separate units and must not be compared numerically.",
+      "selection_role_history": "Current role is FIT by explicit owner direction; source JSON had these as CHECK_ONLY."
+    },
+    {
+      "id": "san-francisco-oakland-bay-bridge-model-group-center",
+      "role": "fit",
+      "feature_group": "san_francisco",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.3779722,
+          37.7982222
+        ],
+        "feature_semantics": "San Francisco\u2013Oakland Bay Bridge, ASCE Historical Civil Engineering Landmark location (37\u00b047\u203253.6\u2033N, 122\u00b022\u203240.7\u2033W).",
+        "source_urls": [
+          "https://www.asce.org/about-civil-engineering/history-and-heritage/historic-landmarks/san-francisco-oakland-bay-bridge",
+          "https://mtc.ca.gov/operations/programs-projects/bridges/san-francisco-oakland-bay-bridge"
+        ],
+        "coordinate_revision": null,
+        "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/pacific-california-washington-qualified-controls.json",
+        "source_record_sha256": "5e0448c958224b2a339dc52d0d498d9f7d33f4ea68544fe5180f3426cea01ed7",
+        "uncertainty_meters": 500
+      },
+      "native": {
+        "center_xz": [
+          -114446.5812697598,
+          -9152.142701198172
+        ],
+        "native_anchor_definition": "Arithmetic mean of the mesh-geometry centers for the three uniquely named ca_baybridge_pillar_1/2/3 PMG placements. It is the center of the native named pillar group; no claim is made that the ordinal asset names directly identify individual real piers.",
+        "native_components": [
+          {
+            "name": "ca_baybridge_pillar_1",
+            "item_uid": "0x514f8994bc050000",
+            "sector": "map/usa/sec-0029-0003.base",
+            "effective_provider": "base_map.scs",
+            "provider_priority_index_high_to_low": 31,
+            "archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+            "model_path": "model/panorama/ca_san_francisco/ca_baybridge_pillar_1.pmg",
+            "model_sha256": "f36b4ff80b20e83a11804132ddfac8b2d82c816c14cc823916ba5b74c4fecb7d",
+            "native_mesh_center_xz": [
+              -114644.17801810446,
+              -9079.635558981567
+            ],
+            "native_world_bbox_xz": [
+              -114761.21016367892,
+              -9138.999590535926,
+              -114525.1784743531,
+              -9019.739275998249
+            ]
+          },
+          {
+            "name": "ca_baybridge_pillar_2",
+            "item_uid": "0x514f899765850002",
+            "sector": "map/usa/sec-0029-0003.base",
+            "effective_provider": "base_map.scs",
+            "provider_priority_index_high_to_low": 31,
+            "archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+            "model_path": "model/panorama/ca_san_francisco/ca_baybridge_pillar_2.pmg",
+            "model_sha256": "c11b492794d17847640ca04a7dfa01b3e7e3cee8eec979150cda3d88cc150fbe",
+            "native_mesh_center_xz": [
+              -114445.44102768265,
+              -9154.305541232694
+            ],
+            "native_world_bbox_xz": [
+              -114540.91146035527,
+              -9204.248170502902,
+              -114346.40494826974,
+              -9099.748329603935
+            ]
+          },
+          {
+            "name": "ca_baybridge_pillar_3",
+            "item_uid": "0x514f8995f2050004",
+            "sector": "map/usa/sec-0029-0003.base",
+            "effective_provider": "base_map.scs",
+            "provider_priority_index_high_to_low": 31,
+            "archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+            "model_path": "model/panorama/ca_san_francisco/ca_baybridge_pillar_3.pmg",
+            "model_sha256": "6d5089c1400337b8e2035bff7990049b34f1c4a1db93d041dc966b2464c9a5da",
+            "native_mesh_center_xz": [
+              -114250.12476349229,
+              -9222.487003380256
+            ],
+            "native_world_bbox_xz": [
+              -114362.21862839095,
+              -9280.297856864647,
+              -114136.92185765262,
+              -9164.982520998128
+            ]
+          }
+        ],
+        "native_uncertainty_game_units": 100
+      },
+      "uncertainty_basis": "The bridge itself is 8.4 miles including approaches; ASCE coordinate is a single historic-landmark location, not an identified tower coordinate. Three named pillar meshes define a group center but may represent a selected subset/abstraction of the bridge. Native bbox dimensions and error bounds remain game-world units.",
+      "selection_role_history": "Current role is FIT by explicit owner direction; source JSON had these as CHECK_ONLY."
+    },
+    {
+      "id": "seattle-space-needle-placeholder-center",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.3491,
+          47.6204
+        ],
+        "feature_semantics": "Space Needle tower point from Wikidata Q5317 P625 coordinate location; City of Seattle landmark nomination independently identifies the landmark site.",
+        "source_urls": [
+          "https://www.wikidata.org/wiki/Q5317?oldid=2541609816",
+          "https://www.wikidata.org/wiki/Property:P625",
+          "https://www.seattle.gov/Documents/Departments/Neighborhoods/HistoricPreservation/Landmarks/RelatedDocuments/space-needle-designation.pdf"
+        ],
+        "qid": "Q5317",
+        "entity_revision": 2541609816,
+        "entity_modified_utc": "2026-09-07T09:19:13Z",
+        "entity_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/source-responses/Q5317.json",
+        "entity_snapshot_sha256": "53b5223a2e73c345b02ad07da696f549168c28f9b53fcbd45fa92d012701196d",
+        "coordinate_statement": {
+          "rank": "normal",
+          "id": "q5317$C935CC20-D5CE-4FED-9A23-4E6E0D12FCA4",
+          "latitude": 47.6204,
+          "longitude": -122.3491,
+          "precision_degrees": null,
+          "globe": "http://www.wikidata.org/entity/Q2"
+        },
+        "license": "Wikidata structured data CC0"
+      },
+      "native": {
+        "center_xz": [
+          -100169.07631612473,
+          -64185.63549895597
+        ],
+        "native_anchor_definition": "Mesh-geometry center of unique `wa_seattle_needle_placeholder.pmg`, effective item 0x2e3336e89a53000f in dlc_wa.scs, map/usa/sec-0026-0017.aux.",
+        "native_components": [],
+        "native_model_path": "model/panorama/wa_seattle/wa_seattle_needle_placeholder.pmg",
+        "native_model_sha256": "4fdcbe4fb3cb3af5645cfe4c99b7aa89cf6a288923b9e2c0d7fdb092d1a65ec5",
+        "native_uncertainty_game_units": 20
+      },
+      "geographic_uncertainty_meters": 40,
+      "uncertainty_basis": "Wikidata Q5317 P625 has no declared precision and its statement is sourced via imported English Wikipedia. Its point differs by about 30 m from the prior OSM-derived point; 40 m covers that source/rounding spread. The native PMG is a stylized placeholder; mesh center is used rather than item pivot.",
+      "selection_role_history": "Current role is FIT by explicit owner direction; source JSON had this as CHECK_ONLY."
+    },
+    {
+      "id": "seattle-lacey-murrow-bridge-named-mesh-group-center",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.2789722,
+          47.5897778
+        ],
+        "feature_semantics": "Lacey V. Murrow Bridge location published by the American Society of Civil Engineers at Seattle, WA; WSDOT identifies the Murrow Bridge as the I-90 floating span between Mercer Island and Seattle and reports its length as 6,620 ft.",
+        "source_urls": [
+          "https://www.asce.org/about-civil-engineering/history-and-heritage/historic-landmarks/lacey-v-murrow-bridge-and-mount-baker-ridge-tunnels",
+          "https://wsdot.wa.gov/construction-planning/search-projects/i-90-homer-m-hadley-lacey-v-murrow-bridges-electrical-rehabilitation"
+        ],
+        "coordinate_revision": null,
+        "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/pacific-california-washington-qualified-controls.json",
+        "source_record_sha256": "5e0448c958224b2a339dc52d0d498d9f7d33f4ea68544fe5180f3426cea01ed7"
+      },
+      "native": {
+        "center_xz": [
+          -98321.85859352045,
+          -62601.91825492641
+        ],
+        "native_anchor_definition": "Arithmetic midpoint of two named `wa_lacey_murrow_bridge1.pmg` mesh-geometry centers in dlc_wa. Item positions are approximately 602 native X units apart and are interpreted as two bridge scenic pieces; no exact pier/tower correspondence is claimed.",
+        "native_components": [
+          {
+            "name": "wa_lacey_murrow_bridge1",
+            "item_uid": "0x283cdc000e0502ee",
+            "sector": "map/usa/sec-0025-0016.aux",
+            "effective_provider": "dlc_wa.scs",
+            "provider_priority_index_high_to_low": 12,
+            "archive_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+            "model_path": "model/panorama/wa_seattle/wa_lacey_murrow_bridge1.pmg",
+            "model_sha256": "4ad32da14157c8b16b5af9fa60a127d6b5e6406018c78dc450cea5d1dee86940",
+            "native_mesh_center_xz": [
+              -98622.79921829088,
+              -62651.16854110282
+            ],
+            "native_world_bbox_xz": [
+              -98658.34339275809,
+              -62664.18945062822,
+              -98586.85096433474,
+              -62631.49430593898
+            ]
+          },
+          {
+            "name": "wa_lacey_murrow_bridge1",
+            "item_uid": "0x283cdc00e60502fb",
+            "sector": "map/usa/sec-0025-0016.aux",
+            "effective_provider": "dlc_wa.scs",
+            "provider_priority_index_high_to_low": 12,
+            "archive_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+            "model_path": "model/panorama/wa_seattle/wa_lacey_murrow_bridge1.pmg",
+            "model_sha256": "4ad32da14157c8b16b5af9fa60a127d6b5e6406018c78dc450cea5d1dee86940",
+            "native_mesh_center_xz": [
+              -98020.91796875,
+              -62552.66796875
+            ],
+            "native_world_bbox_xz": [
+              -98056.46279588937,
+              -62565.68813830137,
+              -97984.9703680657,
+              -62532.99299367439
+            ]
+          }
+        ],
+        "native_model_path": null,
+        "native_model_sha256": null,
+        "native_uncertainty_game_units": 100
+      },
+      "geographic_uncertainty_meters": 500,
+      "uncertainty_basis": "The ASCE landmark coordinate locates a project combining bridge and tunnels, and may not mark bridge center. The two native pieces have named bridge semantics, but their ordinal/component role and exact matching to bridge endpoints are undocumented. The 100-unit native tolerance applies to the derived group center; 500 m geographic tolerance covers broad project-location semantics.",
+      "selection_role_history": "Current role is FIT by explicit owner direction; source JSON had this as CHECK_ONLY."
+    },
+    {
+      "id": "everett-boeing-factory-darwing-hall-center",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "Boeing Everett Factory",
+        "qid": "Q890159",
+        "latitude": 47.925555555555555,
+        "longitude": -122.27194444444444,
+        "precision_degrees": 0.0002777777777777778,
+        "claim_id": "q890159$D4999869-ACB0-4CAE-8014-E4EB9C934720",
+        "claim_hash": "eb7e7969d1be4819dae2b84cf141d3bde45f6f15",
+        "revision": 2549132645,
+        "modified": "2026-09-25T01:43:46Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q890159.json",
+        "snapshot": "Q890159.json",
+        "snapshot_sha256": "74408f90b9e49ab595fbccaf7e1d442cb26904c78d3414a6bcf896137203792b",
+        "license": "Wikidata structured data CC0",
+        "semantics": "Feature coordinate for the Boeing Everett Factory; geographic precision is about 31 m latitude. It is not a surveyed point for the Darwing mesh center."
+      },
+      "native": {
+        "xz": [
+          -99373.494,
+          -65134.768
+        ],
+        "uncertainty_native_units": [
+          100,
+          200
+        ],
+        "source_feature": "Effective standalone `wa_aerospace_hall.pmd` mesh center in the Everett Darwing aerospace factory site, derived by prior structural/model inspection.",
+        "model_path": "/prefab/depots/aerospace_company/wa_aerospace_hall.pmd",
+        "effective_model_definition": null,
+        "model_sha256": null,
+        "provider": "dlc_wa.scs",
+        "provider_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+        "sector": "map/usa/sec-0025-0017.aux",
+        "sector_sha256": "80f2bf3754baf623e055e4f3b60c646fa204aca0e60991ba64f969234da6da5b"
+      },
+      "uncertainty_basis": "Geographic feature identity is high; exact mesh-to-facility center is medium-high semantic correspondence. The source site and Darwing hall are the same broad feature. If this geofeature pair is used in fitting, existing nine hall interior ground controls (six historical fit, three historical check) become same-feature local support/checks, not independent geographic holdouts. Do not count them as independent control groups.",
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/new-seattle-controls/qualified-seattle-fit-controls.json",
+      "source_record_sha256": "fb589b6a998e6b02d5d6af153c1aa10203bf2a74f65a65a67e3c30b5fbcdd00a",
+      "correlated_same_feature_evidence": {
+        "source_file": "local_outputs/work/2026-10-25_00-36-35/landmarks/everett-aerospace-hall-interior-ground-controls.json",
+        "source_sha256": "c42ca3735cda4043899c1f1935b07c5ac53d1c1175953ea4a7c37e9ef9690f3e",
+        "native_ground_samples": 9,
+        "historical_roles": {
+          "fit": 6,
+          "check": 3
+        },
+        "current_interpretation": "All nine ground samples lie in the same Darwing aerospace hall footprint; if this geofeature pair is fitted they are correlated local support/checks, not independent geographic anchors."
+      }
+    },
+    {
+      "id": "seattle-t-mobile-park-safeco-field-mesh-center",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "T-Mobile Park (game asset named Safeco Field)",
+        "qid": "Q1193117",
+        "latitude": 47.591388888889,
+        "longitude": -122.3325,
+        "precision_degrees": null,
+        "claim_id": "q1193117$63194561-AD87-409E-B473-5C138B984FEB",
+        "claim_hash": "9f7582c6eacc012149f280aac2de221bf8b20b44",
+        "revision": 2540124057,
+        "modified": "2026-09-04T15:02:55Z",
+        "source_url": "https://www.wikidata.org/wiki/Special:EntityData/Q1193117.json",
+        "snapshot": "Q1193117.json",
+        "snapshot_sha256": "840339bf16dd31808b4d59cec073773dd16270c0de4ffb10374197c8c8dc4efa",
+        "license": "Wikidata structured data CC0",
+        "semantics": "Named stadium feature-location point; no precision stated, not explicitly a surveyed building center."
+      },
+      "native": {
+        "xz": [
+          -99933.97613720229,
+          -62907.604067695414
+        ],
+        "uncertainty_native_units": [
+          100,
+          200
+        ],
+        "source_feature": "PMG geometric center of the uniquely named effective `wa_seattle_safeco_field.pmd` landmark placement.",
+        "model_path": "/model/panorama/wa_seattle/wa_seattle_safeco_field.pmd",
+        "effective_model_definition": "dlc_wa.scs:def/world/model.dlc_wa.sii model.wa_202",
+        "model_sha256": "2ad9fb2d43ed2d98805546af758abfe13720bd58853e58832eab34da8e595dac",
+        "provider": null,
+        "provider_sha256": null,
+        "sector": "map/usa/sec-0025-0016.aux",
+        "sector_sha256": "ad596fc34d9b0b789832dc8cd0147308e3c2916dfbe881ddfa28439801acd9a0"
+      },
+      "uncertainty_basis": "This is a new central Seattle feature and is distinct from the frozen Space Needle, Jos\u00e9 Rizal Bridge, and West Seattle Bridge checks. It adds a third noncollinear Seattle feature if used with Needle and Lacey/Murrow, but remains one anchor pair. No building footprint polygon or survey precision is asserted.",
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/new-seattle-controls/qualified-seattle-fit-controls.json",
+      "source_record_sha256": "fb589b6a998e6b02d5d6af153c1aa10203bf2a74f65a65a67e3c30b5fbcdd00a"
+    },
+    {
+      "id": "seattle-seatac-rest-area-building-center",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "SeaTac SRA NB",
+        "point_lonlat_wgs84": [
+          -122.314556889,
+          47.271133531
+        ],
+        "latitude_longitude_wgs84": [
+          47.271133531,
+          -122.314556889
+        ],
+        "source": "WSDOT Sites Active Rest Area Feature Layer, OBJECTID 8, SiteFCR 1417VA00",
+        "site_location": "I-5, MP 140.5, East side",
+        "site_acreage": 7.3,
+        "site_building_count": 5,
+        "query_url": "https://data.wsdot.wa.gov/arcgis/rest/services/Shared/FacilitiesData/MapServer/8/query?where=UPPER%28SiteName%29+LIKE+%27%25SEATAC%25%27&outFields=%2A&returnGeometry=true&outSR=4326&f=json",
+        "query_response_sha256": "5cdbb6338a8b1d81dd435aa1e2258c0524d9d35166ee730517a56f90c84e1398",
+        "geometry_lonlat_wgs84": [
+          -122.31457170094409,
+          47.27113913199681
+        ],
+        "license": "WSDOT primary public GIS feature service; API response retained locally"
+      },
+      "native": {
+        "center_xz": [
+          -99822.34321240471,
+          -60809.96031143242
+        ],
+        "native_feature_semantics": "Geometric center of the placed PMG bounds for effective wa_seatac_building; model center is not the WSDOT GPS point or a surveyed building centroid.",
+        "placement_origin_xyz": [
+          -99815.8125,
+          10.20703125,
+          -60825.7421875
+        ],
+        "placed_geometric_center_xyz": [
+          -99822.34321240471,
+          11.307186126706627,
+          -60809.96031143242
+        ],
+        "placed_bbox_xz": [
+          -99842.18166312757,
+          -60842.25501625662,
+          -99805.74470766976,
+          -60778.61993346613
+        ],
+        "mesh_local_center_xyz": [
+          17.04438018798828,
+          1.1001548767089844,
+          1.0985851287841797
+        ],
+        "mesh_local_radius": 31.21954345703125,
+        "model_definition": "def/world/model.dlc_wa.sii: model.wa_129 -> /model/panorama/rest_stop/wa_seatac/wa_seatac_building.pmd",
+        "model_definition_sha256": "5dd245b145e0d59970ccbc5c48092181f69b845fcb112f9b66d43c43504d675a",
+        "pmd_sha256": "95556dc97199575aa90bce82d08681697971c185358bcac738be2f8b292eb96a",
+        "pmg_sha256": "3bf500a6d55702b4e70032e2f276509e8437fce2bbe49e34a2da1d816ceac9b7",
+        "provider": "dlc_wa.scs",
+        "provider_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+        "sector": "map/usa/sec-0025-0016.aux",
+        "sector_sha256": "ad596fc34d9b0b789832dc8cd0147308e3c2916dfbe881ddfa28439801acd9a0",
+        "placement_item_uid": "0x2c6ed20061930001"
+      },
+      "uncertainty_basis": {
+        "geographic": "WSDOT site GPS point; official record and returned geometry differ by ~1.5m, but this is a 7.3-acre rest-area site, not a precise building centroid.",
+        "native": "WSDOT records a 7.3-acre facility-site GPS point; native mesh is a reusable panorama rest-stop building and may not be the GPS point or site centroid. The 200-300u allowance is site-to-building correspondence, not coordinate survey error.",
+        "working_allowance": "200 native-unit site-to-building correspondence allowance (upper audit record allows 200\u2013300); this is a working semantic bound, not survey/statistical precision.",
+        "native_working_allowance_game_units": [
+          200,
+          300
+        ],
+        "native_working_allowance_note": "These bounds are native game units (not meters); they describe WSDOT site-point to reusable building-mesh correspondence."
+      },
+      "correlated_same_site_checks": {
+        "uids": [
+          "0x29665eb007130001",
+          "0x29665f90e0d30000"
+        ],
+        "treatment": "Both remain frozen CHECKs and are correlated to this same SeaTac SRA site; do not count as independent holdouts."
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/baseline-audit/regression-origin/seatac-site-fit-pair.json",
+        "sha256": "997be8e94a93115edb8fefdffd3372d26124f136134a7f9bc66cf3332eb34530"
+      }
+    },
+    {
+      "id": "pnw-ferry-swartz-bay",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "Swartz Bay ferry terminal",
+        "qid": "Q1507888",
+        "point_lonlat_wgs84": [
+          -123.41,
+          48.6882
+        ],
+        "coordinate_property": "Wikidata P625",
+        "precision_degrees": null,
+        "statement_reference": "Q328",
+        "entity_revision": 2408129375,
+        "entity_url": "https://www.wikidata.org/wiki/Q1507888",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/Q1507888.json",
+        "source_snapshot_sha256": "01de0a6f45bd815be442db06438d5dc78b3ea73496c37d8e67a59277c34f1caa",
+        "license": "CC0 1.0",
+        "source_limit": "Imported P625 site point; displayed precision is not survey precision.",
+        "coordinate_precision_degrees": null,
+        "coordinate_precision_approx_meters_at_site": null,
+        "coordinate_precision_note": "Printed P625 coordinate resolution only, not a survey or accuracy statement.",
+        "source_site_uncertainty_radius_m": 400
+      },
+      "native": {
+        "center_xz": [
+          -101525.58984375,
+          -70927.89453125
+        ],
+        "native_feature_semantics": "Native Ferry item activation point at the named terminal, linked by Ferry UID to its actual Node and matching parent prefab; not a route endpoint, berth centroid, or surveyed point.",
+        "ferry_item_uid": "0x519e9bbe6200109e",
+        "linked_node_uid": "0x519e9bbedb0043ff",
+        "linked_prefab_uid": "0x5a84a07588800001",
+        "port_token": "swartz_bay",
+        "terminal_definition": "def/ferry/swartz_bay.sui",
+        "terminal_definition_sha256": "2dfc2f94917d6d04d9b7ce80bd75398edaaab6bc62dd3bbecbe8e9d2744266ff",
+        "provider": "promods-ats-map-v164.scs",
+        "sector": "sec-0026-0018.base",
+        "linked_ferry_item_validation": {
+          "prefab_uid_matches_parent": true,
+          "node_uid_resolved_in_same_sector": true,
+          "evidence_source_record": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "Wikidata point is imported and differs from OSM terminal-area placement by roughly 0.2 km; the endpoint is berth/access-side, not a parcel centroid.",
+        "working_allowance": "400 native game units chosen for this site-to-activation correspondence; this is not a meter value, geographic uncertainty radius, or survey precision.",
+        "native": "Map\u2019s named Ferry activation node is the observed game coordinate; its semantic relationship to the terminal site is represented by the separately stated native game-unit allowance, not by a fabricated survey error.",
+        "geographic_coordinate_precision": "The P625 decimal/precision metadata is recorded separately and must not be read as positional accuracy.",
+        "native_site_correspondence_allowance_game_units": 400,
+        "unit_separation": "Geographic uncertainty remains the source-record radius in meters. The selected native correspondence allowance is in game units; no conversion or equivalence between them is asserted."
+      },
+      "correlation_group": "swartz_bay_to_tsawwassen_berth5",
+      "correlation_note": "Terminal endpoints on the same ferry connection share one route-definition source; these are not four fully independent measurements. The two route pairs are distinct.",
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json",
+        "sha256": "e0a35cba4bdc44b32bcd6c3211a04c4bbc9eb178458509fb3f7aace3c5492f52"
+      },
+      "geographic_uncertainty_meters": 400,
+      "native_site_correspondence_allowance_game_units": 400
+    },
+    {
+      "id": "pnw-ferry-tsawwassen-berth5",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "Tsawwassen ferry terminal",
+        "qid": "Q1656648",
+        "point_lonlat_wgs84": [
+          -123.128929,
+          49.008657
+        ],
+        "coordinate_property": "Wikidata P625",
+        "precision_degrees": 2.77777777778e-06,
+        "statement_reference": "Q48183",
+        "entity_revision": 2408129467,
+        "entity_url": "https://www.wikidata.org/wiki/Q1656648",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/Q1656648.json",
+        "source_snapshot_sha256": "41beb387fe34d641af0293ef1f7ee5872877c9f8060dc1bb45feaa3a351840fd",
+        "license": "CC0 1.0",
+        "source_limit": "Imported P625 site point; displayed precision is not survey precision.",
+        "coordinate_precision_degrees": 2.77777777778e-06,
+        "coordinate_precision_approx_meters_at_site": 0.31,
+        "coordinate_precision_note": "Printed P625 coordinate resolution only, not a survey or accuracy statement.",
+        "source_site_uncertainty_radius_m": 400
+      },
+      "native": {
+        "center_xz": [
+          -101683.703125,
+          -71502.8125
+        ],
+        "native_feature_semantics": "Native Ferry item activation point at the named terminal, linked by Ferry UID to its actual Node and matching parent prefab; not a route endpoint, berth centroid, or surveyed point.",
+        "ferry_item_uid": "0x54427fa309800001",
+        "linked_node_uid": "0x54427fa378000000",
+        "linked_prefab_uid": "0x5a84bba91f800001",
+        "port_token": "tsawwassenb5",
+        "terminal_definition": "def/ferry/tsawwassen_berth5.sui",
+        "terminal_definition_sha256": "eb3d5b13775ba86178379b8ea42433444adc850ff07a9efb9bb95910945dcf04",
+        "provider": "promods-ats-map-v164.scs",
+        "sector": "sec-0026-0018.base",
+        "linked_ferry_item_validation": {
+          "prefab_uid_matches_parent": true,
+          "node_uid_resolved_in_same_sector": true,
+          "evidence_source_record": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "Wikidata point is imported and differs from OSM terminal-area placement by roughly 0.1 km; the endpoint is berth/access-side, not a parcel centroid.",
+        "working_allowance": "400 native game units chosen for this site-to-activation correspondence; this is not a meter value, geographic uncertainty radius, or survey precision.",
+        "native": "Map\u2019s named Ferry activation node is the observed game coordinate; its semantic relationship to the terminal site is represented by the separately stated native game-unit allowance, not by a fabricated survey error.",
+        "geographic_coordinate_precision": "The P625 decimal/precision metadata is recorded separately and must not be read as positional accuracy.",
+        "native_site_correspondence_allowance_game_units": 400,
+        "unit_separation": "Geographic uncertainty remains the source-record radius in meters. The selected native correspondence allowance is in game units; no conversion or equivalence between them is asserted."
+      },
+      "correlation_group": "tsawwassen_berth5_to_swartz_bay",
+      "correlation_note": "Tsawwassen berth 5 selected as one berth-specific linked activation node. A separate berth 3 ferry item maps to the same terminal site and is not counted as another geographic control.",
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json",
+        "sha256": "e0a35cba4bdc44b32bcd6c3211a04c4bbc9eb178458509fb3f7aace3c5492f52"
+      },
+      "geographic_uncertainty_meters": 400,
+      "native_site_correspondence_allowance_game_units": 400
+    },
+    {
+      "id": "pnw-ferry-duke-point",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "Duke Point ferry terminal",
+        "qid": "Q1264419",
+        "point_lonlat_wgs84": [
+          -123.892372,
+          49.160884
+        ],
+        "coordinate_property": "Wikidata P625",
+        "precision_degrees": 2.77777777778e-06,
+        "statement_reference": "Q48183",
+        "entity_revision": 2408129119,
+        "entity_url": "https://www.wikidata.org/wiki/Q1264419",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/Q1264419.json",
+        "source_snapshot_sha256": "d744187e737a7c71953eb0c38f786bbef160b72f4ec4b03da82d637c5c9df15c",
+        "license": "CC0 1.0",
+        "source_limit": "Imported P625 site point; displayed precision is not survey precision.",
+        "coordinate_precision_degrees": 2.77777777778e-06,
+        "coordinate_precision_approx_meters_at_site": 0.31,
+        "coordinate_precision_note": "Printed P625 coordinate resolution only, not a survey or accuracy statement.",
+        "source_site_uncertainty_radius_m": 350
+      },
+      "native": {
+        "center_xz": [
+          -103627.58203125,
+          -74243.23828125
+        ],
+        "native_feature_semantics": "Native Ferry item activation point at the named terminal, linked by Ferry UID to its actual Node and matching parent prefab; not a route endpoint, berth centroid, or surveyed point.",
+        "ferry_item_uid": "0x5be38ff33e000001",
+        "linked_node_uid": "0x5be38ff025000000",
+        "linked_prefab_uid": "0x5be3d886b5800001",
+        "port_token": "dukepoint",
+        "terminal_definition": "def/ferry/dukepoint.sui",
+        "terminal_definition_sha256": "8bf435a84c6403bae26021fb3b3d7a0bab13e37be48c226028e0b675f008fd48",
+        "provider": "promods-ats-map-v164.scs",
+        "sector": "sec-0026-0019.base",
+        "linked_ferry_item_validation": {
+          "prefab_uid_matches_parent": true,
+          "node_uid_resolved_in_same_sector": true,
+          "evidence_source_record": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "Wikidata point is imported from Wikipedia; terminal site and endpoint have no survey positioning.",
+        "working_allowance": "400 native game units chosen for this site-to-activation correspondence; this is not a meter value, geographic uncertainty radius, or survey precision.",
+        "native": "Map\u2019s named Ferry activation node is the observed game coordinate; its semantic relationship to the terminal site is represented by the separately stated native game-unit allowance, not by a fabricated survey error.",
+        "geographic_coordinate_precision": "The P625 decimal/precision metadata is recorded separately and must not be read as positional accuracy.",
+        "native_site_correspondence_allowance_game_units": 400,
+        "unit_separation": "Geographic uncertainty remains the source-record radius in meters. The selected native correspondence allowance is in game units; no conversion or equivalence between them is asserted."
+      },
+      "correlation_group": "duke_point_to_horseshoe_bay",
+      "correlation_note": "Duke Point has multiple route endpoints; all endpoints share ferry-route source geometry. The other route sites are distinct, but repeated Tsawwassen berths are not separate geographic controls.",
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json",
+        "sha256": "e0a35cba4bdc44b32bcd6c3211a04c4bbc9eb178458509fb3f7aace3c5492f52"
+      },
+      "geographic_uncertainty_meters": 350,
+      "native_site_correspondence_allowance_game_units": 400
+    },
+    {
+      "id": "pnw-ferry-horseshoe-bay",
+      "role": "fit",
+      "feature_group": "pnw",
+      "geographic": {
+        "name": "Horseshoe Bay ferry terminal",
+        "qid": "Q1628996",
+        "point_lonlat_wgs84": [
+          -123.271526,
+          49.375094
+        ],
+        "coordinate_property": "Wikidata P625",
+        "precision_degrees": 2.77777777778e-06,
+        "statement_reference": "Q48183",
+        "entity_revision": 2408128137,
+        "entity_url": "https://www.wikidata.org/wiki/Q1628996",
+        "source_snapshot_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/Q1628996.json",
+        "source_snapshot_sha256": "42f63c3687418ecc581b80b6f71eb53c15885a72ca7973c518bde91e3093e31b",
+        "license": "CC0 1.0",
+        "source_limit": "Imported P625 site point; displayed precision is not survey precision.",
+        "coordinate_precision_degrees": 2.77777777778e-06,
+        "coordinate_precision_approx_meters_at_site": 0.31,
+        "coordinate_precision_note": "Printed P625 coordinate resolution only, not a survey or accuracy statement.",
+        "source_site_uncertainty_radius_m": 850
+      },
+      "native": {
+        "center_xz": [
+          -103693.41015625,
+          -76098.12109375
+        ],
+        "native_feature_semantics": "Native Ferry item activation point at the named terminal, linked by Ferry UID to its actual Node and matching parent prefab; not a route endpoint, berth centroid, or surveyed point.",
+        "ferry_item_uid": "0x5be44a3da1000001",
+        "linked_node_uid": "0x5be44a3e02800000",
+        "linked_prefab_uid": "0x58aff2c8aa800001",
+        "port_token": "horseshoebay",
+        "terminal_definition": "def/ferry/horseshoebay.sui",
+        "terminal_definition_sha256": "57923ce67c2e78318a93a22c5b98338da6ed53dee9df5e5daf0dde182f1b073a",
+        "provider": "promods-ats-map-v164.scs",
+        "sector": "sec-0026-0020.base",
+        "linked_ferry_item_validation": {
+          "prefab_uid_matches_parent": true,
+          "node_uid_resolved_in_same_sector": true,
+          "evidence_source_record": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "Wikidata and the OSM terminal-area point differ by roughly 0.75 km; no berth-specific point is established.",
+        "working_allowance": "500 native game units chosen for this site-to-activation correspondence; this is not a meter value, geographic uncertainty radius, or survey precision.",
+        "native": "Map\u2019s named Ferry activation node is the observed game coordinate; its semantic relationship to the terminal site is represented by the separately stated native game-unit allowance, not by a fabricated survey error.",
+        "geographic_coordinate_precision": "The P625 decimal/precision metadata is recorded separately and must not be read as positional accuracy.",
+        "native_site_correspondence_allowance_game_units": 500,
+        "unit_separation": "Geographic uncertainty remains the source-record radius in meters. The selected native correspondence allowance is in game units; no conversion or equivalence between them is asserted."
+      },
+      "correlation_group": "horseshoe_bay_to_duke_point",
+      "correlation_note": "Terminal endpoints on the same ferry connection share one route-definition source; these are not four fully independent measurements. The two route pairs are distinct.",
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json",
+        "sha256": "e0a35cba4bdc44b32bcd6c3211a04c4bbc9eb178458509fb3f7aace3c5492f52"
+      },
+      "geographic_uncertainty_meters": 850,
+      "native_site_correspondence_allowance_game_units": 500
+    }
+  ],
+  "frozen_checks": [
+    {
+      "id": "chicago-i57-i80-shared-prefab-port",
+      "role": "frozen_check",
+      "feature_group": "chicago",
+      "geographic_lonlat": [
+        -87.743267,
+        41.565237
+      ],
+      "geographic_feature": "Natural Earth 10m I-57 x I-80 line crossing, route features 11630 and 11640",
+      "geographic_sources": [
+        "local_outputs/work/2026-10-24_17-09-42/shore-geometry/topology-anchor-candidates.json",
+        "local_outputs/work/2026-10-24_17-09-42/zoom-review/landmarks/named-intersections.json"
+      ],
+      "geographic_uncertainty_meters": 250,
+      "native_xz": [
+        33815.3203125,
+        -15105.890625
+      ],
+      "native_feature": "Shared MapNode port 0x5f5c63796c0b0003, Y=9; independently traced I-57 and I-80 route paths traverse linked prefabs 0x5f5c637b1a0b0001 and 0x5f5c6284018b0001, effective dlc_il.scs map/usa/sec+0008-0004.base",
+      "native_uncertainty_game_units": 30,
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/qualified-fit-check-landmarks.json",
+      "source_record_sha256": "55921ef6e0bdfe59bdd59e2508c414b7fbcad5d34f183f851d6800e0a7009d3a"
+    },
+    {
+      "id": "chicago-i55-i90-grade-separated-crossing",
+      "role": "frozen_check",
+      "feature_group": "chicago",
+      "geographic_lonlat": [
+        -87.643094,
+        41.847653
+      ],
+      "geographic_feature": "Natural Earth 10m I-55 x I-90 line crossing, route features 11629 and 11643",
+      "geographic_sources": [
+        "local_outputs/work/2026-10-24_17-09-42/shore-geometry/topology-anchor-candidates.json",
+        "local_outputs/work/2026-10-24_17-09-42/zoom-review/landmarks/named-intersections.json"
+      ],
+      "geographic_uncertainty_meters": 300,
+      "native_xz": [
+        33521.100553434546,
+        -17272.97533807201
+      ],
+      "native_feature": "XZ intersection of separately traced UI-visible I-55 and I-90 segments in dlc_il.scs map/usa/sec+0008-0005.base; native Y values -2.316 and 17.398 show approximately 19.7-unit vertical separation, so this is an overpass, not a connected node",
+      "native_uncertainty_game_units": 30,
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/qualified-fit-check-landmarks.json",
+      "source_record_sha256": "55921ef6e0bdfe59bdd59e2508c414b7fbcad5d34f183f851d6800e0a7009d3a"
+    },
+    {
+      "id": "port-angeles-black-ball-ferry-terminal",
+      "role": "frozen_check",
+      "feature_group": "pacific_northwest",
+      "geographic_lonlat": [
+        -123.4311,
+        48.125278
+      ],
+      "geographic_feature": "Black Ball Transport Port Angeles Ferry Dock, U.S. Army Corps of Engineers Port Series No. 37, Port PWD 008, coordinate published in 1997; Black Ball is operator of ferry service between Port Angeles and Victoria.",
+      "geographic_sources": [
+        "https://usace.contentdm.oclc.org/digital/api/collection/p16021coll2/id/3229/download (USACE Port Series No. 37; names Black Ball Transport Port Angeles Ferry Dock and gives 48.125278, -123.4311)",
+        "https://portofpa.com/marine/terminal-facilities/ (Port of Port Angeles identifies Terminal 2 as leased to Black Ball Ferry Line and service to Victoria)",
+        "https://cohoferry.com/getting-here (operator location at 101 East Railroad Avenue)",
+        "https://data.wsdot.wa.gov/arcgis/rest/services/Shared/FerryRoutes/MapServer/0 (WSDOT ferry terminals primary layer includes Port Angeles; metadata makes positional accuracy unassessed)"
+      ],
+      "geographic_uncertainty_meters": {
+        "geographic_terminal_point": 100,
+        "native_feature_center": 25,
+        "cross_source_correspondence": 250
+      },
+      "native_xz": [
+        -103082.891,
+        -66855.848
+      ],
+      "native_feature": "Effective ATS 1.61 placed WA model 0x297188b8e30d0195, decoded model token wa_176, variant/look token port_angels; native node 0x297188b8e1cd0479; dlc_wa.scs map/usa/sec-0026-0017.aux. This is a named Port Angeles port panorama placement, not a city marker.",
+      "native_uncertainty_game_units": null,
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/qualified-fit-check-landmarks.json",
+      "source_record_sha256": "55921ef6e0bdfe59bdd59e2508c414b7fbcad5d34f183f851d6800e0a7009d3a"
+    },
+    {
+      "id": "chicago-buckingham-fountain",
+      "role": "frozen_check",
+      "feature_group": "chicago",
+      "geographic_lonlat": [
+        -87.6188889,
+        41.8758333
+      ],
+      "geographic_feature": "Named Clarence Buckingham Memorial Fountain; independent Wikidata coordinate and USGS GNIS-sourced GeoNames consistency point.",
+      "geographic_sources": [
+        "https://www.wikidata.org/wiki/Special:EntityData/Q158989.json",
+        "Chicago Landmarks names Clarence Buckingham Memorial Fountain and Garden and gives bounded site; Chicago Park District lists the fountain at 301 S Columbus Dr."
+      ],
+      "geographic_uncertainty_meters": 35,
+      "native_xz": [
+        35237.6303,
+        -18274.8341
+      ],
+      "native_feature": "model/panorama/il_chicago/il_chicago_fountain.pmg",
+      "native_uncertainty_game_units": 30,
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/chicago-independent-audit.json",
+      "source_record_sha256": "db7c398b576515852da97deac0be468d87c9cfefdf231267c9ae476504cb7176",
+      "limitations": "The Wikidata point is an imported English-Wikipedia statement; the fountain center is a named model mesh-center proxy, not a survey."
+    },
+    {
+      "id": "san-francisco-palace-of-fine-arts-rotunda-mesh-center",
+      "role": "frozen_check",
+      "feature_group": "san_francisco",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.448333,
+          37.802778
+        ],
+        "feature_semantics": "Wikidata Q966263 Palace of Fine Arts P625 point, which represents the named site/structure. It is not identified as the rotunda footprint centroid; City landmark context is separate identity evidence.",
+        "source_urls": [
+          "https://www.wikidata.org/wiki/Q966263?oldid=2554212088",
+          "https://www.wikidata.org/wiki/Property:P625"
+        ],
+        "uncertainty_meters": 150,
+        "qid": "Q966263",
+        "entity_revision": 2554212088,
+        "entity_modified_utc": "2026-10-06T23:25:55Z",
+        "entity_json_sha256": "bfb74efdf843b6021a246ca2fcf2fd2e29455204fc4e5e603f0ad04eb276abb5",
+        "entity_json_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/source-responses/Q966263.json",
+        "coordinate_statement": [
+          {
+            "rank": "normal",
+            "id": "q966263$60BFE042-E6D1-441D-BC62-80E7E992FF13",
+            "latitude": 37.802778,
+            "longitude": -122.448333,
+            "precision_degrees": 1e-05,
+            "globe": "http://www.wikidata.org/entity/Q2"
+          }
+        ],
+        "license": "Wikidata structured data CC0"
+      },
+      "native": {
+        "center_xz": [
+          -115701.72180582107,
+          -10243.487387732055
+        ],
+        "feature_semantics": "Effective named ca_san_francisco_arts_palace PMG mesh center. The scenic model spans surrounding Palace elements, not just the rotunda; its broad bounds preclude exact rotunda-center semantics.",
+        "world_bbox_xz": [
+          -115815.72043189834,
+          -10374.559073431921,
+          -115539.584007306,
+          -10080.147320954222
+        ],
+        "placement_item_uid": "0x4e1c1c58179a6c10",
+        "sector_path": "map/usa/sec-0029-0003.base",
+        "effective_provider": "base_map.scs",
+        "provider_priority_index_high_to_low": 31,
+        "provider_archive_sha256": "79b9a0b38da235a552692083fc521195e62b41cb8bcca8f6387e72ca88ac0150",
+        "model_path": "model/panorama/ca_san_francisco/ca_san_francisco_arts_palace.pmg",
+        "model_sha256": "ad7bf9d13bd4afa8254c1cda9052fd671a7e94acc62880586e1c45d722d891cb",
+        "uncertainty_game_units": 100
+      },
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/additional-named-fit-check-controls.json",
+      "source_record_sha256": "7761adf179d62b847759573cae163bae910b0a9567e514b4af0d389f734101e9",
+      "limitations": "The WGS84 coordinate statement precision is 0.00001 degrees (~1 m nominal resolution), but this is not an accuracy guarantee. The named Palace site extends beyond the rotunda; native bounds are roughly 276 by 294 game units. Independent tolerances account for that feature-versus-scenic-model scope."
+    },
+    {
+      "id": "seattle-dr-jose-rizal-bridge-mesh-center",
+      "role": "frozen_check",
+      "feature_group": "seattle_core",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.3172466185147,
+          47.595427019466676
+        ],
+        "feature_semantics": "Length-weighted midpoint of City of Seattle SDOT named Jose Rizal Bridge GIS line components OLD PART and NEW PART, including the named spans over Dearborn Street and I-90. Approximate local-metric line measure: 257.3 m across both component geometries.",
+        "source_urls": [
+          "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/arcgis/rest/services/Bridges_CDL/FeatureServer/0",
+          "https://www.seattle.gov/documents/departments/sdot/bridgestairsprogram/bridges/dr.%20jose%20rizal%20bridge%20repainting/joserizalbr_factsheet_en%202025.pdf"
+        ],
+        "uncertainty_meters": 25,
+        "source_record_hash": "6cc13c73f8d55391a2cbeca2c120ce20eb8567ae1645b9cbb042ca88468f62ce",
+        "source_record_bytes": 9306,
+        "source_dataset_license_limit": "City Open Data context applies; no explicit license statement was captured on this feature service layer, so no license claim beyond public City source is made."
+      },
+      "native": {
+        "center_xz": [
+          -99250.1768584412,
+          -62978.52136757008
+        ],
+        "feature_semantics": "Effective named wa_dr_rizal_bridge PMG mesh center in dlc_wa.scs.",
+        "world_bbox_xz": [
+          -99271.83579104954,
+          -63039.062300736616,
+          -99227.42983677963,
+          -62919.46894968809
+        ],
+        "placement_item_uid": "0x283cdc00638501fe",
+        "sector_path": "map/usa/sec-0025-0016.aux",
+        "effective_provider": "dlc_wa.scs",
+        "provider_priority_index_high_to_low": 12,
+        "provider_archive_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+        "model_path": "model/panorama/wa_seattle/wa_dr_rizal_bridge.pmg",
+        "model_sha256": "6e37d17d938f8993918d962332e04295be513416449c5f96e89cbfddcbe23fa0",
+        "uncertainty_game_units": 30
+      },
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/additional-named-fit-check-controls.json",
+      "source_record_sha256": "7761adf179d62b847759573cae163bae910b0a9567e514b4af0d389f734101e9",
+      "limitations": "The point is the geometric midpoint of named City linework rather than a survey monument; the geographic error is conservatively set to 25 m despite the polyline vertex precision. The native mesh bounds are about 44 by 120 game units. Native uncertainty is expressed in game-world units, not metres."
+    },
+    {
+      "id": "seattle-west-seattle-bridge-mesh-center",
+      "role": "frozen_check",
+      "feature_group": "seattle_core",
+      "geographic": {
+        "point_lonlat_wgs84": [
+          -122.35,
+          47.57111111111111
+        ],
+        "feature_semantics": "Wikidata Q7986448 West Seattle Bridge P625 point; City of Seattle independently identifies the high bridge crossing the Duwamish Waterway and gives bridge-scale length (~1,300 ft across three spans). The coordinate is a bridge location, not a stated surveyed midpoint.",
+        "source_urls": [
+          "https://www.wikidata.org/wiki/Q7986448?oldid=1823159237",
+          "https://www.wikidata.org/wiki/Property:P625",
+          "https://www.adc.seattle.gov/transportation/projects-and-programs/programs/bridges-stairs-and-other-structures/bridges/west-seattle-bridge-program/west-seattle-bridge-repair"
+        ],
+        "uncertainty_meters": 250,
+        "qid": "Q7986448",
+        "entity_revision": 1823159237,
+        "entity_modified_utc": "2023-01-31T02:31:52Z",
+        "entity_json_sha256": "15f2e7b1de4613677c3d1fa252c84bf504df2e4d04f52321cb61b370ad92b86a",
+        "entity_json_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/source-responses/Q7986448.json",
+        "coordinate_statement": [
+          {
+            "rank": "normal",
+            "id": "Q7986448$8B45F936-CDEB-4AFF-9CA6-D07D126735EB",
+            "latitude": 47.57111111111111,
+            "longitude": -122.35,
+            "precision_degrees": 0.0002777777777777778,
+            "globe": "http://www.wikidata.org/entity/Q2"
+          }
+        ],
+        "license": "Wikidata structured data CC0"
+      },
+      "native": {
+        "center_xz": [
+          -100780.97881139664,
+          -62316.899568480905
+        ],
+        "feature_semantics": "Effective named wa_west_seattle_bridge PMG mesh center.",
+        "world_bbox_xz": [
+          -100920.8077396445,
+          -62351.20617070034,
+          -100641.52295897003,
+          -62280.10421501454
+        ],
+        "placement_item_uid": "0x2b4bb95c77050001",
+        "sector_path": "map/usa/sec-0026-0016.aux",
+        "effective_provider": "dlc_wa.scs",
+        "provider_priority_index_high_to_low": 12,
+        "provider_archive_sha256": "a095f5da02a088ce7a04afc49a17b73a208ae085a85c7b71f40c9d811702d0c9",
+        "model_path": "model/panorama/wa_seattle/wa_west_seattle_bridge.pmg",
+        "model_sha256": "31000b46120a526a62cb1ec85142a985d892a722d036c5a083551222bfaf16c5",
+        "uncertainty_game_units": 150
+      },
+      "source_record_path": "local_outputs/work/2026-10-25_00-36-35/landmarks/additional-named-fit-check-controls.json",
+      "source_record_sha256": "7761adf179d62b847759573cae163bae910b0a9567e514b4af0d389f734101e9",
+      "limitations": "Wikidata coordinate precision is 0.0002778 degrees (about 31 m nominal north-south resolution) but the location does not specify a particular bridge station. The City describes an approximately 1,300 ft high bridge; 250 m geographic allowance covers bridge-point versus modeled scenic span semantics. Native bounds are roughly 279 by 71 game units; tolerance remains in native units."
+    }
+  ],
+  "source_file_hashes": {
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/wikidata-chicago-fit-check-candidates.json": "d2c55705e1a7dbc4dda9090acc9aaa64b36da149e8f35a48dbb5dd7cba7b87cd",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/qualified-fit-check-landmarks.json": "55921ef6e0bdfe59bdd59e2508c414b7fbcad5d34f183f851d6800e0a7009d3a",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/pacific-california-washington-qualified-controls.json": "5e0448c958224b2a339dc52d0d498d9f7d33f4ea68544fe5180f3426cea01ed7",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/additional-named-fit-check-controls.json": "7761adf179d62b847759573cae163bae910b0a9567e514b4af0d389f734101e9",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/new-seattle-controls/qualified-seattle-fit-controls.json": "fb589b6a998e6b02d5d6af153c1aa10203bf2a74f65a65a67e3c30b5fbcdd00a",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/chicago-independent-audit.json": "db7c398b576515852da97deac0be468d87c9cfefdf231267c9ae476504cb7176",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/everett-aerospace-hall-interior-ground-controls.json": "c42ca3735cda4043899c1f1935b07c5ac53d1c1175953ea4a7c37e9ef9690f3e",
+    "local_outputs/work/2026-10-25_00-36-35/baseline-audit/regression-origin/seatac-site-fit-pair.json": "997be8e94a93115edb8fefdffd3372d26124f136134a7f9bc66cf3332eb34530",
+    "local_outputs/work/2026-10-25_00-36-35/landmarks/vancouver-controls/qualified-ferry-terminal-controls.json": "e0a35cba4bdc44b32bcd6c3211a04c4bbc9eb178458509fb3f7aace3c5492f52",
+    "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/galveston-feature-control-qualification.json": "df8cf5835de4bd5ca7d94992a175b3655db183e7a57a92e62fedae8b4496a1bc",
+    "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-coordinates-provenance.json": "875280c0d1c9efd73d19ef095b79e48c0d199680ddd0b3410300a0edda124a26",
+    "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c",
+    "local_outputs/work/2026-10-25_00-36-35/candidate-configs/regional-landmarks-base.json": "725396843757b9a885870a6e47181b4100266485deaff51e286327526ec7b40b",
+    "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-snapshots/manifest.json": "d53441556c9eba73808d86e7575fed48b29e095b70e74efa8398a669ababefb3",
+    "local_outputs/work/2026-10-25_00-36-35/candidate-configs/localized-coastal-base.json": "90735945ad592c1375af4aa1a15e6cc4fae979721e1534adc232bf4e99a85da0",
+    "local_outputs/work/2026-10-25_00-36-35/candidate-configs/uncertain-coastal-target-reconciliation.json": "0067d98e249fa9eb7616f399dac2af0efa960bea4e23e434d4c62d5968192f1a"
+  },
+  "candidate_configuration": {
+    "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/street-ground-base.json",
+    "sha256": "93c633c5b49c4dcd0c59349f14226b295c54c56caf9b3bdbe3e7463f702eefd6",
+    "landmark_flow_order": [
+      "chicago",
+      "san_francisco_soft",
+      "seattle5",
+      "south_bc_pair",
+      "north_bc_pair"
+    ],
+    "flow_control_counts": [
+      5,
+      3,
+      5,
+      2,
+      2
+    ],
+    "flow_wiring_audit": "local_outputs/work/2026-10-25_00-36-35/landmarks/localized-control-wiring/street-ground-flow-wiring.json",
+    "flow_wiring_audit_sha256": "d7e17a19a603e707347b0ace57636f0993a49940905a096cd025056547178832",
+    "source_coordinate_projection_check": {
+      "method": "Existing calibrated geographic projection and configured pre-feature corrections compared against the exact 17 street-ground-base source_xz values; all flow target_xz values separately compared against the provenance records.",
+      "anchors_path": "docs/examples/north-america-background/r3/anchors.json",
+      "anchors_sha256": "33404424f3f20f20ef1b1d615ee4b70471ddf3ae459d0526863215b4f5a520e3",
+      "max_native_unit_delta": 2.9103830456733704e-11,
+      "target_wiring_verified": true,
+      "all_17_source_coordinates_verified": true,
+      "all_17_target_coordinates_verified": true
+    },
+    "group_semantics": {
+      "seattle5": "Needle, Lacey-Murrow, and T-Mobile Park share the Seattle core group; Everett and SeaTac are separate.",
+      "south_bc_pair": "Swartz Bay and Tsawwassen terminal sites; each is a separate dense-control group.",
+      "north_bc_pair": "Duke Point and Horseshoe Bay terminal sites; each is a separate dense-control group."
+    },
+    "acceptance": "Source/target wiring and causal retirement record only. No model acceptance claim."
+  },
+  "galveston_reconciliation": {
+    "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+    "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c",
+    "method": "Weighted affine reconciliation within declared point-semantic allowances before compact landmark transport; reconciled targets are authored coefficients, not new observed native facts",
+    "original_observed_targets_xz": [
+      [
+        6573.460314632397,
+        54856.73839134246
+      ],
+      [
+        6653.701956986594,
+        54839.89856968481
+      ],
+      [
+        6523.221741594479,
+        54626.51890719494
+      ],
+      [
+        6286.232794314916,
+        53300.20314064199
+      ]
+    ],
+    "authored_reconciled_targets_xz": [
+      [
+        6609.993678309958,
+        54862.33040013634
+      ],
+      [
+        6608.308980926444,
+        54832.95045717186
+      ],
+      [
+        6510.039225042089,
+        54624.50111466048
+      ],
+      [
+        6293.450011872625,
+        53301.30784987183
+      ]
+    ],
+    "native_working_allowances_game_units": [
+      70,
+      80,
+      150,
+      180
+    ],
+    "one_moody_precision_degrees": 0.001,
+    "one_moody_precision_rectangle_native_spread_max": 61.460671872738835,
+    "one_moody_working_allowance_game_units": 150,
+    "one_moody_allowance_is_statistical_interval": false,
+    "geographic_uncertainty_radii_meters_remain_distinct": true,
+    "all_targets_are_observed_facts": false,
+    "fit_status": "retired_diagnostic_only; soft targets are not active in street-ground-base",
+    "causal_ablation": {
+      "receipt_path": "local_outputs/work/2026-10-25_00-36-35/galveston-flow-ablation/qualified-loss-point-ablation.json",
+      "receipt_sha256": "b200f6ccf897bace772ad6c6994bcf1dbd97c949176f60597102bda434ea7dab",
+      "candidate": "localized-coastal-base with Galveston flow",
+      "representative_count": 99,
+      "with_flow_loss_gt50": 88,
+      "with_flow_loss_gt150": 62,
+      "with_flow_max_loss_game_units": 833.4937872583806,
+      "without_flow_result_key": "ablation",
+      "without_flow_loss_gt50": 0,
+      "without_flow_max_abs_loss_game_units": 19.94547325153441,
+      "independence": "Causal ablation only; the representative road cohort is not blind holdout evidence."
+    }
+  },
+  "native_geometry_exclusion": "Original native geometry, asset binaries, and full geometry arrays are excluded from this factual controls summary; compact source/placement identifiers, coordinates, semantics, and provenance hashes only.",
+  "san_francisco_reconciliation": {
+    "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/uncertain-coastal-target-reconciliation.json",
+    "sha256": "0067d98e249fa9eb7616f399dac2af0efa960bea4e23e434d4c62d5968192f1a",
+    "method": "Minimum RKHS velocity energy along straight landmark trajectories, constrained to predeclared native point-semantic allowance disks; other controls fixed. No coastline masks, native heldout coordinates or scores enter objective.",
+    "original_observed_targets_xz": [
+      [
+        -116631.06049766966,
+        -11539.305538822788
+      ],
+      [
+        -114846.95264638567,
+        -10863.070343103074
+      ],
+      [
+        -114446.5812697598,
+        -9152.142701198172
+      ]
+    ],
+    "authored_reconciled_targets_xz": [
+      [
+        -116606.64323182628,
+        -11533.93924319792
+      ],
+      [
+        -114877.01970937927,
+        -10836.689067111578
+      ],
+      [
+        -114401.49923684674,
+        -9241.40417277704
+      ]
+    ],
+    "native_working_allowances_game_units": [
+      25.0,
+      40.0,
+      100.0
+    ],
+    "source_uncertainty_and_allowances_are_not_meters": true,
+    "all_targets_are_observed_facts": false
+  },
+  "retired_localized_configuration_wiring": {
+    "configuration_path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/localized-coastal-base.json",
+    "configuration_sha256": "90735945ad592c1375af4aa1a15e6cc4fae979721e1534adc232bf4e99a85da0",
+    "status": "Historical six-flow source/target wiring; its Galveston compact flow is retired after causal loss ablation.",
+    "units": {
+      "geographic_coordinates": "WGS84 longitude, latitude",
+      "source_xz_and_native_target_xz": "ATS 1.61 native X,Z game-world units",
+      "geographic_uncertainty": "real-world meters as separately recorded on each control",
+      "soft_target_allowances": "native game-world units only; never converted/equated to real-world meters"
+    },
+    "fit_control_count": 21,
+    "frozen_check_count": 7,
+    "checks_preserved_exactly": true,
+    "flows": [
+      {
+        "flow_index": 0,
+        "name": "chicago",
+        "control_count": 5,
+        "control_ids_in_exact_config_order": [
+          "chicago-shedd-aquarium",
+          "chicago-field-museum",
+          "chicago-public-library-harold-washington",
+          "chicago-old-main-post-office",
+          "chicago-centennial-wheel"
+        ],
+        "radius_game_units": 6000,
+        "integration_steps": 96,
+        "dense_control_groups": null,
+        "target_policy": "observed_native_feature_center",
+        "max_source_projection_delta_game_units": 7.275957614183426e-12,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "chicago-shedd-aquarium",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.613889,
+              41.867778
+            ],
+            "source_xz_before_feature_flows": [
+              35268.34320645058,
+              -18849.67488285717
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              35617.53963567122,
+              -17859.871720938827
+            ],
+            "authored_flow_target_xz": [
+              35617.53963567122,
+              -17859.871720938827
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 35.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 1,
+            "control_id": "chicago-field-museum",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.617039,
+              41.866278
+            ],
+            "source_xz_before_feature_flows": [
+              35247.74857811003,
+              -18838.083425647175
+            ],
+            "source_prediction_delta_game_units": 3.637978807091713e-12,
+            "observed_native_target_xz": [
+              35353.255208466195,
+              -17752.84511540061
+            ],
+            "authored_flow_target_xz": [
+              35353.255208466195,
+              -17752.84511540061
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 20.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 2,
+            "control_id": "chicago-public-library-harold-washington",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.6282,
+              41.8763
+            ],
+            "source_xz_before_feature_flows": [
+              35217.01447067231,
+              -18894.826113141236
+            ],
+            "source_prediction_delta_game_units": 7.275957614183426e-12,
+            "observed_native_target_xz": [
+              34493.02186418228,
+              -18347.138138898063
+            ],
+            "authored_flow_target_xz": [
+              34493.02186418228,
+              -18347.138138898063
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 20.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 3,
+            "control_id": "chicago-old-main-post-office",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.6388,
+              41.8756
+            ],
+            "source_xz_before_feature_flows": [
+              35159.61121816866,
+              -18883.36841584454
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              33710.96760545162,
+              -18275.992862177085
+            ],
+            "authored_flow_target_xz": [
+              33710.96760545162,
+              -18275.992862177085
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 25.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 4,
+            "control_id": "chicago-centennial-wheel",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.60748,
+              41.89171
+            ],
+            "source_xz_before_feature_flows": [
+              35367.79222388296,
+              -19006.430660263653
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              35963.98006692915,
+              -19268.016348329693
+            ],
+            "authored_flow_target_xz": [
+              35963.98006692915,
+              -19268.016348329693
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 30.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 1,
+        "name": "san_francisco_soft",
+        "control_count": 3,
+        "control_ids_in_exact_config_order": [
+          "san-francisco-golden-gate-bridge-midspan",
+          "san-francisco-alcatraz-island",
+          "san-francisco-oakland-bay-bridge-model-group-center"
+        ],
+        "radius_game_units": 7000,
+        "integration_steps": 96,
+        "dense_control_groups": null,
+        "target_policy": "source-uncertainty-reconciled coefficient; original observed targets retained",
+        "max_source_projection_delta_game_units": 1.8189894035458565e-12,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "san-francisco-golden-gate-bridge-midspan",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.4779444,
+              37.8188889
+            ],
+            "source_xz_before_feature_flows": [
+              -115177.10870999504,
+              -8891.36383872315
+            ],
+            "source_prediction_delta_game_units": 1.8189894035458565e-12,
+            "observed_native_target_xz": [
+              -116631.06049766966,
+              -11539.305538822788
+            ],
+            "authored_flow_target_xz": [
+              -116606.64323182628,
+              -11533.93924319792
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 24.99999999999713,
+            "geographic_uncertainty_radius_meters": 300,
+            "geographic_semantic_uncertainty_note": "Golden Gate Bridge, at the Bridge District's explicitly approximate published bridge-location coordinate (37\u00b049\u20328.0\u2033N, 122\u00b028\u203240.6\u2033W).",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 25.0,
+            "reconciliation_receipt": "uncertain-coastal-target-reconciliation.json"
+          },
+          {
+            "control_index": 1,
+            "control_id": "san-francisco-alcatraz-island",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.4230122,
+              37.8266636
+            ],
+            "source_xz_before_feature_flows": [
+              -114906.6206543286,
+              -8978.390700967711
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -114846.95264638567,
+              -10863.070343103074
+            ],
+            "authored_flow_target_xz": [
+              -114877.01970937927,
+              -10836.689067111578
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 40.00000000000169,
+            "geographic_uncertainty_radius_meters": 150,
+            "geographic_semantic_uncertainty_note": "Alcatraz Island location recorded in National Park Service NPGallery asset metadata; NPS independently identifies Alcatraz Island as a National Historic Landmark in Golden Gate National Recreation Area.",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 40.0,
+            "reconciliation_receipt": "uncertain-coastal-target-reconciliation.json"
+          },
+          {
+            "control_index": 2,
+            "control_id": "san-francisco-oakland-bay-bridge-model-group-center",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.3779722,
+              37.7982222
+            ],
+            "source_xz_before_feature_flows": [
+              -114764.14370843137,
+              -8848.658798020693
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -114446.5812697598,
+              -9152.142701198172
+            ],
+            "authored_flow_target_xz": [
+              -114401.49923684674,
+              -9241.40417277704
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 99.9999999999987,
+            "geographic_uncertainty_radius_meters": 500,
+            "geographic_semantic_uncertainty_note": "San Francisco\u2013Oakland Bay Bridge, ASCE Historical Civil Engineering Landmark location (37\u00b047\u203253.6\u2033N, 122\u00b022\u203240.7\u2033W).",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 100.0,
+            "reconciliation_receipt": "uncertain-coastal-target-reconciliation.json"
+          }
+        ]
+      },
+      {
+        "flow_index": 2,
+        "name": "seattle5",
+        "control_count": 5,
+        "control_ids_in_exact_config_order": [
+          "seattle-space-needle-placeholder-center",
+          "seattle-lacey-murrow-bridge-named-mesh-group-center",
+          "everett-boeing-factory-darwing-hall-center",
+          "seattle-t-mobile-park-safeco-field-mesh-center",
+          "seattle-seatac-rest-area-building-center"
+        ],
+        "radius_game_units": 7000,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            2
+          ],
+          [
+            4
+          ]
+        ],
+        "target_policy": "observed named native feature/model center",
+        "max_source_projection_delta_game_units": 0.0,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "seattle-space-needle-placeholder-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.3491,
+              47.6204
+            ],
+            "source_xz_before_feature_flows": [
+              -96985.1166158055,
+              -62929.708021317776
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -100169.07631612473,
+              -64185.63549895597
+            ],
+            "authored_flow_target_xz": [
+              -100169.07631612473,
+              -64185.63549895597
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 40,
+            "geographic_semantic_uncertainty_note": "Space Needle tower point from Wikidata Q5317 P625 coordinate location; City of Seattle landmark nomination independently identifies the landmark site.",
+            "native_feature_uncertainty_game_units": 20
+          },
+          {
+            "control_index": 1,
+            "control_id": "seattle-lacey-murrow-bridge-named-mesh-group-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.2789722,
+              47.5897778
+            ],
+            "source_xz_before_feature_flows": [
+              -96901.89730294424,
+              -62701.76612057139
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -98321.85859352045,
+              -62601.91825492641
+            ],
+            "authored_flow_target_xz": [
+              -98321.85859352045,
+              -62601.91825492641
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 500,
+            "geographic_semantic_uncertainty_note": "Lacey V. Murrow Bridge location published by the American Society of Civil Engineers at Seattle, WA; WSDOT identifies the Murrow Bridge as the I-90 floating span between Mercer Island and Seattle and reports its length as 6,620 ft.",
+            "native_feature_uncertainty_game_units": 100
+          },
+          {
+            "control_index": 2,
+            "control_id": "everett-boeing-factory-darwing-hall-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.27194444444444,
+              47.925555555555555
+            ],
+            "source_xz_before_feature_flows": [
+              -95638.32728348931,
+              -63890.63187945968
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99373.494,
+              -65134.768
+            ],
+            "authored_flow_target_xz": [
+              -99373.494,
+              -65134.768
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "Feature coordinate for the Boeing Everett Factory; geographic precision is about 31 m latitude. It is not a surveyed point for the Darwing mesh center.",
+            "native_feature_uncertainty_game_units": [
+              100,
+              200
+            ]
+          },
+          {
+            "control_index": 3,
+            "control_id": "seattle-t-mobile-park-safeco-field-mesh-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.3325,
+              47.591388888889
+            ],
+            "source_xz_before_feature_flows": [
+              -97062.86225367927,
+              -62798.492946388375
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99933.97613720229,
+              -62907.604067695414
+            ],
+            "authored_flow_target_xz": [
+              -99933.97613720229,
+              -62907.604067695414
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "Named stadium feature-location point; no precision stated, not explicitly a surveyed building center.",
+            "native_feature_uncertainty_game_units": [
+              100,
+              200
+            ]
+          },
+          {
+            "control_index": 4,
+            "control_id": "seattle-seatac-rest-area-building-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.314556889,
+              47.271133531
+            ],
+            "source_xz_before_feature_flows": [
+              -98524.31423761506,
+              -61571.78781817604
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99822.34321240471,
+              -60809.96031143242
+            ],
+            "authored_flow_target_xz": [
+              -99822.34321240471,
+              -60809.96031143242
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 3,
+        "name": "galveston_soft",
+        "control_count": 4,
+        "control_ids_in_exact_config_order": [
+          "galveston-bishops-palace",
+          "galveston-sacred-heart",
+          "galveston-american-national",
+          "galveston-seawolf-park"
+        ],
+        "radius_game_units": 6000,
+        "integration_steps": 96,
+        "dense_control_groups": null,
+        "target_policy": "weighted-affine reconciled coefficient; original observed targets retained",
+        "max_source_projection_delta_game_units": 0.0,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "galveston-bishops-palace",
+            "feature_group": "galveston",
+            "geographic_lonlat_wgs84": [
+              -94.7820299299999,
+              29.3030657199999
+            ],
+            "source_xz_before_feature_flows": [
+              6506.068264673705,
+              54812.42460050528
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              6573.460314632397,
+              54856.73839134246
+            ],
+            "authored_flow_target_xz": [
+              6609.993678309958,
+              54862.33040013634
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 36.958858531451696,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "THC identifies the building at 1402 Ave. J and Wikidata carries a second-level coordinate. This is a building location, not a declared footprint centroid. 70u is a conservative working tolerance combining point-to-building semantics with the approximately 29u half-diagonal of the model footprint; it is not a statistical interval.",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 70.0,
+            "reconciliation_receipt": "galveston-soft-reconciliation.json"
+          },
+          {
+            "control_index": 1,
+            "control_id": "galveston-sacred-heart",
+            "feature_group": "galveston",
+            "geographic_lonlat_wgs84": [
+              -94.78128313130009,
+              29.303749747740312
+            ],
+            "source_xz_before_feature_flows": [
+              6509.448002350194,
+              54808.528269966984
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              6653.701956986594,
+              54839.89856968481
+            ],
+            "authored_flow_target_xz": [
+              6608.308980926444,
+              54832.95045717186
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 45.92165658042017,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "The GPS is high-precision metadata but the page describes an exterior photograph and does not state building-centroid semantics. THC independently confirms the named building/address. 80u is a conservative working tolerance, larger than the approximately 30u half-diagonal of the model footprint; it is not a statistical interval.",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 80.0,
+            "reconciliation_receipt": "galveston-soft-reconciliation.json"
+          },
+          {
+            "control_index": 2,
+            "control_id": "galveston-american-national",
+            "feature_group": "galveston",
+            "geographic_lonlat_wgs84": [
+              -94.7899,
+              29.307
+            ],
+            "source_xz_before_feature_flows": [
+              6461.449516757362,
+              54786.80980349232
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              6523.221741594479,
+              54626.51890719494
+            ],
+            "authored_flow_target_xz": [
+              6510.039225042089,
+              54624.50111466048
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 13.336049991138882,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "The Q4744566 coordinate is rounded to a tenth of an arc-second and its headquarters point is tied to One Moody Plaza; Q7092936 independently names the building. The building centroid is not stated. 100u is a conservative working tolerance, larger than the approximately 43u half-diagonal of the mesh footprint; it is not a statistical interval.",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 150.0,
+            "reconciliation_receipt": "galveston-soft-reconciliation.json"
+          },
+          {
+            "control_index": 3,
+            "control_id": "galveston-seawolf-park",
+            "feature_group": "galveston",
+            "geographic_lonlat_wgs84": [
+              -94.7788068,
+              29.3352358
+            ],
+            "source_xz_before_feature_flows": [
+              6496.3249596210135,
+              54620.9899527489
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              6286.232794314916,
+              53300.20314064199
+            ],
+            "authored_flow_target_xz": [
+              6293.450011872625,
+              53301.30784987183
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 7.301274666645111,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "City confirms the park is on Pelican Island but publishes an address, not a surveyed centroid. The public gazetteer point denotes the named park feature and does not state whether it is the park center, entrance, or label point. City plan says 15 acres and notes the park is surrounded by Galveston Bay. 180u is an intentionally broad working tolerance for a park-point-to-scenic-group-center correspondence, not a confidence interval; the large displacement is retained as a meaningful city-layout signal, not dismissed.",
+            "native_feature_uncertainty_game_units": null,
+            "native_working_allowance_game_units": 180.0,
+            "reconciliation_receipt": "galveston-soft-reconciliation.json"
+          }
+        ]
+      },
+      {
+        "flow_index": 4,
+        "name": "south_bc_pair",
+        "control_count": 2,
+        "control_ids_in_exact_config_order": [
+          "pnw-ferry-swartz-bay",
+          "pnw-ferry-tsawwassen-berth5"
+        ],
+        "radius_game_units": 2000,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "target_policy": "linked ferry activation node; terminal-site correspondence",
+        "max_source_projection_delta_game_units": 2.9103830456733704e-11,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "pnw-ferry-swartz-bay",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.41,
+              48.6882
+            ],
+            "source_xz_before_feature_flows": [
+              -103170.92690224672,
+              -71500.64847374719
+            ],
+            "source_prediction_delta_game_units": 2.9103830456733704e-11,
+            "observed_native_target_xz": [
+              -101525.58984375,
+              -70927.89453125
+            ],
+            "authored_flow_target_xz": [
+              -101525.58984375,
+              -70927.89453125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 400,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null,
+            "native_site_correspondence_allowance_game_units": 400
+          },
+          {
+            "control_index": 1,
+            "control_id": "pnw-ferry-tsawwassen-berth5",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.128929,
+              49.008657
+            ],
+            "source_xz_before_feature_flows": [
+              -102079.08683428042,
+              -72933.61229675452
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -101683.703125,
+              -71502.8125
+            ],
+            "authored_flow_target_xz": [
+              -101683.703125,
+              -71502.8125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 400,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null,
+            "native_site_correspondence_allowance_game_units": 400
+          }
+        ]
+      },
+      {
+        "flow_index": 5,
+        "name": "north_bc_pair",
+        "control_count": 2,
+        "control_ids_in_exact_config_order": [
+          "pnw-ferry-duke-point",
+          "pnw-ferry-horseshoe-bay"
+        ],
+        "radius_game_units": 3500,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "target_policy": "linked ferry activation node; terminal-site correspondence",
+        "max_source_projection_delta_game_units": 0.0,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "pnw-ferry-duke-point",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.892372,
+              49.160884
+            ],
+            "source_xz_before_feature_flows": [
+              -105432.04157595981,
+              -77182.94003956513
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -103627.58203125,
+              -74243.23828125
+            ],
+            "authored_flow_target_xz": [
+              -103627.58203125,
+              -74243.23828125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 350,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null,
+            "native_site_correspondence_allowance_game_units": 400
+          },
+          {
+            "control_index": 1,
+            "control_id": "pnw-ferry-horseshoe-bay",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.271526,
+              49.375094
+            ],
+            "source_xz_before_feature_flows": [
+              -101339.01750170086,
+              -77207.39749277139
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -103693.41015625,
+              -76098.12109375
+            ],
+            "authored_flow_target_xz": [
+              -103693.41015625,
+              -76098.12109375
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 850,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null,
+            "native_site_correspondence_allowance_game_units": 500
+          }
+        ]
+      }
+    ],
+    "source_reconciliations": {
+      "san_francisco": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/uncertain-coastal-target-reconciliation.json",
+        "sha256": "0067d98e249fa9eb7616f399dac2af0efa960bea4e23e434d4c62d5968192f1a"
+      },
+      "galveston": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+        "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c"
+      }
+    }
+  },
+  "retired_diagnostics": [
+    {
+      "id": "galveston-bishops-palace",
+      "role": "retired_diagnostic",
+      "feature_group": "galveston",
+      "geographic": {
+        "name": "Bishop's Palace",
+        "point_lonlat_wgs84": [
+          -94.7820299299999,
+          29.3030657199999
+        ],
+        "canonical_input_latlon_wgs84": [
+          29.3030657199999,
+          -94.7820299299999
+        ],
+        "sources": [
+          "https://atlas.thc.texas.gov/Details/2070000746/print",
+          "https://www.wikidata.org/wiki/Q3728690"
+        ],
+        "source_coordinate_qualification": "THC identifies the building at 1402 Ave. J and Wikidata carries a second-level coordinate. This is a building location, not a declared footprint centroid. 70u is a conservative working tolerance combining point-to-building semantics with the approximately 29u half-diagonal of the model footprint; it is not a statistical interval.",
+        "primary_snapshot_or_record": {
+          "snapshot": "wikidata-Q3728690-Bishops-Palace.json",
+          "sha256": "ca32a32e73ba29345ee12dafbfc0e6898a67fdadb212c889cbec630331e41715",
+          "pageid": 3554227,
+          "lastrevid": 2540942441,
+          "modified": "2026-09-06T07:47:40Z",
+          "label": "Bishop's Palace",
+          "P625": [
+            {
+              "value": {
+                "latitude": 29.303056,
+                "longitude": -94.782222,
+                "altitude": null,
+                "precision": 0.001,
+                "globe": "http://www.wikidata.org/entity/Q2"
+              },
+              "references": [
+                {
+                  "P143": [
+                    {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": {
+                "latitude": 29.3030657199999,
+                "longitude": -94.7820299299999,
+                "altitude": null,
+                "precision": 1e-05,
+                "globe": "http://www.wikidata.org/entity/Q2"
+              },
+              "references": [
+                {
+                  "P854": [
+                    "https://atlas.thc.state.tx.us/Details/2070000746"
+                  ],
+                  "P248": [
+                    {
+                      "entity-type": "item",
+                      "numeric-id": 88604909,
+                      "id": "Q88604909"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "P159": []
+        }
+      },
+      "native": {
+        "observed_feature_center_xz": [
+          6573.460314632397,
+          54856.73839134246
+        ],
+        "flow_target_xz": [
+          6609.993678309958,
+          54862.33040013634
+        ],
+        "target_semantics": "Weighted-affine reconciled coefficient; not a new observation and not an exact feature center.",
+        "model_feature_semantics": "Named Bishop's Palace placement/model center; correspondence remains semantic and model-scale dependent.",
+        "native_aabb_xz": [
+          6556.851582164017,
+          54833.52705531817,
+          6595.561091736281,
+          54875.367455612315
+        ],
+        "map_model_unit": "tx_1q002",
+        "map_model_name": "tx galveston palace",
+        "map_item_uid": "0x37d7cc3435160312",
+        "map_node_uid": "0x37d7cc34a5160bcf",
+        "sector": "sec+0001+0013.aux",
+        "pmd_path": "model/panorama/tx_galvestone/tx_galveston_palace.pmd",
+        "pmg_path": "model/panorama/tx_galvestone/tx_galveston_palace.pmg",
+        "model_hashes": {
+          "pmd_sha256": "b3db96047ea1ef2024effadf52de5c59af70a2c1e1cd92d28bb6b0bf22a7fe5a",
+          "pmg_sha256": "19d53b4411cfabe306759b4f625f0bdb37712d1a044ae2a8feb891b3b947b60b"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "THC identifies the building at 1402 Ave. J and Wikidata carries a second-level coordinate. This is a building location, not a declared footprint centroid. 70u is a conservative working tolerance combining point-to-building semantics with the approximately 29u half-diagonal of the model footprint; it is not a statistical interval.",
+        "target_residual_native_units": 36.958858531451696,
+        "allowance_is_not_statistical_interval": true,
+        "native_working_allowance_game_units": 70
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/galveston-feature-control-qualification.json",
+        "sha256": "df8cf5835de4bd5ca7d94992a175b3655db183e7a57a92e62fedae8b4496a1bc"
+      },
+      "coordinate_source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-coordinates-provenance.json",
+        "sha256": "875280c0d1c9efd73d19ef095b79e48c0d199680ddd0b3410300a0edda124a26"
+      },
+      "target_reconciliation_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+        "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c"
+      },
+      "historical_role": "fit",
+      "fit_target_status": "observed correspondence and authored soft coefficient retained for audit; unused by street-ground-base",
+      "retirement_reason": "Causal ablation found that the complete Galveston compact flow caused broad source-qualified mainland-road ground losses. The four observation pairs and reconciled soft targets are retained for audit but are no longer active fit targets.",
+      "ablation_coordinates": {
+        "original_observed_native_xz": [
+          6573.460314632397,
+          54856.73839134246
+        ],
+        "authored_reconciled_native_xz": [
+          6609.993678309958,
+          54862.33040013634
+        ],
+        "native_working_allowance_game_units": 70
+      }
+    },
+    {
+      "id": "galveston-sacred-heart",
+      "role": "retired_diagnostic",
+      "feature_group": "galveston",
+      "geographic": {
+        "name": "Sacred Heart Church",
+        "point_lonlat_wgs84": [
+          -94.78128313130009,
+          29.303749747740312
+        ],
+        "canonical_input_latlon_wgs84": [
+          29.303749747740312,
+          -94.78128313130009
+        ],
+        "sources": [
+          "https://atlas.thc.texas.gov/Details/5167007170",
+          "https://exhibits.lib.ttu.edu/s/openarch/item/13974"
+        ],
+        "source_coordinate_qualification": "The GPS is high-precision metadata but the page describes an exterior photograph and does not state building-centroid semantics. THC independently confirms the named building/address. 80u is a conservative working tolerance, larger than the approximately 30u half-diagonal of the model footprint; it is not a statistical interval.",
+        "primary_snapshot_or_record": {
+          "coordinate_sources": "TTU GPS coordinates; Texas Historical Commission identity/address",
+          "ttuhash": "a8818b41226ff8142784665ac88e287b33adc49c0858059a4998940a14d6d999",
+          "thc_hash": "05af373a6505270611a7d2db4e2700e3e66d7717cb57958f897c41f238d9d438"
+        }
+      },
+      "native": {
+        "observed_feature_center_xz": [
+          6653.701956986594,
+          54839.89856968481
+        ],
+        "flow_target_xz": [
+          6608.308980926444,
+          54832.95045717186
+        ],
+        "target_semantics": "Weighted-affine reconciled coefficient; not a new observation and not an exact feature center.",
+        "model_feature_semantics": "Named Sacred Heart Church placement/model center; correspondence remains semantic and model-scale dependent.",
+        "native_aabb_xz": [
+          6629.778011027155,
+          54826.98826363755,
+          6679.964889870467,
+          54860.86908778785
+        ],
+        "map_model_unit": "tx_19004",
+        "map_model_name": "tx galveston sacred heart",
+        "map_item_uid": "0x37d7cc3496160347",
+        "map_node_uid": "0x37d7cc34abd60c14",
+        "sector": "sec+0001+0013.aux",
+        "pmd_path": "model/panorama/tx_galvestone/tx_galveston_sacred_heart.pmd",
+        "pmg_path": "model/panorama/tx_galvestone/tx_galveston_sacred_heart.pmg",
+        "model_hashes": {
+          "pmd_sha256": "7325d0e51640f9d549ae6754e7529da9025014f0821ee0a0d94c8bb49277485d",
+          "pmg_sha256": "045a76230971d9a199a489cc7ada2e4862ae455c3d1c06fc7d10bc8752711f09"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "The GPS is high-precision metadata but the page describes an exterior photograph and does not state building-centroid semantics. THC independently confirms the named building/address. 80u is a conservative working tolerance, larger than the approximately 30u half-diagonal of the model footprint; it is not a statistical interval.",
+        "target_residual_native_units": 45.92165658042017,
+        "allowance_is_not_statistical_interval": true,
+        "native_working_allowance_game_units": 80
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/galveston-feature-control-qualification.json",
+        "sha256": "df8cf5835de4bd5ca7d94992a175b3655db183e7a57a92e62fedae8b4496a1bc"
+      },
+      "coordinate_source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-coordinates-provenance.json",
+        "sha256": "875280c0d1c9efd73d19ef095b79e48c0d199680ddd0b3410300a0edda124a26"
+      },
+      "target_reconciliation_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+        "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c"
+      },
+      "historical_role": "fit",
+      "fit_target_status": "observed correspondence and authored soft coefficient retained for audit; unused by street-ground-base",
+      "retirement_reason": "Causal ablation found that the complete Galveston compact flow caused broad source-qualified mainland-road ground losses. The four observation pairs and reconciled soft targets are retained for audit but are no longer active fit targets.",
+      "ablation_coordinates": {
+        "original_observed_native_xz": [
+          6653.701956986594,
+          54839.89856968481
+        ],
+        "authored_reconciled_native_xz": [
+          6608.308980926444,
+          54832.95045717186
+        ],
+        "native_working_allowance_game_units": 80
+      }
+    },
+    {
+      "id": "galveston-american-national",
+      "role": "retired_diagnostic",
+      "feature_group": "galveston",
+      "geographic": {
+        "name": "American National Insurance / One Moody Plaza",
+        "point_lonlat_wgs84": [
+          -94.7899,
+          29.307
+        ],
+        "canonical_input_latlon_wgs84": [
+          29.307,
+          -94.7899
+        ],
+        "sources": [
+          "https://www.wikidata.org/wiki/Q4744566",
+          "https://www.wikidata.org/wiki/Q7092936"
+        ],
+        "source_coordinate_qualification": "The Q4744566 coordinate is rounded to a tenth of an arc-second and its headquarters point is tied to One Moody Plaza; Q7092936 independently names the building. The building centroid is not stated. 100u is a conservative working tolerance, larger than the approximately 43u half-diagonal of the mesh footprint; it is not a statistical interval.",
+        "primary_snapshot_or_record": {
+          "snapshot": "wikidata-Q7092936-One-Moody-Plaza.json",
+          "sha256": "fba7021a6b6bcc11b8cdcc777d0167ff5e897aaf21835028d56895c726778e25",
+          "pageid": 6987404,
+          "lastrevid": 2485959665,
+          "modified": "2026-05-01T02:43:54Z",
+          "label": "One Moody Plaza",
+          "P625": [
+            {
+              "value": {
+                "latitude": 29.307,
+                "longitude": -94.7899,
+                "altitude": null,
+                "precision": 0.001,
+                "globe": "http://www.wikidata.org/entity/Q2"
+              },
+              "references": [
+                {
+                  "P143": [
+                    {
+                      "entity-type": "item",
+                      "numeric-id": 328,
+                      "id": "Q328"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "P159": []
+        },
+        "source_precision_degrees": 0.001
+      },
+      "native": {
+        "observed_feature_center_xz": [
+          6523.221741594479,
+          54626.51890719494
+        ],
+        "flow_target_xz": [
+          6510.039225042089,
+          54624.50111466048
+        ],
+        "target_semantics": "Weighted-affine reconciled coefficient; not a new observation and not an exact feature center.",
+        "model_feature_semantics": "Named American National Insurance / One Moody Plaza placement/model center; correspondence remains semantic and model-scale dependent.",
+        "native_aabb_xz": [
+          6489.12693286819,
+          54595.63073934198,
+          6550.010452309887,
+          54656.48077554464
+        ],
+        "map_model_unit": "tx_19003",
+        "map_model_name": "tx galveston american national",
+        "map_item_uid": "0x37d7cc34b9d60709",
+        "map_node_uid": "0x37d7cc34f0d6112f",
+        "sector": "sec+0001+0013.base",
+        "pmd_path": "model/panorama/tx_galvestone/tx_galveston_american_national.pmd",
+        "pmg_path": "model/panorama/tx_galvestone/tx_galveston_american_national.pmg",
+        "model_hashes": {
+          "pmd_sha256": "118bf83bb6226967fa5dd2cc8d49ac550a9d7621500edfd80165c85c65d68103",
+          "pmg_sha256": "9d032e596e0a1cba805ba1bbd835e8a0670dfb8c157643d6e460aaa8858fcd6a"
+        },
+        "model_radius_approx_game_units": 43
+      },
+      "uncertainty_basis": {
+        "geographic": "The Q4744566 coordinate is rounded to a tenth of an arc-second and its headquarters point is tied to One Moody Plaza; Q7092936 independently names the building. The building centroid is not stated. 100u is a conservative working tolerance, larger than the approximately 43u half-diagonal of the mesh footprint; it is not a statistical interval.",
+        "target_residual_native_units": 13.336049991138882,
+        "allowance_is_not_statistical_interval": true,
+        "native_working_allowance_game_units": 150,
+        "precision_propagation_max_native_units": 61.460671872738835,
+        "working_allowance_is_statistical_interval": false
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/galveston-feature-control-qualification.json",
+        "sha256": "df8cf5835de4bd5ca7d94992a175b3655db183e7a57a92e62fedae8b4496a1bc"
+      },
+      "coordinate_source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-coordinates-provenance.json",
+        "sha256": "875280c0d1c9efd73d19ef095b79e48c0d199680ddd0b3410300a0edda124a26"
+      },
+      "target_reconciliation_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+        "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c"
+      },
+      "historical_role": "fit",
+      "fit_target_status": "observed correspondence and authored soft coefficient retained for audit; unused by street-ground-base",
+      "retirement_reason": "Causal ablation found that the complete Galveston compact flow caused broad source-qualified mainland-road ground losses. The four observation pairs and reconciled soft targets are retained for audit but are no longer active fit targets.",
+      "ablation_coordinates": {
+        "original_observed_native_xz": [
+          6523.221741594479,
+          54626.51890719494
+        ],
+        "authored_reconciled_native_xz": [
+          6510.039225042089,
+          54624.50111466048
+        ],
+        "native_working_allowance_game_units": 150
+      }
+    },
+    {
+      "id": "galveston-seawolf-park",
+      "role": "retired_diagnostic",
+      "feature_group": "galveston",
+      "geographic": {
+        "name": "Seawolf Park panorama center",
+        "point_lonlat_wgs84": [
+          -94.7788068,
+          29.3352358
+        ],
+        "canonical_input_latlon_wgs84": [
+          29.3352358,
+          -94.7788068
+        ],
+        "sources": [
+          "https://www.galvestontx.gov/1337/Seawolf-Park",
+          "https://galvestontx.gov/DocumentCenter/View/1713/Galveston-Adopted-Parks-Recreation-and-Open-Space-Master-Plan-PDF",
+          "https://www.anyplaceamerica.com/directory/tx/galveston-county-48167/parks/seawolf-park-2029396/"
+        ],
+        "source_coordinate_qualification": "City confirms the park is on Pelican Island but publishes an address, not a surveyed centroid. The public gazetteer point denotes the named park feature and does not state whether it is the park center, entrance, or label point. City plan says 15 acres and notes the park is surrounded by Galveston Bay. 180u is an intentionally broad working tolerance for a park-point-to-scenic-group-center correspondence, not a confidence interval; the large displacement is retained as a meaningful city-layout signal, not dismissed.",
+        "primary_snapshot_or_record": {
+          "snapshot": "usgs-gnis-TX_Features_20210825.txt",
+          "extract": "usgs-gnis-Seawolf-Park-2029396-extract.json",
+          "sha256": "9a134d0e38106a72f1ee92b8a32e0a9827bd41a4c87749233d0ac114ba987985",
+          "feature_record": {
+            "FEATURE_ID": "2029396",
+            "FEATURE_NAME": "Seawolf Park",
+            "FEATURE_CLASS": "Park",
+            "STATE_ALPHA": "TX",
+            "STATE_NUMERIC": "48",
+            "COUNTY_NAME": "Galveston",
+            "COUNTY_NUMERIC": "167",
+            "PRIMARY_LAT_DMS": "292007N",
+            "PRIM_LONG_DMS": "0944644W",
+            "PRIM_LAT_DEC": "29.3352358",
+            "PRIM_LONG_DEC": "-94.7788068",
+            "SOURCE_LAT_DMS": "",
+            "SOURCE_LONG_DMS": "",
+            "SOURCE_LAT_DEC": "",
+            "SOURCE_LONG_DEC": "",
+            "ELEV_IN_M": "1",
+            "ELEV_IN_FT": "3",
+            "MAP_NAME": "Galveston",
+            "DATE_CREATED": "02/12/2004",
+            "DATE_EDITED": ""
+          },
+          "classification_note": "USGS archived data. USGS says static legacy domestic data last updated Aug 2021 and not refreshed, and that Park was one of the administrative feature classes removed from current GNIS in 2021. Record is primary historical GNIS evidence, not a current maintained GNIS point."
+        }
+      },
+      "native": {
+        "observed_feature_center_xz": [
+          6286.232794314916,
+          53300.20314064199
+        ],
+        "flow_target_xz": [
+          6293.450011872625,
+          53301.30784987183
+        ],
+        "target_semantics": "Weighted-affine reconciled coefficient; not a new observation and not an exact feature center.",
+        "model_feature_semantics": "Named Seawolf Park panorama center placement/model center; correspondence remains semantic and model-scale dependent.",
+        "native_aabb_xz": [
+          6203.8221399366585,
+          53253.87815522074,
+          6367.660235235979,
+          53365.468823503405
+        ],
+        "map_model_unit": "tx_1l002",
+        "map_model_name": "tx galveston seawolf park",
+        "map_item_uid": "0x37d7cc34abd60549",
+        "map_node_uid": "0x37d7cc3425d60ede",
+        "sector": "sec+0001+0013.aux",
+        "pmd_path": "model/panorama/tx_galvestone/tx_galveston_seawolf_park.pmd",
+        "pmg_path": "model/panorama/tx_galvestone/tx_galveston_seawolf_park.pmg",
+        "model_hashes": {
+          "pmg_sha256": "cce92a4077e74a2eab4f34bd71cacb4ff75685eb87693e9c65ba1dcb61b1ce99"
+        }
+      },
+      "uncertainty_basis": {
+        "geographic": "City confirms the park is on Pelican Island but publishes an address, not a surveyed centroid. The public gazetteer point denotes the named park feature and does not state whether it is the park center, entrance, or label point. City plan says 15 acres and notes the park is surrounded by Galveston Bay. 180u is an intentionally broad working tolerance for a park-point-to-scenic-group-center correspondence, not a confidence interval; the large displacement is retained as a meaningful city-layout signal, not dismissed.",
+        "target_residual_native_units": 7.301274666645111,
+        "allowance_is_not_statistical_interval": true,
+        "native_working_allowance_game_units": 180
+      },
+      "source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/galveston-feature-control-qualification.json",
+        "sha256": "df8cf5835de4bd5ca7d94992a175b3655db183e7a57a92e62fedae8b4496a1bc"
+      },
+      "coordinate_source_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/views/weak-final/texas-feature-controls/source-coordinates-provenance.json",
+        "sha256": "875280c0d1c9efd73d19ef095b79e48c0d199680ddd0b3410300a0edda124a26"
+      },
+      "target_reconciliation_record": {
+        "path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/galveston-soft-reconciliation.json",
+        "sha256": "6bc99b8fd3771a361c6250c1c603e161954dcb4204f64aa78c0bdde3a0778c1c"
+      },
+      "historical_role": "fit",
+      "fit_target_status": "observed correspondence and authored soft coefficient retained for audit; unused by street-ground-base",
+      "retirement_reason": "Causal ablation found that the complete Galveston compact flow caused broad source-qualified mainland-road ground losses. The four observation pairs and reconciled soft targets are retained for audit but are no longer active fit targets.",
+      "ablation_coordinates": {
+        "original_observed_native_xz": [
+          6286.232794314916,
+          53300.20314064199
+        ],
+        "authored_reconciled_native_xz": [
+          6293.450011872625,
+          53301.30784987183
+        ],
+        "native_working_allowance_game_units": 180
+      }
+    }
+  ],
+  "street_ground_configuration_wiring": {
+    "configuration_path": "local_outputs/work/2026-10-25_00-36-35/candidate-configs/street-ground-base.json",
+    "configuration_sha256": "93c633c5b49c4dcd0c59349f14226b295c54c56caf9b3bdbe3e7463f702eefd6",
+    "status": "Exact five-flow source/target wiring and provenance. Galveston flow retired after causal ablation. No model acceptance claim.",
+    "units": {
+      "geographic_coordinates": "WGS84 longitude, latitude",
+      "source_xz_and_native_target_xz": "ATS 1.61 native X,Z game-world units",
+      "geographic_uncertainty": "real-world meters as separately recorded on each control",
+      "soft_target_allowances": "native game-world units only; never converted/equated to real-world meters"
+    },
+    "fit_control_count": 17,
+    "frozen_check_count": 7,
+    "retired_diagnostic_count": 4,
+    "checks_preserved_exactly": true,
+    "max_source_coordinate_wiring_delta_game_units": 0.0,
+    "max_target_coordinate_wiring_delta_game_units": 0.0,
+    "all_17_source_and_target_pairs_match_config": true,
+    "flows": [
+      {
+        "flow_index": 0,
+        "name": "chicago",
+        "control_count": 5,
+        "control_ids_in_exact_config_order": [
+          "chicago-shedd-aquarium",
+          "chicago-field-museum",
+          "chicago-public-library-harold-washington",
+          "chicago-old-main-post-office",
+          "chicago-centennial-wheel"
+        ],
+        "radius_game_units": 6000,
+        "integration_steps": 96,
+        "dense_control_groups": null,
+        "target_policy": "observed_native_feature_center",
+        "max_source_projection_delta_game_units": 7.275957614183426e-12,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "chicago-shedd-aquarium",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.613889,
+              41.867778
+            ],
+            "source_xz_before_feature_flows": [
+              35268.34320645058,
+              -18849.67488285717
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              35617.53963567122,
+              -17859.871720938827
+            ],
+            "authored_flow_target_xz": [
+              35617.53963567122,
+              -17859.871720938827
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 35.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 1,
+            "control_id": "chicago-field-museum",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.617039,
+              41.866278
+            ],
+            "source_xz_before_feature_flows": [
+              35247.74857811003,
+              -18838.083425647175
+            ],
+            "source_prediction_delta_game_units": 3.637978807091713e-12,
+            "observed_native_target_xz": [
+              35353.255208466195,
+              -17752.84511540061
+            ],
+            "authored_flow_target_xz": [
+              35353.255208466195,
+              -17752.84511540061
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 20.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 2,
+            "control_id": "chicago-public-library-harold-washington",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.6282,
+              41.8763
+            ],
+            "source_xz_before_feature_flows": [
+              35217.01447067231,
+              -18894.826113141236
+            ],
+            "source_prediction_delta_game_units": 7.275957614183426e-12,
+            "observed_native_target_xz": [
+              34493.02186418228,
+              -18347.138138898063
+            ],
+            "authored_flow_target_xz": [
+              34493.02186418228,
+              -18347.138138898063
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 20.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 3,
+            "control_id": "chicago-old-main-post-office",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.6388,
+              41.8756
+            ],
+            "source_xz_before_feature_flows": [
+              35159.61121816866,
+              -18883.36841584454
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              33710.96760545162,
+              -18275.992862177085
+            ],
+            "authored_flow_target_xz": [
+              33710.96760545162,
+              -18275.992862177085
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 25.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 4,
+            "control_id": "chicago-centennial-wheel",
+            "feature_group": "chicago",
+            "geographic_lonlat_wgs84": [
+              -87.60748,
+              41.89171
+            ],
+            "source_xz_before_feature_flows": [
+              35367.79222388296,
+              -19006.430660263653
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              35963.98006692915,
+              -19268.016348329693
+            ],
+            "authored_flow_target_xz": [
+              35963.98006692915,
+              -19268.016348329693
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 30.0,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 1,
+        "name": "san_francisco_soft",
+        "control_count": 3,
+        "control_ids_in_exact_config_order": [
+          "san-francisco-golden-gate-bridge-midspan",
+          "san-francisco-alcatraz-island",
+          "san-francisco-oakland-bay-bridge-model-group-center"
+        ],
+        "radius_game_units": 7000,
+        "integration_steps": 96,
+        "dense_control_groups": null,
+        "target_policy": "source-uncertainty-reconciled coefficient; original observed targets retained",
+        "max_source_projection_delta_game_units": 1.8189894035458565e-12,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "san-francisco-golden-gate-bridge-midspan",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.4779444,
+              37.8188889
+            ],
+            "source_xz_before_feature_flows": [
+              -115177.10870999504,
+              -8891.36383872315
+            ],
+            "source_prediction_delta_game_units": 1.8189894035458565e-12,
+            "observed_native_target_xz": [
+              -116631.06049766966,
+              -11539.305538822788
+            ],
+            "authored_flow_target_xz": [
+              -116606.64323182628,
+              -11533.93924319792
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 24.99999999999713,
+            "geographic_uncertainty_radius_meters": 300,
+            "geographic_semantic_uncertainty_note": "Golden Gate Bridge, at the Bridge District's explicitly approximate published bridge-location coordinate (37\u00b049\u20328.0\u2033N, 122\u00b028\u203240.6\u2033W).",
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 1,
+            "control_id": "san-francisco-alcatraz-island",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.4230122,
+              37.8266636
+            ],
+            "source_xz_before_feature_flows": [
+              -114906.6206543286,
+              -8978.390700967711
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -114846.95264638567,
+              -10863.070343103074
+            ],
+            "authored_flow_target_xz": [
+              -114877.01970937927,
+              -10836.689067111578
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 40.00000000000169,
+            "geographic_uncertainty_radius_meters": 150,
+            "geographic_semantic_uncertainty_note": "Alcatraz Island location recorded in National Park Service NPGallery asset metadata; NPS independently identifies Alcatraz Island as a National Historic Landmark in Golden Gate National Recreation Area.",
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 2,
+            "control_id": "san-francisco-oakland-bay-bridge-model-group-center",
+            "feature_group": "san_francisco",
+            "geographic_lonlat_wgs84": [
+              -122.3779722,
+              37.7982222
+            ],
+            "source_xz_before_feature_flows": [
+              -114764.14370843137,
+              -8848.658798020693
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -114446.5812697598,
+              -9152.142701198172
+            ],
+            "authored_flow_target_xz": [
+              -114401.49923684674,
+              -9241.40417277704
+            ],
+            "target_status": "soft_reconciled_fit_coefficient_not_observed",
+            "target_displacement_from_observation_game_units": 99.9999999999987,
+            "geographic_uncertainty_radius_meters": 500,
+            "geographic_semantic_uncertainty_note": "San Francisco\u2013Oakland Bay Bridge, ASCE Historical Civil Engineering Landmark location (37\u00b047\u203253.6\u2033N, 122\u00b022\u203240.7\u2033W).",
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 2,
+        "name": "seattle5",
+        "control_count": 5,
+        "control_ids_in_exact_config_order": [
+          "seattle-space-needle-placeholder-center",
+          "seattle-lacey-murrow-bridge-named-mesh-group-center",
+          "everett-boeing-factory-darwing-hall-center",
+          "seattle-t-mobile-park-safeco-field-mesh-center",
+          "seattle-seatac-rest-area-building-center"
+        ],
+        "radius_game_units": 7000,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            2
+          ],
+          [
+            4
+          ]
+        ],
+        "target_policy": "observed named native feature/model center",
+        "max_source_projection_delta_game_units": 0.0,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "seattle-space-needle-placeholder-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.3491,
+              47.6204
+            ],
+            "source_xz_before_feature_flows": [
+              -96985.1166158055,
+              -62929.708021317776
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -100169.07631612473,
+              -64185.63549895597
+            ],
+            "authored_flow_target_xz": [
+              -100169.07631612473,
+              -64185.63549895597
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 40,
+            "geographic_semantic_uncertainty_note": "Space Needle tower point from Wikidata Q5317 P625 coordinate location; City of Seattle landmark nomination independently identifies the landmark site.",
+            "native_feature_uncertainty_game_units": 20
+          },
+          {
+            "control_index": 1,
+            "control_id": "seattle-lacey-murrow-bridge-named-mesh-group-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.2789722,
+              47.5897778
+            ],
+            "source_xz_before_feature_flows": [
+              -96901.89730294424,
+              -62701.76612057139
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -98321.85859352045,
+              -62601.91825492641
+            ],
+            "authored_flow_target_xz": [
+              -98321.85859352045,
+              -62601.91825492641
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 500,
+            "geographic_semantic_uncertainty_note": "Lacey V. Murrow Bridge location published by the American Society of Civil Engineers at Seattle, WA; WSDOT identifies the Murrow Bridge as the I-90 floating span between Mercer Island and Seattle and reports its length as 6,620 ft.",
+            "native_feature_uncertainty_game_units": 100
+          },
+          {
+            "control_index": 2,
+            "control_id": "everett-boeing-factory-darwing-hall-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.27194444444444,
+              47.925555555555555
+            ],
+            "source_xz_before_feature_flows": [
+              -95638.32728348931,
+              -63890.63187945968
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99373.494,
+              -65134.768
+            ],
+            "authored_flow_target_xz": [
+              -99373.494,
+              -65134.768
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "Feature coordinate for the Boeing Everett Factory; geographic precision is about 31 m latitude. It is not a surveyed point for the Darwing mesh center.",
+            "native_feature_uncertainty_game_units": [
+              100,
+              200
+            ]
+          },
+          {
+            "control_index": 3,
+            "control_id": "seattle-t-mobile-park-safeco-field-mesh-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.3325,
+              47.591388888889
+            ],
+            "source_xz_before_feature_flows": [
+              -97062.86225367927,
+              -62798.492946388375
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99933.97613720229,
+              -62907.604067695414
+            ],
+            "authored_flow_target_xz": [
+              -99933.97613720229,
+              -62907.604067695414
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": "Named stadium feature-location point; no precision stated, not explicitly a surveyed building center.",
+            "native_feature_uncertainty_game_units": [
+              100,
+              200
+            ]
+          },
+          {
+            "control_index": 4,
+            "control_id": "seattle-seatac-rest-area-building-center",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -122.314556889,
+              47.271133531
+            ],
+            "source_xz_before_feature_flows": [
+              -98524.31423761506,
+              -61571.78781817604
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -99822.34321240471,
+              -60809.96031143242
+            ],
+            "authored_flow_target_xz": [
+              -99822.34321240471,
+              -60809.96031143242
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": null,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 3,
+        "name": "south_bc_pair",
+        "control_count": 2,
+        "control_ids_in_exact_config_order": [
+          "pnw-ferry-swartz-bay",
+          "pnw-ferry-tsawwassen-berth5"
+        ],
+        "radius_game_units": 2000,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "target_policy": "linked ferry activation node; terminal-site correspondence",
+        "max_source_projection_delta_game_units": 2.9103830456733704e-11,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "pnw-ferry-swartz-bay",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.41,
+              48.6882
+            ],
+            "source_xz_before_feature_flows": [
+              -103170.92690224672,
+              -71500.64847374719
+            ],
+            "source_prediction_delta_game_units": 2.9103830456733704e-11,
+            "observed_native_target_xz": [
+              -101525.58984375,
+              -70927.89453125
+            ],
+            "authored_flow_target_xz": [
+              -101525.58984375,
+              -70927.89453125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 400,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 1,
+            "control_id": "pnw-ferry-tsawwassen-berth5",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.128929,
+              49.008657
+            ],
+            "source_xz_before_feature_flows": [
+              -102079.08683428042,
+              -72933.61229675452
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -101683.703125,
+              -71502.8125
+            ],
+            "authored_flow_target_xz": [
+              -101683.703125,
+              -71502.8125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 400,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      },
+      {
+        "flow_index": 4,
+        "name": "north_bc_pair",
+        "control_count": 2,
+        "control_ids_in_exact_config_order": [
+          "pnw-ferry-duke-point",
+          "pnw-ferry-horseshoe-bay"
+        ],
+        "radius_game_units": 3500,
+        "integration_steps": 96,
+        "dense_control_groups": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "target_policy": "linked ferry activation node; terminal-site correspondence",
+        "max_source_projection_delta_game_units": 0.0,
+        "controls": [
+          {
+            "control_index": 0,
+            "control_id": "pnw-ferry-duke-point",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.892372,
+              49.160884
+            ],
+            "source_xz_before_feature_flows": [
+              -105432.04157595981,
+              -77182.94003956513
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -103627.58203125,
+              -74243.23828125
+            ],
+            "authored_flow_target_xz": [
+              -103627.58203125,
+              -74243.23828125
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 350,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          },
+          {
+            "control_index": 1,
+            "control_id": "pnw-ferry-horseshoe-bay",
+            "feature_group": "pnw",
+            "geographic_lonlat_wgs84": [
+              -123.271526,
+              49.375094
+            ],
+            "source_xz_before_feature_flows": [
+              -101339.01750170086,
+              -77207.39749277139
+            ],
+            "source_prediction_delta_game_units": 0.0,
+            "observed_native_target_xz": [
+              -103693.41015625,
+              -76098.12109375
+            ],
+            "authored_flow_target_xz": [
+              -103693.41015625,
+              -76098.12109375
+            ],
+            "target_status": "native_feature_or_site_observation_used_as_fit_target",
+            "target_displacement_from_observation_game_units": 0.0,
+            "geographic_uncertainty_radius_meters": 850,
+            "geographic_semantic_uncertainty_note": null,
+            "native_feature_uncertainty_game_units": null
+          }
+        ]
+      }
+    ],
+    "flow_wiring_audit": "local_outputs/work/2026-10-25_00-36-35/landmarks/localized-control-wiring/street-ground-flow-wiring.json",
+    "flow_wiring_audit_sha256": "d7e17a19a603e707347b0ace57636f0993a49940905a096cd025056547178832",
+    "retired_flow": {
+      "name": "galveston_soft",
+      "previous_flow_index": 3,
+      "reason": "The complete coast-support compact field caused widespread losses of source-qualified mainland-road ground outside Galveston.",
+      "causal_ablation_path": "local_outputs/work/2026-10-25_00-36-35/galveston-flow-ablation/qualified-loss-point-ablation.json",
+      "causal_ablation_sha256": "b200f6ccf897bace772ad6c6994bcf1dbd97c949176f60597102bda434ea7dab",
+      "causal_receipt_scope": "Causalablationdiagnosticononlypreviouslyland\u2192waterR2lostroadrepresentatives; notanindependentcheckorsupplementalfitset",
+      "affected_representative_count": 99,
+      "with_flow_loss_gt50_game_units": 88,
+      "with_flow_loss_gt150_game_units": 62,
+      "with_flow_max_loss_game_units": 833.4937872583806,
+      "without_flow_result_key": "ablation",
+      "without_flow_loss_gt50_game_units": 0,
+      "without_flow_max_loss_game_units": 19.94547325153441,
+      "interpretation": "Causal ablation of the fitted candidate effect on a previously selected qualified-road cohort; not independent validation. Original facts and soft targets are retained below as retired diagnostics, not fit targets."
+    }
+  }
+}
