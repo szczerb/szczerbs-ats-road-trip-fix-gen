@@ -110,6 +110,32 @@ class ArchiveTests(unittest.TestCase):
             self.assertIn("--deep", command)
             self.assertIn("--list", command)
 
+    def test_only_opt_in_hashfs_v1_listing_discards_invalid_candidates(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'mod.scs'
+            extractor = root / 'extractor'
+            extractor.touch(mode=0o755)
+            result = SimpleNamespace(
+                returncode=0, stdout='/bad:/member.tobj\n/map/usa/sec+0000+0000.base\n', stderr='',
+            )
+            with patch('ats_road_trip.archive.subprocess.run', return_value=result):
+                for version in (1, 2):
+                    source.write_bytes(b'SCS#' + bytes((version, 0, 0, 0)))
+                    with Archive(source, extractor=extractor) as strict:
+                        with self.assertRaises(ArchiveError):
+                            strict.entries()
+                    with Archive(source, extractor=extractor, skip_invalid_deep_paths=True) as archive:
+                        if version == 2:
+                            with self.assertRaises(ArchiveError):
+                                archive.entries()
+                            continue
+                        self.assertEqual([entry.path for entry in archive.entries()],
+                                         ['map/usa/sec+0000+0000.base'])
+                        self.assertEqual(archive.discarded_deep_path_count, 1)
+                        with self.assertRaises(ArchiveError):
+                            archive.read('bad:/member.tobj')
+
     def test_hashfs_v2_listing_does_not_use_deep_scan(self):
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -153,6 +179,34 @@ class ArchiveTests(unittest.TestCase):
             command = run.call_args.args[0]
             self.assertIn("--deep", command)
             self.assertIn("--partial=/prefab/gas/station.ppd", command)
+
+    def test_exact_hashfs_v1_lookup_reads_only_requested_safe_hits(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / 'mod.scs'
+            source.write_bytes(b'SCS#\x01\x00\x00\x00')
+            extractor = root / 'extractor'
+            extractor.touch(mode=0o755)
+
+            def extract(command, **options):
+                self.assertNotIn('--deep', command)
+                self.assertIn('--partial=/missing.ppd,/prefab/known.ppd', command)
+                stage = Path(next(arg.removeprefix('--dest=') for arg in command
+                                  if arg.startswith('--dest=')))
+                (stage / 'prefab').mkdir()
+                (stage / 'prefab/known.ppd').write_bytes(b'descriptor')
+                (stage / 'extra').write_bytes(b'ignored')
+                return SimpleNamespace(returncode=0)
+
+            with Archive(source, extractor=extractor) as archive, \
+                 patch.object(Archive, '_scratch_root', return_value=root), \
+                 patch('ats_road_trip.archive.subprocess.run', side_effect=extract):
+                self.assertEqual(archive.read_exact_hashfs_v1(['prefab/known.ppd', 'missing.ppd']),
+                                 {'prefab/known.ppd': b'descriptor'})
+                with self.assertRaises(ArchiveError):
+                    archive.read_exact_hashfs_v1(['../escape.ppd'])
+                with self.assertRaises(ArchiveError):
+                    archive.read_exact_hashfs_v1(['prefab/known.ppd', 'missing.ppd'], max_bytes=1)
 
     def test_archive_staging_uses_configured_work_root(self):
         with TemporaryDirectory() as temporary:

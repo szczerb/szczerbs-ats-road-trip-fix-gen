@@ -79,9 +79,12 @@ class Archive:
 
     _work_root: Path | None = None
 
-    def __init__(self, path: str | os.PathLike[str], extractor: str | os.PathLike[str] | None = None):
+    def __init__(self, path: str | os.PathLike[str], extractor: str | os.PathLike[str] | None = None,
+                 *, skip_invalid_deep_paths: bool = False):
         self.path = Path(path)
         self.format = detect_format(self.path)
+        self._skip_invalid_deep_paths = skip_invalid_deep_paths
+        self.discarded_deep_path_count = 0
         self._zip: zipfile.ZipFile | None = None
         self._entries: list[ArchiveEntry] | None = None
         self._entry_index: dict[str, list[ArchiveEntry]] | None = None
@@ -150,9 +153,21 @@ class Archive:
                 raise ArchiveError(f"Extractor list failed: {result.stderr.strip() or result.stdout.strip()}")
             # The command prints paths (files and directories), rooted at '/'.
             raw = [line.strip() for line in result.stdout.splitlines() if line.startswith("/") and line.strip() != "/"]
-            if self.format == "hashfs_v1" and not raw:
+            paths = []
+            discarded = 0
+            for line in raw:
+                try:
+                    paths.append(_safe_member(line[1:]))
+                except ArchiveError:
+                    # Deep v1 discovery can infer malformed names from payload
+                    # strings. Ignore those candidates only for callers that
+                    # explicitly accept a partial read-only inventory.
+                    if self.format != "hashfs_v1" or not self._skip_invalid_deep_paths:
+                        raise
+                    discarded += 1
+            if self.format == "hashfs_v1" and not paths:
                 raise ArchiveError("Extractor deep listing returned no HashFS v1 members")
-            paths = [_safe_member(line[1:]) for line in raw]
+            self.discarded_deep_path_count = discarded
             directories: set[str] = set()
             for name in paths:
                 parent = PurePosixPath(name).parent
@@ -199,6 +214,35 @@ class Archive:
         if len(data) > max_bytes:
             raise ArchiveError(f"Member exceeds {max_bytes} byte limit: {entry.path}")
         return data
+
+    def read_exact_hashfs_v1(
+        self, names: Iterable[str], *, max_bytes: int = DEFAULT_MAX_BYTES,
+    ) -> dict[str, bytes]:
+        """Look up verified virtual names by hash when a v1 listing omitted them.
+
+        The extractor can read explicitly named members without heuristic deep
+        discovery. Missing names are allowed. Only safe exact output files are
+        read from the temporary staging directory.
+        """
+        if self.format != 'hashfs_v1' or max_bytes < 0:
+            raise ValueError('Exact HashFS reads require a v1 archive and nonnegative limit')
+        selected = sorted({_safe_member(name) for name in names})
+        if not selected:
+            return {}
+        with TemporaryDirectory(dir=self._scratch_root()) as temporary:
+            stage = Path(temporary)
+            self._extract_hashfs(selected, stage, deep_v1=False)
+            result = {}
+            for name in selected:
+                source = _safe_destination(stage, name)
+                if not source.is_file():
+                    continue
+                with source.open('rb') as stream:
+                    data = stream.read(max_bytes + 1)
+                if len(data) > max_bytes:
+                    raise ArchiveError(f'Member exceeds {max_bytes} byte limit: {name}')
+                result[name] = data
+        return result
 
     def extract(
         self,
@@ -262,7 +306,7 @@ class Archive:
         root.mkdir(parents=True, exist_ok=True)
         return root
 
-    def _extract_hashfs(self, names: list[str], stage: Path) -> None:
+    def _extract_hashfs(self, names: list[str], stage: Path, *, deep_v1: bool = True) -> None:
         self._require_extractor()
         if not names:
             return
@@ -279,7 +323,7 @@ class Archive:
             length += len(name) + 2
         for batch in batches:
             command = [str(self.extractor), str(self.path)]
-            if self.format == "hashfs_v1":
+            if deep_v1 and self.format == "hashfs_v1":
                 command.append("--deep")
             command.extend(["--partial=" + ",".join("/" + name for name in batch),
                             "--dest=" + str(stage), "--quiet"])

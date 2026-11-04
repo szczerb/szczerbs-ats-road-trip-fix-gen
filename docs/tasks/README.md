@@ -20,6 +20,8 @@ No unstarted tasks.
 
 ## Done
 
+- [TASK-0063: Render ATS map-mod coverage and roads](done/TASK-0063-render-map-mod-coverage-and-roads.md) — 31 active mounts, 11 standalone images, 20 clean skips, six connector crops, 727 tests, and [source PR #3](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/3).
+
 - [TASK-0062: Isolate background downloads and resolve review](done/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared pre-write download boundary, read-only offline caches, 21 regressions and 713 tests; fix pushed, direct Copilot reply posted and exact thread confirmed resolved.
 
 - [TASK-0061: Review and open background source PR](done/TASK-0061-review-and-open-background-source-pr.md) — fresh clean review and 692 tests; reviewed source branch pushed and [PR #2](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/2) opened against master; mergeable, automatic merge disabled, no release artifacts.

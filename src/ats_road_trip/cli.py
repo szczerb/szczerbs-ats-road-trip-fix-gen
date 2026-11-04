@@ -52,6 +52,18 @@ def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(description='ATS Road Trip compatibility research prototype')
     root.add_argument('--extractor', help='Path to the external Linux HashFS Extractor')
     sub = root.add_subparsers(dest='command', required=True)
+    render = sub.add_parser('render-map', help='Render ATS map-sector footprints and roads')
+    render.add_argument('archives', nargs='+', help='Target archives, lowest to highest for effective mode')
+    render.add_argument('--mode', choices=('standalone', 'comparison', 'effective'), default='standalone')
+    render.add_argument('--background', required=True, help='Background generator original-background.png')
+    render.add_argument('--background-config', required=True, help='Matching generator config.json')
+    render.add_argument('--game-dir', help='Optional installed ATS baseline; also reads ATS_GAME_DIR')
+    render.add_argument('--dependency', action='append', default=[], help='Additional package, repeat low to high')
+    render.add_argument('--dlc', action='append', default=[], help='Active DLC token, repeat to select mounts')
+    render.add_argument('--bounds', nargs=4, type=float, metavar=('XMIN', 'ZMIN', 'XMAX', 'ZMAX'))
+    render.add_argument('--long-edge', type=int, default=8192, help='Longest PNG edge in pixels')
+    render.add_argument('--output-dir', help='Defaults to a Warsaw-timestamped ignored work directory')
+    render.add_argument('--name', help='Output basename for this view')
     inventory = sub.add_parser('inspect', help='List archive metadata without extracting content')
     inventory.add_argument('archive')
     inventory.add_argument('--prefix', default='')
@@ -214,6 +226,9 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     command = parser()
     args = command.parse_args(argv)
+    if args.command == 'render-map':
+        from .map_render import run_render_map
+        return run_render_map(args)
     try:
         if hasattr(args, 'path'):
             args.path = [virtual_path(p.lstrip('/')) for p in args.path]
