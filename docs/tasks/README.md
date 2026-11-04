@@ -4,8 +4,6 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 
 ## Active
 
-- [TASK-0063: Render ATS map-mod coverage and roads](active/TASK-0063-render-map-mod-coverage-and-roads.md) — archive footprint, road geometry, and effective-stack images.
-
 
 
 
@@ -21,6 +19,8 @@ Use the [workflow](../project/HOW_TO_WORK_WITH_TASKS_AND_ADRS.md) and [task temp
 No unstarted tasks.
 
 ## Done
+
+- [TASK-0063: Render ATS map-mod coverage and roads](done/TASK-0063-render-map-mod-coverage-and-roads.md) — 31 active mounts, 11 standalone images, 20 clean skips, six connector crops, 727 tests, and [source PR #3](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/3).
 
 - [TASK-0062: Isolate background downloads and resolve review](done/TASK-0062-isolate-background-downloads-and-resolve-review.md) — shared pre-write download boundary, read-only offline caches, 21 regressions and 713 tests; fix pushed, direct Copilot reply posted and exact thread confirmed resolved.
 

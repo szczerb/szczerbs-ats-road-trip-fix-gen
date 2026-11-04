@@ -1,7 +1,7 @@
 ---
 id: TASK-0063
 title: Render ATS map-mod coverage and roads
-status: active
+status: done
 priority: medium
 repositories: [.]
 depends_on: []
@@ -40,9 +40,14 @@ Render high-resolution map-mod footprint and road images for individual archives
 
 - GPT-6.1 Sol, medium effort, owns native geometry and tests. GPT-6 Luna, low effort, owns live log inventory and independent local validation. The lead owns CLI, image composition, integration, and review.
 - **Observed locally** — The log inventory records 19 mounted local mods and 12 mounted Workshop mods on ATS 1.61.3.23s. The ProMods and Western Canada precedence controls agree with the active mount order.
-- Live image and full suite verification are in progress.
+- **Observed locally, 2026-11-04** — The exact mounted archives and Workshop variants produce 11 standalone PNGs at 8,192 pixels on the longest edge and 20 clean no-sector results. ZIP, HashFS v1 and v2, and mounted directories all run without archive-load errors.
+- **Observed locally** — Effective full-footprint and atlas views decode all 3,412 selected sector members, draw 317,367 road curves and 246,985 prefab links, and record 2,317 shadowed resources. One road item has zero X/Z extent. The 96 omitted prefab placements retain their definition, descriptor, or placement diagnostics.
+- **Observed locally** — Thirty native road and prefab ports agree within 0.004 world units. The exact HashFS lookup reads all 30 named Alaska descriptors omitted by deep discovery. All six connector crops and the local image index are verified. The full footprint retains Alaska's distant layer-only tiles, and the atlas and seam crops show the road network at useful scales.
+- **Observed locally** — All 727 tests pass. Independent checks verified archive classification, geometry accounting, PNG dimensions, relative index links, path hygiene, and the source-only feature diff. The final source PR is open and marked ready for review.
 
 # Links
 
 - [Renderer usage](../../reference/MAP_MOD_RENDERER.md)
 - [Background r4](../../reference/NORTH_AMERICA_BACKGROUND_1_61_R4.md)
+- [Coverage and priority ADR](../../architecture/decisions/ADR-0033-render-sector-footprints-and-effective-stacks.md)
+- [Source PR #3](https://github.com/szczerb/szczerbs-ats-road-trip-fix-gen/pull/3)
